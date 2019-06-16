@@ -3,6 +3,7 @@
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Commands_Active_Test {
 	private Tasks tasks = new Tasks();
@@ -15,5 +16,12 @@ class Commands_Active_Test {
 		tasks.startTask(1);
 		
 		assertEquals(new Tasks.Task(1, "Testing 2"), tasks.getActiveTask());
+	}
+	
+	@Test
+	void no_active_task_throws_exception_with_message() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.getActiveTask());
+		
+		assertEquals("No active task.", runtimeException.getMessage());
 	}
 }
