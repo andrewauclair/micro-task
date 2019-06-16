@@ -54,11 +54,20 @@ public class Main {
 		else if (command.equals("list")) {
 			List<Tasks.Task> tasksList = tasks.getTasks();
 			
-			Tasks.Task activeTask = tasks.getActiveTask();
+			Tasks.Task activeTask = new Tasks.Task(-1, "");
+			try {
+				activeTask = tasks.getActiveTask();
+			}
+			catch (RuntimeException ignored) {
+			}
 			
 			for (Tasks.Task task : tasksList) {
 				System.out.print(task.id == activeTask.id ? "* " : "  ");
 				System.out.println(task.task);
+			}
+			
+			if (tasksList.size() == 0) {
+				System.out.println("No tasks.");
 			}
 		}
 		else {
