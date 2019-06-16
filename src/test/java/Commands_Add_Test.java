@@ -11,6 +11,6 @@ class Commands_Add_Test {
 	void adding_task_adds_it_to_a_list() {
 		tasks.addTask("Testing task add command");
 		
-		assertThat(tasks.getTasks()).containsOnly("Testing task add command");
+		assertThat(tasks.getTasks()).containsOnly(new Tasks.Task(0, "Testing task add command"));
 	}
 }

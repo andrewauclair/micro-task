@@ -1,5 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -12,9 +13,7 @@ public class Main {
 			command = scanner.nextLine();
 			
 			if (command.startsWith("add")) {
-				String[] s = command.split(" ");
-				
-				String task = command.substring(5, command.length() - 1);//s[1].substring(1, s[1].length() - 1);
+				String task = command.substring(5, command.length() - 1);
 				
 				int newTaskID = tasks.addTask(task);
 				
@@ -36,6 +35,16 @@ public class Main {
 				}
 				else {
 					System.out.println("Active task: " + activeTask);
+				}
+			}
+			else if (command.equals("list")) {
+				List<Tasks.Task> tasksList = tasks.getTasks();
+				
+				int activeTask = tasks.getActiveTask();
+				
+				for (Tasks.Task task : tasksList) {
+					System.out.print(task.id == activeTask ? "* " : "  ");
+					System.out.println(task.task);
 				}
 			}
 			else {

@@ -2,20 +2,34 @@
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 class Tasks {
 	private int startingID = 0;
 	
 	private int activeTaskID = -1;
 	
-	class Task {
-		int id;
-		String task;
+	static final class Task {
+		final int id;
+		final String task;
 		
 		Task(int id, String task) {
 			this.id = id;
 			this.task = task;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Task task1 = (Task) o;
+			return id == task1.id &&
+					Objects.equals(task, task1.task);
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hash(id, task);
 		}
 	}
 	
@@ -38,9 +52,7 @@ class Tasks {
 		return activeTaskID;
 	}
 	
-	List<String> getTasks() {
-		return tasks.stream()
-				.map(p -> p.task)
-				.collect(Collectors.toList());
+	List<Task> getTasks() {
+		return tasks;
 	}
 }
