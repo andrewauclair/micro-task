@@ -1,4 +1,4 @@
-image: 11.0.3-jdk:latest
+image: openjdk/11.0.3-jdk:latest
 
 stages:
   - build
