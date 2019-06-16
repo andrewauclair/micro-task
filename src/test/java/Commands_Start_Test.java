@@ -3,6 +3,7 @@
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Commands_Start_Test {
 	private Tasks tasks = new Tasks();
@@ -14,5 +15,12 @@ class Commands_Start_Test {
 		tasks.startTask(id);
 		
 		assertEquals(id, tasks.getActiveTask());
+	}
+	
+	@Test
+	void starting_non_existent_id_throws_exception_with_message() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(5));
+		
+		assertEquals("Task 5 was not found.", runtimeException.getMessage());
 	}
 }

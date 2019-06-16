@@ -48,9 +48,11 @@ class Tasks {
 	
 	void startTask(int id) {
 		tasks.stream()
-				.filter(p -> p.id == id)
+				.filter(task -> task.id == id)
 				.findFirst()
-				.ifPresent(p -> activeTaskID = p.id);
+				.ifPresentOrElse(task -> activeTaskID = task.id, () -> {
+					throw new RuntimeException("Task " + id + " was not found.");
+				});
 	}
 	
 	void finishTask(int taskID) {
