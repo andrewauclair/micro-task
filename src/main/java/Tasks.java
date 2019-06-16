@@ -54,7 +54,11 @@ class Tasks {
 	}
 	
 	void finishTask(int taskID) {
-		tasks.removeIf(task -> task.id == taskID);
+		boolean removed = tasks.removeIf(task -> task.id == taskID);
+		
+		if (!removed) {
+			throw new RuntimeException("Task " + taskID + " was not found.");
+		}
 	}
 	
 	int getActiveTask() {
