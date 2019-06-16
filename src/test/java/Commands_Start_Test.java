@@ -10,11 +10,12 @@ class Commands_Start_Test {
 	
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {
+		tasks.addTask("Empty task");
 		int id = tasks.addTask("Testing task start command");
 		
 		tasks.startTask(id);
 		
-		assertEquals(id, tasks.getActiveTask());
+		assertEquals(new Tasks.Task(1, "Testing task start command"), tasks.getActiveTask());
 	}
 	
 	@Test

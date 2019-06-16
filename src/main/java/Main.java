@@ -47,22 +47,17 @@ public class Main {
 			System.out.println("Finished task: " + taskID);
 		}
 		else if (command.equals("active")) {
-			int activeTask = tasks.getActiveTask();
+			Tasks.Task activeTask = tasks.getActiveTask();
 			
-			if (activeTask == -1) {
-				System.out.println("No active task");
-			}
-			else {
-				System.out.println("Active task: " + activeTask);
-			}
+			System.out.println("Active task: " + activeTask);
 		}
 		else if (command.equals("list")) {
 			List<Tasks.Task> tasksList = tasks.getTasks();
 			
-			int activeTask = tasks.getActiveTask();
+			Tasks.Task activeTask = tasks.getActiveTask();
 			
 			for (Tasks.Task task : tasksList) {
-				System.out.print(task.id == activeTask ? "* " : "  ");
+				System.out.print(task.id == activeTask.id ? "* " : "  ");
 				System.out.println(task.task);
 			}
 		}

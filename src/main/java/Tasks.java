@@ -3,6 +3,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 class Tasks {
 	private int startingID = 0;
@@ -63,8 +64,15 @@ class Tasks {
 		}
 	}
 	
-	int getActiveTask() {
-		return activeTaskID;
+	Task getActiveTask() {
+		Optional<Task> first = tasks.stream()
+				.filter(task -> task.id == activeTaskID)
+				.findFirst();
+		
+		if (first.isPresent()) {
+			return first.get();
+		}
+		throw new RuntimeException("No active task.");
 	}
 	
 	List<Task> getTasks() {
