@@ -56,12 +56,17 @@ class Tasks {
 				});
 	}
 	
-	void finishTask(int taskID) {
-		boolean removed = tasks.removeIf(task -> task.id == taskID);
+	Tasks.Task finishTask() {
+		Optional<Task> first = tasks.stream()
+				.filter(task -> task.id == activeTaskID)
+				.findFirst();
 		
-		if (!removed) {
-			throw new RuntimeException("Task " + taskID + " was not found.");
+		tasks.removeIf(task -> task.id == activeTaskID);
+		
+		if (first.isPresent()) {
+			return first.get();
 		}
+		throw new RuntimeException("No active task.");
 	}
 	
 	Task getActiveTask() {

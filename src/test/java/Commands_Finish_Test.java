@@ -21,16 +21,20 @@ class Commands_Finish_Test {
 		assertThat(tasks.getTasks()).containsOnly(new Tasks.Task(0, "Testing tasks"),
 				new Tasks.Task(1, "Testing tasks 2"));
 		
-		tasks.finishTask(1);
+		tasks.startTask(1);
+		
+		Tasks.Task task = tasks.finishTask();
 		
 		assertThat(tasks.getTasks()).containsOnly(new Tasks.Task(0, "Testing tasks"));
+		
+		assertEquals(new Tasks.Task(1, "Testing tasks 2"), task);
 	}
 	
 	// TODO This technically works because when we remove the task it won't be found in the list by getActiveTask, this behavior will probably change in the future and this test will fail
 	@Test
 	void finishing_a_task_resets_the_active_task() {
 		tasks.startTask(1);
-		tasks.finishTask(1);
+		tasks.finishTask();
 		
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.getActiveTask());
 		
@@ -38,9 +42,9 @@ class Commands_Finish_Test {
 	}
 	
 	@Test
-	void finishing_non_existent_id_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.finishTask(5));
+	void finish_with_no_active_task_throws_exception_with_message() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.finishTask());
 		
-		assertEquals("Task 5 was not found.", runtimeException.getMessage());
+		assertEquals("No active task.", runtimeException.getMessage());
 	}
 }
