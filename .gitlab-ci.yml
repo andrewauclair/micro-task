@@ -1,0 +1,29 @@
+image: ubuntu:latest
+
+stages:
+  - build
+  - test
+  - quality_assurance
+ # - deploy
+  
+assembleDebug:
+  stage: build
+  script:
+    - mvn package
+  artifacts:
+    paths:
+      - target/
+    expire_in: 1 week
+   
+unit_tests:
+  stage: test
+  script:
+    - mvn test
+  artifacts:
+    name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+    when: on_failure
+    expire_in: 4 days
+    paths:
+      - app/build/reports/tests/
+
+    
