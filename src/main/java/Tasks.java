@@ -31,6 +31,11 @@ class Tasks {
 		public int hashCode() {
 			return Objects.hash(id, task);
 		}
+		
+		@Override
+		public String toString() {
+			return id + " - \"" + task + "\"";
+		}
 	}
 	
 	private List<Task> tasks = new ArrayList<>();
@@ -46,6 +51,10 @@ class Tasks {
 				.filter(p -> p.id == id)
 				.findFirst()
 				.ifPresent(p -> activeTaskID = p.id);
+	}
+	
+	void finishTask(int taskID) {
+		tasks.removeIf(task -> task.id == taskID);
 	}
 	
 	int getActiveTask() {

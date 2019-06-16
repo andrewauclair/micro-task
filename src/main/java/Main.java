@@ -27,6 +27,14 @@ public class Main {
 				
 				System.out.println("Started task: " + taskID);
 			}
+			else if (command.startsWith("finish")) {
+				String[] s = command.split(" ");
+				int taskID = Integer.parseInt(s[1]);
+				
+				tasks.finishTask(taskID);
+				
+				System.out.println("Finished task: " + taskID);
+			}
 			else if (command.equals("active")) {
 				int activeTask = tasks.getActiveTask();
 				
