@@ -2,24 +2,45 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class Tasks {
-	private static List<String> tasks = new ArrayList<>();
+	private int startingID = 0;
 	
-	static int addTask(String task) {
-		tasks.add(task);
-		return 0;
+	private int activeTaskID = -1;
+	
+	class Task {
+		int id;
+		String task;
+		
+		Task(int id, String task) {
+			this.id = id;
+			this.task = task;
+		}
 	}
 	
-	static void startTask(int id) {
+	private List<Task> tasks = new ArrayList<>();
 	
+	int addTask(String task) {
+		Task newTask = new Task(startingID++, task);
+		tasks.add(newTask);
+		return newTask.id;
 	}
 	
-	static int getActiveTask() {
-		return -1;
+	void startTask(int id) {
+		tasks.stream()
+				.filter(p -> p.id == id)
+				.findFirst()
+				.ifPresent(p -> activeTaskID = p.id);
 	}
 	
-	static List<String> getTasks() {
-		return tasks;
+	int getActiveTask() {
+		return activeTaskID;
+	}
+	
+	List<String> getTasks() {
+		return tasks.stream()
+				.map(p -> p.task)
+				.collect(Collectors.toList());
 	}
 }

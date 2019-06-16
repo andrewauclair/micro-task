@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Start_Test {
+	Tasks tasks = new Tasks();
+	
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {
-		int id = Tasks.addTask("Testing task start command");
+		int id = tasks.addTask("Testing task start command");
 		
-		Tasks.startTask(id);
+		tasks.startTask(id);
 		
-		assertEquals(id, Tasks.getActiveTask());
+		assertEquals(id, tasks.getActiveTask());
 	}
 }
