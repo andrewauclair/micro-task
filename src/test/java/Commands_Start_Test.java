@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Start_Test {
-	Tasks tasks = new Tasks();
+	private Tasks tasks = new Tasks();
 	
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {
