@@ -42,7 +42,6 @@ public class Main {
 		// save to a file
 		// TODO we'll do this better in the future, right now this will lose all the current id's, you can't persist the active task with this
 		FileOutputStream output = new FileOutputStream(new File("tasks.txt"));
-		BufferedOutputStream outputStream = new BufferedOutputStream(output);
 		
 		for (Tasks.Task task : tasks.getTasks()) {
 			output.write(task.task.getBytes());
@@ -66,6 +65,11 @@ public class Main {
 			
 			System.out.println("Started task: " + taskID);
 		}
+		else if (command.startsWith("stop")) {
+			Tasks.Task task = tasks.stopTask();
+			
+			System.out.println("Stopped task: " + task);
+		}
 		else if (command.startsWith("finish")) {
 			Tasks.Task task = tasks.finishTask();
 			
@@ -88,7 +92,7 @@ public class Main {
 			
 			for (Tasks.Task task : tasksList) {
 				System.out.print(task.id == activeTask.id ? "* " : "  ");
-				System.out.println(task.task);
+				System.out.println(task);
 			}
 			
 			if (tasksList.size() == 0) {

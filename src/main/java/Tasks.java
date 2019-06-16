@@ -56,6 +56,12 @@ class Tasks {
 				});
 	}
 	
+	Task stopTask() {
+		Task activeTask = getActiveTask();
+		activeTaskID = -1;
+		return activeTask;
+	}
+	
 	Tasks.Task finishTask() {
 		Optional<Task> first = tasks.stream()
 				.filter(task -> task.id == activeTaskID)
