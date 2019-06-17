@@ -18,16 +18,16 @@ class Commands_Finish_Test {
 	
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
-		assertThat(tasks.getTasks()).containsOnly(new Tasks.Task(0, "Testing tasks"),
-				new Tasks.Task(1, "Testing tasks 2"));
+		assertThat(tasks.getTasks()).containsOnly(new Task(0, "Testing tasks"),
+				new Task(1, "Testing tasks 2"));
 		
 		tasks.startTask(1);
 		
-		Tasks.Task task = tasks.finishTask();
+		Task task = tasks.finishTask();
 		
-		assertThat(tasks.getTasks()).containsOnly(new Tasks.Task(0, "Testing tasks"));
+		assertThat(tasks.getTasks()).containsOnly(new Task(0, "Testing tasks"));
 		
-		assertEquals(new Tasks.Task(1, "Testing tasks 2"), task);
+		assertEquals(new Task(1, "Testing tasks 2"), task);
 	}
 	
 	// TODO This technically works because when we remove the task it won't be found in the list by getActiveTask, this behavior will probably change in the future and this test will fail

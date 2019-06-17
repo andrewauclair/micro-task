@@ -14,13 +14,13 @@ class Commands_Stop_Test {
 		
 		tasks.startTask(1);
 		
-		assertEquals(new Tasks.Task(1, "Test 2"), tasks.getActiveTask());
+		assertEquals(new Task(1, "Test 2"), tasks.getActiveTask());
 		
-		Tasks.Task stoppedTask = tasks.stopTask();
+		Task stoppedTask = tasks.stopTask();
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		assertEquals(new Tasks.Task(1, "Test 2"), stoppedTask);
+		assertEquals(new Task(1, "Test 2"), stoppedTask);
 	}
 	
 	@Test

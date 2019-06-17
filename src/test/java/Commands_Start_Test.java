@@ -15,7 +15,7 @@ class Commands_Start_Test {
 		
 		tasks.startTask(id);
 		
-		assertEquals(new Tasks.Task(1, "Testing task start command"), tasks.getActiveTask());
+		assertEquals(new Task(1, "Testing task start command"), tasks.getActiveTask());
 	}
 	
 	@Test

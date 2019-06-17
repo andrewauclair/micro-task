@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class Task_Equals_Test {
 	@Test
 	void task_equals_task() {
-		EqualsVerifier.forClass(Tasks.Task.class)
+		EqualsVerifier.forClass(Task.class)
 				.verify();
 	}
 }

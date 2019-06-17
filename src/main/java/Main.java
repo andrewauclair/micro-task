@@ -43,7 +43,7 @@ public class Main {
 		// TODO we'll do this better in the future, right now this will lose all the current id's, you can't persist the active task with this
 		FileOutputStream output = new FileOutputStream(new File("tasks.txt"));
 		
-		for (Tasks.Task task : tasks.getTasks()) {
+		for (Task task : tasks.getTasks()) {
 			output.write(task.task.getBytes());
 			output.write("\n".getBytes());
 		}
@@ -66,31 +66,31 @@ public class Main {
 			System.out.println("Started task: " + taskID);
 		}
 		else if (command.startsWith("stop")) {
-			Tasks.Task task = tasks.stopTask();
+			Task task = tasks.stopTask();
 			
 			System.out.println("Stopped task: " + task);
 		}
 		else if (command.startsWith("finish")) {
-			Tasks.Task task = tasks.finishTask();
+			Task task = tasks.finishTask();
 			
 			System.out.println("Finished task: " + task);
 		}
 		else if (command.equals("active")) {
-			Tasks.Task activeTask = tasks.getActiveTask();
+			Task activeTask = tasks.getActiveTask();
 			
 			System.out.println("Active task: " + activeTask);
 		}
 		else if (command.equals("list")) {
-			List<Tasks.Task> tasksList = tasks.getTasks();
+			List<Task> tasksList = tasks.getTasks();
 			
-			Tasks.Task activeTask = new Tasks.Task(-1, "");
+			Task activeTask = new Task(-1, "");
 			try {
 				activeTask = tasks.getActiveTask();
 			}
 			catch (RuntimeException ignored) {
 			}
 			
-			for (Tasks.Task task : tasksList) {
+			for (Task task : tasksList) {
 				System.out.print(task.id == activeTask.id ? "* " : "  ");
 				System.out.println(task);
 			}

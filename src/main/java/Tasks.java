@@ -2,42 +2,12 @@
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 class Tasks {
 	private int startingID = 0;
 	
 	private int activeTaskID = -1;
-	
-	static final class Task {
-		final int id;
-		final String task;
-		
-		Task(int id, String task) {
-			this.id = id;
-			this.task = task;
-		}
-		
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Task task1 = (Task) o;
-			return id == task1.id &&
-					Objects.equals(task, task1.task);
-		}
-		
-		@Override
-		public int hashCode() {
-			return Objects.hash(id, task);
-		}
-		
-		@Override
-		public String toString() {
-			return id + " - \"" + task + "\"";
-		}
-	}
 	
 	private List<Task> tasks = new ArrayList<>();
 	
@@ -62,7 +32,7 @@ class Tasks {
 		return activeTask;
 	}
 	
-	Tasks.Task finishTask() {
+	Task finishTask() {
 		Optional<Task> first = tasks.stream()
 				.filter(task -> task.id == activeTaskID)
 				.findFirst();
