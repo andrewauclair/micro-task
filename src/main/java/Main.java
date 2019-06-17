@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		Tasks tasks = new Tasks();
+		Commands commands = new Commands(tasks, System.out);
 		
 		// reload previous tasks from a file
 		File file = new File("tasks.txt");
@@ -30,7 +31,7 @@ public class Main {
 			
 			if (!command.equals("exit")) {
 				try {
-					parseCommand(tasks, command);
+					parseCommand(tasks, commands, command);
 				}
 				catch (RuntimeException e) {
 					System.out.println(e.getMessage());
@@ -49,13 +50,9 @@ public class Main {
 		}
 	}
 	
-	private static void parseCommand(Tasks tasks, String command) {
+	private static void parseCommand(Tasks tasks, Commands commands, String command) {
 		if (command.startsWith("add")) {
-			String task = command.substring(5, command.length() - 1);
-			
-			int newTaskID = tasks.addTask(task);
-			
-			System.out.println("Added task " + newTaskID + " \"" + task + "\"");
+			commands.execute(command);
 		}
 		else if (command.startsWith("start")) {
 			String[] s = command.split(" ");
