@@ -17,13 +17,16 @@ class Tasks {
 		return newTask.id;
 	}
 	
-	void startTask(int id) {
-		tasks.stream()
+	Task startTask(int id) {
+		Optional<Task> first = tasks.stream()
 				.filter(task -> task.id == id)
-				.findFirst()
-				.ifPresentOrElse(task -> activeTaskID = task.id, () -> {
-					throw new RuntimeException("Task " + id + " was not found.");
-				});
+				.findFirst();
+
+		if (first.isPresent()) {
+			activeTaskID = first.get().id;
+			return first.get();
+		}
+		throw new RuntimeException("Task " + id + " was not found.");
 	}
 	
 	Task stopTask() {

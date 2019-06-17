@@ -5,17 +5,32 @@ import java.io.PrintStream;
 class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
-	
+
 	Commands(Tasks tasks, PrintStream output) {
 		this.tasks = tasks;
 		this.output = output;
 	}
-	
+
 	void execute(String command) {
-		String task = command.substring(5, command.length() - 1);
-		
-		int newTaskID = tasks.addTask(task);
-		
-		output.println("Added task " + newTaskID + " \"" + task + "\"");
+		if (command.equals("finish")) {
+			Task task = tasks.finishTask();
+
+			output.println("Finished task " + task);
+		}
+		else if (command.startsWith("start")) {
+			String[] s = command.split(" ");
+			int taskID = Integer.parseInt(s[1]);
+
+			Task task = tasks.startTask(taskID);
+
+			output.println("Started task " + task);
+		}
+		else {
+			String task = command.substring(5, command.length() - 1);
+
+			int newTaskID = tasks.addTask(task);
+
+			output.println("Added task " + newTaskID + " \"" + task + "\"");
+		}
 	}
 }
