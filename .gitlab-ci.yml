@@ -5,7 +5,7 @@ stages:
   - test
   - quality_assurance
   
-assembleDebug:
+build:
   stage: build
   script:
     - source ./ci/pre-build.sh
@@ -15,7 +15,7 @@ assembleDebug:
       - target/
     expire_in: 1 week
    
-unit_tests:
+test:
   stage: test
   script:
     - source ./ci/pre-build.sh
