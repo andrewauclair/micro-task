@@ -20,6 +20,7 @@ unit_tests:
   script:
     - source ./ci/pre-build.sh
     - ./maven/bin/mvn test
+    - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
   artifacts:
     name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
     when: on_failure
