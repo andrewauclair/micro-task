@@ -1,5 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.Tasks;
 import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

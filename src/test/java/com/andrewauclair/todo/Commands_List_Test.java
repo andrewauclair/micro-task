@@ -1,5 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.Commands;
+import com.andrewauclair.todo.Tasks;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -15,14 +18,14 @@ class Commands_List_Test {
 	
 	@Test
 	void execute_list_command() {
-		tasks.addTask("Task 1");
-		tasks.addTask("Task 2");
-		tasks.addTask("Task 3");
+		tasks.addTask("com.andrewauclair.todo.Task 1");
+		tasks.addTask("com.andrewauclair.todo.Task 2");
+		tasks.addTask("com.andrewauclair.todo.Task 3");
 		tasks.startTask(2);
 		
-		String expected = "  0 - \"Task 1\"" + System.lineSeparator() +
-				"  1 - \"Task 2\"" + System.lineSeparator() +
-				"* 2 - \"Task 3\"" + System.lineSeparator();
+		String expected = "  0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator() +
+				"  1 - \"com.andrewauclair.todo.Task 2\"" + System.lineSeparator() +
+				"* 2 - \"com.andrewauclair.todo.Task 3\"" + System.lineSeparator();
 		
 		commands.execute("list");
 		

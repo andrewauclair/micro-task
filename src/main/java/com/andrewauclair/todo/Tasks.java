@@ -1,4 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.todo;
+
+import com.andrewauclair.todo.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,7 @@ class Tasks {
 			activeTaskID = first.get().id;
 			return first.get();
 		}
-		throw new RuntimeException("Task " + id + " was not found.");
+		throw new RuntimeException("com.andrewauclair.todo.Task " + id + " was not found.");
 	}
 	
 	Task stopTask() {
