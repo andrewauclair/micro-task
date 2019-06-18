@@ -2,3 +2,5 @@
 target/
 *.iml
 tasks.txt
+run/git-data/
+run/*.jar
