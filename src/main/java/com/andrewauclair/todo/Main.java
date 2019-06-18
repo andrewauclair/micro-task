@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		Tasks tasks = new Tasks();
+		Tasks tasks = new Tasks(new TaskWriter());
 		Commands commands = new Commands(tasks, System.out);
 		
 		File git_data = new File("git-data");
@@ -20,7 +20,7 @@ public class Main {
 		
 		GitControls gitControls = new GitControls();
 		OSInterface osInterface = new OSInterface();
-		osInterface.runCommand(new GitCommand("git init"));
+		osInterface.runGitCommand(new GitCommand("git init"));
 		
 		// reload previous tasks from a file
 		File file = new File("tasks.txt");

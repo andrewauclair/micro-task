@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Start_Test {
-	private final Tasks tasks = new Tasks();
+	private final Tasks tasks = new Tasks(new TaskWriter());
 
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {
 		tasks.addTask("Empty task");
-		int id = tasks.addTask("Testing task start command");
+		Task task = tasks.addTask("Testing task start command");
 
-		Task newActiveTask = tasks.startTask(id);
+		Task newActiveTask = tasks.startTask(task.id);
 
 		assertEquals(new Task(1, "Testing task start command"), tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);

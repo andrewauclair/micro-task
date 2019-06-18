@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Commands;
-import com.andrewauclair.todo.Tasks;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -23,5 +21,7 @@ class Commands_Stop_Test {
 		commands.execute("stop");
 		
 		assertEquals("Stopped task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+
+		Mockito.verify(tasks).stopTask();
 	}
 }

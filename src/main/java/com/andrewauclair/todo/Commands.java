@@ -63,11 +63,11 @@ class Commands {
 	}
 	
 	private void addCommand(String command) {
-		String task = command.substring(5, command.length() - 1);
+		String taskTitle = command.substring(5, command.length() - 1);
 		
-		int newTaskID = tasks.addTask(task);
+		Task task = tasks.addTask(taskTitle);
 		
-		output.println("Added task " + newTaskID + " \"" + task + "\"");
+		output.println("Added task " + task);
 	}
 	
 	private void stopCommand() {

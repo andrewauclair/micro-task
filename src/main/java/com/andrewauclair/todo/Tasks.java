@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Task;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +11,20 @@ class Tasks {
 	private int activeTaskID = -1;
 	
 	private final List<Task> tasks = new ArrayList<>();
-	
-	int addTask(String task) {
+	private final TaskWriter writer;
+
+	public Tasks() {
+		writer = new TaskWriter();
+	}
+
+	public Tasks(TaskWriter writer) {
+		this.writer = writer;
+	}
+
+	Task addTask(String task) {
 		Task newTask = new Task(startingID++, task);
 		tasks.add(newTask);
-		return newTask.id;
+		return newTask;
 	}
 	
 	Task startTask(int id) {

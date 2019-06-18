@@ -23,5 +23,7 @@ class Commands_Finish_Test {
 		commands.execute("finish");
 
 		assertEquals("Finished task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+
+		Mockito.verify(tasks).finishTask();
 	}
 }

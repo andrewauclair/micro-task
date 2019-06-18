@@ -8,7 +8,7 @@ import java.io.IOException;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
-	public void runCommand(GitCommand command) throws IOException {
+	public void runGitCommand(GitCommand command) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(new File("git-data"));
 		builder.command(command.toString().split(" "));

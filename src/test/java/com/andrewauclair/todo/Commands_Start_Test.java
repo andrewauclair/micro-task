@@ -22,5 +22,7 @@ class Commands_Start_Test {
 		commands.execute("start 0");
 
 		assertEquals("Started task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+
+		Mockito.verify(tasks).startTask(0);
 	}
 }
