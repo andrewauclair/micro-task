@@ -1,30 +1,24 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Stop_Test {
-	private Tasks tasks = new Tasks();
+	private Tasks tasks = Mockito.spy(Tasks.class);
+	private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	private Commands commands = new Commands(tasks, new PrintStream(outputStream));
 	
 	@Test
-	void stop_command_sets_the_active_task_to_none() {
-		tasks.addTask("Test 1");
-		tasks.addTask("Test 2");
+	void execute_stop_command() {
+		tasks.addTask("Task 1");
+		tasks.startTask(0);
+		commands.execute("stop");
 		
-		tasks.startTask(1);
-		
-		assertEquals(new Task(1, "Test 2"), tasks.getActiveTask());
-		
-		Task stoppedTask = tasks.stopTask();
-		
-		ActiveTaskAsserts.assertNoActiveTask(tasks);
-		
-		assertEquals(new Task(1, "Test 2"), stoppedTask);
-	}
-	
-	@Test
-	void stop_command_throws_exception_if_there_is_no_active_task() {
-		ActiveTaskAsserts.assertThrowsNoActiveTaskException(tasks::stopTask);
+		assertEquals("Stopped task 0 - \"Task 1\"" + System.lineSeparator(), outputStream.toString());
 	}
 }

@@ -25,6 +25,11 @@ class Commands {
 
 			output.println("Started task " + task);
 		}
+		else if (command.equals("stop")) {
+			Task task = tasks.stopTask();
+			
+			output.println("Stopped task " + task);
+		}
 		else {
 			String task = command.substring(5, command.length() - 1);
 

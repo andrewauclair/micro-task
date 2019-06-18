@@ -58,9 +58,7 @@ public class Main {
 			commands.execute(command);
 		}
 		else if (command.startsWith("stop")) {
-			Task task = tasks.stopTask();
-			
-			System.out.println("Stopped task: " + task);
+			commands.execute(command);
 		}
 		else if (command.startsWith("finish")) {
 			commands.execute(command);
