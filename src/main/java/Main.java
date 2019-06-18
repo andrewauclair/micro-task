@@ -64,9 +64,7 @@ public class Main {
 			commands.execute(command);
 		}
 		else if (command.equals("active")) {
-			Task activeTask = tasks.getActiveTask();
-			
-			System.out.println("Active task: " + activeTask);
+			commands.execute(command);
 		}
 		else if (command.equals("list")) {
 			List<Task> tasksList = tasks.getTasks();

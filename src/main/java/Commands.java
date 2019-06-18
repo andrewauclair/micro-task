@@ -37,6 +37,11 @@ class Commands {
 
 			output.println("Added task " + newTaskID + " \"" + task + "\"");
 		}
+		else if (command.startsWith("active")) {
+			Task task = tasks.getActiveTask();
+			
+			output.println("Active task is " + task);
+		}
 		else {
 			output.println("Unknown command.");
 		}
