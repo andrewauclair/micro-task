@@ -3,6 +3,7 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.git.GitCommand;
 import com.andrewauclair.todo.git.GitControls;
+import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.*;
 import java.util.Scanner;
@@ -18,7 +19,8 @@ public class Main {
 		System.out.println(mkdir);
 		
 		GitControls gitControls = new GitControls();
-		gitControls.runCommand(new GitCommand("git init"));
+		OSInterface osInterface = new OSInterface();
+		osInterface.runCommand(new GitCommand("git init"));
 		
 		// reload previous tasks from a file
 		File file = new File("tasks.txt");
