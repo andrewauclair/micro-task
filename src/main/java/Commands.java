@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 
 import java.io.PrintStream;
+import java.util.List;
 
 class Commands {
 	private final Tasks tasks;
@@ -41,6 +42,25 @@ class Commands {
 			Task task = tasks.getActiveTask();
 			
 			output.println("Active task is " + task);
+		}
+		else if (command.startsWith("list")) {
+			List<Task> tasksList = tasks.getTasks();
+			
+			Task activeTask = new Task(-1, "");
+			try {
+				activeTask = tasks.getActiveTask();
+			}
+			catch (RuntimeException ignored) {
+			}
+			
+			for (Task task : tasksList) {
+				output.print(task.id == activeTask.id ? "* " : "  ");
+				output.println(task);
+			}
+			
+			if (tasksList.size() == 0) {
+				output.println("No tasks.");
+			}
 		}
 		else {
 			output.println("Unknown command.");

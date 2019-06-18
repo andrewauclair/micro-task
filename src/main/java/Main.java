@@ -31,7 +31,7 @@ public class Main {
 			
 			if (!command.equals("exit")) {
 				try {
-					parseCommand(tasks, commands, command);
+					commands.execute(command);
 				}
 				catch (RuntimeException e) {
 					System.out.println(e.getMessage());
@@ -47,46 +47,6 @@ public class Main {
 		for (Task task : tasks.getTasks()) {
 			output.write(task.task.getBytes());
 			output.write("\n".getBytes());
-		}
-	}
-	
-	private static void parseCommand(Tasks tasks, Commands commands, String command) {
-		if (command.startsWith("add")) {
-			commands.execute(command);
-		}
-		else if (command.startsWith("start")) {
-			commands.execute(command);
-		}
-		else if (command.startsWith("stop")) {
-			commands.execute(command);
-		}
-		else if (command.startsWith("finish")) {
-			commands.execute(command);
-		}
-		else if (command.equals("active")) {
-			commands.execute(command);
-		}
-		else if (command.equals("list")) {
-			List<Task> tasksList = tasks.getTasks();
-			
-			Task activeTask = new Task(-1, "");
-			try {
-				activeTask = tasks.getActiveTask();
-			}
-			catch (RuntimeException ignored) {
-			}
-			
-			for (Task task : tasksList) {
-				System.out.print(task.id == activeTask.id ? "* " : "  ");
-				System.out.println(task);
-			}
-			
-			if (tasksList.size() == 0) {
-				System.out.println("No tasks.");
-			}
-		}
-		else {
-			System.out.println("Unknown Command");
 		}
 	}
 }
