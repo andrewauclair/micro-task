@@ -1,4 +1,13 @@
 package com.andrewauclair.todo;
 
-public class TaskWriter {
+class TaskWriter {
+	TaskWriter() {
+
+	}
+	public TaskWriter(FileCreator fileCreator) {
+
+	}
+	void writeTask(Task task, String fileName) {
+
+	}
 }

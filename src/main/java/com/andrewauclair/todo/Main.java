@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		Tasks tasks = new Tasks(new TaskWriter());
+		Tasks tasks = new Tasks(new TaskWriter(new FileCreator()));
 		Commands commands = new Commands(tasks, System.out);
 		
 		File git_data = new File("git-data");

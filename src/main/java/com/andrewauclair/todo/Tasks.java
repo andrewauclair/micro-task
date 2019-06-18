@@ -1,6 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +16,15 @@ class Tasks {
 	private final List<Task> tasks = new ArrayList<>();
 	private final TaskWriter writer;
 
-	public Tasks() {
-		writer = new TaskWriter();
+	// this constructor should only be used in the tests
+	Tasks() {
+		// create an empty writer
+		writer = new TaskWriter(new FileCreator() {
+			@Override
+			public OutputStream createOutputStream(String fileName) throws FileNotFoundException {
+				return new ByteArrayOutputStream();
+			}
+		});
 	}
 
 	public Tasks(TaskWriter writer) {
@@ -24,6 +34,9 @@ class Tasks {
 	Task addTask(String task) {
 		Task newTask = new Task(startingID++, task);
 		tasks.add(newTask);
+
+		writer.writeTask(newTask, "git-data/" + newTask.id + ".txt");
+
 		return newTask;
 	}
 	

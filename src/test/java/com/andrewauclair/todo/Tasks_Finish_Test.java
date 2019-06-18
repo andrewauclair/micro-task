@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Finish_Test {
-	private final Tasks tasks = new Tasks(new TaskWriter());
+	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()));
 
 	@BeforeEach
 	void setup() {

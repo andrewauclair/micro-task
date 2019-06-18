@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Start_Test {
-	private final Tasks tasks = new Tasks(new TaskWriter());
+	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()));
 
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {
