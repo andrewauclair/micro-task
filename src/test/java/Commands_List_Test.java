@@ -1,3 +1,5 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
