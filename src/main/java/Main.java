@@ -55,12 +55,7 @@ public class Main {
 			commands.execute(command);
 		}
 		else if (command.startsWith("start")) {
-			String[] s = command.split(" ");
-			int taskID = Integer.parseInt(s[1]);
-			
-			tasks.startTask(taskID);
-			
-			System.out.println("Started task: " + taskID);
+			commands.execute(command);
 		}
 		else if (command.startsWith("stop")) {
 			Task task = tasks.stopTask();
@@ -68,9 +63,7 @@ public class Main {
 			System.out.println("Stopped task: " + task);
 		}
 		else if (command.startsWith("finish")) {
-			Task task = tasks.finishTask();
-			
-			System.out.println("Finished task: " + task);
+			commands.execute(command);
 		}
 		else if (command.equals("active")) {
 			Task activeTask = tasks.getActiveTask();
