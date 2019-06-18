@@ -1,9 +1,9 @@
 package com.andrewauclair.todo.git;
 
-class GitCommand {
+public class GitCommand {
 	private final String command;
 	
-	GitCommand(String command) {
+	public GitCommand(String command) {
 		this.command = command;
 	}
 	

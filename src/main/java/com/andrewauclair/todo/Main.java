@@ -1,6 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.git.GitCommand;
+import com.andrewauclair.todo.git.GitControls;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -8,6 +11,14 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		Tasks tasks = new Tasks();
 		Commands commands = new Commands(tasks, System.out);
+		
+		File git_data = new File("git-data");
+		boolean mkdir = git_data.mkdir();
+		
+		System.out.println(mkdir);
+		
+		GitControls gitControls = new GitControls();
+		gitControls.runCommand(new GitCommand("git init"));
 		
 		// reload previous tasks from a file
 		File file = new File("tasks.txt");
