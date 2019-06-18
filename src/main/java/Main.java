@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 
 import java.io.*;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {

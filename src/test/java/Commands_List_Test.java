@@ -7,9 +7,9 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_List_Test {
-	private Tasks tasks = Mockito.spy(Tasks.class);
-	private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private Commands commands = new Commands(tasks, new PrintStream(outputStream));
+	private final Tasks tasks = Mockito.spy(Tasks.class);
+	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
 	
 	@Test
 	void execute_list_command() {

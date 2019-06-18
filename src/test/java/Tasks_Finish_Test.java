@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Finish_Test {
-	private Tasks tasks = new Tasks();
+	private final Tasks tasks = new Tasks();
 
 	@BeforeEach
 	void setup() {
@@ -36,14 +36,14 @@ class Tasks_Finish_Test {
 		tasks.startTask(1);
 		tasks.finishTask();
 
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.getActiveTask());
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTask);
 
 		assertEquals("No active task.", runtimeException.getMessage());
 	}
 
 	@Test
 	void finish_with_no_active_task_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.finishTask());
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::finishTask);
 
 		assertEquals("No active task.", runtimeException.getMessage());
 	}

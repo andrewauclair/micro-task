@@ -9,7 +9,7 @@ class Tasks {
 	
 	private int activeTaskID = -1;
 	
-	private List<Task> tasks = new ArrayList<>();
+	private final List<Task> tasks = new ArrayList<>();
 	
 	int addTask(String task) {
 		Task newTask = new Task(startingID++, task);

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Tasks_Stop_Test {
-	private Tasks tasks = new Tasks();
+	private final Tasks tasks = new Tasks();
 	
 	@Test
 	void stop_command_sets_the_active_task_to_none() {

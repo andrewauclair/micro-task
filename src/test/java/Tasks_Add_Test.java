@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Tasks_Add_Test {
-	private Tasks tasks = new Tasks();
+	private final Tasks tasks = new Tasks();
 	
 	@Test
 	void adding_task_adds_it_to_a_list() {
