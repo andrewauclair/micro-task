@@ -30,12 +30,15 @@ class Commands {
 			
 			output.println("Stopped task " + task);
 		}
-		else {
+		else if (command.startsWith("add")) {
 			String task = command.substring(5, command.length() - 1);
 
 			int newTaskID = tasks.addTask(task);
 
 			output.println("Added task " + newTaskID + " \"" + task + "\"");
+		}
+		else {
+			output.println("Unknown command.");
 		}
 	}
 }
