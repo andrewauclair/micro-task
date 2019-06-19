@@ -17,13 +17,14 @@ class Tasks_Stop_Test {
 		
 		tasks.startTask(1);
 		
-		assertEquals(new Task(1, "Test 2"), tasks.getActiveTask());
+		// TODO This should check the state being active
+		assertEquals(new Task(1, "Test 2", Task.TaskState.Inactive), tasks.getActiveTask());
 		
 		Task stoppedTask = tasks.stopTask();
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		assertEquals(new Task(1, "Test 2"), stoppedTask);
+		assertEquals(new Task(1, "Test 2", Task.TaskState.Inactive), stoppedTask);
 	}
 	
 	@Test

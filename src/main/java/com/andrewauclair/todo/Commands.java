@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
-
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +46,7 @@ class Commands {
 	private void listCommand() {
 		List<Task> tasksList = tasks.getTasks();
 		
-		Task activeTask = new Task(-1, "");
+		Task activeTask = new Task(-1, "", Task.TaskState.Inactive);
 		try {
 			activeTask = tasks.getActiveTask();
 		}

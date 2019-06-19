@@ -20,10 +20,10 @@ class TaskWriterTest {
 
 		TaskWriter writer = new TaskWriter(fileCreator);
 
-		Task task = new Task(1, "Test");
+		Task task = new Task(1, "Test", Task.TaskState.Inactive);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
-		assertEquals("Test", outputStream.toString());
+		assertEquals("Test" + System.lineSeparator() + "Inactive", outputStream.toString());
 		assertTrue(writeTask);
 	}
 
@@ -38,7 +38,7 @@ class TaskWriterTest {
 
 		TaskWriter writer = new TaskWriter(fileCreator);
 
-		Task task = new Task(1, "Test");
+		Task task = new Task(1, "Test", Task.TaskState.Inactive);
 		assertFalse(writer.writeTask(task, "test.txt"));
 	}
 }

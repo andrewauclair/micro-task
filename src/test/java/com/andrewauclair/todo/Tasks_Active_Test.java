@@ -20,7 +20,8 @@ class Tasks_Active_Test {
 		
 		tasks.startTask(1);
 		
-		assertEquals(new Task(1, "Testing 2"), tasks.getActiveTask());
+		// TODO This should check the state being Active
+		assertEquals(new Task(1, "Testing 2", Task.TaskState.Inactive), tasks.getActiveTask());
 	}
 	
 	@Test

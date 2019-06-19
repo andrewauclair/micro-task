@@ -18,7 +18,8 @@ class Tasks_Start_Test {
 
 		Task newActiveTask = tasks.startTask(task.id);
 
-		assertEquals(new Task(1, "Testing task start command"), tasks.getActiveTask());
+		// TODO This should check the state being active
+		assertEquals(new Task(1, "Testing task start command", Task.TaskState.Inactive), tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
 	}
 

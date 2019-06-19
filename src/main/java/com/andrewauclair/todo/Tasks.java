@@ -42,7 +42,7 @@ class Tasks {
 	}
 
 	Task addTask(String task) {
-		Task newTask = new Task(startingID++, task);
+		Task newTask = new Task(startingID++, task, Task.TaskState.Inactive);
 		tasks.add(newTask);
 
 		writer.writeTask(newTask, "git-data/" + newTask.id + ".txt");
@@ -60,7 +60,12 @@ class Tasks {
 
 		if (first.isPresent()) {
 			activeTaskID = first.get().id;
-			return first.get();
+			Task activeTask = first.get();
+			
+//			Task newActiveTask = new Task(activeTaskID, activeTask.task, Task.TaskState.Active);
+//			tasks.remove(activeTask);
+//			tasks.add(newActiveTask);
+			return activeTask;
 		}
 		throw new RuntimeException("com.andrewauclair.todo.Task " + id + " was not found.");
 	}

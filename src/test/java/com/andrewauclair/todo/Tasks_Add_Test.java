@@ -15,7 +15,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 
-		Task expectedTask = new Task(0, "Testing task add command");
+		Task expectedTask = new Task(0, "Testing task add command", Task.TaskState.Inactive);
 
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
