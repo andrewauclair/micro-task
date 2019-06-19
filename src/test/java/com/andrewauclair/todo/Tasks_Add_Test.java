@@ -1,9 +1,12 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.git.GitCommand;
 import com.andrewauclair.todo.os.OSInterface;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -13,9 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class Tasks_Add_Test {
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	private final OSInterface osInterface = Mockito.spy(OSInterface.class);
-	private final Tasks tasks = new Tasks(writer);
-	
+	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	private final Tasks tasks = new Tasks(writer, osInterface);
+
+	@BeforeEach
+	void setup() {
+		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
+	}
+
 	@Test
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
@@ -33,5 +41,20 @@ class Tasks_Add_Test {
 
 		Mockito.verify(writer).writeTask(task1, "git-data/0.txt");
 		Mockito.verify(writer).writeTask(task2, "git-data/1.txt");
+	}
+
+	@Test
+	void adding_task_tells_git_control_to_add_file_and_commit() {
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.addTask("Testing task add command 1");
+
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 0.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Adding task 0 - \\\"Testing task add command 1\\\"\""));
+
+		tasks.addTask("Testing task add command 2");
+
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Adding task 1 - \\\"Testing task add command 2\\\"\""));
 	}
 }

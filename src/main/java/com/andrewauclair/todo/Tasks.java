@@ -1,6 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.git.GitCommand;
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ class Tasks {
 	
 	private final List<Task> tasks = new ArrayList<>();
 	private final TaskWriter writer;
+	private final OSInterface osInterface;
 
 	// this constructor should only be used in the tests
 	Tasks() {
@@ -24,10 +28,17 @@ class Tasks {
 				return new ByteArrayOutputStream();
 			}
 		});
+		osInterface = new OSInterface() {
+			@Override
+			public boolean runGitCommand(GitCommand command) {
+				return true;
+			}
+		};
 	}
 
-	public Tasks(TaskWriter writer) {
+	public Tasks(TaskWriter writer, OSInterface osInterface) {
 		this.writer = writer;
+		this.osInterface = osInterface;
 	}
 
 	Task addTask(String task) {
@@ -35,6 +46,9 @@ class Tasks {
 		tasks.add(newTask);
 
 		writer.writeTask(newTask, "git-data/" + newTask.id + ".txt");
+
+		osInterface.runGitCommand(new GitCommand("git add " + newTask.id + ".txt"));
+		osInterface.runGitCommand(new GitCommand("git commit -m \"Adding task " + newTask.toString().replace("\"", "\\\"") + "\""));
 
 		return newTask;
 	}

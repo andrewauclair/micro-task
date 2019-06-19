@@ -1,12 +1,14 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Tasks_Stop_Test {
-	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()));
+	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()), Mockito.mock(OSInterface.class));
 	
 	@Test
 	void stop_command_sets_the_active_task_to_none() {

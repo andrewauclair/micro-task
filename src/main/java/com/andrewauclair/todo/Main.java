@@ -10,18 +10,20 @@ import java.util.Scanner;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		Tasks tasks = new Tasks(new TaskWriter(new FileCreator()));
+		OSInterface osInterface = new OSInterface();
+
+		Tasks tasks = new Tasks(new TaskWriter(new FileCreator()), osInterface);
 		Commands commands = new Commands(tasks, System.out);
-		
+
 		File git_data = new File("git-data");
 		boolean mkdir = git_data.mkdir();
-		
+
 		System.out.println(mkdir);
-		
-		GitControls gitControls = new GitControls();
-		OSInterface osInterface = new OSInterface();
+
 		osInterface.runGitCommand(new GitCommand("git init"));
-		
+		osInterface.runGitCommand(new GitCommand("git config user.email \"mightymalakai33@gmail.com\""));
+		osInterface.runGitCommand(new GitCommand("git config user.name \"Andrew Auclair\""));
+
 		// reload previous tasks from a file
 		File file = new File("tasks.txt");
 		if (file.exists()) {

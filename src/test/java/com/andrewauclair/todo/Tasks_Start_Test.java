@@ -1,15 +1,15 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Start_Test {
-	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()));
+	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()), Mockito.mock(OSInterface.class));
 
 	@Test
 	void starting_task_assigns_it_as_the_active_task() {

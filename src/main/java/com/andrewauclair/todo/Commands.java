@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,7 @@ class Commands {
 	private final PrintStream output;
 	
 	private interface Command {
-		void execute(String command) throws IOException;
+		void execute(String command);
 	}
 	
 	private final Map<String, Command> commands = new HashMap<>();
@@ -33,14 +32,7 @@ class Commands {
 		commands.keySet().stream()
 				.filter(command::startsWith)
 				.findFirst()
-				.ifPresentOrElse(name -> {
-							try {
-								commands.get(name).execute(command);
-							}
-							catch (IOException e) {
-								e.printStackTrace();
-							}
-						},
+				.ifPresentOrElse(name -> commands.get(name).execute(command),
 						() -> output.println("Unknown command."));
 	}
 	
