@@ -63,6 +63,7 @@ class Tasks {
 			Task activeTask = first.get();
 			
 			Task newActiveTask = activeTask.activate();
+			
 			tasks.remove(activeTask);
 			tasks.add(newActiveTask);
 			
@@ -82,12 +83,15 @@ class Tasks {
 				.filter(task -> task.id == activeTaskID)
 				.findFirst();
 		
-		tasks.removeIf(task -> task.id == activeTaskID);
-		
 		if (first.isPresent()) {
+			activeTaskID = -1;
+			
 			Task activeTask = first.get();
 			
 			Task finishedTask = activeTask.finish();
+			
+			tasks.remove(activeTask);
+			tasks.add(finishedTask);
 			
 			return finishedTask;
 		}

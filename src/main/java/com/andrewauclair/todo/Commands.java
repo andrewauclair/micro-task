@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 class Commands {
 	private final Tasks tasks;
@@ -44,7 +45,9 @@ class Commands {
 	}
 	
 	private void listCommand() {
-		List<Task> tasksList = tasks.getTasks();
+		List<Task> tasksList = tasks.getTasks().stream()
+				.filter(task -> task.state != Task.TaskState.Finished)
+				.collect(Collectors.toList());
 		
 		Task activeTask = new Task(-1, "", Task.TaskState.Inactive);
 		try {

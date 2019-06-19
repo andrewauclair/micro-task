@@ -28,9 +28,13 @@ class Tasks_Finish_Test {
 
 		Task task = tasks.finishTask();
 
-		assertThat(tasks.getTasks()).containsOnly(new Task(0, "Testing tasks", Task.TaskState.Inactive));
-
-		assertEquals(new Task(1, "Testing tasks 2", Task.TaskState.Finished), task);
+		Task finishedTask = new Task(1, "Testing tasks 2", Task.TaskState.Finished);
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(0, "Testing tasks", Task.TaskState.Inactive),
+				finishedTask
+		);
+		
+		assertEquals(finishedTask, task);
 	}
 
 	// TODO This technically works because when we remove the task it won't be found in the list by getActiveTask, this behavior will probably change in the future and this test will fail
