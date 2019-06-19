@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
-
+	
 	private boolean debugEnabled = false;
 	
-	public boolean isDebugEnabled() {
+	boolean isDebugEnabled() {
 		return debugEnabled;
 	}
-
+	
 	private interface Command {
 		void execute(String command);
 	}

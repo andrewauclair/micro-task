@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import java.lang.annotation.IncompleteAnnotationException;
 import java.util.Objects;
 
 final class Task {

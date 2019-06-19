@@ -5,17 +5,15 @@ import com.andrewauclair.todo.git.GitCommand;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
 	private boolean enableDebug = false;
-
+	
 	public void setEnableDebug(boolean debug) {
 		enableDebug = debug;
 	}
-
+	
 	private static boolean isJUnitTest() {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		for (StackTraceElement element : stackTrace) {
@@ -25,7 +23,7 @@ public class OSInterface {
 		}
 		return false;
 	}
-
+	
 	public boolean runGitCommand(GitCommand command) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");

@@ -18,7 +18,7 @@ class Tasks {
 	private final List<Task> tasks = new ArrayList<>();
 	private final TaskWriter writer;
 	private final OSInterface osInterface;
-
+	
 	// this constructor should only be used in the tests
 	Tasks() {
 		// create an empty writer
@@ -35,21 +35,21 @@ class Tasks {
 			}
 		};
 	}
-
+	
 	public Tasks(TaskWriter writer, OSInterface osInterface) {
 		this.writer = writer;
 		this.osInterface = osInterface;
 	}
-
+	
 	Task addTask(String task) {
 		Task newTask = new Task(startingID++, task, Task.TaskState.Inactive);
 		tasks.add(newTask);
-
+		
 		writer.writeTask(newTask, "git-data/" + newTask.id + ".txt");
-
+		
 		osInterface.runGitCommand(new GitCommand("git add " + newTask.id + ".txt"));
 		osInterface.runGitCommand(new GitCommand("git commit -m \"Adding task " + newTask.toString().replace("\"", "\\\"") + "\""));
-
+		
 		return newTask;
 	}
 	
@@ -57,7 +57,7 @@ class Tasks {
 		Optional<Task> first = tasks.stream()
 				.filter(task -> task.id == id)
 				.findFirst();
-
+		
 		if (first.isPresent()) {
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();

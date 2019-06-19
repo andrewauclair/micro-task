@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Commands;
-import com.andrewauclair.todo.Tasks;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

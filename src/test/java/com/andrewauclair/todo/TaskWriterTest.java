@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -17,16 +16,16 @@ class TaskWriterTest {
 		OutputStream outputStream = new ByteArrayOutputStream();
 		FileCreator fileCreator = Mockito.mock(FileCreator.class);
 		Mockito.when(fileCreator.createOutputStream("git-data/1.txt")).thenReturn(outputStream);
-
+		
 		TaskWriter writer = new TaskWriter(fileCreator);
-
+		
 		Task task = new Task(1, "Test", Task.TaskState.Inactive);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
-
+		
 		assertEquals("Test" + System.lineSeparator() + "Inactive", outputStream.toString());
 		assertTrue(writeTask);
 	}
-
+	
 	@Test
 	void thrown_exception_makes_writeTask_return_false() {
 		FileCreator fileCreator = new FileCreator() {
@@ -35,9 +34,9 @@ class TaskWriterTest {
 				throw new IOException();
 			}
 		};
-
+		
 		TaskWriter writer = new TaskWriter(fileCreator);
-
+		
 		Task task = new Task(1, "Test", Task.TaskState.Inactive);
 		assertFalse(writer.writeTask(task, "test.txt"));
 	}

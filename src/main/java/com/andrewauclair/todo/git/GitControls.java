@@ -2,7 +2,7 @@
 
 package com.andrewauclair.todo.git;
 
-public class GitControls {
+class GitControls {
 	GitCommand addFile(String fileName) {
 		return new GitCommand("git add " + fileName);
 	}

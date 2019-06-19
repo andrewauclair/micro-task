@@ -21,7 +21,7 @@ class Commands_Active_Test {
 		commands.execute("active");
 		
 		assertEquals("Active task is 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
-
+		
 		Mockito.verify(tasks).startTask(0);
 	}
 }

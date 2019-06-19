@@ -21,7 +21,7 @@ class Commands_Stop_Test {
 		commands.execute("stop");
 		
 		assertEquals("Stopped task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
-
+		
 		Mockito.verify(tasks).stopTask();
 	}
 }

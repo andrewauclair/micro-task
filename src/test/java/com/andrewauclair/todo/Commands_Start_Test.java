@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Commands;
-import com.andrewauclair.todo.Tasks;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -20,9 +18,9 @@ class Commands_Start_Test {
 	void execute_start_command() {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
 		commands.execute("start 0");
-
+		
 		assertEquals("Started task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
-
+		
 		Mockito.verify(tasks).startTask(0);
 	}
 }

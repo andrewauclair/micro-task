@@ -14,7 +14,7 @@ public final class GitCommand {
 	public String toString() {
 		return command;
 	}
-
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -26,7 +26,7 @@ public final class GitCommand {
 		GitCommand that = (GitCommand) o;
 		return Objects.equals(command, that.command);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(command);
