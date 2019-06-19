@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TaskWriterTest {
 	@Test
@@ -25,5 +25,20 @@ class TaskWriterTest {
 
 		assertEquals("Test", outputStream.toString());
 		assertTrue(writeTask);
+	}
+
+	@Test
+	void thrown_exception_makes_writeTask_return_false() {
+		FileCreator fileCreator = new FileCreator() {
+			@Override
+			OutputStream createOutputStream(String fileName) throws IOException {
+				throw new IOException();
+			}
+		};
+
+		TaskWriter writer = new TaskWriter(fileCreator);
+
+		Task task = new Task(1, "Test");
+		assertFalse(writer.writeTask(task, "test.txt"));
 	}
 }

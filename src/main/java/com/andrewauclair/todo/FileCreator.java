@@ -1,13 +1,10 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 class FileCreator {
-	OutputStream createOutputStream(String fileName) throws FileNotFoundException {
+	OutputStream createOutputStream(String fileName) throws IOException {
 		return new FileOutputStream(new File(fileName));
 	}
 }
