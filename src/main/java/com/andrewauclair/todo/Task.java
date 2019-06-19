@@ -37,6 +37,10 @@ final class Task {
 		this.state = state;
 	}
 	
+	Task activate() {
+		return new Task(id, task, TaskState.Active);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -52,6 +56,7 @@ final class Task {
 		return Objects.hash(id, task, state);
 	}
 	
+	// TODO make a description method and have the toString print all the info, this will help in tests that fail
 	@Override
 	public String toString() {
 		return id + " - \"" + task + "\"";

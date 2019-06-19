@@ -7,6 +7,7 @@ import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -20,8 +21,9 @@ class Tasks_Active_Test {
 		
 		tasks.startTask(1);
 		
-		// TODO This should check the state being Active
-		assertEquals(new Task(1, "Testing 2", Task.TaskState.Inactive), tasks.getActiveTask());
+		Task activeTask = new Task(1, "Testing 2", Task.TaskState.Active);
+		
+		assertEquals(activeTask, tasks.getActiveTask());
 	}
 	
 	@Test

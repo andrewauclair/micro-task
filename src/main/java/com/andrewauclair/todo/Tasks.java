@@ -62,10 +62,11 @@ class Tasks {
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			
-//			Task newActiveTask = new Task(activeTaskID, activeTask.task, Task.TaskState.Active);
-//			tasks.remove(activeTask);
-//			tasks.add(newActiveTask);
-			return activeTask;
+			Task newActiveTask = activeTask.activate();
+			tasks.remove(activeTask);
+			tasks.add(newActiveTask);
+			
+			return newActiveTask;
 		}
 		throw new RuntimeException("com.andrewauclair.todo.Task " + id + " was not found.");
 	}
