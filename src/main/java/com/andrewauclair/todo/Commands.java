@@ -9,7 +9,11 @@ import java.util.Map;
 class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
-	
+
+	public boolean isDebugEnabled() {
+		return false;
+	}
+
 	private interface Command {
 		void execute(String command);
 	}

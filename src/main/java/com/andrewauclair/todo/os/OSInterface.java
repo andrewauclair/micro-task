@@ -10,10 +10,15 @@ import java.util.List;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
-	public static boolean isJUnitTest() {
+	private boolean enableDebug = false;
+
+	public void setEnableDebug(boolean debug) {
+		enableDebug = debug;
+	}
+
+	private static boolean isJUnitTest() {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		List<StackTraceElement> list = Arrays.asList(stackTrace);
-		for (StackTraceElement element : list) {
+		for (StackTraceElement element : stackTrace) {
 			if (element.getClassName().startsWith("org.junit.")) {
 				return true;
 			}
