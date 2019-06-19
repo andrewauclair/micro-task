@@ -1,8 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +30,7 @@ class Tasks_Finish_Test {
 
 		assertThat(tasks.getTasks()).containsOnly(new Task(0, "Testing tasks", Task.TaskState.Inactive));
 
-		// TODO This should be finished, not active
-		assertEquals(new Task(1, "Testing tasks 2", Task.TaskState.Active), task);
+		assertEquals(new Task(1, "Testing tasks 2", Task.TaskState.Finished), task);
 	}
 
 	// TODO This technically works because when we remove the task it won't be found in the list by getActiveTask, this behavior will probably change in the future and this test will fail

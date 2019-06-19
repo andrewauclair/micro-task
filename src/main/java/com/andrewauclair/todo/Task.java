@@ -41,6 +41,10 @@ final class Task {
 		return new Task(id, task, TaskState.Active);
 	}
 	
+	Task finish() {
+		return new Task(id, task, TaskState.Finished);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

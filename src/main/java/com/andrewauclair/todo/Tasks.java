@@ -85,7 +85,11 @@ class Tasks {
 		tasks.removeIf(task -> task.id == activeTaskID);
 		
 		if (first.isPresent()) {
-			return first.get();
+			Task activeTask = first.get();
+			
+			Task finishedTask = activeTask.finish();
+			
+			return finishedTask;
 		}
 		throw new RuntimeException("No active task.");
 	}
