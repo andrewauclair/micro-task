@@ -24,7 +24,6 @@ class Commands_List_Test {
 		tasks.startTask(2);
 		
 		String expected = "  0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator() +
-//				"  1 - \"com.andrewauclair.todo.Task 2\"" + System.lineSeparator() +
 				"* 2 - \"com.andrewauclair.todo.Task 3\"" + System.lineSeparator();
 		
 		commands.execute("list");

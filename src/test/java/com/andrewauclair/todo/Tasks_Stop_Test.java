@@ -5,6 +5,7 @@ import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Tasks_Stop_Test {
@@ -15,16 +16,19 @@ class Tasks_Stop_Test {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
-		tasks.startTask(1);
+		Task oldTask = tasks.startTask(1);
 		
-		assertEquals(new Task(1, "Test 2", Task.TaskState.Active), tasks.getActiveTask());
+		Task expectedOldTask = new Task(1, "Test 2", Task.TaskState.Active);
+		assertEquals(expectedOldTask, tasks.getActiveTask());
+		assertEquals(expectedOldTask, oldTask);
 		
 		Task stoppedTask = tasks.stopTask();
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		// TODO This should check if it is inactive
-		assertEquals(new Task(1, "Test 2", Task.TaskState.Active), stoppedTask);
+		assertEquals(new Task(1, "Test 2", Task.TaskState.Inactive), stoppedTask);
+		assertThat(tasks.getTasks()).doesNotContain(oldTask);
+		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}
 	
 	@Test

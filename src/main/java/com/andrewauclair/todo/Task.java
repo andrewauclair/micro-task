@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import java.lang.annotation.IncompleteAnnotationException;
 import java.util.Objects;
 
 final class Task {
@@ -43,6 +44,10 @@ final class Task {
 	
 	Task finish() {
 		return new Task(id, task, TaskState.Finished);
+	}
+	
+	Task stop() {
+		return new Task(id, task, TaskState.Inactive);
 	}
 	
 	@Override

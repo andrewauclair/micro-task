@@ -75,7 +75,12 @@ class Tasks {
 	Task stopTask() {
 		Task activeTask = getActiveTask();
 		activeTaskID = -1;
-		return activeTask;
+		
+		Task stoppedTask = activeTask.stop();
+		tasks.remove(activeTask);
+		tasks.add(stoppedTask);
+		
+		return stoppedTask;
 	}
 	
 	Task finishTask() {
