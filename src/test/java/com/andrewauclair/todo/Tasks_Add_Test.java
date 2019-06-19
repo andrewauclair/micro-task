@@ -2,28 +2,15 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.git.GitCommand;
-import com.andrewauclair.todo.os.OSInterface;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
-class Tasks_Add_Test {
-	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
-	private final Tasks tasks = new Tasks(writer, osInterface);
 
-	@BeforeEach
-	void setup() {
-		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
-	}
-
+class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");

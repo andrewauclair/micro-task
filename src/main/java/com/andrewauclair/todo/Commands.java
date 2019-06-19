@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +12,10 @@ class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
 
+	private boolean debugEnabled = false;
+	
 	public boolean isDebugEnabled() {
-		return false;
+		return debugEnabled;
 	}
 
 	private interface Command {
@@ -30,6 +34,7 @@ class Commands {
 		commands.put("add", this::addCommand);
 		commands.put("active", command -> activeCommand());
 		commands.put("list", command -> listCommand());
+		commands.put("debug", this::debugCommand);
 	}
 	
 	void execute(String command) {
@@ -93,5 +98,12 @@ class Commands {
 		Task task = tasks.finishTask();
 		
 		output.println("Finished task " + task);
+	}
+	
+	private void debugCommand(String command) {
+		String[] s = command.split(" ");
+		
+		// TODO This means we could use literally anything else as disable, we should be strict on it and verify commands, bigger thing to solve than just this
+		debugEnabled = s[1].equals("enable");
 	}
 }

@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,5 +23,12 @@ class Commands_Debug_Test {
 		commands.execute("debug enable");
 
 		assertTrue(commands.isDebugEnabled());
+	}
+	
+	@Test
+	void execute_debug_disable_command() {
+		commands.execute("debug enable");
+		commands.execute("debug disable");
+		assertFalse(commands.isDebugEnabled());
 	}
 }
