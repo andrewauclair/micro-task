@@ -2,7 +2,6 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -13,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class Tasks_Add_Test {
-	private final TaskWriter writer = Mockito.spy(TaskWriter.class);
+	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final OSInterface osInterface = Mockito.spy(OSInterface.class);
 	private final Tasks tasks = new Tasks(writer);
 	

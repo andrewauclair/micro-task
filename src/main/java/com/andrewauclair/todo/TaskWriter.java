@@ -1,13 +1,26 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-class TaskWriter {
-	TaskWriter() {
+import java.io.IOException;
+import java.io.OutputStream;
 
-	}
+class TaskWriter {
+	private final FileCreator fileCreator;
+
 	public TaskWriter(FileCreator fileCreator) {
 
+		this.fileCreator = fileCreator;
 	}
-	void writeTask(Task task, String fileName) {
-
+	boolean writeTask(Task task, String fileName) {
+		OutputStream outputStream;
+		try {
+			outputStream = fileCreator.createOutputStream(fileName);
+			outputStream.write(task.task.getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

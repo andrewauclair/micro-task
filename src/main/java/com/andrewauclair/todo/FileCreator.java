@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-public class FileCreator {
-	public OutputStream createOutputStream(String fileName) throws FileNotFoundException {
+class FileCreator {
+	OutputStream createOutputStream(String fileName) throws FileNotFoundException {
 		return new FileOutputStream(new File(fileName));
 	}
 }

@@ -1,12 +1,11 @@
 package com.andrewauclair.todo;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-public class FileCreatorMock extends FileCreator {
+class FileCreatorMock extends FileCreator {
 	@Override
-	public OutputStream createOutputStream(String fileName) throws FileNotFoundException {
+	public OutputStream createOutputStream(String fileName) {
 		return new ByteArrayOutputStream();
 	}
 }

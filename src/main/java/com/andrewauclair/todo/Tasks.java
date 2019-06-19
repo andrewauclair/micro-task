@@ -2,7 +2,6 @@
 package com.andrewauclair.todo;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ class Tasks {
 		// create an empty writer
 		writer = new TaskWriter(new FileCreator() {
 			@Override
-			public OutputStream createOutputStream(String fileName) throws FileNotFoundException {
+			public OutputStream createOutputStream(String fileName) {
 				return new ByteArrayOutputStream();
 			}
 		});
