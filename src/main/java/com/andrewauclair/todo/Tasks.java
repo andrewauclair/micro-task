@@ -45,12 +45,20 @@ class Tasks {
 		Task newTask = new Task(startingID++, task, Task.TaskState.Inactive);
 		tasks.add(newTask);
 		
-		writer.writeTask(newTask, "git-data/" + newTask.id + ".txt");
+		writeTask(newTask);
 		
-		osInterface.runGitCommand(new GitCommand("git add " + newTask.id + ".txt"));
-		osInterface.runGitCommand(new GitCommand("git commit -m \"Adding task " + newTask.toString().replace("\"", "\\\"") + "\""));
+		addAndCommit(newTask, "Adding task");
 		
 		return newTask;
+	}
+	
+	private void writeTask(Task task) {
+		writer.writeTask(task, "git-data/" + task.id + ".txt");
+	}
+	
+	private void addAndCommit(Task task, final String comment) {
+		osInterface.runGitCommand(new GitCommand("git add " + task.id + ".txt"));
+		osInterface.runGitCommand(new GitCommand("git commit -m \"" + comment + " " + task.toString().replace("\"", "\\\"") + "\""));
 	}
 	
 	Task startTask(int id) {
@@ -66,6 +74,9 @@ class Tasks {
 			
 			tasks.remove(activeTask);
 			tasks.add(newActiveTask);
+			
+			writeTask(newActiveTask);
+			addAndCommit(newActiveTask, "Starting task");
 			
 			return newActiveTask;
 		}
