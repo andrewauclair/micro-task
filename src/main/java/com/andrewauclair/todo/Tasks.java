@@ -90,7 +90,7 @@ class Tasks {
 		Task activeTask = getActiveTask();
 		activeTaskID = -1;
 		
-		Task stoppedTask = activeTask.stop();
+		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
 		tasks.remove(activeTask);
 		tasks.add(stoppedTask);
 		
@@ -110,7 +110,7 @@ class Tasks {
 			
 			Task activeTask = first.get();
 			
-			Task finishedTask = activeTask.finish();
+			Task finishedTask = activeTask.finish(osInterface.currentSeconds());
 			
 			tasks.remove(activeTask);
 			tasks.add(finishedTask);

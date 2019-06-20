@@ -80,4 +80,17 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
 		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Finished task 2 - \\\"Testing tasks 2\\\"\""));
 	}
+	
+	@Test
+	void finishing_a_task_records_the_stop_time() {
+		tasks.addTask("Test 1");
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
+		
+		Task task = tasks.finishTask();
+		
+		assertEquals(2345, task.stop);
+	}
 }

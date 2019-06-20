@@ -32,31 +32,34 @@ final class Task {
 	final TaskState state;
 	
 	final long start;
+	final long stop;
 	
 	Task(int id, String task, TaskState state) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		this.start = 0;
+		this.stop = 0;
 	}
 	
-	Task(int id, String task, TaskState state, long start) {
+	Task(int id, String task, TaskState state, long start, long stop) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		this.start = start;
+		this.stop = stop;
 	}
 	
 	Task activate(long start) {
-		return new Task(id, task, TaskState.Active, start);
+		return new Task(id, task, TaskState.Active, start, 0);
 	}
 	
-	Task finish() {
-		return new Task(id, task, TaskState.Finished);
+	Task finish(long stop) {
+		return new Task(id, task, TaskState.Finished, start, stop);
 	}
 	
-	Task stop() {
-		return new Task(id, task, TaskState.Inactive);
+	Task stop(long stop) {
+		return new Task(id, task, TaskState.Inactive, start, stop);
 	}
 	
 	@Override
@@ -67,12 +70,13 @@ final class Task {
 		return id == otherTask.id &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
-				start == otherTask.start;
+				start == otherTask.start &&
+				stop == otherTask.stop;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, start);
+		return Objects.hash(id, task, state, start, stop);
 	}
 	
 	// TODO make a description method and have the toString print all the info, this will help in tests that fail

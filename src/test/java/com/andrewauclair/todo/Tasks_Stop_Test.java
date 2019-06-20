@@ -65,4 +65,17 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
 		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Stopped task 2 - \\\"Test 2\\\"\""));
 	}
+	
+	@Test
+	void stopping_a_task_records_the_stop_time() {
+		tasks.addTask("Test 1");
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
+		
+		Task task = tasks.stopTask();
+		
+		assertEquals(2345, task.stop);
+	}
 }
