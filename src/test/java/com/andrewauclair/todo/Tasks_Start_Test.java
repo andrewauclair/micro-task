@@ -18,8 +18,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		
 		Task newActiveTask = tasks.startTask(task.id);
 		
-		Task oldTask = new Task(1, "Testing task start command", Task.TaskState.Inactive);
-		Task activeTask = new Task(1, "Testing task start command", Task.TaskState.Active);
+		Task oldTask = new Task(2, "Testing task start command", Task.TaskState.Inactive);
+		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active);
 		
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -53,11 +53,11 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		
 		Mockito.reset(osInterface);
 		
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Started task 1 - \\\"Testing task add command 2\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Started task 2 - \\\"Testing task add command 2\\\"\""));
 	}
 }

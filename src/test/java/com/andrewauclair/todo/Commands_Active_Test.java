@@ -17,11 +17,11 @@ class Commands_Active_Test {
 	@Test
 	void execute_active_command() {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
-		tasks.startTask(0);
+		tasks.startTask(1);
 		commands.execute("active");
 		
-		assertEquals("Active task is 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+		assertEquals("Active task is 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
-		Mockito.verify(tasks).startTask(0);
+		Mockito.verify(tasks).startTask(1);
 	}
 }

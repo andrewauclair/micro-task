@@ -18,11 +18,11 @@ class Commands_Start_Test {
 	@Test
 	void execute_start_command() {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
-		commands.execute("start 0");
+		commands.execute("start 1");
 		
-		assertEquals("Started task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+		assertEquals("Started task 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
-		Mockito.verify(tasks).startTask(0);
+		Mockito.verify(tasks).startTask(1);
 	}
 	
 	@Test
@@ -30,8 +30,8 @@ class Commands_Start_Test {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
-		tasks.startTask(0);
 		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		assertThat(tasks.getTasks().stream()
 				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);

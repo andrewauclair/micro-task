@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 class Tasks {
-	private int startingID = 0;
+	private int startingID = 1;
 	
 	private int activeTaskID = -1;
 	

@@ -17,10 +17,10 @@ class Commands_Finish_Test {
 	@Test
 	void execute_remove_command() {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
-		tasks.startTask(0);
+		tasks.startTask(1);
 		commands.execute("finish");
 		
-		assertEquals("Finished task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+		assertEquals("Finished task 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
 		Mockito.verify(tasks).finishTask();
 	}

@@ -17,10 +17,10 @@ class Commands_Stop_Test {
 	@Test
 	void execute_stop_command() {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
-		tasks.startTask(0);
+		tasks.startTask(1);
 		commands.execute("stop");
 		
-		assertEquals("Stopped task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+		assertEquals("Stopped task 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
 		Mockito.verify(tasks).stopTask();
 	}

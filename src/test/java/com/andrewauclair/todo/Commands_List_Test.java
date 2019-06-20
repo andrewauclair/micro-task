@@ -19,12 +19,12 @@ class Commands_List_Test {
 		tasks.addTask("com.andrewauclair.todo.Task 1");
 		tasks.addTask("com.andrewauclair.todo.Task 2");
 		tasks.addTask("com.andrewauclair.todo.Task 3");
-		tasks.startTask(1);
-		tasks.finishTask();
 		tasks.startTask(2);
+		tasks.finishTask();
+		tasks.startTask(3);
 		
-		String expected = "  0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator() +
-				"* 2 - \"com.andrewauclair.todo.Task 3\"" + System.lineSeparator();
+		String expected = "  1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator() +
+				"* 3 - \"com.andrewauclair.todo.Task 3\"" + System.lineSeparator();
 		
 		commands.execute("list");
 		

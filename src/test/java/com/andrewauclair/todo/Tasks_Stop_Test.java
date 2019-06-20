@@ -15,9 +15,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
-		Task oldTask = tasks.startTask(1);
+		Task oldTask = tasks.startTask(2);
 		
-		Task expectedOldTask = new Task(1, "Test 2", Task.TaskState.Active);
+		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active);
 		assertEquals(expectedOldTask, tasks.getActiveTask());
 		assertEquals(expectedOldTask, oldTask);
 		
@@ -25,7 +25,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		assertEquals(new Task(1, "Test 2", Task.TaskState.Inactive), stoppedTask);
+		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}
@@ -54,7 +54,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		Mockito.reset(osInterface);
 		
@@ -62,7 +62,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Stopped task 1 - \\\"Test 2\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Stopped task 2 - \\\"Test 2\\\"\""));
 	}
 }

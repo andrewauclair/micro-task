@@ -15,7 +15,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 		
-		Task expectedTask = new Task(0, "Testing task add command", Task.TaskState.Inactive);
+		Task expectedTask = new Task(1, "Testing task add command", Task.TaskState.Inactive);
 		
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
@@ -26,8 +26,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		Task task1 = tasks.addTask("Testing task add command 1");
 		Task task2 = tasks.addTask("Testing task add command 2");
 		
-		Mockito.verify(writer).writeTask(task1, "git-data/0.txt");
-		Mockito.verify(writer).writeTask(task2, "git-data/1.txt");
+		Mockito.verify(writer).writeTask(task1, "git-data/1.txt");
+		Mockito.verify(writer).writeTask(task2, "git-data/2.txt");
 	}
 	
 	@Test
@@ -36,12 +36,12 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		tasks.addTask("Testing task add command 1");
 		
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 0.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 0 - \\\"Testing task add command 1\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\""));
 		
 		tasks.addTask("Testing task add command 2");
 		
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 2\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\""));
 	}
 }

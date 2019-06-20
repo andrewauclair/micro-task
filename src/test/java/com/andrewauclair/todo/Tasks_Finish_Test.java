@@ -21,16 +21,16 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
-		assertThat(tasks.getTasks()).containsOnly(new Task(0, "Testing tasks", Task.TaskState.Inactive),
-				new Task(1, "Testing tasks 2", Task.TaskState.Inactive));
+		assertThat(tasks.getTasks()).containsOnly(new Task(1, "Testing tasks", Task.TaskState.Inactive),
+				new Task(2, "Testing tasks 2", Task.TaskState.Inactive));
 		
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = new Task(1, "Testing tasks 2", Task.TaskState.Finished);
+		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished);
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(0, "Testing tasks", Task.TaskState.Inactive),
+				new Task(1, "Testing tasks", Task.TaskState.Inactive),
 				finishedTask
 		);
 		
@@ -69,7 +69,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finishing_task_tells_git_control_to_add_file_and_commit() {
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		Mockito.reset(osInterface);
 		
@@ -77,7 +77,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Finished task 1 - \\\"Testing tasks 2\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Finished task 2 - \\\"Testing tasks 2\\\"\""));
 	}
 }

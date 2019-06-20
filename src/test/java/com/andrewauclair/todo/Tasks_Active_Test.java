@@ -16,9 +16,9 @@ class Tasks_Active_Test {
 		tasks.addTask("Testing 1");
 		tasks.addTask("Testing 2");
 		
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
-		Task activeTask = new Task(1, "Testing 2", Task.TaskState.Active);
+		Task activeTask = new Task(2, "Testing 2", Task.TaskState.Active);
 		
 		assertEquals(activeTask, tasks.getActiveTask());
 	}
