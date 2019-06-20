@@ -47,7 +47,7 @@ class Tasks {
 		
 		writeTask(newTask);
 		
-		addAndCommit(newTask, "Adding task");
+		addAndCommit(newTask, "Added task");
 		
 		return newTask;
 	}
@@ -56,7 +56,7 @@ class Tasks {
 		writer.writeTask(task, "git-data/" + task.id + ".txt");
 	}
 	
-	private void addAndCommit(Task task, final String comment) {
+	private void addAndCommit(Task task, String comment) {
 		osInterface.runGitCommand(new GitCommand("git add " + task.id + ".txt"));
 		osInterface.runGitCommand(new GitCommand("git commit -m \"" + comment + " " + task.toString().replace("\"", "\\\"") + "\""));
 	}
@@ -76,7 +76,7 @@ class Tasks {
 			tasks.add(newActiveTask);
 			
 			writeTask(newActiveTask);
-			addAndCommit(newActiveTask, "Starting task");
+			addAndCommit(newActiveTask, "Started task");
 			
 			return newActiveTask;
 		}
@@ -108,6 +108,9 @@ class Tasks {
 			
 			tasks.remove(activeTask);
 			tasks.add(finishedTask);
+			
+			writeTask(finishedTask);
+			addAndCommit(finishedTask, "Finished task");
 			
 			return finishedTask;
 		}

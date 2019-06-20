@@ -37,11 +37,11 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Testing task add command 1");
 		
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 0.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Adding task 0 - \\\"Testing task add command 1\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 0 - \\\"Testing task add command 1\\\"\""));
 		
 		tasks.addTask("Testing task add command 2");
 		
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Adding task 1 - \\\"Testing task add command 2\\\"\""));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 2\\\"\""));
 	}
 }

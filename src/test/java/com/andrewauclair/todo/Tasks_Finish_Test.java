@@ -1,18 +1,18 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.git.GitCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class Tasks_Finish_Test {
-	private final Tasks tasks = new Tasks(new TaskWriter(new FileCreatorMock()), Mockito.mock(OSInterface.class));
-	
+class Tasks_Finish_Test extends TaskBaseTestCase {
 	@BeforeEach
 	void setup() {
 		tasks.addTask("Testing tasks");
@@ -54,5 +54,30 @@ class Tasks_Finish_Test {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::finishTask);
 		
 		assertEquals("No active task.", runtimeException.getMessage());
+	}
+	
+	@Test
+	void finishing_task_tells_task_writer_to_write_file() {
+		tasks.startTask(1);
+		
+		Mockito.reset(writer);
+		
+		Task task = tasks.finishTask();
+		
+		Mockito.verify(writer).writeTask(task, "git-data/1.txt");
+	}
+	
+	@Test
+	void finishing_task_tells_git_control_to_add_file_and_commit() {
+		tasks.startTask(1);
+		
+		Mockito.reset(osInterface);
+		
+		tasks.finishTask();
+		
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
+		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Finished task 1 - \\\"Testing tasks 2\\\"\""));
 	}
 }
