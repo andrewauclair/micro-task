@@ -94,6 +94,9 @@ class Tasks {
 		tasks.remove(activeTask);
 		tasks.add(stoppedTask);
 		
+		writeTask(stoppedTask);
+		addAndCommit(stoppedTask, "Stopped task");
+		
 		return stoppedTask;
 	}
 	
