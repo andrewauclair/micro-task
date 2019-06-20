@@ -60,4 +60,15 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
 		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Started task 2 - \\\"Testing task add command 2\\\"\""));
 	}
+	
+	@Test
+	void starting_a_task_tracks_the_time_second_it_was_started() {
+		tasks.addTask("Testing Task");
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
+		Task task = tasks.startTask(1);
+		
+		assertEquals(1234, task.start);
+	}
 }

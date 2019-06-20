@@ -73,7 +73,7 @@ class Tasks {
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			
-			Task newActiveTask = activeTask.activate();
+			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
 			
 			tasks.remove(activeTask);
 			tasks.add(newActiveTask);

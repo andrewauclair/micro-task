@@ -31,14 +31,24 @@ final class Task {
 	final String task;
 	final TaskState state;
 	
+	final long start;
+	
 	Task(int id, String task, TaskState state) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
+		this.start = 0;
 	}
 	
-	Task activate() {
-		return new Task(id, task, TaskState.Active);
+	Task(int id, String task, TaskState state, long start) {
+		this.id = id;
+		this.task = task;
+		this.state = state;
+		this.start = start;
+	}
+	
+	Task activate(long start) {
+		return new Task(id, task, TaskState.Active, start);
 	}
 	
 	Task finish() {
@@ -53,15 +63,16 @@ final class Task {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Task task1 = (Task) o;
-		return id == task1.id &&
-				Objects.equals(task, task1.task) &&
-				state == task1.state;
+		Task otherTask = (Task) o;
+		return id == otherTask.id &&
+				Objects.equals(task, otherTask.task) &&
+				state == otherTask.state &&
+				start == otherTask.start;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state);
+		return Objects.hash(id, task, state, start);
 	}
 	
 	// TODO make a description method and have the toString print all the info, this will help in tests that fail

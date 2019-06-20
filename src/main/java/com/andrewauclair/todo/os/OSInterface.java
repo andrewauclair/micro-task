@@ -6,6 +6,7 @@ import com.andrewauclair.todo.git.GitCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
@@ -51,5 +52,9 @@ public class OSInterface {
 			return false;
 		}
 		return true;
+	}
+	
+	public long currentSeconds() {
+		return Instant.now().getEpochSecond();
 	}
 }
