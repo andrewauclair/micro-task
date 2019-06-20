@@ -12,9 +12,9 @@ class TaskWriter {
 	}
 	
 	boolean writeTask(Task task, String fileName) {
-		OutputStream outputStream;
-		try {
-			outputStream = fileCreator.createOutputStream(fileName);
+//		OutputStream outputStream;
+		try (OutputStream outputStream = fileCreator.createOutputStream(fileName)){
+//			outputStream = fileCreator.createOutputStream(fileName);
 			outputStream.write(task.task.getBytes());
 			outputStream.write(System.lineSeparator().getBytes());
 			outputStream.write(task.state.toString().getBytes());
