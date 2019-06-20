@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class Commands {
+public class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
 	
 	private boolean debugEnabled = false;
 	
-	boolean isDebugEnabled() {
+	public boolean isDebugEnabled() {
 		return debugEnabled;
 	}
 	

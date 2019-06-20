@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Start_Test {
@@ -22,5 +23,17 @@ class Commands_Start_Test {
 		assertEquals("Started task 0 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
 		Mockito.verify(tasks).startTask(0);
+	}
+	
+	@Test
+	void starting_second_task_stops_active_task() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		
+		tasks.startTask(0);
+		tasks.startTask(1);
+		
+		assertThat(tasks.getTasks().stream()
+				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);
 	}
 }

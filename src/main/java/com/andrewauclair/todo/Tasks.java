@@ -67,6 +67,9 @@ class Tasks {
 				.findFirst();
 		
 		if (first.isPresent()) {
+			if (activeTaskID != -1) {
+				stopTask();
+			}
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			

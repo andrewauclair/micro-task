@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.os;
 
+import com.andrewauclair.todo.Commands;
 import com.andrewauclair.todo.git.GitCommand;
 
 import java.io.File;
@@ -9,9 +10,14 @@ import java.io.IOException;
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
 	private boolean enableDebug = false;
+	private Commands commands;
 	
 	public void setEnableDebug(boolean debug) {
 		enableDebug = debug;
+	}
+	
+	public void setCommands(Commands commands) {
+		this.commands = commands;
 	}
 	
 	private static boolean isJUnitTest() {
@@ -28,11 +34,15 @@ public class OSInterface {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
-		System.out.println("run: " + command);
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(new File("git-data"));
 		builder.command(command.toString().split(" "));
-		builder.inheritIO();
+		
+		if (commands.isDebugEnabled()) {
+			System.out.println("run: " + command);
+			builder.inheritIO();
+		}
+		
 		try {
 			Process process = builder.start();
 			process.waitFor();

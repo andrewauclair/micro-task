@@ -10,9 +10,10 @@ import java.util.Scanner;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		OSInterface osInterface = new OSInterface();
-		
 		Tasks tasks = new Tasks(new TaskWriter(new FileCreator()), osInterface);
 		Commands commands = new Commands(tasks, System.out);
+
+		osInterface.setCommands(commands);
 		
 		File git_data = new File("git-data");
 		boolean mkdir = git_data.mkdir();
