@@ -69,6 +69,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.startTask(1);
 		
+//		TaskTimes.Times times = new TaskTimes.Times(0);
 		assertEquals(1234, task.start);
 	}
 }

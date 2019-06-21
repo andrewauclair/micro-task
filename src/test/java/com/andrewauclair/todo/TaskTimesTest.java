@@ -50,6 +50,21 @@ class TaskTimesTest {
 	}
 	
 	@Test
+	void task_times_with_only_start_time_sets_stop_time_to_min_long() {
+		TaskTimes taskTimes = new TaskTimes(1234);
+		
+		assertThat(taskTimes.asList()).containsOnly(new TaskTimes.Times(1234, Long.MIN_VALUE));
+	}
+	
+	@Test
+	void times_with_only_start_time_sets_stop_time_to_min_long() {
+		TaskTimes.Times times = new TaskTimes.Times(1234);
+		
+		assertEquals(1234, times.start);
+		assertEquals(Long.MIN_VALUE, times.stop);
+	}
+	
+	@Test
 	void times_equals() {
 		EqualsVerifier.forClass(TaskTimes.Times.class).verify();
 	}
