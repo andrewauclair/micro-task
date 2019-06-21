@@ -4,18 +4,12 @@ package com.andrewauclair.todo.os;
 import com.andrewauclair.todo.Commands;
 import com.andrewauclair.todo.git.GitCommand;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.Instant;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
-	private boolean enableDebug = false;
 	private Commands commands;
-	
-	public void setEnableDebug(boolean debug) {
-		enableDebug = debug;
-	}
 	
 	public void setCommands(Commands commands) {
 		this.commands = commands;
@@ -56,5 +50,13 @@ public class OSInterface {
 	
 	public long currentSeconds() {
 		return Instant.now().getEpochSecond();
+	}
+	
+	public OutputStream createOutputStream(String fileName) throws IOException {
+		return new FileOutputStream(new File(fileName));
+	}
+	
+	public InputStream createInputStream(String fileName) throws IOException {
+		return new FileInputStream(new File(fileName));
 	}
 }
