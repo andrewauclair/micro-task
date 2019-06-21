@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.lang.reflect.InaccessibleObjectException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,5 +47,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
 		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\""));
+	}
+	
+	@Test
+	void tasks_allows_us_to_add_an_actual_task_object_for_reloading_from_a_file() {
+		Task task = new Task(4, "Testing", Task.TaskState.Inactive);
+		tasks.addTask(task);
+		
+		assertThat(tasks.getTasks()).containsOnly(task);
 	}
 }

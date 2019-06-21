@@ -16,27 +16,27 @@ public class Main {
 		osInterface.setCommands(commands);
 		
 		File git_data = new File("git-data");
-		boolean mkdir = git_data.mkdir();
 		
-		System.out.println(mkdir);
+		boolean exists = git_data.exists();
 		
-		osInterface.runGitCommand(new GitCommand("git init"));
-		osInterface.runGitCommand(new GitCommand("git config user.email \"mightymalakai33@gmail.com\""));
-		osInterface.runGitCommand(new GitCommand("git config user.name \"Andrew Auclair\""));
-		
-		// reload previous tasks from a file
-		File file = new File("tasks.txt");
-		if (file.exists()) {
-			BufferedReader reader = new BufferedReader(new FileReader(new File("tasks.txt")));
+		if (!exists) {
+			boolean mkdir = git_data.mkdir();
 			
-			String line;
-			do {
-				line = reader.readLine();
-				if (line != null && !line.isEmpty()) {
-					tasks.addTask(line);
-				}
+			System.out.println(mkdir);
+			
+			osInterface.runGitCommand(new GitCommand("git init"));
+			osInterface.runGitCommand(new GitCommand("git config user.email \"mightymalakai33@gmail.com\""));
+			osInterface.runGitCommand(new GitCommand("git config user.name \"Andrew Auclair\""));
+		}
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		for (File file : git_data.listFiles()) {
+			if (file.getName().endsWith(".txt")) {
+				Task task = reader.readTask("git-data/" + file.getName());
+				
+				tasks.addTask(task);
 			}
-			while (line != null);
 		}
 		
 		String command;
@@ -54,14 +54,5 @@ public class Main {
 			}
 		}
 		while (!command.equals("exit"));
-		
-		// save to a file
-		// TODO we'll do this better in the future, right now this will lose all the current id's, you can't persist the active task with this
-		FileOutputStream output = new FileOutputStream(new File("tasks.txt"));
-		
-		for (Task task : tasks.getTasks()) {
-			output.write(task.task.getBytes());
-			output.write("\n".getBytes());
-		}
 	}
 }
