@@ -5,7 +5,6 @@ import com.andrewauclair.todo.git.GitCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,12 +88,14 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finishing_a_task_records_the_stop_time() {
 		tasks.addTask("Test 1");
 		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
 		tasks.startTask(1);
 		
-		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
+		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 		
 		Task task = tasks.finishTask();
 		
-		assertEquals(2345, task.stop);
+		assertThat(task.times.asList()).containsOnly(new TaskTimes.Times(1234, 4567));
 	}
 }

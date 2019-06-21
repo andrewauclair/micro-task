@@ -32,8 +32,8 @@ final class Task {
 	final String task;
 	final TaskState state;
 	
-	final long start;
-	final long stop;
+	private final long start;
+	private final long stop;
 	
 	final TaskTimes times;
 	
