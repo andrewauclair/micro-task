@@ -15,17 +15,21 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
 		Task oldTask = tasks.startTask(2);
 		
-		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active);
+		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active, new TaskTimes.Times(1234));
 		assertEquals(expectedOldTask, tasks.getActiveTask());
 		assertEquals(expectedOldTask, oldTask);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 		
 		Task stoppedTask = tasks.stopTask();
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive), stoppedTask);
+		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive, new TaskTimes.Times(1234, 4567)), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}

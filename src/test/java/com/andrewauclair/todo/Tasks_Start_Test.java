@@ -16,10 +16,12 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Empty task");
 		Task task = tasks.addTask("Testing task start command");
 		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
 		Task newActiveTask = tasks.startTask(task.id);
 		
 		Task oldTask = new Task(2, "Testing task start command", Task.TaskState.Inactive);
-		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active);
+		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, new TaskTimes.Times(1234));
 		
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -70,6 +72,10 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(1);
 		
 //		TaskTimes.Times times = new TaskTimes.Times(0);
-		assertEquals(1234, task.start);
+		
+		TaskTimes times = task.times;
+		
+		assertThat(times.asList()).containsOnly(new TaskTimes.Times(1234, Long.MIN_VALUE));
+//		assertEquals(1234, task.start);
 	}
 }

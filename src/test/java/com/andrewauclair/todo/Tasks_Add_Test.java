@@ -17,6 +17,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		Task expectedTask = new Task(1, "Testing task add command", Task.TaskState.Inactive);
 		
+		boolean equal = actualTask.equals(expectedTask);
+		
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
 	}

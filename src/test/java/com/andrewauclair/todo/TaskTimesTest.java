@@ -70,6 +70,11 @@ class TaskTimesTest {
 	}
 	
 	@Test
+	void task_times_equals() {
+		EqualsVerifier.forClass(TaskTimes.class).verify();
+	}
+	
+	@Test
 	@Disabled("This is the better version, being lazy for now")
 	void times_toString_prints_dates_and_times() {
 		// 6/20/2019 8:50:02 - 6/20/2019 9:20:22

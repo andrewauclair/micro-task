@@ -24,11 +24,15 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		assertThat(tasks.getTasks()).containsOnly(new Task(1, "Testing tasks", Task.TaskState.Inactive),
 				new Task(2, "Testing tasks 2", Task.TaskState.Inactive));
 		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
 		tasks.startTask(2);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 		
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished);
+		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished, new TaskTimes.Times(1234, 4567));
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Testing tasks", Task.TaskState.Inactive),
 				finishedTask

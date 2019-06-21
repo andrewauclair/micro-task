@@ -62,4 +62,17 @@ final class TaskTimes {
 	List<Times> asList() {
 		return times;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TaskTimes taskTimes = (TaskTimes) o;
+		return Objects.equals(times, taskTimes.times);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(times);
+	}
 }

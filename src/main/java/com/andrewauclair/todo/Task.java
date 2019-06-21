@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import java.util.Collections;
 import java.util.Objects;
 
 final class Task {
@@ -34,32 +35,36 @@ final class Task {
 	final long start;
 	final long stop;
 	
+	final TaskTimes times;
+	
 	Task(int id, String task, TaskState state) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		this.start = 0;
 		this.stop = 0;
+		times = new TaskTimes();
 	}
 	
-	Task(int id, String task, TaskState state, long start, long stop) {
+	Task(int id, String task, TaskState state, TaskTimes.Times times) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
-		this.start = start;
-		this.stop = stop;
+		this.start = times.start;
+		this.stop = times.stop;
+		this.times = new TaskTimes(Collections.singletonList(times));
 	}
 	
 	Task activate(long start) {
-		return new Task(id, task, TaskState.Active, start, 0);
+		return new Task(id, task, TaskState.Active, new TaskTimes.Times(start));
 	}
 	
 	Task finish(long stop) {
-		return new Task(id, task, TaskState.Finished, start, stop);
+		return new Task(id, task, TaskState.Finished, new TaskTimes.Times(times.asList().get(0).start, stop));
 	}
 	
 	Task stop(long stop) {
-		return new Task(id, task, TaskState.Inactive, start, stop);
+		return new Task(id, task, TaskState.Inactive, new TaskTimes.Times(times.asList().get(0).start, stop));
 	}
 	
 	@Override
@@ -67,16 +72,18 @@ final class Task {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Task otherTask = (Task) o;
+		
 		return id == otherTask.id &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
 				start == otherTask.start &&
-				stop == otherTask.stop;
+				stop == otherTask.stop &&
+				Objects.equals(times, otherTask.times);
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, start, stop);
+		return Objects.hash(id, task, state, start, stop, times);
 	}
 	
 	// TODO make a description method and have the toString print all the info, this will help in tests that fail
