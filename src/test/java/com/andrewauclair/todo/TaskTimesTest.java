@@ -43,6 +43,13 @@ class TaskTimesTest {
 	}
 	
 	@Test
+	void task_times_provides_empty_for_new_tasks() {
+		TaskTimes taskTimes = new TaskTimes();
+		
+		assertThat(taskTimes.asList()).isEmpty();
+	}
+	
+	@Test
 	void times_equals() {
 		EqualsVerifier.forClass(TaskTimes.Times.class).verify();
 	}

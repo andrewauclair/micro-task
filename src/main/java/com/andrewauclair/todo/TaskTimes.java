@@ -37,6 +37,10 @@ final class TaskTimes {
 	
 	private final List<Times> times;
 	
+	TaskTimes() {
+		times = Collections.emptyList();
+	}
+	
 	TaskTimes(int start, int stop) {
 		times = Collections.unmodifiableList(Collections.singletonList(new Times(start, stop)));
 	}
