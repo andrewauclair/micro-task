@@ -98,4 +98,34 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		assertThat(task.times.asList()).containsOnly(new TaskTimes.Times(1234, 4567));
 	}
+	
+	@Test
+	void finish_respects_the_multiple_starts_and_stops_before_it() {
+		tasks.addTask("Test 1");
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
+		
+		Task stop = tasks.stopTask();
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(3456L);
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
+		
+		Task finishTask = tasks.finishTask();
+		
+		assertThat(stop.times.asList()).containsOnly(
+				new TaskTimes.Times(1234, 2345)
+		);
+		
+		assertThat(finishTask.times.asList()).containsOnly(
+				new TaskTimes.Times(1234, 2345),
+				new TaskTimes.Times(3456, 4567)
+		);
+	}
 }

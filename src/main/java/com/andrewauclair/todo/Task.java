@@ -64,7 +64,11 @@ final class Task {
 	}
 	
 	Task finish(long stop) {
-		return new Task(id, task, TaskState.Finished, new TaskTimes.Times(times.asList().get(0).start, stop));
+		List<TaskTimes.Times> times = new ArrayList<>(this.times.asList());
+		TaskTimes.Times lastTime = times.remove(times.size() - 1);
+		TaskTimes.Times stopTime = new TaskTimes.Times(lastTime.start, stop);
+		times.add(stopTime);
+		return new Task(id, task, TaskState.Finished, new TaskTimes(times));
 	}
 	
 	Task stop(long stop) {
