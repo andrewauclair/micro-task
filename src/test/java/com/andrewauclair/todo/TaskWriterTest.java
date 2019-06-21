@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,6 +43,58 @@ class TaskWriterTest {
 		assertEquals("Test" + NL +
 				"Active" + NL + NL +
 				"start 1234", outputStream.toString());
+		assertTrue(writeTask);
+	}
+	
+	@Test
+	void write_task_with_start_and_stop_times() {
+		TaskWriter writer = new TaskWriter(fileCreator);
+		
+		Task task = new Task(1, "Test", Task.TaskState.Finished, new TaskTimes.Times(1234, 4567));
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+		
+		assertEquals("Test" + NL +
+				"Finished" + NL + NL +
+				"start 1234" + NL +
+				"stop 4567", outputStream.toString());
+		assertTrue(writeTask);
+	}
+	
+	@Test
+	void write_task_with_start_stop_and_start_again() {
+		TaskWriter writer = new TaskWriter(fileCreator);
+		
+		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(
+				Arrays.asList(new TaskTimes.Times(1234, 4567),
+						new TaskTimes.Times(3333)))
+		);
+		
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+		
+		assertEquals("Test" + NL +
+				"Active" + NL + NL +
+				"start 1234" + NL +
+				"stop 4567" + NL +
+				"start 3333", outputStream.toString());
+		assertTrue(writeTask);
+	}
+	
+	@Test
+	void write_task_with_multiple_starts_and_stops() {
+		TaskWriter writer = new TaskWriter(fileCreator);
+		
+		Task task = new Task(1, "Test", Task.TaskState.Inactive, new TaskTimes(
+				Arrays.asList(new TaskTimes.Times(1234, 4567),
+						new TaskTimes.Times(3333, 5555)))
+		);
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+		
+		assertEquals("Test" + NL +
+				"Inactive" + NL + NL +
+				"start 1234" + NL +
+				"stop 4567" + NL +
+				"start 3333" + NL +
+				"stop 5555", outputStream.toString());
 		assertTrue(writeTask);
 	}
 	

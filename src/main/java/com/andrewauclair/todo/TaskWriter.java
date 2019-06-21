@@ -22,11 +22,18 @@ class TaskWriter {
 			
 			if (times.size() > 0) {
 				writeNL(outputStream);
-				writeNL(outputStream);
 				
-				outputStream.write("start ".getBytes());
-				
-				outputStream.write(String.valueOf(times.get(0).start).getBytes());
+				for (TaskTimes.Times time : times) {
+					writeNL(outputStream);
+					outputStream.write("start ".getBytes());
+					outputStream.write(String.valueOf(time.start).getBytes());
+					
+					if (time.stop != TaskTimes.Times.TIME_NOT_SET) {
+						writeNL(outputStream);
+						outputStream.write("stop ".getBytes());
+						outputStream.write(String.valueOf(time.stop).getBytes());
+					}
+				}
 			}
 		}
 		catch (IOException e) {

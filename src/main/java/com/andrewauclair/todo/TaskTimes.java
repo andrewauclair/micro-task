@@ -7,7 +7,7 @@ import java.util.Objects;
 
 final class TaskTimes {
 	static final class Times {
-		private static final long TIME_NOT_SET = Long.MIN_VALUE;
+		public static final long TIME_NOT_SET = Long.MIN_VALUE;
 		
 		final long start;
 		final long stop;
