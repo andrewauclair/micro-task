@@ -32,17 +32,12 @@ final class Task {
 	final String task;
 	final TaskState state;
 	
-	private final long start;
-	private final long stop;
-	
 	final TaskTimes times;
 	
 	Task(int id, String task, TaskState state) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
-		this.start = 0;
-		this.stop = 0;
 		times = new TaskTimes();
 	}
 	
@@ -50,8 +45,6 @@ final class Task {
 		this.id = id;
 		this.task = task;
 		this.state = state;
-		this.start = times.start;
-		this.stop = times.stop;
 		this.times = new TaskTimes(Collections.singletonList(times));
 	}
 	
@@ -76,14 +69,12 @@ final class Task {
 		return id == otherTask.id &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
-				start == otherTask.start &&
-				stop == otherTask.stop &&
 				Objects.equals(times, otherTask.times);
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, start, stop, times);
+		return Objects.hash(id, task, state, times);
 	}
 	
 	// TODO make a description method and have the toString print all the info, this will help in tests that fail
