@@ -84,4 +84,34 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		assertThat(task.times.asList()).containsOnly(new TaskTimes.Times(1234, 4567));
 	}
+	
+	@Test
+	void multiple_stops_result_in_multiple_times() {
+		tasks.addTask("Test 1");
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
+		
+		Task stop1 = tasks.stopTask();
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(3456L);
+		
+		tasks.startTask(1);
+		
+		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
+		
+		Task stop2 = tasks.stopTask();
+		
+		assertThat(stop1.times.asList()).containsOnly(
+				new TaskTimes.Times(1234, 2345)
+		);
+		
+		assertThat(stop2.times.asList()).containsOnly(
+				new TaskTimes.Times(1234, 2345),
+				new TaskTimes.Times(3456, 4567)
+		);
+	}
 }

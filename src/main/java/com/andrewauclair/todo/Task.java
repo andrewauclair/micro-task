@@ -1,7 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 final class Task {
@@ -48,8 +50,17 @@ final class Task {
 		this.times = new TaskTimes(Collections.singletonList(times));
 	}
 	
+	Task(int id, String task, TaskState state, TaskTimes times) {
+		this.id = id;
+		this.task = task;
+		this.state = state;
+		this.times = times;
+	}
+	
 	Task activate(long start) {
-		return new Task(id, task, TaskState.Active, new TaskTimes.Times(start));
+		List<TaskTimes.Times> times = new ArrayList<>(this.times.asList());
+		times.add(new TaskTimes.Times(start));
+		return new Task(id, task, TaskState.Active, new TaskTimes(times));
 	}
 	
 	Task finish(long stop) {
@@ -57,7 +68,11 @@ final class Task {
 	}
 	
 	Task stop(long stop) {
-		return new Task(id, task, TaskState.Inactive, new TaskTimes.Times(times.asList().get(0).start, stop));
+		List<TaskTimes.Times> times = new ArrayList<>(this.times.asList());
+		TaskTimes.Times lastTime = times.remove(times.size() - 1);
+		TaskTimes.Times stopTime = new TaskTimes.Times(lastTime.start, stop);
+		times.add(stopTime);
+		return new Task(id, task, TaskState.Inactive, new TaskTimes(times));
 	}
 	
 	@Override
