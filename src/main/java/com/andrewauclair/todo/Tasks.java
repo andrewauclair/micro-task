@@ -27,7 +27,12 @@ class Tasks {
 			public OutputStream createOutputStream(String fileName) {
 				return new ByteArrayOutputStream();
 			}
-		});
+		}) {
+			@Override
+			boolean writeTask(Task task, String fileName) {
+				return true;
+			}
+		};
 		osInterface = new OSInterface() {
 			@Override
 			public boolean runGitCommand(GitCommand command) {
