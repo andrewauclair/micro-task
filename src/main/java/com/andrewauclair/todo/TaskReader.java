@@ -3,8 +3,6 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,7 +34,6 @@ class TaskReader {
 		long stop = TaskTimes.Times.TIME_NOT_SET;
 		List<TaskTimes.Times> timesList = new ArrayList<>();
 		
-		
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if (line.startsWith("start")) {
@@ -47,7 +44,6 @@ class TaskReader {
 				stop = Integer.parseInt(line.substring(5));
 				
 				timesList.add(new TaskTimes.Times(start, stop));
-				
 			}
 		}
 		
