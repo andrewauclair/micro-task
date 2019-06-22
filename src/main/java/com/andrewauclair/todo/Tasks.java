@@ -53,7 +53,7 @@ class Tasks {
 
 	private void addAndCommit(Task task, String comment) {
 		osInterface.runGitCommand("git add " + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.toString().replace("\"", "\\\"") + "\"");
+		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 
 	Task startTask(int id) {

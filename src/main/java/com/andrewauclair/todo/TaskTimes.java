@@ -38,6 +38,9 @@ final class TaskTimes {
 
 	@Override
 	public String toString() {
+		if (stop == TIME_NOT_SET) {
+			return String.valueOf(start);
+		}
 		return start + " - " + stop;
 	}
 }

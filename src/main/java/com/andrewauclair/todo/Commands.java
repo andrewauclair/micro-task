@@ -52,7 +52,7 @@ public class Commands {
 
 		for (Task task : tasksList) {
 			output.print(task.id == activeTask.id ? "* " : "  ");
-			output.println(task);
+			output.println(task.description());
 		}
 
 		if (tasksList.size() == 0) {
@@ -63,7 +63,7 @@ public class Commands {
 	private void activeCommand() {
 		Task task = tasks.getActiveTask();
 
-		output.println("Active task is " + task);
+		output.println("Active task is " + task.description());
 	}
 
 	private void addCommand(String command) {
@@ -71,13 +71,13 @@ public class Commands {
 
 		Task task = tasks.addTask(taskTitle);
 
-		output.println("Added task " + task);
+		output.println("Added task " + task.description());
 	}
 
 	private void stopCommand() {
 		Task task = tasks.stopTask();
 
-		output.println("Stopped task " + task);
+		output.println("Stopped task " + task.description());
 	}
 
 	private void startCommand(String command) {
@@ -86,13 +86,13 @@ public class Commands {
 
 		Task task = tasks.startTask(taskID);
 
-		output.println("Started task " + task);
+		output.println("Started task " + task.description());
 	}
 
 	private void finishCommand() {
 		Task task = tasks.finishTask();
 
-		output.println("Finished task " + task);
+		output.println("Finished task " + task.description());
 	}
 
 	private void debugCommand(String command) {

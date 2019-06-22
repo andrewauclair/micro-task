@@ -79,13 +79,21 @@ final class Task {
 	public int hashCode() {
 		return Objects.hash(id, task, state, taskTimes);
 	}
-
-	// TODO make a description method and have the toString print all the info, this will help in tests that fail
+	
 	@Override
 	public String toString() {
+		return "Task{" +
+				"id=" + id +
+				", task='" + task + '\'' +
+				", state=" + state +
+				", taskTimes=" + taskTimes +
+				'}';
+	}
+	
+	String description() {
 		return id + " - \"" + task + "\"";
 	}
-
+	
 	enum TaskState {
 		Inactive(0, "Inactive"),
 		Active(1, "Active"),
