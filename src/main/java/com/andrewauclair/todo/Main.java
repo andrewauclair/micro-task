@@ -45,6 +45,7 @@ public class Main {
 		String command;
 		Scanner scanner = new Scanner(System.in);
 		do {
+			System.out.print(">");
 			command = scanner.nextLine();
 
 			if (!command.equals("exit")) {
