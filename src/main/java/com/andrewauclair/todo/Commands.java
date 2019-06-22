@@ -11,6 +11,8 @@ public class Commands {
 	private final Map<String, Command> commands = new HashMap<>();
 	private final List<String> listNames = new ArrayList<>();
 	
+	private String currentList = "default";
+	
 	private boolean debugEnabled = false;
 	
 	Commands(Tasks tasks, PrintStream output) {
@@ -28,6 +30,7 @@ public class Commands {
 		commands.put("times", this::timesCommand);
 		commands.put("debug", this::debugCommand);
 		commands.put("create-list", this::listCreateCommand);
+		commands.put("switch-list", this::listSwitchCommand);
 	}
 	
 	public boolean isDebugEnabled() {
@@ -157,6 +160,12 @@ public class Commands {
 		listNames.add(s[1]);
 	}
 	
+	private void listSwitchCommand(String command) {
+		String[] s = command.split(" ");
+		
+		currentList = s[1];
+	}
+	
 	private void debugCommand(String command) {
 		String[] s = command.split(" ");
 		
@@ -172,7 +181,7 @@ public class Commands {
 	}
 	
 	String getListName() {
-		return "default";
+		return currentList;
 	}
 	
 	boolean hasListWithName(String listName) {

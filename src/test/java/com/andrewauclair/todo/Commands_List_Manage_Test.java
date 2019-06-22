@@ -40,4 +40,12 @@ class Commands_List_Manage_Test {
 		
 		assertTrue(commands.hasListWithName("test-tasks"));
 	}
+	
+	@Test
+	void switch_to_another_list() {
+		commands.execute("create-list test-tasks");
+		commands.execute("switch-list test-tasks");
+		
+		assertEquals("test-tasks", commands.getListName());
+	}
 }
