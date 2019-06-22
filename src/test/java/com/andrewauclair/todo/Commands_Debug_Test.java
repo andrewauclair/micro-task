@@ -9,8 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class Commands_Debug_Test {
@@ -30,5 +29,11 @@ class Commands_Debug_Test {
 		commands.execute("debug enable");
 		commands.execute("debug disable");
 		assertFalse(commands.isDebugEnabled());
+	}
+	
+	@Test
+	void executing_debug_with_any_text_other_than_enable_or_disable_results_in_an_invalid_command_message() {
+		commands.execute("debug junk");
+		assertEquals("Invalid command." + System.lineSeparator(), outputStream.toString());
 	}
 }

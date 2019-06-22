@@ -98,8 +98,15 @@ public class Commands {
 	private void debugCommand(String command) {
 		String[] s = command.split(" ");
 
-		// TODO This means we could use literally anything else as disable, we should be strict on it and verify commands, bigger thing to solve than just this
-		debugEnabled = s[1].equals("enable");
+		if (s[1].equals("enable")) {
+			debugEnabled = true;
+		}
+		else if (s[1].equals("disable")) {
+			debugEnabled = false;
+		}
+		else {
+			output.println("Invalid command.");
+		}
 	}
 
 	private interface Command {
