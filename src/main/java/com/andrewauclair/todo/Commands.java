@@ -80,16 +80,24 @@ public class Commands {
 				.filter(task -> task.state != Task.TaskState.Finished)
 				.collect(Collectors.toList());
 		
-		Task activeTask = new Task(-1, "");
+		Task activeTask = null;
 		try {
 			activeTask = tasks.getActiveTask();
 		}
 		catch (RuntimeException ignored) {
 		}
 		
-		for (Task task : tasksList) {
-			output.print(task.id == activeTask.id ? "* " : "  ");
-			output.println(task.description());
+		final int activeTaskID = activeTask == null ? -1 : activeTask.id;
+		
+		tasksList.stream()
+				.limit(20)
+				.forEach(task -> {
+					output.print(task.id == activeTaskID ? "* " : "  ");
+					output.println(task.description());
+				});
+		
+		if (tasksList.size() > 20) {
+			output.println("(" + (tasksList.size() - 20) + " more tasks.)");
 		}
 		
 		if (tasksList.size() == 0) {
