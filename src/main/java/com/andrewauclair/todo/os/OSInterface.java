@@ -5,6 +5,7 @@ import com.andrewauclair.todo.Commands;
 
 import java.io.*;
 import java.time.Instant;
+import java.time.ZoneId;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
@@ -50,12 +51,18 @@ public class OSInterface {
 	public long currentSeconds() {
 		return Instant.now().getEpochSecond();
 	}
-
+	
 	public OutputStream createOutputStream(String fileName) throws IOException {
 		return new FileOutputStream(new File(fileName));
 	}
 
 	public InputStream createInputStream(String fileName) throws IOException {
 		return new FileInputStream(new File(fileName));
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(Instant.now().atZone(ZoneId.systemDefault()));
+		
+//		System.out.println(Instant.now().);
 	}
 }

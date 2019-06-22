@@ -5,6 +5,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskTimesTest {
@@ -30,14 +32,19 @@ class TaskTimesTest {
 	}
 
 	@Test
-	@Disabled("This is the better version, being lazy for now")
-	void times_toString_prints_dates_and_times() {
-		// 6/20/2019 8:50:02 - 6/20/2019 9:20:22
+	void times_description_prints_dates_and_times() {
 		TaskTimes times = new TaskTimes(1561078202, 1561080022);
 
-		assertEquals("6/20/2019 8:50:02 PM - 6/20/2019 9:20:22 PM", times.toString());
+		assertEquals("06/20/2019 08:50:02 PM - 06/20/2019 09:20:22 PM", times.description(ZoneId.of("America/New_York")));
 	}
-
+	
+	@Test
+	void times_description_prints_only_start_time_for_active_tasks() {
+		TaskTimes times = new TaskTimes(1561078202);
+		
+		assertEquals("06/20/2019 08:50:02 PM -", times.description(ZoneId.of("America/New_York")));
+	}
+	
 	@Test
 	void times_toString() {
 		TaskTimes times = new TaskTimes(1561078202, 1561080022);

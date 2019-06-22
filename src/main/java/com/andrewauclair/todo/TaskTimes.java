@@ -1,6 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 final class TaskTimes {
@@ -36,6 +39,17 @@ final class TaskTimes {
 		return Objects.hash(start, stop);
 	}
 
+	String description(ZoneId zone) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(dateTimeFormatter);
+		
+		if (stop != TIME_NOT_SET) {
+			String stopStr = Instant.ofEpochSecond(stop).atZone(zone).format(dateTimeFormatter);
+			return startStr + " - " + stopStr;
+		}
+		return startStr + " -";
+	}
+	
 	@Override
 	public String toString() {
 		if (stop == TIME_NOT_SET) {

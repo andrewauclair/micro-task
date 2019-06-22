@@ -40,19 +40,21 @@ final class Task {
 	}
 
 	Task finish(long stop) {
-		List<TaskTimes> times = new ArrayList<>(taskTimes);
-		TaskTimes lastTime = times.remove(times.size() - 1);
-		TaskTimes stopTime = new TaskTimes(lastTime.start, stop);
-		times.add(stopTime);
+		List<TaskTimes> times = addStopTime(stop);
 		return new Task(id, task, TaskState.Finished, times);
 	}
-
+	
 	Task stop(long stop) {
+		List<TaskTimes> times = addStopTime(stop);
+		return new Task(id, task, TaskState.Inactive, times);
+	}
+	
+	private List<TaskTimes> addStopTime(long stop) {
 		List<TaskTimes> times = new ArrayList<>(taskTimes);
 		TaskTimes lastTime = times.remove(times.size() - 1);
 		TaskTimes stopTime = new TaskTimes(lastTime.start, stop);
 		times.add(stopTime);
-		return new Task(id, task, TaskState.Inactive, times);
+		return times;
 	}
 
 	List<TaskTimes> getTimes() {
