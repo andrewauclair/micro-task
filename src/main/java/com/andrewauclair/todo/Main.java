@@ -47,8 +47,11 @@ public class Main {
 		do {
 			System.out.print(">");
 			command = scanner.nextLine();
-
-			if (!command.equals("exit")) {
+			
+			if (command.equals("clear")) {
+				clearScreen();
+			}
+			else if (!command.equals("exit")) {
 				try {
 					commands.execute(command);
 				}
@@ -58,5 +61,17 @@ public class Main {
 			}
 		}
 		while (!command.equals("exit"));
+	}
+	
+	public static void clearScreen() {
+		//Clears Screen in java
+		try {
+			if (System.getProperty("os.name").contains("Windows"))
+				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			else
+				Runtime.getRuntime().exec("clear");
+		}
+		catch (IOException | InterruptedException ignored) {
+		}
 	}
 }
