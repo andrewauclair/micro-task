@@ -7,33 +7,9 @@ import java.util.List;
 import java.util.Objects;
 
 final class Task {
-	enum TaskState {
-		Inactive(0, "Inactive"),
-		Active(1, "Active"),
-		Finished(2, "Finished");
-
-		int value;
-		String name;
-
-		TaskState(int value, String name) {
-			this.value = value;
-			this.name = name;
-		}
-
-		public int getValue() {
-			return value;
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
-
 	final int id;
 	final String task;
 	final TaskState state;
-
 	private final List<TaskTimes> taskTimes;
 
 	Task(int id, String task) {
@@ -108,5 +84,28 @@ final class Task {
 	@Override
 	public String toString() {
 		return id + " - \"" + task + "\"";
+	}
+
+	enum TaskState {
+		Inactive(0, "Inactive"),
+		Active(1, "Active"),
+		Finished(2, "Finished");
+
+		final int value;
+		final String name;
+
+		TaskState(int value, String name) {
+			this.value = value;
+			this.name = name;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
 	}
 }

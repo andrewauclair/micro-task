@@ -5,16 +5,16 @@ import java.util.Objects;
 
 public final class GitCommand {
 	private final String command;
-	
+
 	public GitCommand(String command) {
 		this.command = command;
 	}
-	
+
 	@Override
 	public String toString() {
 		return command;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -26,7 +26,7 @@ public final class GitCommand {
 		GitCommand that = (GitCommand) o;
 		return Objects.equals(command, that.command);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(command);

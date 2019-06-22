@@ -9,27 +9,27 @@ import java.util.List;
 
 class TaskWriter {
 	private final OSInterface osInterface;
-	
+
 	TaskWriter(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-	
+
 	boolean writeTask(Task task, String fileName) {
 		try (OutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
 			writeNL(outputStream);
 			outputStream.write(task.state.toString().getBytes());
-			
+
 			List<TaskTimes> times = task.getTimes();
-			
+
 			if (times.size() > 0) {
 				writeNL(outputStream);
-				
+
 				for (TaskTimes time : times) {
 					writeNL(outputStream);
 					outputStream.write("start ".getBytes());
 					outputStream.write(String.valueOf(time.start).getBytes());
-					
+
 					if (time.stop != TaskTimes.TIME_NOT_SET) {
 						writeNL(outputStream);
 						outputStream.write("stop ".getBytes());
@@ -44,7 +44,7 @@ class TaskWriter {
 		}
 		return true;
 	}
-	
+
 	private void writeNL(OutputStream outputStream) throws IOException {
 		outputStream.write(System.lineSeparator().getBytes());
 	}

@@ -15,13 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskWriterTest {
 	private static final String NL = System.lineSeparator();
-	private OutputStream outputStream = new ByteArrayOutputStream();
-	//	private FileCreator fileCreator = Mockito.mock(FileCreator.class);
+	private final OutputStream outputStream = new ByteArrayOutputStream();
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
 
 	@BeforeEach
 	void setup() throws IOException {
-//		Mockito.when(fileCreator.createOutputStream("git-data/1.txt")).thenReturn(outputStream);
 		Mockito.when(osInterface.createOutputStream("git-data/1.txt")).thenReturn(outputStream);
 	}
 
