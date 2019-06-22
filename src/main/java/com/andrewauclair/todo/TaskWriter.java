@@ -20,17 +20,17 @@ class TaskWriter {
 			writeNL(outputStream);
 			outputStream.write(task.state.toString().getBytes());
 			
-			List<TaskTimes.Times> times = task.times.asList();
+			List<TaskTimes> times = task.getTimes();
 			
 			if (times.size() > 0) {
 				writeNL(outputStream);
 				
-				for (TaskTimes.Times time : times) {
+				for (TaskTimes time : times) {
 					writeNL(outputStream);
 					outputStream.write("start ".getBytes());
 					outputStream.write(String.valueOf(time.start).getBytes());
 					
-					if (time.stop != TaskTimes.Times.TIME_NOT_SET) {
+					if (time.stop != TaskTimes.TIME_NOT_SET) {
 						writeNL(outputStream);
 						outputStream.write("stop ".getBytes());
 						outputStream.write(String.valueOf(time.stop).getBytes());

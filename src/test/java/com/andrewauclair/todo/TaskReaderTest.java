@@ -34,8 +34,8 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", Task.TaskState.Active,
 				Arrays.asList(
-						new TaskTimes.Times(1234, 4567),
-						new TaskTimes.Times(3333)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333)
 				)
 		);
 
@@ -60,8 +60,8 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", Task.TaskState.Active,
 				Arrays.asList(
-						new TaskTimes.Times(1234, 4567),
-						new TaskTimes.Times(3333)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333)
 				)
 		);
 
@@ -87,8 +87,8 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", Task.TaskState.Inactive,
 				Arrays.asList(
-						new TaskTimes.Times(1234, 4567),
-						new TaskTimes.Times(3333, 5555)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333, 5555)
 				)
 		);
 

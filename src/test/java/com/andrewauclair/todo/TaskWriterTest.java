@@ -40,7 +40,7 @@ class TaskWriterTest {
 	void write_task_with_start_time() {
 		TaskWriter writer = new TaskWriter(osInterface);
 
-		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes.Times(1234));
+		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(1234));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + NL +
@@ -53,7 +53,7 @@ class TaskWriterTest {
 	void write_task_with_start_and_stop_times() {
 		TaskWriter writer = new TaskWriter(osInterface);
 
-		Task task = new Task(1, "Test", Task.TaskState.Finished, new TaskTimes.Times(1234, 4567));
+		Task task = new Task(1, "Test", Task.TaskState.Finished, new TaskTimes(1234, 4567));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + NL +
@@ -69,8 +69,8 @@ class TaskWriterTest {
 
 		Task task = new Task(1, "Test", Task.TaskState.Active,
 				Arrays.asList(
-						new TaskTimes.Times(1234, 4567),
-						new TaskTimes.Times(3333)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333)
 				)
 		);
 
@@ -90,8 +90,8 @@ class TaskWriterTest {
 
 		Task task = new Task(1, "Test", Task.TaskState.Inactive,
 				Arrays.asList(
-						new TaskTimes.Times(1234, 4567),
-						new TaskTimes.Times(3333, 5555)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333, 5555)
 				)
 		);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");

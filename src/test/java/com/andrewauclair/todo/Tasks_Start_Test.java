@@ -21,7 +21,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Task newActiveTask = tasks.startTask(task.id);
 		
 		Task oldTask = new Task(2, "Testing task start command");
-		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, new TaskTimes.Times(1234));
+		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, new TaskTimes(1234));
 		
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -71,11 +71,6 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.startTask(1);
 		
-//		TaskTimes.Times times = new TaskTimes.Times(0);
-		
-		TaskTimes times = task.times;
-		
-		assertThat(times.asList()).containsOnly(new TaskTimes.Times(1234, Long.MIN_VALUE));
-//		assertEquals(1234, task.start);
+		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, Long.MIN_VALUE));
 	}
 }

@@ -30,24 +30,24 @@ class TaskReader {
 		state = Task.TaskState.valueOf(scanner.nextLine());
 		
 		long start = 0;
-		long stop = TaskTimes.Times.TIME_NOT_SET;
-		List<TaskTimes.Times> timesList = new ArrayList<>();
+		long stop = TaskTimes.TIME_NOT_SET;
+		List<TaskTimes> timesList = new ArrayList<>();
 		
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if (line.startsWith("start")) {
 				start = Integer.parseInt(line.substring(6));
-				stop = TaskTimes.Times.TIME_NOT_SET;
+				stop = TaskTimes.TIME_NOT_SET;
 			}
 			if (line.startsWith("stop")) {
 				stop = Integer.parseInt(line.substring(5));
 				
-				timesList.add(new TaskTimes.Times(start, stop));
+				timesList.add(new TaskTimes(start, stop));
 			}
 		}
 		
-		if (stop == TaskTimes.Times.TIME_NOT_SET) {
-			timesList.add(new TaskTimes.Times(start, stop));
+		if (stop == TaskTimes.TIME_NOT_SET) {
+			timesList.add(new TaskTimes(start, stop));
 		}
 		return new Task(id, task, state, timesList);
 	}

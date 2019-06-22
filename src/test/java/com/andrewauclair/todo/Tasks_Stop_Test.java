@@ -19,7 +19,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		Task oldTask = tasks.startTask(2);
 		
-		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active, new TaskTimes.Times(1234));
+		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active, new TaskTimes(1234));
 		assertEquals(expectedOldTask, tasks.getActiveTask());
 		assertEquals(expectedOldTask, oldTask);
 		
@@ -29,7 +29,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 		
-		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive, new TaskTimes.Times(1234, 4567)), stoppedTask);
+		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive, new TaskTimes(1234, 4567)), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}
@@ -82,7 +82,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.stopTask();
 		
-		assertThat(task.times.asList()).containsOnly(new TaskTimes.Times(1234, 4567));
+		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, 4567));
 	}
 	
 	@Test
@@ -105,13 +105,13 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		
 		Task stop2 = tasks.stopTask();
 		
-		assertThat(stop1.times.asList()).containsOnly(
-				new TaskTimes.Times(1234, 2345)
+		assertThat(stop1.getTimes()).containsOnly(
+				new TaskTimes(1234, 2345)
 		);
 		
-		assertThat(stop2.times.asList()).containsOnly(
-				new TaskTimes.Times(1234, 2345),
-				new TaskTimes.Times(3456, 4567)
+		assertThat(stop2.getTimes()).containsOnly(
+				new TaskTimes(1234, 2345),
+				new TaskTimes(3456, 4567)
 		);
 	}
 }

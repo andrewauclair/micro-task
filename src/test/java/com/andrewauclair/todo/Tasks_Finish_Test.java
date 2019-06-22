@@ -31,7 +31,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished, new TaskTimes.Times(1234, 4567));
+		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished, new TaskTimes(1234, 4567));
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Testing tasks"),
 				finishedTask
@@ -96,7 +96,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.finishTask();
 		
-		assertThat(task.times.asList()).containsOnly(new TaskTimes.Times(1234, 4567));
+		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, 4567));
 	}
 	
 	@Test
@@ -119,13 +119,13 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		Task finishTask = tasks.finishTask();
 		
-		assertThat(stop.times.asList()).containsOnly(
-				new TaskTimes.Times(1234, 2345)
+		assertThat(stop.getTimes()).containsOnly(
+				new TaskTimes(1234, 2345)
 		);
 		
-		assertThat(finishTask.times.asList()).containsOnly(
-				new TaskTimes.Times(1234, 2345),
-				new TaskTimes.Times(3456, 4567)
+		assertThat(finishTask.getTimes()).containsOnly(
+				new TaskTimes(1234, 2345),
+				new TaskTimes(3456, 4567)
 		);
 	}
 }
