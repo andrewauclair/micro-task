@@ -22,12 +22,7 @@ class Tasks {
 	// this constructor should only be used in the tests
 	Tasks() {
 		// create an empty writer
-		writer = new TaskWriter(new FileCreator() {
-			@Override
-			public OutputStream createOutputStream(String fileName) {
-				return new ByteArrayOutputStream();
-			}
-		}) {
+		writer = new TaskWriter(new OSInterface()) {
 			@Override
 			boolean writeTask(Task task, String fileName) {
 				return true;

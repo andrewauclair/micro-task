@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		OSInterface osInterface = new OSInterface();
-		Tasks tasks = new Tasks(new TaskWriter(new FileCreator()), osInterface);
+		Tasks tasks = new Tasks(new TaskWriter(osInterface), osInterface);
 		Commands commands = new Commands(tasks, System.out);
 
 		osInterface.setCommands(commands);

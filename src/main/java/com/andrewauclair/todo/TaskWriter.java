@@ -1,19 +1,21 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
 class TaskWriter {
-	private final FileCreator fileCreator;
+	private final OSInterface osInterface;
 	
-	TaskWriter(FileCreator fileCreator) {
-		this.fileCreator = fileCreator;
+	TaskWriter(OSInterface osInterface) {
+		this.osInterface = osInterface;
 	}
 	
 	boolean writeTask(Task task, String fileName) {
-		try (OutputStream outputStream = fileCreator.createOutputStream(fileName)) {
+		try (OutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
 			writeNL(outputStream);
 			outputStream.write(task.state.toString().getBytes());

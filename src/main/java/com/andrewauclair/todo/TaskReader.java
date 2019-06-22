@@ -21,11 +21,10 @@ class TaskReader {
 		
 		Scanner scanner = new Scanner(inputStream);
 		
-		int id = 0;
-		String task = "";
-		Task.TaskState state = Task.TaskState.Inactive;
-		TaskTimes times = new TaskTimes();
-		
+		int id;
+		String task;
+		Task.TaskState state;
+
 		id = Integer.parseInt(fileName.substring(fileName.indexOf('/') + 1, fileName.indexOf(".txt")));
 		task = scanner.nextLine();
 		state = Task.TaskState.valueOf(scanner.nextLine());
