@@ -44,6 +44,7 @@ class Commands_Times_Test {
 		tasks.stopTask();
 		setTime(1561084202);
 		tasks.startTask(1);
+		setTime(1561085202);
 		
 		commands.execute("times 1");
 		
@@ -51,8 +52,10 @@ class Commands_Times_Test {
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + NL +
 				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + NL +
 				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + NL +
-				"06/20/2019 09:30:02 PM -" + NL;
+				"06/20/2019 09:30:02 PM -" + NL + NL +
+				"Total time: 01h 06m 40s" + NL;
 		
+		// 01w 01d 01h 01m 01s
 		assertEquals(expected, outputStream.toString());
 	}
 	

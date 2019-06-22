@@ -20,7 +20,14 @@ final class TaskTimes {
 	TaskTimes(long start) {
 		this(start, TIME_NOT_SET);
 	}
-
+	
+	long getDuration() {
+		if (stop == TIME_NOT_SET) {
+			return 0;
+		}
+		return stop - start;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

@@ -115,9 +115,25 @@ public class Commands {
 				output.println("Times for " + task.description());
 				output.println();
 				
+				long totalTime = 0;
 				for (TaskTimes time : task.getTimes()) {
 					output.println(time.description(tasks.osInterface.getZoneId()));
+					
+					totalTime += time.getDuration();
+					
+					if (time.stop == TaskTimes.TIME_NOT_SET) {
+						totalTime += tasks.osInterface.currentSeconds() - time.start;
+					}
 				}
+				
+				output.println();
+				output.print("Total time: ");
+				
+				long hours = totalTime / (60 * 60);
+				long minutes = (totalTime - (hours * 60 * 60)) / 60;
+				long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
+				
+				output.println(String.format("%02dh %02dm %02ds", hours, minutes, seconds));
 			}
 		}
 		else {
