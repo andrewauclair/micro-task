@@ -49,7 +49,7 @@ public class Commands {
 				.filter(task -> task.state != Task.TaskState.Finished)
 				.collect(Collectors.toList());
 		
-		Task activeTask = new Task(-1, "", Task.TaskState.Inactive);
+		Task activeTask = new Task(-1, "");
 		try {
 			activeTask = tasks.getActiveTask();
 		}

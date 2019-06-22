@@ -49,6 +49,6 @@ class TaskReader {
 		if (stop == TaskTimes.Times.TIME_NOT_SET) {
 			timesList.add(new TaskTimes.Times(start, stop));
 		}
-		return new Task(id, task, state, new TaskTimes(timesList));
+		return new Task(id, task, state, timesList);
 	}
 }

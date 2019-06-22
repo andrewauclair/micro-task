@@ -4,8 +4,6 @@ package com.andrewauclair.todo;
 import com.andrewauclair.todo.git.GitCommand;
 import com.andrewauclair.todo.os.OSInterface;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +40,7 @@ class Tasks {
 	}
 	
 	Task addTask(String task) {
-		Task newTask = new Task(startingID++, task, Task.TaskState.Inactive);
+		Task newTask = new Task(startingID++, task);
 		tasks.add(newTask);
 		
 		writeTask(newTask);

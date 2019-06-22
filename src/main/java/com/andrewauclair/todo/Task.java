@@ -36,10 +36,10 @@ final class Task {
 	
 	final TaskTimes times;
 	
-	Task(int id, String task, TaskState state) {
+	Task(int id, String task) {
 		this.id = id;
 		this.task = task;
-		this.state = state;
+		this.state = TaskState.Inactive;
 		times = new TaskTimes();
 	}
 	
@@ -50,17 +50,17 @@ final class Task {
 		this.times = new TaskTimes(Collections.singletonList(times));
 	}
 	
-	Task(int id, String task, TaskState state, TaskTimes times) {
+	Task(int id, String task, TaskState state, List<TaskTimes.Times> times) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
-		this.times = times;
+		this.times = new TaskTimes(times);
 	}
 	
 	Task activate(long start) {
 		List<TaskTimes.Times> times = new ArrayList<>(this.times.asList());
 		times.add(new TaskTimes.Times(start));
-		return new Task(id, task, TaskState.Active, new TaskTimes(times));
+		return new Task(id, task, TaskState.Active, times);
 	}
 	
 	Task finish(long stop) {
@@ -68,7 +68,7 @@ final class Task {
 		TaskTimes.Times lastTime = times.remove(times.size() - 1);
 		TaskTimes.Times stopTime = new TaskTimes.Times(lastTime.start, stop);
 		times.add(stopTime);
-		return new Task(id, task, TaskState.Finished, new TaskTimes(times));
+		return new Task(id, task, TaskState.Finished, times);
 	}
 	
 	Task stop(long stop) {
@@ -76,7 +76,7 @@ final class Task {
 		TaskTimes.Times lastTime = times.remove(times.size() - 1);
 		TaskTimes.Times stopTime = new TaskTimes.Times(lastTime.start, stop);
 		times.add(stopTime);
-		return new Task(id, task, TaskState.Inactive, new TaskTimes(times));
+		return new Task(id, task, TaskState.Inactive, times);
 	}
 	
 	@Override

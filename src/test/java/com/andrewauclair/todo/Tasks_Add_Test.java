@@ -15,7 +15,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 		
-		Task expectedTask = new Task(1, "Testing task add command", Task.TaskState.Inactive);
+		Task expectedTask = new Task(1, "Testing task add command");
 		
 		boolean equal = actualTask.equals(expectedTask);
 		
@@ -49,7 +49,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	
 	@Test
 	void tasks_allows_us_to_add_an_actual_task_object_for_reloading_from_a_file() {
-		Task task = new Task(4, "Testing", Task.TaskState.Inactive);
+		Task task = new Task(4, "Testing");
 		tasks.addTask(task);
 		
 		assertThat(tasks.getTasks()).containsOnly(task);

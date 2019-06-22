@@ -8,6 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Task_toString_Test {
 	@Test
 	void task_toString_displays_number_and_title() {
-		assertEquals("1 - \"Test\"", new Task(1, "Test", Task.TaskState.Inactive).toString());
+		assertEquals("1 - \"Test\"", new Task(1, "Test").toString());
 	}
 }

@@ -20,7 +20,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		
 		Task newActiveTask = tasks.startTask(task.id);
 		
-		Task oldTask = new Task(2, "Testing task start command", Task.TaskState.Inactive);
+		Task oldTask = new Task(2, "Testing task start command");
 		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, new TaskTimes.Times(1234));
 		
 		assertEquals(activeTask, tasks.getActiveTask());
