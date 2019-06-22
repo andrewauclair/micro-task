@@ -34,4 +34,11 @@ class Commands_List_Test {
 		Mockito.verify(tasks).getTasks();
 		Mockito.verify(tasks).getActiveTask();
 	}
+
+	@Test
+	void list_command_does_not_throw_the_no_active_task_exception() {
+		commands.execute("list");
+
+		assertEquals("No tasks." + System.lineSeparator(), outputStream.toString());
+	}
 }
