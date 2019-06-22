@@ -2,11 +2,13 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,6 +22,10 @@ class Commands_Times_Test {
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
 	
+	@BeforeEach
+	void setup() {
+		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
+	}
 	@Test
 	void times_command_prints_all_task_times() {
 		tasks.addTask("Test");
@@ -42,10 +48,10 @@ class Commands_Times_Test {
 		commands.execute("times 1");
 		
 		String expected = "Times for 1 - \"Test\"" + NL + NL +
-				"06/20/2019 08:50:02 PM - 06/20/2019 09:06:42 PM" + NL +
-				"06/20/2019 09:23:22 PM - 06/20/2019 09:40:02 PM" + NL +
-				"06/20/2019 09:56:42 PM - 06/20/2019 10:13:22 PM" + NL +
-				"06/20/2019 10:30:02 PM -" + NL;
+				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + NL +
+				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + NL +
+				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + NL +
+				"06/20/2019 09:30:02 PM -" + NL;
 		
 		assertEquals(expected, outputStream.toString());
 	}

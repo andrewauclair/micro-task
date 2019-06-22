@@ -2,7 +2,6 @@
 package com.andrewauclair.todo;
 
 import java.io.PrintStream;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class Commands {
 				output.println();
 				
 				for (TaskTimes time : task.getTimes()) {
-					output.println(time.description(ZoneId.systemDefault()));
+					output.println(time.description(tasks.osInterface.getZoneId()));
 				}
 			}
 		}

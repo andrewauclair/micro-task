@@ -52,17 +52,15 @@ public class OSInterface {
 		return Instant.now().getEpochSecond();
 	}
 	
+	public ZoneId getZoneId() {
+		return ZoneId.systemDefault();
+	}
+	
 	public OutputStream createOutputStream(String fileName) throws IOException {
 		return new FileOutputStream(new File(fileName));
 	}
 
 	public InputStream createInputStream(String fileName) throws IOException {
 		return new FileInputStream(new File(fileName));
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(Instant.now().atZone(ZoneId.systemDefault()));
-		
-//		System.out.println(Instant.now().);
 	}
 }

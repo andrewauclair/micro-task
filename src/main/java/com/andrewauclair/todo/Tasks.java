@@ -10,7 +10,7 @@ import java.util.Optional;
 class Tasks {
 	private final List<Task> tasks = new ArrayList<>();
 	private final TaskWriter writer;
-	private final OSInterface osInterface;
+	final OSInterface osInterface;
 	private int startingID = 1;
 	private int activeTaskID = -1;
 
