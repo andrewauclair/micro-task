@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.git.GitCommand;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.File;
@@ -25,9 +24,9 @@ public class Main {
 
 			System.out.println(mkdir);
 
-			osInterface.runGitCommand(new GitCommand("git init"));
-			osInterface.runGitCommand(new GitCommand("git config user.email \"mightymalakai33@gmail.com\""));
-			osInterface.runGitCommand(new GitCommand("git config user.name \"Andrew Auclair\""));
+			osInterface.runGitCommand("git init");
+			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"");
+			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
 
 		TaskReader reader = new TaskReader(osInterface);

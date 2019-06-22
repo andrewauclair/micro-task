@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.git.GitCommand;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ class Tasks {
 		};
 		osInterface = new OSInterface() {
 			@Override
-			public boolean runGitCommand(GitCommand command) {
+			public boolean runGitCommand(String command) {
 				return true;
 			}
 		};
@@ -53,8 +52,8 @@ class Tasks {
 	}
 
 	private void addAndCommit(Task task, String comment) {
-		osInterface.runGitCommand(new GitCommand("git add " + task.id + ".txt"));
-		osInterface.runGitCommand(new GitCommand("git commit -m \"" + comment + " " + task.toString().replace("\"", "\\\"") + "\""));
+		osInterface.runGitCommand("git add " + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.toString().replace("\"", "\\\"") + "\"");
 	}
 
 	Task startTask(int id) {

@@ -2,7 +2,6 @@
 package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Commands;
-import com.andrewauclair.todo.git.GitCommand;
 
 import java.io.*;
 import java.time.Instant;
@@ -25,13 +24,13 @@ public class OSInterface {
 		this.commands = commands;
 	}
 
-	public boolean runGitCommand(GitCommand command) {
+	public boolean runGitCommand(String command) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(new File("git-data"));
-		builder.command(command.toString().split(" "));
+		builder.command(command.split(" "));
 
 		if (commands.isDebugEnabled()) {
 			System.out.println("run: " + command);

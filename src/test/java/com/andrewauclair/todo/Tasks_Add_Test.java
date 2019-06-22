@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.git.GitCommand;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -36,13 +35,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Testing task add command 1");
 
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 1.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\""));
+		order.verify(osInterface).runGitCommand("git add 1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
 
 		tasks.addTask("Testing task add command 2");
 
-		order.verify(osInterface).runGitCommand(new GitCommand("git add 2.txt"));
-		order.verify(osInterface).runGitCommand(new GitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\""));
+		order.verify(osInterface).runGitCommand("git add 2.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\"");
 	}
 
 	@Test
