@@ -117,14 +117,14 @@ class Commands_List_Manage_Test {
 	
 	@Test
 	void create_list_without_a_task_number_prints_invalid_command() {
-		commands.execute("switch-list");
+		commands.execute("create-list");
 		
 		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
 	}
 	
 	@Test
 	void create_list_with_too_many_arguments_prints_invalid_command() {
-		commands.execute("switch-list test two");
+		commands.execute("create-list test two");
 		
 		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
 	}
