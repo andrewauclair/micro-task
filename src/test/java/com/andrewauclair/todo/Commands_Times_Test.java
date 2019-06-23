@@ -27,34 +27,35 @@ class Commands_Times_Test {
 	
 	@Test
 	void times_command_prints_all_task_times() {
-		tasks.addTask("Test");
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
 		
 		setTime(1561078202);
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		setTime(1561079202);
 		tasks.stopTask();
 		
 		setTime(1561080202);
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		setTime(1561081202);
 		tasks.stopTask();
 		
 		setTime(1561082202);
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		setTime(1561083202);
 		tasks.stopTask();
 		
 		setTime(1561084202);
-		tasks.startTask(1);
+		tasks.startTask(2);
 		
 		setTime(1561085202);
 		
-		commands.execute("times 1");
+		commands.execute("times 2");
 		
-		String expected = "Times for 1 - \"Test\"" + Utils.NL + Utils.NL +
+		String expected = "Times for 2 - \"Test 2\"" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
 				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
 				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + Utils.NL +
@@ -83,5 +84,19 @@ class Commands_Times_Test {
 		commands.execute("times 1");
 		
 		assertEquals("No times for task 1 - \"Test\"" + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void times_without_a_task_number_prints_invalid_command() {
+		commands.execute("times");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void times_with_too_many_arguments_prints_invalid_command() {
+		commands.execute("times 1 2");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
 	}
 }

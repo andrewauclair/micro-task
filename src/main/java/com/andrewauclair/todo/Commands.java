@@ -98,6 +98,12 @@ public class Commands {
 	
 	private void timesCommand(String command) {
 		String[] s = command.split(" ");
+		
+		if (s.length != 2) {
+			output.println("Invalid command.");
+			return;
+		}
+		
 		int taskID = Integer.parseInt(s[1]);
 		
 		Optional<Task> firstTask = tasks.getTasks().stream()
