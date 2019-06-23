@@ -31,18 +31,6 @@ public class Commands {
 		commands.put("switch-list", this::listSwitchCommand);
 	}
 	
-	public boolean isDebugEnabled() {
-		return debugEnabled;
-	}
-	
-	void execute(String command) {
-		commands.keySet().stream()
-				.filter(command::startsWith)
-				.findFirst()
-				.ifPresentOrElse(name -> commands.get(name).execute(command),
-						() -> output.println("Unknown command."));
-	}
-	
 	private void finishCommand() {
 		Task task = tasks.finishTask();
 		
@@ -152,18 +140,6 @@ public class Commands {
 		}
 	}
 	
-	private void listCreateCommand(String command) {
-		String[] s = command.split(" ");
-		
-		tasks.addList(s[1]);
-	}
-	
-	private void listSwitchCommand(String command) {
-		String[] s = command.split(" ");
-		
-		tasks.setCurrentList(s[1]);
-	}
-	
 	private void debugCommand(String command) {
 		String[] s = command.split(" ");
 		
@@ -176,6 +152,30 @@ public class Commands {
 		else {
 			output.println("Invalid command.");
 		}
+	}
+	
+	private void listCreateCommand(String command) {
+		String[] s = command.split(" ");
+		
+		tasks.addList(s[1]);
+	}
+	
+	private void listSwitchCommand(String command) {
+		String[] s = command.split(" ");
+		
+		tasks.setCurrentList(s[1]);
+	}
+	
+	public boolean isDebugEnabled() {
+		return debugEnabled;
+	}
+	
+	void execute(String command) {
+		commands.keySet().stream()
+				.filter(command::startsWith)
+				.findFirst()
+				.ifPresentOrElse(name -> commands.get(name).execute(command),
+						() -> output.println("Unknown command."));
 	}
 	
 	String getListName() {

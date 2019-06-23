@@ -11,13 +11,13 @@ class TaskStateTest {
 		assertEquals(0, Task.TaskState.Inactive.getValue());
 		assertEquals("Inactive", Task.TaskState.Inactive.toString());
 	}
-
+	
 	@Test
 	void task_state_active() {
 		assertEquals(1, Task.TaskState.Active.getValue());
 		assertEquals("Active", Task.TaskState.Active.toString());
 	}
-
+	
 	@Test
 	void task_finished_inactive() {
 		assertEquals(2, Task.TaskState.Finished.getValue());

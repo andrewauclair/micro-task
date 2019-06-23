@@ -13,15 +13,15 @@ class Commands_Active_Test {
 	private final Tasks tasks = Mockito.spy(Tasks.class);
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-
+	
 	@Test
 	void execute_active_command() {
 		tasks.addTask("Task 1");
 		tasks.startTask(1);
 		commands.execute("active");
 		
-		assertEquals("Active task is 1 - \"Task 1\"" + System.lineSeparator(), outputStream.toString());
-
+		assertEquals("Active task is 1 - \"Task 1\"" + Utils.NL, outputStream.toString());
+		
 		Mockito.verify(tasks).startTask(1);
 	}
 }

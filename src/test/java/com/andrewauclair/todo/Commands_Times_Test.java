@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Test for a simple times command to print out a task times list, might just be a temporary step towards bigger better features
 class Commands_Times_Test {
-	private static final String NL = System.lineSeparator();
-	
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final Tasks tasks = new Tasks(writer, osInterface);
@@ -26,6 +24,7 @@ class Commands_Times_Test {
 	void setup() {
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 	}
+	
 	@Test
 	void times_command_prints_all_task_times() {
 		tasks.addTask("Test");
@@ -48,12 +47,12 @@ class Commands_Times_Test {
 		
 		commands.execute("times 1");
 		
-		String expected = "Times for 1 - \"Test\"" + NL + NL +
-				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + NL +
-				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + NL +
-				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + NL +
-				"06/20/2019 09:30:02 PM -" + NL + NL +
-				"Total time: 01h 06m 40s" + NL;
+		String expected = "Times for 1 - \"Test\"" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
+				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
+				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + Utils.NL +
+				"06/20/2019 09:30:02 PM -" + Utils.NL + Utils.NL +
+				"Total time: 01h 06m 40s" + Utils.NL;
 		
 		// 01w 01d 01h 01m 01s
 		assertEquals(expected, outputStream.toString());
@@ -67,7 +66,7 @@ class Commands_Times_Test {
 	void times_command_prints_no_task_found_if_task_does_not_exist() {
 		commands.execute("times 1");
 		
-		assertEquals("Task not found." + NL, outputStream.toString());
+		assertEquals("Task not found." + Utils.NL, outputStream.toString());
 	}
 	
 	@Test
@@ -76,6 +75,6 @@ class Commands_Times_Test {
 		
 		commands.execute("times 1");
 		
-		assertEquals("No times for task 1 - \"Test\"" + NL, outputStream.toString());
+		assertEquals("No times for task 1 - \"Test\"" + Utils.NL, outputStream.toString());
 	}
 }

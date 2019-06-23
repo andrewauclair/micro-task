@@ -8,17 +8,17 @@ import java.util.Objects;
 
 final class TaskTimes {
 	static final long TIME_NOT_SET = Long.MIN_VALUE;
-
+	
 	final long start;
 	final long stop;
-
+	
+	TaskTimes(long start) {
+		this(start, TIME_NOT_SET);
+	}
+	
 	TaskTimes(long start, long stop) {
 		this.start = start;
 		this.stop = stop;
-	}
-
-	TaskTimes(long start) {
-		this(start, TIME_NOT_SET);
 	}
 	
 	long getDuration() {
@@ -26,6 +26,11 @@ final class TaskTimes {
 			return 0;
 		}
 		return stop - start;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(start, stop);
 	}
 	
 	@Override
@@ -40,12 +45,15 @@ final class TaskTimes {
 		return start == times.start &&
 				stop == times.stop;
 	}
-
+	
 	@Override
-	public int hashCode() {
-		return Objects.hash(start, stop);
+	public String toString() {
+		if (stop == TIME_NOT_SET) {
+			return String.valueOf(start);
+		}
+		return start + " - " + stop;
 	}
-
+	
 	String description(ZoneId zone) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(dateTimeFormatter);
@@ -55,13 +63,5 @@ final class TaskTimes {
 			return startStr + " - " + stopStr;
 		}
 		return startStr + " -";
-	}
-	
-	@Override
-	public String toString() {
-		if (stop == TIME_NOT_SET) {
-			return String.valueOf(start);
-		}
-		return start + " - " + stop;
 	}
 }

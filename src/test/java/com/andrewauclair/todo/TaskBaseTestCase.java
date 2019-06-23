@@ -12,7 +12,7 @@ class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	final Tasks tasks = new Tasks(writer, osInterface);
-
+	
 	@BeforeEach
 	void setup() {
 		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);

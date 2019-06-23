@@ -12,36 +12,36 @@ public class Main {
 		OSInterface osInterface = new OSInterface();
 		Tasks tasks = new Tasks(new TaskWriter(osInterface), osInterface);
 		Commands commands = new Commands(tasks, System.out);
-
+		
 		osInterface.setCommands(commands);
-
+		
 		File git_data = new File("git-data");
-
+		
 		boolean exists = git_data.exists();
-
+		
 		if (!exists) {
 			boolean mkdir = git_data.mkdir();
-
+			
 			System.out.println(mkdir);
-
+			
 			osInterface.runGitCommand("git init");
 			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"");
 			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
-
+		
 		TaskReader reader = new TaskReader(osInterface);
-
+		
 		File[] files = git_data.listFiles();
 		if (files != null) {
 			for (File file : files) {
 				if (file.getName().endsWith(".txt")) {
 					Task task = reader.readTask("git-data/" + file.getName());
-
+					
 					tasks.addTask(task);
 				}
 			}
 		}
-
+		
 		String command;
 		Scanner scanner = new Scanner(System.in);
 		do {
@@ -63,7 +63,7 @@ public class Main {
 		while (!command.equals("exit"));
 	}
 	
-	public static void clearScreen() {
+	private static void clearScreen() {
 		//Clears Screen in java
 		try {
 			if (System.getProperty("os.name").contains("Windows"))

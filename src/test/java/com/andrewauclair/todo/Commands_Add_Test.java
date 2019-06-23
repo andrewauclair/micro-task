@@ -16,14 +16,14 @@ class Commands_Add_Test {
 	private final Tasks tasks = Mockito.spy(Tasks.class);
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-
+	
 	@Test
 	void execute_add_command() {
 		commands.execute("add \"Task 1\"");
 		commands.execute("add \"Task 2\"");
 		
-		assertEquals("Added task 1 - \"Task 1\"" + System.lineSeparator() +
-				"Added task 2 - \"Task 2\"" + System.lineSeparator(), outputStream.toString());
+		assertEquals("Added task 1 - \"Task 1\"" + Utils.NL +
+				"Added task 2 - \"Task 2\"" + Utils.NL, outputStream.toString());
 		
 		Mockito.verify(tasks).addTask("Task 1");
 		Mockito.verify(tasks).addTask("Task 2");

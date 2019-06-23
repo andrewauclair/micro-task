@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Commands_List_Manage_Test {
-	private static final String NL = System.lineSeparator();
-	
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final Tasks tasks = new Tasks(writer, osInterface);
