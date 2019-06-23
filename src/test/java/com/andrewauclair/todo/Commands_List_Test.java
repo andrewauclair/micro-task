@@ -19,21 +19,20 @@ class Commands_List_Test {
 
 	@Test
 	void execute_list_command() {
-		tasks.addTask("com.andrewauclair.todo.Task 1");
-		tasks.addTask("com.andrewauclair.todo.Task 2");
-		tasks.addTask("com.andrewauclair.todo.Task 3");
+		tasks.addTask("Task 1");
+		tasks.addTask("Task 2");
+		tasks.addTask("Task 3");
 		tasks.startTask(2);
 		tasks.finishTask();
 		tasks.startTask(3);
 		
-		String expected = "  1 - \"com.andrewauclair.todo.Task 1\"" + NL +
-				"* 3 - \"com.andrewauclair.todo.Task 3\"" + System.lineSeparator();
+		String expected = "  1 - \"Task 1\"" + NL +
+				"* 3 - \"Task 3\"" + System.lineSeparator();
 
 		commands.execute("list");
 
 		assertEquals(expected, outputStream.toString());
 
-		//noinspection ResultOfMethodCallIgnored
 		Mockito.verify(tasks).getTasks();
 		Mockito.verify(tasks).getActiveTask();
 	}

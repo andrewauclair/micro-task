@@ -19,13 +19,13 @@ class Commands_Add_Test {
 
 	@Test
 	void execute_add_command() {
-		commands.execute("add \"com.andrewauclair.todo.Task 1\"");
-		commands.execute("add \"com.andrewauclair.todo.Task 2\"");
-
-		assertEquals("Added task 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator() +
-				"Added task 2 - \"com.andrewauclair.todo.Task 2\"" + System.lineSeparator(), outputStream.toString());
-
-		Mockito.verify(tasks).addTask("com.andrewauclair.todo.Task 1");
-		Mockito.verify(tasks).addTask("com.andrewauclair.todo.Task 2");
+		commands.execute("add \"Task 1\"");
+		commands.execute("add \"Task 2\"");
+		
+		assertEquals("Added task 1 - \"Task 1\"" + System.lineSeparator() +
+				"Added task 2 - \"Task 2\"" + System.lineSeparator(), outputStream.toString());
+		
+		Mockito.verify(tasks).addTask("Task 1");
+		Mockito.verify(tasks).addTask("Task 2");
 	}
 }

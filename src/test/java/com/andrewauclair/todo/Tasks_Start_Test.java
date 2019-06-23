@@ -31,8 +31,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void starting_non_existent_id_throws_exception_with_message() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(5));
-
-		assertEquals("com.andrewauclair.todo.Task 5 was not found.", runtimeException.getMessage());
+		
+		assertEquals("Task 5 was not found.", runtimeException.getMessage());
 	}
 
 	@Test

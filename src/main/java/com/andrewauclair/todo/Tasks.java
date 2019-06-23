@@ -82,7 +82,7 @@ class Tasks {
 
 			return newActiveTask;
 		}
-		throw new RuntimeException("com.andrewauclair.todo.Task " + id + " was not found.");
+		throw new RuntimeException("Task " + id + " was not found.");
 	}
 
 	Task stopTask() {

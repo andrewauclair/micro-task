@@ -17,10 +17,10 @@ class Commands_Start_Test {
 
 	@Test
 	void execute_start_command() {
-		tasks.addTask("com.andrewauclair.todo.Task 1");
+		tasks.addTask("Task 1");
 		commands.execute("start 1");
-
-		assertEquals("Started task 1 - \"com.andrewauclair.todo.Task 1\"" + System.lineSeparator(), outputStream.toString());
+		
+		assertEquals("Started task 1 - \"Task 1\"" + System.lineSeparator(), outputStream.toString());
 
 		Mockito.verify(tasks).startTask(1);
 	}
