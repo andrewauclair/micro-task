@@ -38,14 +38,21 @@ class Commands_List_Manage_Test {
 		commands.execute("create-list test-tasks");
 		
 		assertTrue(commands.hasListWithName("test-tasks"));
+		
+		assertEquals("Created new list \"test-tasks\"" + Utils.NL, outputStream.toString());
 	}
 	
 	@Test
 	void switch_to_another_list() {
 		commands.execute("create-list test-tasks");
+		
+		outputStream.reset();
+		
 		commands.execute("switch-list test-tasks");
 		
 		assertEquals("test-tasks", commands.getListName());
+		
+		assertEquals("Switched to list \"test-tasks\"" + Utils.NL, outputStream.toString());
 	}
 	
 	@Test

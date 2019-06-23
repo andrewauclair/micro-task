@@ -169,6 +169,8 @@ public class Commands {
 		}
 		
 		tasks.addList(s[1]);
+		
+		output.println("Created new list \"" + s[1] + "\"");
 	}
 	
 	private void listSwitchCommand(String command) {
@@ -180,6 +182,8 @@ public class Commands {
 		}
 		
 		tasks.setCurrentList(s[1]);
+		
+		output.println("Switched to list \"" + s[1] + "\"");
 	}
 	
 	public boolean isDebugEnabled() {
