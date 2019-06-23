@@ -6,8 +6,6 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.util.*;
 
 class Tasks {
-//	private final List<Task> tasks = new ArrayList<>();
-	
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	
 	private final TaskWriter writer;
@@ -136,7 +134,7 @@ class Tasks {
 	}
 
 	List<Task> getTasks() {
-		return tasks.get(currentList);
+		return Collections.unmodifiableList(tasks.get(currentList));
 	}
 
 	public void addTask(Task task) {
