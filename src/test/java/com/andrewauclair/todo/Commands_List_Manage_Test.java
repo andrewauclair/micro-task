@@ -73,4 +73,33 @@ class Commands_List_Manage_Test {
 				new Task(4, "test-tasks List Task 2")
 		);
 	}
+	
+	// TODO I think these style tests can be parameterized
+	@Test
+	void switch_list_without_a_task_number_prints_invalid_command() {
+		commands.execute("switch-list");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void switch_list_with_too_many_arguments_prints_invalid_command() {
+		commands.execute("switch-list test two");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void create_list_without_a_task_number_prints_invalid_command() {
+		commands.execute("switch-list");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void create_list_with_too_many_arguments_prints_invalid_command() {
+		commands.execute("switch-list test two");
+		
+		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+	}
 }

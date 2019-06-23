@@ -163,11 +163,21 @@ public class Commands {
 	private void listCreateCommand(String command) {
 		String[] s = command.split(" ");
 		
+		if (s.length != 2) {
+			output.println("Invalid command.");
+			return;
+		}
+		
 		tasks.addList(s[1]);
 	}
 	
 	private void listSwitchCommand(String command) {
 		String[] s = command.split(" ");
+		
+		if (s.length != 2) {
+			output.println("Invalid command.");
+			return;
+		}
 		
 		tasks.setCurrentList(s[1]);
 	}
