@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,7 +28,7 @@ class Task_ID_Test {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new ByteArrayOutputStream());
 		
 		TaskWriter taskWriter = Mockito.mock(TaskWriter.class);
-		Tasks tasks = new Tasks(5, taskWriter, osInterface);
+		Tasks tasks = new Tasks(5, taskWriter, new PrintStream(new ByteArrayOutputStream()), osInterface);
 		
 		Task test = tasks.addTask("Test");
 		

@@ -17,9 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Times_Test {
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
-	private final Tasks tasks = new Tasks(1, writer, osInterface);
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
+	private final PrintStream printStream = new PrintStream(outputStream);
+	private final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
+	private final Commands commands = new Commands(tasks, printStream);
 	
 	@BeforeEach
 	void setup() throws IOException {

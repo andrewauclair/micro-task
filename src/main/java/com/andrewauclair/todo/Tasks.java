@@ -6,10 +6,12 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 class Tasks {
 	final OSInterface osInterface;
+	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	private final TaskWriter writer;
 	private long startingID = 1;
@@ -20,7 +22,7 @@ class Tasks {
 	// this constructor should only be used in the tests
 	Tasks() {
 		// create an empty writer
-		writer = new TaskWriter(new OSInterface()) {
+		writer = new TaskWriter(new PrintStream(new ByteArrayOutputStream()), new OSInterface()) {
 			@Override
 			boolean writeTask(Task task, String fileName) {
 				return true;
@@ -37,12 +39,14 @@ class Tasks {
 				return new ByteArrayOutputStream();
 			}
 		};
+		output = new PrintStream(new ByteArrayOutputStream());
 		tasks.put("default", new ArrayList<>());
 	}
 	
-	public Tasks(long startID, TaskWriter writer, OSInterface osInterface) {
+	public Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.startingID = startID;
 		this.writer = writer;
+		this.output = output;
 		this.osInterface = osInterface;
 		
 		tasks.put("default", new ArrayList<>());
@@ -66,7 +70,7 @@ class Tasks {
 			outputStream.write(String.valueOf(startingID).getBytes());
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(output);
 		}
 	}
 	

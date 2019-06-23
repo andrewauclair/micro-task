@@ -1,7 +1,7 @@
 /.idea
-target/
+/target
 *.iml
 tasks.txt
 run/git-data/
 run/*.jar
-git-data/
+/git-data

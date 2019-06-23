@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskWriterTest {
 	private final OutputStream outputStream = new ByteArrayOutputStream();
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	final ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
+	private final TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
 	
 	@BeforeEach
 	void setup() throws IOException {
@@ -24,8 +27,6 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_contents_to_file() {
-		TaskWriter writer = new TaskWriter(osInterface);
-		
 		Task task = new Task(1, "Test");
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 		
@@ -35,8 +36,6 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_start_time() {
-		TaskWriter writer = new TaskWriter(osInterface);
-		
 		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(1234));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 		
@@ -48,8 +47,6 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_start_and_stop_times() {
-		TaskWriter writer = new TaskWriter(osInterface);
-		
 		Task task = new Task(1, "Test", Task.TaskState.Finished, new TaskTimes(1234, 4567));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 		
@@ -62,8 +59,6 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_start_stop_and_start_again() {
-		TaskWriter writer = new TaskWriter(osInterface);
-		
 		Task task = new Task(1, "Test", Task.TaskState.Active,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
@@ -83,8 +78,6 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_multiple_starts_and_stops() {
-		TaskWriter writer = new TaskWriter(osInterface);
-		
 		Task task = new Task(1, "Test", Task.TaskState.Inactive,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
@@ -103,17 +96,21 @@ class TaskWriterTest {
 	}
 	
 	@Test
-	void thrown_exception_makes_writeTask_return_false() {
-		OSInterface osInterface = new OSInterface() {
-			@Override
-			public OutputStream createOutputStream(String fileName) throws IOException {
-				throw new IOException();
-			}
-		};
+	void thrown_exception_makes_writeTask_return_false() throws IOException {
+		OSInterface osInterface = Mockito.mock(OSInterface.class);
 		
-		TaskWriter writer = new TaskWriter(osInterface);
+		OutputStream outputStream = Mockito.mock(OutputStream.class);
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
+		
+		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
+		
+		ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
+		
+		TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
 		
 		Task task = new Task(1, "Test");
 		assertFalse(writer.writeTask(task, "test.txt"));
+		
+		assertEquals("java.io.IOException" + Utils.NL, consoleOutput.toString());
 	}
 }

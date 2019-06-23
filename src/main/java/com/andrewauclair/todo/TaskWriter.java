@@ -5,12 +5,15 @@ import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 class TaskWriter {
+	private final PrintStream output;
 	private final OSInterface osInterface;
 	
-	TaskWriter(OSInterface osInterface) {
+	TaskWriter(PrintStream output, OSInterface osInterface) {
+		this.output = output;
 		this.osInterface = osInterface;
 	}
 	
@@ -39,7 +42,7 @@ class TaskWriter {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(output);
 			return false;
 		}
 		return true;

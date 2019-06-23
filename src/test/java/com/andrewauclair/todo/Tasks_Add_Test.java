@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,5 +91,17 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask(task);
 		
 		assertThat(tasks.getTasks()).containsOnly(task);
+	}
+	
+	@Test
+	void write_next_id_prints_exception_to_output() throws IOException {
+		OutputStream outputStream = Mockito.mock(OutputStream.class);
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
+		
+		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
+		
+		tasks.addTask("Test");
+		
+		assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
 }

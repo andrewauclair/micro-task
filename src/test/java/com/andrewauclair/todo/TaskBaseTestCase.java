@@ -9,12 +9,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 @ExtendWith(MockitoExtension.class)
 class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
-	final Tasks tasks = new Tasks(1, writer, osInterface);
+	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	final Tasks tasks = new Tasks(1, writer, new PrintStream(outputStream), osInterface);
 	
 	@BeforeEach
 	void setup() throws IOException {
