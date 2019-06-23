@@ -136,7 +136,15 @@ class Tasks {
 	List<Task> getTasks() {
 		return Collections.unmodifiableList(tasks.get(currentList));
 	}
-
+	
+	List<Task> getTasksForList(String listName) {
+		return Collections.unmodifiableList(tasks.get(listName));
+	}
+	
+	Set<String> getListNames() {
+		return tasks.keySet();
+	}
+	
 	public void addTask(Task task) {
 		tasks.get(currentList).add(task);
 	}
