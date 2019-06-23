@@ -2,10 +2,12 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,9 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class Commands_List_Manage_Test {
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
-	private final Tasks tasks = new Tasks(writer, osInterface);
+	private final Tasks tasks = new Tasks(1, writer, osInterface);
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
+	
+	@BeforeEach
+	void setup() throws IOException {
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new ByteArrayOutputStream());
+	}
 	
 	@Test
 	void starting_list_is_called_default() {

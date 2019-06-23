@@ -78,7 +78,7 @@ public class Commands {
 		catch (RuntimeException ignored) {
 		}
 		
-		final int activeTaskID = activeTask == null ? -1 : activeTask.id;
+		final long activeTaskID = activeTask == null ? -1 : activeTask.id;
 		
 		tasksList.stream()
 				.limit(20)

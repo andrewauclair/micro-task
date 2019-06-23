@@ -3,14 +3,17 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 class Tasks {
 	final OSInterface osInterface;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	private final TaskWriter writer;
-	private int startingID = 1;
-	private int activeTaskID = -1;
+	private long startingID = 1;
+	private long activeTaskID = -1;
 	
 	private String currentList = "default";
 	
@@ -28,11 +31,17 @@ class Tasks {
 			public boolean runGitCommand(String command) {
 				return true;
 			}
+			
+			@Override
+			public OutputStream createOutputStream(String fileName) {
+				return new ByteArrayOutputStream();
+			}
 		};
 		tasks.put("default", new ArrayList<>());
 	}
 	
-	public Tasks(TaskWriter writer, OSInterface osInterface) {
+	public Tasks(long startID, TaskWriter writer, OSInterface osInterface) {
+		this.startingID = startID;
 		this.writer = writer;
 		this.osInterface = osInterface;
 		
@@ -43,11 +52,22 @@ class Tasks {
 		Task newTask = new Task(startingID++, task);
 		tasks.get(currentList).add(newTask);
 		
+		writeNextId();
 		writeTask(newTask);
 		
+		osInterface.runGitCommand("git add next-id.txt");
 		addAndCommit(newTask, "Added task");
 		
 		return newTask;
+	}
+	
+	private void writeNextId() {
+		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
+			outputStream.write(String.valueOf(startingID).getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void writeTask(Task task) {
@@ -59,7 +79,7 @@ class Tasks {
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 	
-	Task startTask(int id) {
+	Task startTask(long id) {
 		Optional<Task> first = tasks.get(currentList).stream()
 				.filter(task -> task.id == id)
 				.findFirst();

@@ -57,6 +57,9 @@ public class OSInterface {
 	}
 	
 	public OutputStream createOutputStream(String fileName) throws IOException {
+		if (isJUnitTest()) {
+			throw new RuntimeException("Shouldn't use createOutputStream in tests.");
+		}
 		File file = new File(fileName);
 		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			System.out.println("Failed to create directory: " + file.getParentFile());
@@ -65,6 +68,9 @@ public class OSInterface {
 	}
 	
 	public InputStream createInputStream(String fileName) throws IOException {
+		if (isJUnitTest()) {
+			throw new RuntimeException("Shouldn't use createInputStream in tests.");
+		}
 		return new FileInputStream(new File(fileName));
 	}
 }

@@ -6,13 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Finish_Test extends TaskBaseTestCase {
 	@BeforeEach
-	void setup() {
+	void setup() throws IOException {
+		super.setup();
 		tasks.addTask("Testing tasks");
 		tasks.addTask("Testing tasks 2");
 	}

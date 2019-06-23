@@ -25,11 +25,11 @@ class TaskReaderTest {
 		
 		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
 		
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		Mockito.when(osInterface.createInputStream("git-data/tasks/default/1.txt")).thenReturn(inputStream);
 		
 		TaskReader reader = new TaskReader(osInterface);
 		
-		Task task = reader.readTask("git-data/1.txt");
+		Task task = reader.readTask("git-data/tasks/default/1.txt");
 		
 		Task expectedTask = new Task(1, "Test", Task.TaskState.Active,
 				Arrays.asList(

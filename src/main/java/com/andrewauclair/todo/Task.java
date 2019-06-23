@@ -7,26 +7,26 @@ import java.util.List;
 import java.util.Objects;
 
 final class Task {
-	final int id;
+	final long id;
 	final String task;
 	final TaskState state;
 	private final List<TaskTimes> taskTimes;
 	
-	Task(int id, String task) {
+	Task(long id, String task) {
 		this.id = id;
 		this.task = task;
 		this.state = TaskState.Inactive;
 		taskTimes = Collections.emptyList();
 	}
 	
-	Task(int id, String task, TaskState state, TaskTimes times) {
+	Task(long id, String task, TaskState state, TaskTimes times) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.singletonList(times);
 	}
 	
-	Task(int id, String task, TaskState state, List<TaskTimes> times) {
+	Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
 		this.task = task;
 		this.state = state;

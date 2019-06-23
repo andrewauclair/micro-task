@@ -20,7 +20,7 @@ class Commands_Active_Test {
 		tasks.startTask(1);
 		commands.execute("active");
 		
-		assertEquals("Active task is 1 - \"Task 1\"" + Utils.NL, outputStream.toString());
+		assertEquals("Active task is 1 - \"Task 1\"" + System.lineSeparator(), outputStream.toString());
 		
 		Mockito.verify(tasks).startTask(1);
 	}

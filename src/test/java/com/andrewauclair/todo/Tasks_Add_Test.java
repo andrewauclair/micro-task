@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,6 +33,17 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	}
 	
 	@Test
+	void adding_tasks_tells_write_to_write_next_id_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(outputStream);
+		
+		tasks.addTask("Test");
+		
+		assertEquals("2", outputStream.toString());
+	}
+	
+	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
@@ -45,11 +59,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		tasks.addTask("Testing task add command 1");
 		
+		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
 		
 		tasks.addTask("Testing task add command 2");
 		
+		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\"");
 	}
@@ -63,6 +79,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		tasks.addTask("Testing task add command 1");
 		
+		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
 	}
