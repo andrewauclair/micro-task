@@ -2,24 +2,22 @@
 package com.andrewauclair.todo;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Commands {
 	private final Tasks tasks;
 	private final PrintStream output;
 	private final Map<String, Command> commands = new HashMap<>();
-	private final List<String> listNames = new ArrayList<>();
-	
-	private String currentList = "default";
 	
 	private boolean debugEnabled = false;
 	
 	Commands(Tasks tasks, PrintStream output) {
 		this.tasks = tasks;
 		this.output = output;
-		
-		listNames.add("default");
 		
 		commands.put("finish", command -> finishCommand());
 		commands.put("start", this::startCommand);
@@ -157,13 +155,13 @@ public class Commands {
 	private void listCreateCommand(String command) {
 		String[] s = command.split(" ");
 		
-		listNames.add(s[1]);
+		tasks.addList(s[1]);
 	}
 	
 	private void listSwitchCommand(String command) {
 		String[] s = command.split(" ");
 		
-		currentList = s[1];
+		tasks.setCurrentList(s[1]);
 	}
 	
 	private void debugCommand(String command) {
@@ -181,11 +179,11 @@ public class Commands {
 	}
 	
 	String getListName() {
-		return currentList;
+		return tasks.getCurrentList();
 	}
 	
 	boolean hasListWithName(String listName) {
-		return listNames.contains(listName);
+		return tasks.hasListWithName(listName);
 	}
 	
 	private interface Command {

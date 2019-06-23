@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Commands_List_Manage_Test {
@@ -47,5 +48,31 @@ class Commands_List_Manage_Test {
 		commands.execute("switch-list test-tasks");
 		
 		assertEquals("test-tasks", commands.getListName());
+	}
+	
+	@Test
+	void each_list_has_its_own_set_of_tasks() {
+		tasks.addTask("default List Task 1");
+		tasks.addTask("default List Task 2");
+		
+		commands.execute("create-list test-tasks");
+		commands.execute("switch-list test-tasks");
+		
+		tasks.addTask("test-tasks List Task 1");
+		tasks.addTask("test-tasks List Task 2");
+		
+		commands.execute("switch-list default");
+		
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "default List Task 1"),
+				new Task(2, "default List Task 2")
+		);
+		
+		commands.execute("switch-list test-tasks");
+		
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(3, "test-tasks List Task 1"),
+				new Task(4, "test-tasks List Task 2")
+		);
 	}
 }

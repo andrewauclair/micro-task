@@ -3,17 +3,20 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 class Tasks {
-	private final List<Task> tasks = new ArrayList<>();
+//	private final List<Task> tasks = new ArrayList<>();
+	
+	private final Map<String, List<Task>> tasks = new HashMap<>();
+	
 	private final TaskWriter writer;
 	final OSInterface osInterface;
 	private int startingID = 1;
 	private int activeTaskID = -1;
-
+	
+	private String currentList = "default";
+	
 	// this constructor should only be used in the tests
 	Tasks() {
 		// create an empty writer
@@ -29,16 +32,19 @@ class Tasks {
 				return true;
 			}
 		};
+		tasks.put("default", new ArrayList<>());
 	}
 
 	public Tasks(TaskWriter writer, OSInterface osInterface) {
 		this.writer = writer;
 		this.osInterface = osInterface;
+		
+		tasks.put("default", new ArrayList<>());
 	}
 
 	Task addTask(String task) {
 		Task newTask = new Task(startingID++, task);
-		tasks.add(newTask);
+		tasks.get(currentList).add(newTask);
 
 		writeTask(newTask);
 
@@ -57,7 +63,7 @@ class Tasks {
 	}
 
 	Task startTask(int id) {
-		Optional<Task> first = tasks.stream()
+		Optional<Task> first = tasks.get(currentList).stream()
 				.filter(task -> task.id == id)
 				.findFirst();
 
@@ -69,9 +75,9 @@ class Tasks {
 			Task activeTask = first.get();
 
 			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
-
-			tasks.remove(activeTask);
-			tasks.add(newActiveTask);
+			
+			tasks.get(currentList).remove(activeTask);
+			tasks.get(currentList).add(newActiveTask);
 
 			writeTask(newActiveTask);
 			addAndCommit(newActiveTask, "Started task");
@@ -86,17 +92,28 @@ class Tasks {
 		activeTaskID = -1;
 
 		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
-		tasks.remove(activeTask);
-		tasks.add(stoppedTask);
+		tasks.get(currentList).remove(activeTask);
+		tasks.get(currentList).add(stoppedTask);
 
 		writeTask(stoppedTask);
 		addAndCommit(stoppedTask, "Stopped task");
 
 		return stoppedTask;
 	}
+	
+	Task getActiveTask() {
+		Optional<Task> first = tasks.get(currentList).stream()
+				.filter(task -> task.id == activeTaskID)
+				.findFirst();
+		
+		if (first.isPresent()) {
+			return first.get();
+		}
+		throw new RuntimeException("No active task.");
+	}
 
 	Task finishTask() {
-		Optional<Task> first = tasks.stream()
+		Optional<Task> first = tasks.get(currentList).stream()
 				.filter(task -> task.id == activeTaskID)
 				.findFirst();
 
@@ -106,9 +123,9 @@ class Tasks {
 			Task activeTask = first.get();
 
 			Task finishedTask = activeTask.finish(osInterface.currentSeconds());
-
-			tasks.remove(activeTask);
-			tasks.add(finishedTask);
+			
+			tasks.get(currentList).remove(activeTask);
+			tasks.get(currentList).add(finishedTask);
 
 			writeTask(finishedTask);
 			addAndCommit(finishedTask, "Finished task");
@@ -118,22 +135,27 @@ class Tasks {
 		throw new RuntimeException("No active task.");
 	}
 
-	Task getActiveTask() {
-		Optional<Task> first = tasks.stream()
-				.filter(task -> task.id == activeTaskID)
-				.findFirst();
-
-		if (first.isPresent()) {
-			return first.get();
-		}
-		throw new RuntimeException("No active task.");
-	}
-
 	List<Task> getTasks() {
-		return tasks;
+		return tasks.get(currentList);
 	}
 
 	public void addTask(Task task) {
-		tasks.add(task);
+		tasks.get(currentList).add(task);
+	}
+	
+	void addList(String listName) {
+		tasks.put(listName, new ArrayList<>());
+	}
+	
+	boolean hasListWithName(String listName) {
+		return tasks.containsKey(listName);
+	}
+	
+	String getCurrentList() {
+		return currentList;
+	}
+	
+	void setCurrentList(String listName) {
+		currentList = listName;
 	}
 }
