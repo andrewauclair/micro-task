@@ -81,6 +81,25 @@ class Commands_List_Manage_Test {
 		);
 	}
 	
+	@Test
+	void can_not_create_a_new_list_with_a_name_that_already_exists() {
+		commands.execute("create-list test");
+		
+		outputStream.reset();
+		
+		commands.execute("create-list test");
+		
+		assertEquals("List \"test\" already exists." + Utils.NL, outputStream.toString());
+	}
+	
+	@Test
+	void can_not_switch_to_a_list_that_does_not_exist() {
+		commands.execute("switch-list test");
+		
+		assertEquals("List \"test\" does not exist." + Utils.NL, outputStream.toString());
+		assertEquals("default", tasks.getCurrentList());
+	}
+	
 	// TODO I think these style tests can be parameterized
 	@Test
 	void switch_list_without_a_task_number_prints_invalid_command() {

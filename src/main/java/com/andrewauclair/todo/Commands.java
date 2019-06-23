@@ -168,9 +168,14 @@ public class Commands {
 			return;
 		}
 		
-		tasks.addList(s[1]);
+		boolean added = tasks.addList(s[1]);
 		
-		output.println("Created new list \"" + s[1] + "\"");
+		if (added) {
+			output.println("Created new list \"" + s[1] + "\"");
+		}
+		else {
+			output.println("List \"" + s[1] + "\" already exists.");
+		}
 	}
 	
 	private void listSwitchCommand(String command) {
@@ -181,9 +186,14 @@ public class Commands {
 			return;
 		}
 		
-		tasks.setCurrentList(s[1]);
+		boolean exists = tasks.setCurrentList(s[1]);
 		
-		output.println("Switched to list \"" + s[1] + "\"");
+		if (exists) {
+			output.println("Switched to list \"" + s[1] + "\"");
+		}
+		else {
+			output.println("List \"" + s[1] + "\" does not exist.");
+		}
 	}
 	
 	public boolean isDebugEnabled() {

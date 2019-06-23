@@ -148,8 +148,12 @@ class Tasks {
 		tasks.get(currentList).add(task);
 	}
 	
-	void addList(String listName) {
+	boolean addList(String listName) {
+		if (tasks.containsKey(listName)) {
+			return false;
+		}
 		tasks.put(listName, new ArrayList<>());
+		return true;
 	}
 	
 	boolean hasListWithName(String listName) {
@@ -160,7 +164,11 @@ class Tasks {
 		return currentList;
 	}
 	
-	void setCurrentList(String listName) {
-		currentList = listName;
+	boolean setCurrentList(String listName) {
+		boolean exists = tasks.containsKey(listName);
+		if (exists) {
+			currentList = listName;
+		}
+		return exists;
 	}
 }
