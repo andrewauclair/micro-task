@@ -57,7 +57,11 @@ public class OSInterface {
 	}
 	
 	public OutputStream createOutputStream(String fileName) throws IOException {
-		return new FileOutputStream(new File(fileName));
+		File file = new File(fileName);
+		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+			System.out.println("Failed to create directory: " + file.getParentFile());
+		}
+		return new FileOutputStream(file);
 	}
 	
 	public InputStream createInputStream(String fileName) throws IOException {

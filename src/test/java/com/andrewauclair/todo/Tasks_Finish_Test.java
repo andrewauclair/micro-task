@@ -66,7 +66,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		Task task = tasks.finishTask();
 		
-		Mockito.verify(writer).writeTask(task, "git-data/1.txt");
+		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
 	}
 	
 	@Test
@@ -79,7 +79,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add 2.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Finished task 2 - \\\"Testing tasks 2\\\"\"");
 	}
 	

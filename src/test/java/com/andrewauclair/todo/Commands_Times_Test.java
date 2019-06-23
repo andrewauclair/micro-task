@@ -31,18 +31,25 @@ class Commands_Times_Test {
 		
 		setTime(1561078202);
 		tasks.startTask(1);
+		
 		setTime(1561079202);
 		tasks.stopTask();
+		
 		setTime(1561080202);
 		tasks.startTask(1);
+		
 		setTime(1561081202);
 		tasks.stopTask();
+		
 		setTime(1561082202);
 		tasks.startTask(1);
+		
 		setTime(1561083202);
 		tasks.stopTask();
+		
 		setTime(1561084202);
 		tasks.startTask(1);
+		
 		setTime(1561085202);
 		
 		commands.execute("times 1");

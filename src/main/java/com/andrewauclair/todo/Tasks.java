@@ -51,11 +51,11 @@ class Tasks {
 	}
 	
 	private void writeTask(Task task) {
-		writer.writeTask(task, "git-data/" + task.id + ".txt");
+		writer.writeTask(task, "git-data/tasks/" + currentList + "/" + task.id + ".txt");
 	}
 	
 	private void addAndCommit(Task task, String comment) {
-		osInterface.runGitCommand("git add " + task.id + ".txt");
+		osInterface.runGitCommand("git add tasks/" + currentList + "/" + task.id + ".txt");
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 	

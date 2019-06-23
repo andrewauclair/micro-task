@@ -25,8 +25,18 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		Task task1 = tasks.addTask("Testing task add command 1");
 		Task task2 = tasks.addTask("Testing task add command 2");
 		
-		Mockito.verify(writer).writeTask(task1, "git-data/1.txt");
-		Mockito.verify(writer).writeTask(task2, "git-data/2.txt");
+		Mockito.verify(writer).writeTask(task1, "git-data/tasks/default/1.txt");
+		Mockito.verify(writer).writeTask(task2, "git-data/tasks/default/2.txt");
+	}
+	
+	@Test
+	void task_is_saved_to_a_folder_for_the_current_list() {
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+		
+		Task task = tasks.addTask("Testing task");
+		
+		Mockito.verify(writer).writeTask(task, "git-data/tasks/test/1.txt");
 	}
 	
 	@Test
@@ -35,13 +45,26 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		tasks.addTask("Testing task add command 1");
 		
-		order.verify(osInterface).runGitCommand("git add 1.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
 		
 		tasks.addTask("Testing task add command 2");
 		
-		order.verify(osInterface).runGitCommand("git add 2.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\"");
+	}
+	
+	@Test
+	void adding_task_tells_git_control_to_add_file_to_current_list_directory() {
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+		
+		tasks.addTask("Testing task add command 1");
+		
+		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
 	}
 	
 	@Test
