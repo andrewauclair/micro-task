@@ -38,4 +38,5 @@ deploy:
     - tags
 
   script:
+    - source ./ci/pre-build.sh
     - ./maven/bin/mvn deploy
