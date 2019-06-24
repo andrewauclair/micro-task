@@ -38,4 +38,4 @@ deploy:
     - tags
 
   script:
-    - mvn deploy
+    - ./maven/bin/mvn deploy
