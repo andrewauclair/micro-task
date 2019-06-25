@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.ZoneId;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -55,9 +56,10 @@ class Commands_Times_Test {
 		tasks.startTask(2);
 		
 		setTime(1561085202);
-		
+
+		Locale.setDefault(Locale.US);
 		commands.execute("times 2");
-		
+
 		String expected = "Times for 2 - \"Test 2\"" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
 				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
