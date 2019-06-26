@@ -1,1 +1,1 @@
-java -jar todo-1.0-SNAPSHOT.jar
+java -jar todo-app.jar
