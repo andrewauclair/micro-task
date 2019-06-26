@@ -113,4 +113,38 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 				new TaskTimes(3456, 4567)
 		);
 	}
+
+	@Test
+	void user_can_stop_the_active_task_when_it_is_on_a_different_list() {
+		tasks.addTask("Task 1");
+
+		Task task = tasks.startTask(1);
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		tasks.addTask("Task 2");
+
+		Task stoppedTask = tasks.stopTask();
+
+		assertEquals(task.id, stoppedTask.id);
+	}
+
+	@Test
+	void on_stop_the_active_task_is_stopped_on_the_correct_list() {
+		tasks.addTask("Task 1");
+
+		tasks.startTask(1);
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		tasks.addTask("Task 2");
+
+		Task stoppedTask = tasks.stopTask();
+
+		tasks.setCurrentList("default");
+
+		assertThat(tasks.getTasks()).containsOnly(stoppedTask);
+	}
 }

@@ -21,7 +21,21 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 		
 		assertEquals(activeTask, tasks.getActiveTask());
 	}
-	
+
+	@Test
+	void active_task_returns_correct_task_when_its_on_a_different_list() {
+		tasks.addTask("Task 1");
+
+		Task task = tasks.startTask(1);
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		Task activeTask = tasks.getActiveTask();
+
+		assertEquals(task, activeTask);
+	}
+
 	@Test
 	void no_active_task_throws_exception_with_message() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTask);
