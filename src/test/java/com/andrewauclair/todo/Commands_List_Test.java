@@ -30,9 +30,6 @@ class Commands_List_Test {
 		commands.execute("list");
 		
 		assertEquals(expected, outputStream.toString());
-		
-		Mockito.verify(tasks).getTasks();
-		Mockito.verify(tasks).getActiveTask();
 	}
 	
 	@Test

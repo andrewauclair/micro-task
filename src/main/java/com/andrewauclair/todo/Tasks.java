@@ -99,8 +99,7 @@ class Tasks {
 
 			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
 
-			tasks.get(currentList).remove(activeTask);
-			tasks.get(currentList).add(newActiveTask);
+			replaceTask(currentList, activeTask, newActiveTask);
 
 			writeTask(newActiveTask);
 			addAndCommit(newActiveTask, "Started task");
@@ -115,8 +114,8 @@ class Tasks {
 		activeTaskID = -1;
 
 		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
-		tasks.get(activeTaskList).remove(activeTask);
-		tasks.get(activeTaskList).add(stoppedTask);
+
+		replaceTask(activeTaskList, activeTask, stoppedTask);
 
 		writeTask(stoppedTask);
 		addAndCommit(stoppedTask, "Stopped task");
@@ -136,27 +135,18 @@ class Tasks {
 	}
 
 	Task finishTask() {
-		// TODO I want to refactor this to use getActiveTask, but the tests check that getActiveTask is called only once
-		Optional<Task> first = tasks.get(activeTaskList).stream()
-				.filter(task -> task.id == activeTaskID)
-				.findFirst();
+		Task activeTask = getActiveTask();
 
-		if (first.isPresent()) {
-			activeTaskID = -1;
+		activeTaskID = -1;
 
-			Task activeTask = first.get();
+		Task finishedTask = activeTask.finish(osInterface.currentSeconds());
 
-			Task finishedTask = activeTask.finish(osInterface.currentSeconds());
+		replaceTask(activeTaskList, activeTask, finishedTask);
 
-			tasks.get(activeTaskList).remove(activeTask);
-			tasks.get(activeTaskList).add(finishedTask);
+		writeTask(finishedTask);
+		addAndCommit(finishedTask, "Finished task");
 
-			writeTask(finishedTask);
-			addAndCommit(finishedTask, "Finished task");
-
-			return finishedTask;
-		}
-		throw new RuntimeException("No active task.");
+		return finishedTask;
 	}
 
 	List<Task> getTasks() {
@@ -197,5 +187,10 @@ class Tasks {
 			currentList = listName;
 		}
 		return exists;
+	}
+
+	private void replaceTask(String list, Task oldTask, Task newTask) {
+		tasks.get(list).remove(oldTask);
+		tasks.get(list).add(newTask);
 	}
 }
