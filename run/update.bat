@@ -1,0 +1,1 @@
+java -jar todo-app-updater.jar

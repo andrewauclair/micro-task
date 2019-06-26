@@ -4,6 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>TODO App</name>
+    <description>Custom task tracking application</description>
+    <url>https://gitlab.com/mightymalakai33/todo-app</url>
+    <scm>
+        <developerConnection>scm:git:git@www.gitlab.com/mightymalakai33/todo-app.git</developerConnection>
+        <connection>scm:git:git@www.gitlab.com/mightymalakai33/todo-app.git</connection>
+        <url>git@www.gitlab.com/mightymalakai33/todo-app</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.release>10</maven.compiler.release>
         <maven.compiler.source>10</maven.compiler.source>
@@ -16,7 +26,7 @@
 
     <groupId>com.github.andrewauclair</groupId>
     <artifactId>todo-app</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
 
     <distributionManagement>
         <snapshotRepository>
@@ -135,6 +145,14 @@
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <!-- needed to fix javadoc on java 11+ https://github.com/joel-costigliola/assertj-core/issues/1403 -->
+                    <source>8</source>
                 </configuration>
             </plugin>
         </plugins>
