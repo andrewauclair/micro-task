@@ -1,5 +1,3 @@
-#image: openjdk:11.0.3-jdk
-
 stages:
   - build
   - test
@@ -9,8 +7,6 @@ stages:
 build:
   stage: build
   script:
-    #- source ./ci/pre-build.sh
-    #- ./maven/bin/mvn package
     mvn package
   artifacts:
     paths:
@@ -20,8 +16,6 @@ build:
 test:
   stage: test
   script:
-    #- source ./ci/pre-build.sh
-    #- ./maven/bin/mvn test
     - mvn test
     - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
   artifacts:
@@ -37,10 +31,4 @@ deploy:
     - tags
 
   script:
-    #- echo ${OSSRH_USER_NAME}
-    #- mkdir $HOME/.m2/
-    #- cp -f settings.xml  $HOME/.m2/settings.xml
-    #- cp -f settings-security.xml $HOME/.m2/settings-security.xml
-    #- source ./ci/pre-build.sh
-    #- ./maven/bin/mvn -e deploy
     mvn deploy
