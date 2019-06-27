@@ -1,16 +1,25 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-class TaskDuration {
-	private final TaskTimes taskTimes;
+import java.util.Collections;
+import java.util.List;
 
-	TaskDuration(TaskTimes taskTimes) {
-		this.taskTimes = taskTimes;
+class TaskDuration {
+	private final List<TaskTimes> times;
+
+	TaskDuration(TaskTimes times) {
+		this.times = Collections.singletonList(times);
+	}
+
+	public TaskDuration(List<TaskTimes> times) {
+		this.times = times;
 	}
 
 	@Override
 	public String toString() {
-		long totalTime = taskTimes.getDuration();
+		long totalTime = times.stream()
+				.map(TaskTimes::getDuration)
+				.reduce(0L, Long::sum);
 
 		long hours = totalTime / (60 * 60);
 		long minutes = (totalTime - (hours * 60 * 60)) / 60;
