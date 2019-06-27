@@ -13,10 +13,13 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 	void execute_finish_command() {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
+		setTime(1561078202);
 		tasks.startTask(2);
+		setTime(1561079202);
 		commands.execute("finish");
 
-		assertEquals("Finished task 2 - \"Task 2\"" + Utils.NL, outputStream.toString());
+		assertEquals("Finished task 2 - \"Task 2\"" + Utils.NL + Utils.NL +
+				"Task finished in: 00h 16m 40s" + Utils.NL, outputStream.toString());
 
 		Optional<Task> optionalTask = tasks.getTask(2);
 

@@ -35,6 +35,9 @@ public class Commands {
 		Task task = tasks.finishTask();
 
 		output.println("Finished task " + task.description());
+		output.println();
+		output.print("Task finished in: ");
+		output.println(new TaskDuration(task.getTimes()));
 	}
 
 	private void startCommand(String command) {
