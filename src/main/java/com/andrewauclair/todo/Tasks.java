@@ -3,7 +3,6 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -14,35 +13,11 @@ class Tasks {
 	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	private final TaskWriter writer;
-	private long startingID = 1;
+	private long startingID;
 	private long activeTaskID = -1;
 
 	private String currentList = "default";
 	private String activeTaskList = currentList;
-
-	// this constructor should only be used in the tests
-	Tasks() {
-		// create an empty writer
-		writer = new TaskWriter(new PrintStream(new ByteArrayOutputStream()), new OSInterface()) {
-			@Override
-			boolean writeTask(Task task, String fileName) {
-				return true;
-			}
-		};
-		osInterface = new OSInterface() {
-			@Override
-			public boolean runGitCommand(String command) {
-				return true;
-			}
-
-			@Override
-			public OutputStream createOutputStream(String fileName) {
-				return new ByteArrayOutputStream();
-			}
-		};
-		output = new PrintStream(new ByteArrayOutputStream());
-		tasks.put("default", new ArrayList<>());
-	}
 
 	public Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.startingID = startID;
@@ -155,6 +130,12 @@ class Tasks {
 
 	List<Task> getTasksForList(String listName) {
 		return Collections.unmodifiableList(tasks.get(listName));
+	}
+
+	Optional<Task> getTask(int id) {
+		return tasks.get(currentList).stream()
+				.filter(task -> task.id == id)
+				.findFirst();
 	}
 
 	Set<String> getListNames() {

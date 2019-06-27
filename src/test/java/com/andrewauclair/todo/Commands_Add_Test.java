@@ -2,30 +2,23 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
-class Commands_Add_Test {
-	private final Tasks tasks = Mockito.spy(Tasks.class);
-	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-	
+
+class Commands_Add_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_add_command() {
 		commands.execute("add \"Task 1\"");
 		commands.execute("add \"Task 2\"");
-		
+
 		assertEquals("Added task 1 - \"Task 1\"" + Utils.NL +
 				"Added task 2 - \"Task 2\"" + Utils.NL, outputStream.toString());
-		
-		Mockito.verify(tasks).addTask("Task 1");
-		Mockito.verify(tasks).addTask("Task 2");
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Task 1"),
+				new Task(2, "Task 2")
+		);
 	}
 }

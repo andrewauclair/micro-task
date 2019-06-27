@@ -2,26 +2,26 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Commands_Finish_Test {
-	private final Tasks tasks = Mockito.spy(Tasks.class);
-	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-	
+class Commands_Finish_Test extends CommandsBaseTestCase {
 	@Test
-	void execute_remove_command() {
+	void execute_finish_command() {
 		tasks.addTask("Task 1");
-		tasks.startTask(1);
+		tasks.addTask("Task 2");
+		tasks.startTask(2);
 		commands.execute("finish");
-		
-		assertEquals("Finished task 1 - \"Task 1\"" + Utils.NL, outputStream.toString());
-		
-		Mockito.verify(tasks).finishTask();
+
+		assertEquals("Finished task 2 - \"Task 2\"" + Utils.NL, outputStream.toString());
+
+		Optional<Task> optionalTask = tasks.getTask(2);
+
+		assertThat(optionalTask).isPresent();
+
+		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Finished, task.state));
 	}
 }

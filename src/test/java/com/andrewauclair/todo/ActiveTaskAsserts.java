@@ -10,10 +10,10 @@ class ActiveTaskAsserts {
 	static void assertNoActiveTask(Tasks tasks) {
 		assertThrowsNoActiveTaskException(tasks::getActiveTask);
 	}
-	
+
 	static void assertThrowsNoActiveTaskException(Executable function) {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, function, "Expected no active task");
-		
+
 		assertEquals("No active task.", runtimeException.getMessage());
 	}
 }

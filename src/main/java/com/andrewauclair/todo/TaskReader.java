@@ -11,28 +11,28 @@ import java.util.Scanner;
 
 class TaskReader {
 	private final OSInterface osInterface;
-	
+
 	TaskReader(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-	
+
 	Task readTask(String fileName) throws IOException {
 		InputStream inputStream = osInterface.createInputStream(fileName);
-		
+
 		Scanner scanner = new Scanner(inputStream);
-		
+
 		long id;
 		String task;
 		Task.TaskState state;
-		
+
 		id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
 		task = scanner.nextLine();
 		state = Task.TaskState.valueOf(scanner.nextLine());
-		
+
 		long start = 0;
 		long stop = TaskTimes.TIME_NOT_SET;
 		List<TaskTimes> timesList = new ArrayList<>();
-		
+
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if (line.startsWith("start")) {
@@ -41,11 +41,11 @@ class TaskReader {
 			}
 			if (line.startsWith("stop")) {
 				stop = Integer.parseInt(line.substring(5));
-				
+
 				timesList.add(new TaskTimes(start, stop));
 			}
 		}
-		
+
 		if (stop == TaskTimes.TIME_NOT_SET) {
 			timesList.add(new TaskTimes(start, stop));
 		}

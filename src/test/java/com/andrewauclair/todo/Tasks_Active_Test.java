@@ -12,13 +12,13 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 	void returns_active_task() {
 		tasks.addTask("Testing 1");
 		tasks.addTask("Testing 2");
-		
+
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
-		
+
 		tasks.startTask(2);
-		
+
 		Task activeTask = new Task(2, "Testing 2", Task.TaskState.Active, new TaskTimes(1234));
-		
+
 		assertEquals(activeTask, tasks.getActiveTask());
 	}
 
@@ -39,7 +39,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 	@Test
 	void no_active_task_throws_exception_with_message() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTask);
-		
+
 		assertEquals("No active task.", runtimeException.getMessage());
 	}
 }

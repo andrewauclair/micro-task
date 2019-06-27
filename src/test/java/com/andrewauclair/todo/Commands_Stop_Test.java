@@ -2,26 +2,25 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Commands_Stop_Test {
-	private final Tasks tasks = Mockito.spy(Tasks.class);
-	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-	
+class Commands_Stop_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_stop_command() {
 		tasks.addTask("Task 1");
 		tasks.startTask(1);
 		commands.execute("stop");
-		
+
 		assertEquals("Stopped task 1 - \"Task 1\"" + Utils.NL, outputStream.toString());
-		
-		Mockito.verify(tasks).stopTask();
+
+		Optional<Task> optionalTask = tasks.getTask(1);
+
+		assertThat(optionalTask).isPresent();
+
+		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Inactive, task.state));
 	}
 }

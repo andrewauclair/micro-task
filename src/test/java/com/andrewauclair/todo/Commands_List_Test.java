@@ -2,19 +2,16 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Commands_List_Test {
-	private final Tasks tasks = Mockito.spy(Tasks.class);
-	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-	
+class Commands_List_Test extends CommandsBaseTestCase {
+//	private final Tasks tasks = Mockito.spy(Tasks.class);
+//	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
+
 	@Test
 	void execute_list_command() {
 		tasks.addTask("Task 1");
@@ -23,20 +20,20 @@ class Commands_List_Test {
 		tasks.startTask(2);
 		tasks.finishTask();
 		tasks.startTask(3);
-		
+
 		String expected = "  1 - \"Task 1\"" + Utils.NL +
 				"* 3 - \"Task 3\"" + Utils.NL;
-		
+
 		commands.execute("list");
-		
+
 		assertEquals(expected, outputStream.toString());
 	}
-	
+
 	@Test
 	void list_command_caps_at_20_tasks_and_displays_a_count_of_how_many_are_left() {
 		IntStream.range(1, 40)
 				.forEach(num -> tasks.addTask("Test " + num));
-		
+
 		String expected = "  1 - \"Test 1\"" + Utils.NL +
 				"  2 - \"Test 2\"" + Utils.NL +
 				"  3 - \"Test 3\"" + Utils.NL +
@@ -58,16 +55,16 @@ class Commands_List_Test {
 				"  19 - \"Test 19\"" + Utils.NL +
 				"  20 - \"Test 20\"" + Utils.NL +
 				"(19 more tasks.)" + Utils.NL;
-		
+
 		commands.execute("list");
-		
+
 		assertEquals(expected, outputStream.toString());
 	}
-	
+
 	@Test
 	void list_command_does_not_throw_the_no_active_task_exception() {
 		commands.execute("list");
-		
+
 		assertEquals("No tasks." + Utils.NL, outputStream.toString());
 	}
 }
