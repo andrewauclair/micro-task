@@ -8,10 +8,6 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_List_Test extends CommandsBaseTestCase {
-//	private final Tasks tasks = Mockito.spy(Tasks.class);
-//	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//	private final Commands commands = new Commands(tasks, new PrintStream(outputStream));
-
 	@Test
 	void execute_list_command() {
 		tasks.addTask("Task 1");

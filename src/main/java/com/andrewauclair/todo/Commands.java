@@ -50,6 +50,15 @@ public class Commands {
 		Task task = tasks.stopTask();
 
 		output.println("Stopped task " + task.description());
+		output.println();
+
+		List<TaskTimes> times = task.getTimes();
+		TaskTimes stopTime = times.get(times.size() - 1);
+
+		output.println(stopTime.description(tasks.osInterface.getZoneId()));
+		output.println();
+		output.print("Task was active for: ");
+		output.println(new TaskDuration(stopTime));
 	}
 
 	private void addCommand(String command) {
