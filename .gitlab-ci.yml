@@ -10,7 +10,9 @@ build:
     mvn package
   artifacts:
     paths:
+      - run/
       - target/
+      - updater/target/
     expire_in: 1 week
    
 test:
