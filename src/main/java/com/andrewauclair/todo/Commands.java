@@ -76,6 +76,14 @@ public class Commands {
 		Task task = tasks.getActiveTask();
 
 		output.println("Active task is " + task.description());
+		output.println();
+
+		List<TaskTimes> times = task.getTimes();
+		TaskTimes activeTime = times.get(times.size() - 1);
+
+		activeTime = new TaskTimes(activeTime.start, tasks.osInterface.currentSeconds());
+		output.print("Current time elapsed: ");
+		output.println(new TaskDuration(activeTime));
 	}
 
 	private void listCommand() {
