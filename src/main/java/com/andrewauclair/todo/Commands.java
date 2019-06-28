@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Commands {
+	private static final int MAX_DISPLAYED_TASKS = 20;
 	private final Tasks tasks;
 	private final PrintStream output;
 	private final Map<String, Command> commands = new HashMap<>();
@@ -24,7 +25,7 @@ public class Commands {
 		commands.put("stop", command -> stopCommand());
 		commands.put("add", this::addCommand);
 		commands.put("active", command -> activeCommand());
-		commands.put("list", command -> listCommand());
+		commands.put("list", this::listCommand);
 		commands.put("times", this::timesCommand);
 		commands.put("debug", this::debugCommand);
 		commands.put("create-list", this::listCreateCommand);
@@ -86,7 +87,14 @@ public class Commands {
 		output.println(new TaskDuration(activeTime));
 	}
 
-	private void listCommand() {
+	private void listCommand(String command) {
+		String[] s = command.split(" ");
+
+		boolean all = false;
+		if (s.length == 2 && s[1].equals("--all")) {
+			all = true;
+		}
+
 		List<Task> tasksList = tasks.getTasks().stream()
 				.filter(task -> task.state != Task.TaskState.Finished)
 				.collect(Collectors.toList());
@@ -100,15 +108,16 @@ public class Commands {
 
 		final long activeTaskID = activeTask == null ? -1 : activeTask.id;
 
+		final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 		tasksList.stream()
-				.limit(20)
+				.limit(limit)
 				.forEach(task -> {
 					output.print(task.id == activeTaskID ? "* " : "  ");
 					output.println(task.description());
 				});
 
-		if (tasksList.size() > 20) {
-			output.println("(" + (tasksList.size() - 20) + " more tasks.)");
+		if (tasksList.size() > limit) {
+			output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
 		}
 
 		if (tasksList.size() == 0) {
