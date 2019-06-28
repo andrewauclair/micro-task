@@ -19,7 +19,7 @@ class Tasks {
 	private String currentList = "default";
 	private String activeTaskList = currentList;
 
-	public Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
+	Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.startingID = startID;
 		this.writer = writer;
 		this.output = output;
@@ -144,6 +144,11 @@ class Tasks {
 
 	public void addTask(Task task) {
 		tasks.get(currentList).add(task);
+
+		if (task.state == Task.TaskState.Active) {
+			activeTaskList = currentList;
+			activeTaskID = task.id;
+		}
 	}
 
 	boolean addList(String listName) {
