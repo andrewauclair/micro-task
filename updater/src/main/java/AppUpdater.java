@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 class AppUpdater {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		// run this to get the xml of the version
 		// http://oss.sonatype.org/service/local/lucene/search?g=com.github.andrewauclair&a=todo-app
 
@@ -40,7 +40,7 @@ class AppUpdater {
 		// Found a build, so now we can update to it
 		File file = new File("todo-app.jar");
 
-		if (!file.delete()) {
+		if (file.exists() && !file.delete()) {
 			System.out.println("Failed to delete old todo-app.jar");
 			System.exit(-1);
 		}
@@ -58,6 +58,9 @@ class AppUpdater {
 
 		pb.redirectErrorStream(true);
 		pb.inheritIO();
+
+		p = pb.start();
+		p.waitFor();
 
 		if (file.exists()) {
 			System.out.println("Successfully Updated todo-app to " + snapshotVersion);
