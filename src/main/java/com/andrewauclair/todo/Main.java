@@ -58,7 +58,7 @@ public class Main {
 		String command;
 		Scanner scanner = new Scanner(System.in);
 		do {
-			System.out.print(tasks.getCurrentList() + ">");
+			System.out.print(commands.getPrompt());
 			command = scanner.nextLine();
 
 			if (command.equals("clear")) {

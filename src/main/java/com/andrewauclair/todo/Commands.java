@@ -228,6 +228,17 @@ public class Commands {
 		return tasks.hasListWithName(listName);
 	}
 
+	String getPrompt() {
+		String prompt = tasks.getCurrentList() + " - ";
+		try {
+			prompt += tasks.getActiveTask().id;
+		}
+		catch (RuntimeException e) {
+			prompt += "none";
+		}
+		return prompt + ">";
+	}
+
 	private interface Command {
 		void execute(String command);
 	}
