@@ -9,12 +9,14 @@ import java.io.PrintStream;
 import java.util.*;
 
 class Tasks {
+	private static final int NO_ACTIVE_TASK = -1;
+
 	final OSInterface osInterface;
 	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	private final TaskWriter writer;
 	private long startingID;
-	private long activeTaskID = -1;
+	private long activeTaskID = NO_ACTIVE_TASK;
 
 	private String currentList = "default";
 	private String activeTaskList = currentList;
@@ -80,7 +82,7 @@ class Tasks {
 				.findFirst();
 
 		if (first.isPresent()) {
-			if (activeTaskID != -1) {
+			if (activeTaskID != NO_ACTIVE_TASK) {
 				stopTask();
 			}
 			activeTaskList = taskList;
@@ -103,7 +105,7 @@ class Tasks {
 
 	Task stopTask() {
 		Task activeTask = getActiveTask();
-		activeTaskID = -1;
+		activeTaskID = NO_ACTIVE_TASK;
 
 		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
 
@@ -129,7 +131,7 @@ class Tasks {
 	Task finishTask() {
 		Task activeTask = getActiveTask();
 
-		activeTaskID = -1;
+		activeTaskID = NO_ACTIVE_TASK;
 
 		Task finishedTask = activeTask.finish(osInterface.currentSeconds());
 

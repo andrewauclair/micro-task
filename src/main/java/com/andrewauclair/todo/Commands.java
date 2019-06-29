@@ -91,37 +91,48 @@ public class Commands {
 		String[] s = command.split(" ");
 
 		boolean all = false;
+		boolean lists = false;
 		if (s.length == 2 && s[1].equals("--all")) {
 			all = true;
 		}
-
-		List<Task> tasksList = tasks.getTasks().stream()
-				.filter(task -> task.state != Task.TaskState.Finished)
-				.collect(Collectors.toList());
-
-		Task activeTask = null;
-		try {
-			activeTask = tasks.getActiveTask();
-		}
-		catch (RuntimeException ignored) {
+		else if (s.length == 2 && s[1].equals("--lists")) {
+			lists = true;
 		}
 
-		final long activeTaskID = activeTask == null ? -1 : activeTask.id;
-
-		final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
-		tasksList.stream()
-				.limit(limit)
-				.forEach(task -> {
-					output.print(task.id == activeTaskID ? "* " : "  ");
-					output.println(task.description());
-				});
-
-		if (tasksList.size() > limit) {
-			output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
+		if (lists) {
+			tasks.getListNames().stream()
+					.sorted()
+					.forEach(output::println);
 		}
+		else {
+			List<Task> tasksList = tasks.getTasks().stream()
+					.filter(task -> task.state != Task.TaskState.Finished)
+					.collect(Collectors.toList());
 
-		if (tasksList.size() == 0) {
-			output.println("No tasks.");
+			Task activeTask = null;
+			try {
+				activeTask = tasks.getActiveTask();
+			}
+			catch (RuntimeException ignored) {
+			}
+
+			final long activeTaskID = activeTask == null ? -1 : activeTask.id;
+
+			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
+			tasksList.stream()
+					.limit(limit)
+					.forEach(task -> {
+						output.print(task.id == activeTaskID ? "* " : "  ");
+						output.println(task.description());
+					});
+
+			if (tasksList.size() > limit) {
+				output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
+			}
+
+			if (tasksList.size() == 0) {
+				output.println("No tasks.");
+			}
 		}
 	}
 
