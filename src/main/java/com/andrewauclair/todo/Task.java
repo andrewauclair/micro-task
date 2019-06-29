@@ -13,17 +13,11 @@ final class Task {
 	private final List<TaskTimes> taskTimes;
 
 	Task(long id, String task) {
-		this.id = id;
-		this.task = task;
-		this.state = TaskState.Inactive;
-		taskTimes = Collections.emptyList();
+		this(id, task, TaskState.Inactive, Collections.emptyList());
 	}
 
 	Task(long id, String task, TaskState state, TaskTimes times) {
-		this.id = id;
-		this.task = task;
-		this.state = state;
-		taskTimes = Collections.singletonList(times);
+		this(id, task, state, Collections.singletonList(times));
 	}
 
 	Task(long id, String task, TaskState state, List<TaskTimes> times) {
@@ -40,15 +34,17 @@ final class Task {
 	}
 
 	Task finish(long stop) {
-		List<TaskTimes> times = addStopTime(stop);
-		return new Task(id, task, TaskState.Finished, times);
+		return new Task(id, task, TaskState.Finished, addStopTime(stop));
 	}
 
 	private List<TaskTimes> addStopTime(long stop) {
 		List<TaskTimes> times = new ArrayList<>(taskTimes);
+
 		TaskTimes lastTime = times.remove(times.size() - 1);
+
 		TaskTimes stopTime = new TaskTimes(lastTime.start, stop);
 		times.add(stopTime);
+
 		return times;
 	}
 

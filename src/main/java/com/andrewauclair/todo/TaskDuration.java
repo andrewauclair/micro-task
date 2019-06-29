@@ -11,7 +11,7 @@ class TaskDuration {
 		this.times = Collections.singletonList(times);
 	}
 
-	public TaskDuration(List<TaskTimes> times) {
+	TaskDuration(List<TaskTimes> times) {
 		this.times = times;
 	}
 
