@@ -72,4 +72,38 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, Long.MIN_VALUE));
 	}
+
+	@Test
+	void starting_a_task_on_a_different_list_automatically_switches_to_that_list() {
+		tasks.addTask("Test 1");
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		assertEquals("test", tasks.getCurrentList());
+
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1);
+
+		assertEquals("default", tasks.getCurrentList());
+	}
+
+	@Test
+	void when_auto_switching_to_new_list_the_new_active_list_changes() {
+		tasks.addTask("Test 1");
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		assertEquals("test", tasks.getCurrentList());
+
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1);
+
+		Task task = tasks.stopTask();
+
+		assertThat(tasks.getTasks()).containsOnly(task);
+	}
 }
