@@ -59,8 +59,23 @@ class Tasks {
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 
+	private String findListForTask(long id) {
+		for (String key : tasks.keySet()) {
+			Optional<Task> first = tasks.get(key).stream()
+					.filter(task -> task.id == id)
+					.findFirst();
+
+			if (first.isPresent()) {
+				return key;
+			}
+		}
+		return currentList;
+	}
+
 	Task startTask(long id) {
-		Optional<Task> first = tasks.get(currentList).stream()
+		String taskList = findListForTask(id);
+
+		Optional<Task> first = tasks.get(taskList).stream()
 				.filter(task -> task.id == id)
 				.findFirst();
 
@@ -68,13 +83,15 @@ class Tasks {
 			if (activeTaskID != -1) {
 				stopTask();
 			}
-			activeTaskList = currentList;
+			activeTaskList = taskList;
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 
 			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
 
-			replaceTask(currentList, activeTask, newActiveTask);
+			replaceTask(taskList, activeTask, newActiveTask);
+
+			setCurrentList(taskList);
 
 			writeTask(newActiveTask);
 			addAndCommit(newActiveTask, "Started task");
