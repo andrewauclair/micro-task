@@ -138,4 +138,16 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		assertThat(tasks.getTasks()).containsOnly(finishedTask);
 	}
+
+	@Test
+	void adding_task_that_is_active_sets_it_as_the_active_task() {
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(1000));
+
+		tasks.addTask(task);
+
+		assertEquals(1, tasks.getActiveTask().id);
+	}
 }
