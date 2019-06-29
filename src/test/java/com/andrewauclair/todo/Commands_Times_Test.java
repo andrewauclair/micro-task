@@ -104,4 +104,46 @@ class Commands_Times_Test {
 
 		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
 	}
+
+	@Test
+	void times_active_prints_the_times_of_the_active_command() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		setTime(1561078202);
+		tasks.startTask(2);
+
+		setTime(1561079202);
+		tasks.stopTask();
+
+		setTime(1561080202);
+		tasks.startTask(2);
+
+		setTime(1561081202);
+		tasks.stopTask();
+
+		setTime(1561082202);
+		tasks.startTask(2);
+
+		setTime(1561083202);
+		tasks.stopTask();
+
+		setTime(1561084202);
+		tasks.startTask(2);
+
+		setTime(1561085202);
+
+		Locale.setDefault(Locale.US);
+		commands.execute("times active");
+
+		String expected = "Times for 2 - \"Test 2\"" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
+				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
+				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + Utils.NL +
+				"06/20/2019 09:30:02 PM -" + Utils.NL + Utils.NL +
+				"Total time: 01h 06m 40s" + Utils.NL;
+
+		// 01w 01d 01h 01m 01s
+		assertEquals(expected, outputStream.toString());
+	}
 }

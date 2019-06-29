@@ -133,7 +133,13 @@ public class Commands {
 			return;
 		}
 
-		int taskID = Integer.parseInt(s[1]);
+		long taskID;
+		if (s[1].equals("active")) {
+			taskID = tasks.getActiveTask().id;
+		}
+		else {
+			taskID = Long.parseLong(s[1]);
+		}
 
 		Optional<Task> firstTask = tasks.getTasks().stream()
 				.filter(task -> task.id == taskID)
