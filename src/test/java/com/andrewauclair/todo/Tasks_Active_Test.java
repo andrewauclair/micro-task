@@ -4,6 +4,8 @@ package com.andrewauclair.todo;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,7 +19,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 		tasks.startTask(2);
 
-		Task activeTask = new Task(2, "Testing 2", Task.TaskState.Active, new TaskTimes(1234));
+		Task activeTask = new Task(2, "Testing 2", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 	}

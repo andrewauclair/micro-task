@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.ConsoleColors;
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -102,29 +104,17 @@ public class Commands {
 		if (lists) {
 			tasks.getListNames().stream()
 					.sorted()
-					.forEach(output::println);
+					.forEach(this::printList);
 		}
 		else {
 			List<Task> tasksList = tasks.getTasks().stream()
 					.filter(task -> task.state != Task.TaskState.Finished)
 					.collect(Collectors.toList());
 
-			Task activeTask = null;
-			try {
-				activeTask = tasks.getActiveTask();
-			}
-			catch (RuntimeException ignored) {
-			}
-
-			final long activeTaskID = activeTask == null ? -1 : activeTask.id;
-
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 			tasksList.stream()
 					.limit(limit)
-					.forEach(task -> {
-						output.print(task.id == activeTaskID ? "* " : "  ");
-						output.println(task.description());
-					});
+					.forEach(this::printTask);
 
 			if (tasksList.size() > limit) {
 				output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
@@ -133,6 +123,28 @@ public class Commands {
 			if (tasksList.size() == 0) {
 				output.println("No tasks.");
 			}
+		}
+	}
+
+	private void printList(String list) {
+		if (list.equals(tasks.getCurrentList())) {
+			output.print("* ");
+			ConsoleColors.println(output, ConsoleColors.ConsoleColor.ANSI_GREEN, list);
+		}
+		else {
+			output.print("  ");
+			output.println(list);
+		}
+	}
+
+	private void printTask(Task task) {
+		if (task.id == tasks.getActiveTaskID()) {
+			output.print("* ");
+			ConsoleColors.println(output, ConsoleColors.ConsoleColor.ANSI_GREEN, task.description());
+		}
+		else {
+			output.print("  ");
+			output.println(task.description());
 		}
 	}
 

@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.IntStream;
@@ -18,7 +19,8 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		tasks.startTask(3);
 
 		String expected = "  1 - \"Task 1\"" + Utils.NL +
-				"* 3 - \"Task 3\"" + Utils.NL;
+				"* " + ConsoleColors.ConsoleColor.ANSI_GREEN +
+				"3 - \"Task 3\"" + ConsoleColors.ConsoleColor.ANSI_RESET + Utils.NL;
 
 		commands.execute("list");
 

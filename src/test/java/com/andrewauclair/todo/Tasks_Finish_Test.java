@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +34,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 
-		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished, new TaskTimes(1234, 4567));
+		Task finishedTask = new Task(2, "Testing tasks 2", Task.TaskState.Finished, Collections.singletonList(new TaskTimes(1234, 4567)));
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Testing tasks"),
 				finishedTask

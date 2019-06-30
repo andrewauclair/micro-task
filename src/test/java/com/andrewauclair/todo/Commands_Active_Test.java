@@ -3,6 +3,7 @@ package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Active_Test extends CommandsBaseTestCase {
@@ -14,6 +15,11 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 		setTime(1561079202);
 		commands.execute("active");
 
+		assertThat(outputStream.toString())
+				.isEqualTo(
+						"Active task is 1 - \"Task 1\"" + Utils.NL + Utils.NL +
+								"Current time elapsed: 00h 16m 40s" + Utils.NL
+				);
 		assertEquals("Active task is 1 - \"Task 1\"" + Utils.NL + Utils.NL +
 				"Current time elapsed: 00h 16m 40s" + Utils.NL, outputStream.toString());
 	}

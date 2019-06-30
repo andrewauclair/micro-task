@@ -16,10 +16,6 @@ final class Task {
 		this(id, task, TaskState.Inactive, Collections.emptyList());
 	}
 
-	Task(long id, String task, TaskState state, TaskTimes times) {
-		this(id, task, state, Collections.singletonList(times));
-	}
-
 	Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
 		this.task = task;
