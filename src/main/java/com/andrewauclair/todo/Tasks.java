@@ -198,4 +198,8 @@ class Tasks {
 		tasks.get(list).remove(oldTask);
 		tasks.get(list).add(newTask);
 	}
+
+	long getActiveTaskID() {
+		return activeTaskID;
+	}
 }

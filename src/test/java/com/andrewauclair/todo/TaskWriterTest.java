@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,7 +37,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_time() {
-		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(1234));
+		Task task = new Task(1, "Test", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + Utils.NL +
@@ -47,7 +48,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_and_stop_times() {
-		Task task = new Task(1, "Test", Task.TaskState.Finished, new TaskTimes(1234, 4567));
+		Task task = new Task(1, "Test", Task.TaskState.Finished, Collections.singletonList(new TaskTimes(1234, 4567)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + Utils.NL +

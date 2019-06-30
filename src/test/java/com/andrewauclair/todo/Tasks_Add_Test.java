@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -144,7 +145,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
 
-		Task task = new Task(1, "Test", Task.TaskState.Active, new TaskTimes(1000));
+		Task task = new Task(1, "Test", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
 		tasks.addTask(task);
 

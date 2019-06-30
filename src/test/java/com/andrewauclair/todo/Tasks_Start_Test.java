@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,7 +22,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Task newActiveTask = tasks.startTask(task.id);
 
 		Task oldTask = new Task(2, "Testing task start command");
-		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, new TaskTimes(1234));
+		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
