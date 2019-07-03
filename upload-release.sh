@@ -16,7 +16,7 @@ echo ""
 echo $markdown
 echo ""
 
-curl_release_result=$(curl --request POST --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --header "Content-Type: application/json" --data '{"description": "${markdown}"}' https://gitlab.com/api/v4/projects/12882469/repository/tags/${CI_COMMIT_TAG}/release)
+curl_release_result=$(curl --request POST --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --header "Content-Type: application/json" --data '{"description": "{markdown}}' https://gitlab.com/api/v4/projects/12882469/repository/tags/${CI_COMMIT_TAG}/release)
 
 echo $curl_release_result
 echo ""
