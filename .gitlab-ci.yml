@@ -34,5 +34,4 @@ deploy:
 
   script:
     - mvn package
-    - markdown=$(curl --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --form "file@target/todo-app-${CI_COMMIT_TAG}.one-jar.jar" https://gitlab.com/api/v4/projects/12882469/uploads | jq --raw-output '.markdown')
-    - curl --request POST --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --header "Content-Type: application/json" --data '{"description": $markdown}' https://gitlab.com/api/v4/projects/12882469/repository/tags/${CI_COMMIT_TAG}/release
+    - ./upload-release.sh

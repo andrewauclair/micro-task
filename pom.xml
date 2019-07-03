@@ -98,6 +98,7 @@
     </dependencies>
 
     <build>
+	<finalName>todo-app-${env.CI_COMMIT_TAG}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
