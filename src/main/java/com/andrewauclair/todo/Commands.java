@@ -156,7 +156,7 @@ public class Commands {
 	private void printList(String list) {
 		if (list.equals(tasks.getCurrentList())) {
 			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleColor.ANSI_GREEN, list);
+			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
 		}
 		else {
 			output.print("  ");
@@ -167,7 +167,7 @@ public class Commands {
 	private void printTask(Task task) {
 		if (task.id == tasks.getActiveTaskID()) {
 			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleColor.ANSI_GREEN, task.description());
+			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
 		}
 		else {
 			output.print("  ");

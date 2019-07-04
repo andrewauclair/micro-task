@@ -16,8 +16,8 @@ class Commands_List_Lists_Test extends CommandsBaseTestCase {
 		commands.execute("list --lists");
 
 		assertEquals("  abcd" + Utils.NL +
-						"* " + ConsoleColors.ConsoleColor.ANSI_GREEN +
-						"default" + ConsoleColors.ConsoleColor.ANSI_RESET +
+						"* " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN +
+						"default" + ConsoleColors.ANSI_RESET +
 						Utils.NL +
 						"  test" + Utils.NL +
 						"  todo-app-tasks" + Utils.NL + Utils.NL
