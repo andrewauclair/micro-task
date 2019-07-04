@@ -15,7 +15,7 @@ import java.time.ZoneId;
 @ExtendWith(MockitoExtension.class)
 class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final PrintStream printStream = new PrintStream(outputStream);
 	final Tasks tasks = new Tasks(1, writer, printStream, osInterface);

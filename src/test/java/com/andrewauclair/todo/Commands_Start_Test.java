@@ -2,6 +2,7 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -12,9 +13,36 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_start_command() {
 		tasks.addTask("Task 1");
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
 		commands.execute("start 1");
 
-		assertEquals("Started task 1 - \"Task 1\"" + Utils.NL, outputStream.toString());
+		assertEquals("Started task 1 - \"Task 1\"" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM -" + Utils.NL, outputStream.toString());
+
+		Optional<Task> optionalTask = tasks.getTask(1);
+
+		assertThat(optionalTask).isPresent();
+
+		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Active, task.state));
+	}
+
+	@Test
+	void multiple_starts_prints_the_correct_start_time() {
+		tasks.addTask("Task 1");
+
+		tasks.startTask(1);
+		Task stopTask = tasks.stopTask();
+
+		assertThat(stopTask.getTimes()).hasSize(1);
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		commands.execute("start 1");
+
+		assertEquals("Started task 1 - \"Task 1\"" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM -" + Utils.NL, outputStream.toString());
 
 		Optional<Task> optionalTask = tasks.getTask(1);
 
