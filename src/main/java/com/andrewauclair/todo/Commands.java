@@ -50,6 +50,12 @@ public class Commands {
 		Task task = tasks.startTask(taskID);
 
 		output.println("Started task " + task.description());
+		output.println();
+
+		List<TaskTimes> times = task.getTimes();
+		TaskTimes startTime = times.get(times.size() - 1);
+
+		output.println(startTime.description(tasks.osInterface.getZoneId()));
 	}
 
 	private void stopCommand() {
