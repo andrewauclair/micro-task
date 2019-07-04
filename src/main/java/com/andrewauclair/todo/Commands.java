@@ -226,13 +226,15 @@ public class Commands {
 			return;
 		}
 
-		boolean added = tasks.addList(s[1]);
+		String list = s[1].toLowerCase();
+
+		boolean added = tasks.addList(list);
 
 		if (added) {
-			output.println("Created new list \"" + s[1] + "\"");
+			output.println("Created new list \"" + list + "\"");
 		}
 		else {
-			output.println("List \"" + s[1] + "\" already exists.");
+			output.println("List \"" + list + "\" already exists.");
 		}
 	}
 
@@ -244,13 +246,15 @@ public class Commands {
 			return;
 		}
 
-		boolean exists = tasks.setCurrentList(s[1]);
+		String list = s[1].toLowerCase();
+
+		boolean exists = tasks.setCurrentList(list);
 
 		if (exists) {
-			output.println("Switched to list \"" + s[1] + "\"");
+			output.println("Switched to list \"" + list + "\"");
 		}
 		else {
-			output.println("List \"" + s[1] + "\" does not exist.");
+			output.println("List \"" + list + "\" does not exist.");
 		}
 	}
 
