@@ -23,6 +23,6 @@ class Commands_Debug_Test extends CommandsBaseTestCase {
 	@Test
 	void executing_debug_with_any_text_other_than_enable_or_disable_results_in_an_invalid_command_message() {
 		commands.execute("debug junk");
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 }

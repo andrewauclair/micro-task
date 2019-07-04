@@ -18,8 +18,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		commands.execute("start 1");
 
-		assertEquals("Started task 1 - \"Task 1\"" + Utils.NL + Utils.NL +
-				"06/20/2019 07:50:02 PM -" + Utils.NL, outputStream.toString());
+		assertEquals("Started task 1 - 'Task 1'" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM -" + Utils.NL + Utils.NL, outputStream.toString());
 
 		Optional<Task> optionalTask = tasks.getTask(1);
 
@@ -41,8 +41,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		commands.execute("start 1");
 
-		assertEquals("Started task 1 - \"Task 1\"" + Utils.NL + Utils.NL +
-				"06/20/2019 07:50:02 PM -" + Utils.NL, outputStream.toString());
+		assertEquals("Started task 1 - 'Task 1'" + Utils.NL + Utils.NL +
+				"06/20/2019 07:50:02 PM -" + Utils.NL + Utils.NL, outputStream.toString());
 
 		Optional<Task> optionalTask = tasks.getTask(1);
 

@@ -85,7 +85,7 @@ final class Task {
 	}
 
 	String description() {
-		return id + " - \"" + task + "\"";
+		return id + " - '" + task + "'";
 	}
 
 	enum TaskState {

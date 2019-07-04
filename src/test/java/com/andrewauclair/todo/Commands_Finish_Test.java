@@ -18,8 +18,8 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		setTime(1561079202);
 		commands.execute("finish");
 
-		assertEquals("Finished task 2 - \"Task 2\"" + Utils.NL + Utils.NL +
-				"Task finished in: 00h 16m 40s" + Utils.NL, outputStream.toString());
+		assertEquals("Finished task 2 - 'Task 2'" + Utils.NL + Utils.NL +
+				"Task finished in: 00h 16m 40s" + Utils.NL + Utils.NL, outputStream.toString());
 
 		Optional<Task> optionalTask = tasks.getTask(2);
 
