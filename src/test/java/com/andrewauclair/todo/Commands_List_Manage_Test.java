@@ -136,4 +136,40 @@ class Commands_List_Manage_Test {
 
 		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
 	}
+
+	@Test
+	void create_list_is_always_lower_case() {
+		commands.execute("create-list RaNDOm");
+
+		assertTrue(commands.hasListWithName("random"));
+
+		assertEquals("Created new list \"random\"" + Utils.NL, outputStream.toString());
+	}
+
+	@Test
+	void create_list_already_exists_is_always_lower_case() {
+		tasks.addList("random");
+
+		commands.execute("create-list RaNDOm");
+
+		assertTrue(commands.hasListWithName("random"));
+
+		assertEquals("List \"random\" already exists." + Utils.NL, outputStream.toString());
+	}
+
+	@Test
+	void switch_list_is_always_lower_case() {
+		tasks.addList("random");
+
+		commands.execute("switch-list ranDOM");
+
+		assertEquals("Switched to list \"random\"" + Utils.NL, outputStream.toString());
+	}
+
+	@Test
+	void switch_list_does_not_exist_is_always_lower_case() {
+		commands.execute("switch-list ranDOM");
+
+		assertEquals("List \"random\" does not exist." + Utils.NL, outputStream.toString());
+	}
 }
