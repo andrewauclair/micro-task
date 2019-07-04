@@ -63,13 +63,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
 
 		tasks.addTask("Testing task add command 2");
 
 		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - \\\"Testing task add command 2\\\"\"");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - 'Testing task add command 2'\"");
 	}
 
 	@Test
@@ -83,7 +83,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - \\\"Testing task add command 1\\\"\"");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
 	}
 
 	@Test

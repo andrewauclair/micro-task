@@ -20,7 +20,7 @@ class Commands_List_Lists_Test extends CommandsBaseTestCase {
 						"default" + ConsoleColors.ConsoleColor.ANSI_RESET +
 						Utils.NL +
 						"  test" + Utils.NL +
-						"  todo-app-tasks" + Utils.NL
+						"  todo-app-tasks" + Utils.NL + Utils.NL
 				, outputStream.toString());
 	}
 }

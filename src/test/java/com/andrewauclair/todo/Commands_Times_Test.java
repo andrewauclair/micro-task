@@ -60,12 +60,12 @@ class Commands_Times_Test {
 		Locale.setDefault(Locale.US);
 		commands.execute("times 2");
 
-		String expected = "Times for 2 - \"Test 2\"" + Utils.NL + Utils.NL +
+		String expected = "Times for 2 - 'Test 2'" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
 				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
 				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + Utils.NL +
 				"06/20/2019 09:30:02 PM -" + Utils.NL + Utils.NL +
-				"Total time: 01h 06m 40s" + Utils.NL;
+				"Total time: 01h 06m 40s" + Utils.NL + Utils.NL;
 
 		// 01w 01d 01h 01m 01s
 		assertEquals(expected, outputStream.toString());
@@ -79,7 +79,7 @@ class Commands_Times_Test {
 	void times_command_prints_no_task_found_if_task_does_not_exist() {
 		commands.execute("times 1");
 
-		assertEquals("Task not found." + Utils.NL, outputStream.toString());
+		assertEquals("Task not found." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -88,21 +88,21 @@ class Commands_Times_Test {
 
 		commands.execute("times 1");
 
-		assertEquals("No times for task 1 - \"Test\"" + Utils.NL, outputStream.toString());
+		assertEquals("No times for task 1 - 'Test'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void times_without_a_task_number_prints_invalid_command() {
 		commands.execute("times");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void times_with_too_many_arguments_prints_invalid_command() {
 		commands.execute("times 1 2");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -136,12 +136,12 @@ class Commands_Times_Test {
 		Locale.setDefault(Locale.US);
 		commands.execute("times active");
 
-		String expected = "Times for 2 - \"Test 2\"" + Utils.NL + Utils.NL +
+		String expected = "Times for 2 - 'Test 2'" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +
 				"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL +
 				"06/20/2019 08:56:42 PM - 06/20/2019 09:13:22 PM" + Utils.NL +
 				"06/20/2019 09:30:02 PM -" + Utils.NL + Utils.NL +
-				"Total time: 01h 06m 40s" + Utils.NL;
+				"Total time: 01h 06m 40s" + Utils.NL + Utils.NL;
 
 		// 01w 01d 01h 01m 01s
 		assertEquals(expected, outputStream.toString());

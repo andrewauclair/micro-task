@@ -47,7 +47,7 @@ class Commands_List_Manage_Test {
 
 		assertTrue(commands.hasListWithName("test-tasks"));
 
-		assertEquals("Created new list \"test-tasks\"" + Utils.NL, outputStream.toString());
+		assertEquals("Created new list 'test-tasks'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -60,7 +60,7 @@ class Commands_List_Manage_Test {
 
 		assertEquals("test-tasks", commands.getListName());
 
-		assertEquals("Switched to list \"test-tasks\"" + Utils.NL, outputStream.toString());
+		assertEquals("Switched to list 'test-tasks'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -97,14 +97,14 @@ class Commands_List_Manage_Test {
 
 		commands.execute("create-list test");
 
-		assertEquals("List \"test\" already exists." + Utils.NL, outputStream.toString());
+		assertEquals("List 'test' already exists." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void can_not_switch_to_a_list_that_does_not_exist() {
 		commands.execute("switch-list test");
 
-		assertEquals("List \"test\" does not exist." + Utils.NL, outputStream.toString());
+		assertEquals("List 'test' does not exist." + Utils.NL + Utils.NL, outputStream.toString());
 		assertEquals("default", tasks.getCurrentList());
 	}
 
@@ -113,28 +113,28 @@ class Commands_List_Manage_Test {
 	void switch_list_without_a_task_number_prints_invalid_command() {
 		commands.execute("switch-list");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void switch_list_with_too_many_arguments_prints_invalid_command() {
 		commands.execute("switch-list test two");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void create_list_without_a_task_number_prints_invalid_command() {
 		commands.execute("create-list");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void create_list_with_too_many_arguments_prints_invalid_command() {
 		commands.execute("create-list test two");
 
-		assertEquals("Invalid command." + Utils.NL, outputStream.toString());
+		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -143,7 +143,7 @@ class Commands_List_Manage_Test {
 
 		assertTrue(commands.hasListWithName("random"));
 
-		assertEquals("Created new list \"random\"" + Utils.NL, outputStream.toString());
+		assertEquals("Created new list 'random'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class Commands_List_Manage_Test {
 
 		assertTrue(commands.hasListWithName("random"));
 
-		assertEquals("List \"random\" already exists." + Utils.NL, outputStream.toString());
+		assertEquals("List 'random' already exists." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
@@ -163,13 +163,13 @@ class Commands_List_Manage_Test {
 
 		commands.execute("switch-list ranDOM");
 
-		assertEquals("Switched to list \"random\"" + Utils.NL, outputStream.toString());
+		assertEquals("Switched to list 'random'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void switch_list_does_not_exist_is_always_lower_case() {
 		commands.execute("switch-list ranDOM");
 
-		assertEquals("List \"random\" does not exist." + Utils.NL, outputStream.toString());
+		assertEquals("List 'random' does not exist." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 }

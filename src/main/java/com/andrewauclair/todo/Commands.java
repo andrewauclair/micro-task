@@ -41,6 +41,7 @@ public class Commands {
 		output.println();
 		output.print("Task finished in: ");
 		output.println(new TaskDuration(task.getTimes()));
+		output.println();
 	}
 
 	private void startCommand(String command) {
@@ -56,6 +57,7 @@ public class Commands {
 		TaskTimes startTime = times.get(times.size() - 1);
 
 		output.println(startTime.description(tasks.osInterface.getZoneId()));
+		output.println();
 	}
 
 	private void stopCommand() {
@@ -71,6 +73,7 @@ public class Commands {
 		output.println();
 		output.print("Task was active for: ");
 		output.println(new TaskDuration(stopTime));
+		output.println();
 	}
 
 	private void addCommand(String command) {
@@ -79,6 +82,7 @@ public class Commands {
 		Task task = tasks.addTask(taskTitle);
 
 		output.println("Added task " + task.description());
+		output.println();
 	}
 
 	private void activeCommand() {
@@ -86,7 +90,7 @@ public class Commands {
 
 		output.println("Active task is " + task.description());
 		output.println();
-		output.println("Active task is on the \"" + tasks.getActiveTaskList() + "\" list");
+		output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
 		output.println();
 
 		List<TaskTimes> times = task.getTimes();
@@ -95,6 +99,7 @@ public class Commands {
 		activeTime = new TaskTimes(activeTime.start, tasks.osInterface.currentSeconds());
 		output.print("Current time elapsed: ");
 		output.println(new TaskDuration(activeTime));
+		output.println();
 	}
 
 	private void listCommand(String command) {
@@ -113,6 +118,7 @@ public class Commands {
 			tasks.getListNames().stream()
 					.sorted()
 					.forEach(this::printList);
+			output.println();
 		}
 		else {
 			List<Task> tasksList = tasks.getTasks().stream()
@@ -127,10 +133,10 @@ public class Commands {
 			if (tasksList.size() > limit) {
 				output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
 			}
-
-			if (tasksList.size() == 0) {
+			else if (tasksList.size() == 0) {
 				output.println("No tasks.");
 			}
+			output.println();
 		}
 	}
 
@@ -161,6 +167,7 @@ public class Commands {
 
 		if (s.length != 2) {
 			output.println("Invalid command.");
+			output.println();
 			return;
 		}
 
@@ -210,6 +217,7 @@ public class Commands {
 		else {
 			output.println("Task not found.");
 		}
+		output.println();
 	}
 
 	private void debugCommand(String command) {
@@ -223,6 +231,7 @@ public class Commands {
 		}
 		else {
 			output.println("Invalid command.");
+			output.println();
 		}
 	}
 
@@ -231,6 +240,7 @@ public class Commands {
 
 		if (s.length != 2) {
 			output.println("Invalid command.");
+			output.println();
 			return;
 		}
 
@@ -239,11 +249,12 @@ public class Commands {
 		boolean added = tasks.addList(list);
 
 		if (added) {
-			output.println("Created new list \"" + list + "\"");
+			output.println("Created new list '" + list + "'");
 		}
 		else {
-			output.println("List \"" + list + "\" already exists.");
+			output.println("List '" + list + "' already exists.");
 		}
+		output.println();
 	}
 
 	private void listSwitchCommand(String command) {
@@ -251,6 +262,7 @@ public class Commands {
 
 		if (s.length != 2) {
 			output.println("Invalid command.");
+			output.println();
 			return;
 		}
 
@@ -259,11 +271,12 @@ public class Commands {
 		boolean exists = tasks.setCurrentList(list);
 
 		if (exists) {
-			output.println("Switched to list \"" + list + "\"");
+			output.println("Switched to list '" + list + "'");
 		}
 		else {
-			output.println("List \"" + list + "\" does not exist.");
+			output.println("List '" + list + "' does not exist.");
 		}
+		output.println();
 	}
 
 	public boolean isDebugEnabled() {
@@ -275,7 +288,10 @@ public class Commands {
 				.filter(command::startsWith)
 				.findFirst()
 				.ifPresentOrElse(name -> commands.get(name).execute(command),
-						() -> output.println("Unknown command."));
+						() -> {
+							output.println("Unknown command.");
+							output.println();
+						});
 	}
 
 	String getListName() {

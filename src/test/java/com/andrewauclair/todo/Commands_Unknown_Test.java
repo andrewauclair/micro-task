@@ -10,6 +10,6 @@ class Commands_Unknown_Test extends CommandsBaseTestCase {
 	void prints_unknown_command_when_command_is_not_found() {
 		commands.execute("junk");
 
-		assertEquals("Unknown command." + Utils.NL, outputStream.toString());
+		assertEquals("Unknown command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 }
