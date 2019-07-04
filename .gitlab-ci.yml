@@ -33,4 +33,5 @@ deploy:
     - tags
 
   script:
-    mvn deploy
+    - mvn package
+    - ./upload-release.sh
