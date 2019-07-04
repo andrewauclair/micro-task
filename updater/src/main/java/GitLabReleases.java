@@ -1,101 +1,97 @@
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class GitLabReleases {
-	private static final String BASE_URL = "https://gitlab.com/api/v4/";
-
-	private static List<String> getReleases() {
-
-		return new ArrayList<>();
-	}
-
 	public static void main(String[] args) throws IOException {
-		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/repository/tags/test/release");
+		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "http://localhost:3000/api/v4/projects/24/releases"
+
+		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/releases");
 		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection();
 
-		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Content-Type", "application/json");
-		connection.setRequestProperty("PRIVATE-TOKEN", "vRxU9YWpPK3sBSgG4Dmd");
+		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
 
 		connection.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-		wr.writeBytes("{\"description\": \"Test\"}");
-		wr.flush();
-		wr.close();
-
-		int responseCode = connection.getResponseCode();
-		System.out.println("Response Code : " + responseCode);
 
 		BufferedReader iny = new BufferedReader(
 				new InputStreamReader(connection.getInputStream()));
 		String output;
-		StringBuffer response = new StringBuffer();
+		StringBuilder response = new StringBuilder();
 
 		while ((output = iny.readLine()) != null) {
 			response.append(output);
 		}
 		iny.close();
 
-		//printing result from response
-		System.out.println(response.toString());
-//		ProcessBuilder pb = new ProcessBuilder(
-//				"curl",
-////				"-s",
-//				"-H",
-//				"Content-Type: application/json",
-//				"-H",
-//				"PRIVATE-TOKEN: vRxU9YWpPK3sBSgG4Dmd",
-//				"--data",
-//				"{\"description\": \"Test\"}",
-//
-//				"--request",
-//				"POST",
-//				"https://gitlab.com/api/v4/projects/12882469/repository/tags/new-tag/release");
+		String jsonStr = response.toString();
 
-//		ProcessBuilder pb = new ProcessBuilder(
-//				"curl",
-////				"-s",
-//				"-H",
-//				"\"Content-Type: application/json\"",
-//				"-H",
-//				"\"PRIVATE-TOKEN: vRxU9YWpPK3sBSgG4Dmd\"",
-////				"--data",
-////				"\"{ \"name\": \"New release\", \"tag_name\": \"v0.3\", \"description\": \"Super nice release\", \"assets\": { \"links\": [{ \"name\": \"hoge\", \"url\": \"https://google.com\" }] } }\"",
-//
-//				"--request",
-//				"POST",
-//				"https://gitlab.com/api/v4/projects/12882469/releases");
+		JSONArray array = new JSONArray(jsonStr);
 
-		//{ "name": "New release", "tag_name": "v0.3", "description": "Super nice release", "assets": { "links": [{ "name": "hoge", "url": "https://google.com" }] } }
-//		ProcessBuilder pb = new ProcessBuilder(
-//				"curl",
-//				"-s",
-//				"-H",
-//				"PRIVATE-TOKEN: vRxU9YWpPK3sBSgG4Dmd",
-////				"-H",
-////				"Content-Type: application/json",
-////				"--request",
-////				"POST",
-////				"--data",
-////				"{\"description\": \"Test\"}",
-//				"https://gitlab.com/api/v4/projects/12882469/repository/tags");
+		String currentReleaseName = "";
+		String currentReleaseJar = "";
 
-//		pb.redirectErrorStream(true);
-//		Process p = pb.start();
-//		InputStream is = p.getInputStream();
-//
-//		Scanner scanner = new Scanner(is);
-//
-//		while (scanner.hasNextLine()) {
-//			String line = scanner.nextLine();
-//
-//			System.out.println(line);
-//		}
+		System.out.println("Releases found on GitLab");
+		System.out.println();
+
+		Map<String, String> releases = new HashMap<>();
+
+		for (int i = array.length() - 1; i >= 0; i--) {
+			JSONObject obj = array.getJSONObject(i);
+
+			String releaseName = obj.getString("name");
+			String description = obj.getString("description");
+
+			System.out.println(releaseName);
+
+			String uploads = description.substring(description.indexOf("(/uploads/") + 1);
+
+			String jar = "https://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
+
+			releases.put(releaseName, jar);
+
+			if (i == 0) {
+				currentReleaseName = releaseName;
+				currentReleaseJar = jar;
+			}
+		}
+
+		System.out.println();
+		System.out.println("Enter release name to update to (leave empty to update to most recent release)");
+		System.out.print("New Release >");
+
+		Scanner scanner = new Scanner(System.in);
+		String newRelease = scanner.nextLine();
+
+		String releaseJar;
+		if (newRelease.isEmpty()) {
+			newRelease = currentReleaseName;
+			releaseJar = currentReleaseJar;
+		}
+		else {
+			releaseJar = releases.get(newRelease);
+		}
+
+		// download the jar file and rename it to todo-app.jar
+
+		try (BufferedInputStream in = new BufferedInputStream(new URL(releaseJar).openStream());
+			 FileOutputStream fileOutputStream = new FileOutputStream("todo-app.jar")) {
+			byte[] dataBuffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+				fileOutputStream.write(dataBuffer, 0, bytesRead);
+			}
+
+			System.out.println("Updated to version '" + newRelease + "'");
+		}
+		catch (IOException e) {
+			// handle exception
+			e.printStackTrace();
+		}
 	}
 }
