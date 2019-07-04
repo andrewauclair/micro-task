@@ -86,6 +86,8 @@ public class Commands {
 
 		output.println("Active task is " + task.description());
 		output.println();
+		output.println("Active task is on the \"" + tasks.getActiveTaskList() + "\" list");
+		output.println();
 
 		List<TaskTimes> times = task.getTimes();
 		TaskTimes activeTime = times.get(times.size() - 1);

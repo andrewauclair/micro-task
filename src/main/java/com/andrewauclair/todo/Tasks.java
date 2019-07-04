@@ -186,6 +186,10 @@ class Tasks {
 		return currentList;
 	}
 
+	String getActiveTaskList() {
+		return activeTaskList;
+	}
+
 	boolean setCurrentList(String listName) {
 		boolean exists = tasks.containsKey(listName);
 		if (exists) {
