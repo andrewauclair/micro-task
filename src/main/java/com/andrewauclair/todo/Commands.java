@@ -32,8 +32,21 @@ public class Commands {
 		commands.put("debug", this::debugCommand);
 		commands.put("create-list", this::listCreateCommand);
 		commands.put("switch-list", this::listSwitchCommand);
+		commands.put("rename", this::renameCommand);
 	}
-
+	
+	private void renameCommand(String command) {
+		String[] s = command.split(" ");
+		
+		long taskID = Long.parseLong(s[1]);
+		String newTitle = command.substring(command.substring(8).indexOf(' ') + 10, command.length() - 1);
+		
+		Task task = tasks.renameTask(taskID, newTitle);
+		
+		output.println("Renamed task " + task.description());
+		output.println();
+	}
+	
 	private void finishCommand() {
 		Task task = tasks.finishTask();
 

@@ -12,6 +12,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class Tasks_Add_Test extends TaskBaseTestCase {
@@ -150,5 +151,14 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask(task);
 
 		assertEquals(1, tasks.getActiveTask().id);
+	}
+	
+	@Test
+	void add_throws_exception_if_task_with_id_already_exists() {
+		tasks.addTask(new Task(1, "Test throw"));
+		
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here")));
+		
+		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
 }
