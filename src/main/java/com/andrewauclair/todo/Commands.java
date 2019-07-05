@@ -33,8 +33,25 @@ public class Commands {
 		commands.put("create-list", this::listCreateCommand);
 		commands.put("switch-list", this::listSwitchCommand);
 		commands.put("rename", this::renameCommand);
+		commands.put("search", this::searchCommand);
 	}
-	
+
+	private void searchCommand(String command) {
+		String searchText = command.substring(8, command.lastIndexOf("\""));
+
+		List<Task> searchResults = tasks.getTasks().stream()
+				.filter(task -> task.task.contains(searchText))
+				.collect(Collectors.toList());
+
+		output.println("Search Results (" + searchResults.size() + "):");
+		output.println();
+
+		for (Task task : searchResults) {
+			output.println(task.description().replace(searchText, ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED + searchText + ConsoleColors.ANSI_RESET));
+		}
+		output.println();
+	}
+
 	private void renameCommand(String command) {
 		String[] s = command.split(" ");
 		
