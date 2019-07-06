@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.jline;
 
-import com.andrewauclair.todo.Commands;
 import com.andrewauclair.todo.Task;
 import com.andrewauclair.todo.Tasks;
 import org.jline.reader.Candidate;
@@ -14,11 +13,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class RenameCompleter implements Completer {
-	private final Commands commands;
 	private final Tasks tasks;
 
-	public RenameCompleter(Commands commands, Tasks tasks) {
-		this.commands = commands;
+	public RenameCompleter(Tasks tasks) {
 		this.tasks = tasks;
 	}
 
