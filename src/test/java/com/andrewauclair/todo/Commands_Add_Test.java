@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Add_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_add_command() {
-		commands.execute("add 'Task 1'");
-		commands.execute("add 'Task 2'");
+		commands.execute("add \"Task 1\"");
+		commands.execute("add \"Task 2\"");
 
 		assertEquals("Added task 1 - 'Task 1'" + Utils.NL + Utils.NL +
 				"Added task 2 - 'Task 2'" + Utils.NL + Utils.NL, outputStream.toString());
@@ -20,5 +20,12 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				new Task(1, "Task 1"),
 				new Task(2, "Task 2")
 		);
+	}
+
+	@Test
+	void add_command_ignores_extra_whitespace() {
+		commands.execute("add \"Task 1\"    ");
+
+		assertEquals("Added task 1 - 'Task 1'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 }

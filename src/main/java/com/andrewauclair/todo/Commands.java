@@ -56,7 +56,7 @@ public class Commands {
 		String[] s = command.split(" ");
 		
 		long taskID = Long.parseLong(s[1]);
-		String newTitle = command.substring(command.substring(8).indexOf(' ') + 10, command.length() - 1);
+		String newTitle = command.substring(command.substring(8).indexOf(' ') + 10, command.lastIndexOf('"'));
 		
 		Task task = tasks.renameTask(taskID, newTitle);
 		
@@ -107,7 +107,7 @@ public class Commands {
 	}
 
 	private void addCommand(String command) {
-		String taskTitle = command.substring(5, command.length() - 1);
+		String taskTitle = command.substring(5, command.lastIndexOf('"'));
 
 		Task task = tasks.addTask(taskTitle);
 
@@ -313,7 +313,7 @@ public class Commands {
 		return debugEnabled;
 	}
 
-	void execute(String command) {
+	public void execute(String command) {
 		commands.keySet().stream()
 				.filter(command::startsWith)
 				.findFirst()

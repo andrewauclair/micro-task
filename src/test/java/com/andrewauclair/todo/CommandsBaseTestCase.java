@@ -13,14 +13,15 @@ import java.io.PrintStream;
 import java.time.ZoneId;
 
 @ExtendWith(MockitoExtension.class)
+public
 class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	private final PrintStream printStream = new PrintStream(outputStream);
-	final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
+	public final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
 
-	final Commands commands = new Commands(tasks, printStream);
+	public final Commands commands = new Commands(tasks, printStream);
 
 	@BeforeEach
 	void setup() throws IOException {

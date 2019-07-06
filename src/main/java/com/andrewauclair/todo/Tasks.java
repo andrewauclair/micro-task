@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
-class Tasks {
+public class Tasks {
 	private static final int NO_ACTIVE_TASK = -1;
 	
 	final OSInterface osInterface;
@@ -187,8 +187,8 @@ class Tasks {
 	Set<String> getListNames() {
 		return tasks.keySet();
 	}
-	
-	Optional<Task> getTask(long id) {
+
+	public Optional<Task> getTask(long id) {
 		return getTask(id, currentList);
 	}
 	

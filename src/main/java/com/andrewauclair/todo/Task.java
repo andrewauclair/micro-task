@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-final class Task {
+public final class Task {
 	final long id;
-	final String task;
+	public final String task;
 	final TaskState state;
 	private final List<TaskTimes> taskTimes;
 
