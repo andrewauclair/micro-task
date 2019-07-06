@@ -4,7 +4,6 @@ package com.andrewauclair.todo;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class Commands_Add_Test extends CommandsBaseTestCase {
@@ -13,8 +12,12 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		commands.execute("add \"Task 1\"");
 		commands.execute("add \"Task 2\"");
 
-		assertEquals("Added task 1 - 'Task 1'" + Utils.NL + Utils.NL +
-				"Added task 2 - 'Task 2'" + Utils.NL + Utils.NL, outputStream.toString());
+		assertOutput(
+				"Added task 1 - 'Task 1'",
+				"",
+				"Added task 2 - 'Task 2'",
+				""
+		);
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Task 1"),
@@ -26,6 +29,9 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 	void add_command_ignores_extra_whitespace() {
 		commands.execute("add \"Task 1\"    ");
 
-		assertEquals("Added task 1 - 'Task 1'" + Utils.NL + Utils.NL, outputStream.toString());
+		assertOutput(
+				"Added task 1 - 'Task 1'",
+				""
+		);
 	}
 }

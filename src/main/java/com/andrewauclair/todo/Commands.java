@@ -34,6 +34,8 @@ public class Commands {
 		commands.put("switch-list", this::listSwitchCommand);
 		commands.put("rename", this::renameCommand);
 		commands.put("search", this::searchCommand);
+		commands.put("clear", command -> tasks.osInterface.clearScreen());
+		commands.put("exit", command -> tasks.osInterface.exit());
 	}
 
 	private void searchCommand(String command) {
@@ -314,14 +316,20 @@ public class Commands {
 	}
 
 	public void execute(String command) {
-		commands.keySet().stream()
-				.filter(command::startsWith)
-				.findFirst()
-				.ifPresentOrElse(name -> commands.get(name).execute(command),
-						() -> {
-							output.println("Unknown command.");
-							output.println();
-						});
+		try {
+			commands.keySet().stream()
+					.filter(command::startsWith)
+					.findFirst()
+					.ifPresentOrElse(name -> commands.get(name).execute(command),
+							() -> {
+								output.println("Unknown command.");
+								output.println();
+							});
+		}
+		catch (RuntimeException e) {
+			output.println(e.getMessage());
+			output.println();
+		}
 	}
 
 	String getListName() {

@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
-	private final RenameCompleter completer = new RenameCompleter(commands, tasks);
+	private final RenameCompleter completer = new RenameCompleter(tasks);
 	private final LineReader lineReader = Mockito.mock(LineReader.class);
 	private final ParsedLine parsedLine = Mockito.mock(ParsedLine.class);
 

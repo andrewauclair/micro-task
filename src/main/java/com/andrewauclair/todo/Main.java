@@ -40,6 +40,73 @@ public class Main {
 			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
 
+		readTasks(osInterface, tasks);
+
+		Terminal terminal = TerminalBuilder.builder()
+				.jna(true)
+				.nativeSignals(true)
+				.build();
+
+		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(
+				Completers.TreeCompleter.node("active"),
+				Completers.TreeCompleter.node("clear"),
+				Completers.TreeCompleter.node("exit"),
+				Completers.TreeCompleter.node("list"),
+				Completers.TreeCompleter.node("debug"),
+				Completers.TreeCompleter.node("add"),
+				Completers.TreeCompleter.node("start"),
+				Completers.TreeCompleter.node("stop"),
+				Completers.TreeCompleter.node("finish"),
+				Completers.TreeCompleter.node("times"),
+				Completers.TreeCompleter.node("create-list"),
+				Completers.TreeCompleter.node("switch-list"),
+				Completers.TreeCompleter.node("search"),
+
+				Completers.TreeCompleter.node("rename",
+						Completers.TreeCompleter.node(new RenameCompleter(tasks))
+				)
+		);
+
+		LineReader lineReader = LineReaderBuilder.builder()
+				.terminal(terminal)
+				.completer(treeCompleter)
+				.variable(LineReader.BELL_STYLE, "none")
+				.build();
+
+		bindCtrlBackspace(lineReader);
+
+		osInterface.clearScreen();
+
+		while (true) {
+			try {
+				commands.execute(lineReader.readLine(commands.getPrompt()));
+			}
+			catch (UserInterruptException ignored) {
+			}
+			catch (EndOfFileException e) {
+				return;
+			}
+		}
+	}
+
+	private static void bindCtrlBackspace(LineReader lineReader) {
+		KeyMap<Binding> main = lineReader.getKeyMaps().get(LineReader.MAIN);
+
+		Widget widget = lineReader.getBuiltinWidgets().get(LineReader.BACKWARD_KILL_WORD);
+
+		main.bind((Widget) () -> {
+			short keyState = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_LCONTROL);
+
+			if (keyState == 0) {
+				return lineReader.getBuffer().backspace();
+			}
+			else {
+				return widget.apply();
+			}
+		}, KeyMap.ctrl(BACKSPACE_KEY));
+	}
+
+	private static void readTasks(OSInterface osInterface, Tasks tasks) throws IOException {
 		TaskReader reader = new TaskReader(osInterface);
 
 		File[] files = new File("git-data/tasks").listFiles();
@@ -64,84 +131,6 @@ public class Main {
 				}
 			}
 		}
-
-		Terminal terminal = TerminalBuilder.builder()
-				.jna(true)
-				.nativeSignals(true)
-				.build();
-
-		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(
-				Completers.TreeCompleter.node("active"),
-				Completers.TreeCompleter.node("clear"),
-				Completers.TreeCompleter.node("exit"),
-				Completers.TreeCompleter.node("list"),
-				Completers.TreeCompleter.node("debug"),
-				Completers.TreeCompleter.node("add"),
-				Completers.TreeCompleter.node("start"),
-				Completers.TreeCompleter.node("stop"),
-				Completers.TreeCompleter.node("finish"),
-				Completers.TreeCompleter.node("times"),
-				Completers.TreeCompleter.node("create-list"),
-				Completers.TreeCompleter.node("switch-list"),
-				Completers.TreeCompleter.node("search"),
-
-				Completers.TreeCompleter.node("rename",
-						Completers.TreeCompleter.node(new RenameCompleter(commands, tasks))
-				)
-		);
-
-
-		LineReader lineReader = LineReaderBuilder.builder()
-				.terminal(terminal)
-				.completer(treeCompleter)
-				.variable(LineReader.BELL_STYLE, "none")
-				.build();
-
-		KeyMap<Binding> main = lineReader.getKeyMaps().get(LineReader.MAIN);
-
-		Widget widget = lineReader.getBuiltinWidgets().get(LineReader.BACKWARD_KILL_WORD);
-
-		main.bind((Widget) () -> {
-			short keyState = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_LCONTROL);
-
-			if (keyState == 0) {
-				return lineReader.getBuffer().backspace();
-			}
-			else {
-				return widget.apply();
-			}
-		}, KeyMap.ctrl(BACKSPACE_KEY));
-
-		clearScreen();
-
-		while (true) {
-			String command;
-
-			try {
-				command = lineReader.readLine(commands.getPrompt());
-
-				if (command.equals("clear")) {
-					clearScreen();
-				}
-				else if (!command.equals("exit")) {
-					try {
-						commands.execute(command);
-					}
-					catch (RuntimeException e) {
-						// TODO I should be catching this in Commands.java
-						System.out.println(e.getMessage());
-					}
-				}
-				else {
-					System.exit(0);
-				}
-			}
-			catch (UserInterruptException ignored) {
-			}
-			catch (EndOfFileException e) {
-				return;
-			}
-		}
 	}
 
 	private static long getStartingID(OSInterface osInterface) {
@@ -152,19 +141,5 @@ public class Main {
 		catch (IOException ignored) {
 		}
 		return 1;
-	}
-
-	private static void clearScreen() {
-		//Clears Screen in java
-		try {
-			if (System.getProperty("os.name").contains("Windows")) {
-				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			}
-			else {
-				Runtime.getRuntime().exec("clear");
-			}
-		}
-		catch (IOException | InterruptedException ignored) {
-		}
 	}
 }

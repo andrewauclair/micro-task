@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.time.ZoneId;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 public
 class CommandsBaseTestCase {
@@ -31,5 +33,16 @@ class CommandsBaseTestCase {
 
 	void setTime(long time) {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(time);
+	}
+
+	void assertOutput(String... lines) {
+		StringBuilder output = new StringBuilder();
+
+		for (String line : lines) {
+			output.append(line);
+			output.append(Utils.NL);
+		}
+
+		assertThat(outputStream.toString()).isEqualTo(output.toString());
 	}
 }
