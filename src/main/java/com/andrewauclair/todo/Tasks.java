@@ -19,7 +19,7 @@ public class Tasks {
 	private long activeTaskID = NO_ACTIVE_TASK;
 	
 	private String currentList = "default";
-	private String activeTaskList = currentList;
+	private String activeTaskList = "";
 	
 	Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.startingID = startID;
@@ -35,10 +35,10 @@ public class Tasks {
 		tasks.get(currentList).add(newTask);
 		
 		writeNextId();
-		writeTask(newTask);
+		writeTask(newTask, currentList);
 		
 		osInterface.runGitCommand("git add next-id.txt");
-		addAndCommit(newTask, "Added task");
+		addAndCommit(newTask, "Added task", currentList);
 		
 		return newTask;
 	}
@@ -65,13 +65,13 @@ public class Tasks {
 			e.printStackTrace(output);
 		}
 	}
-	
-	private void writeTask(Task task) {
-		writer.writeTask(task, "git-data/tasks/" + currentList + "/" + task.id + ".txt");
+
+	private void writeTask(Task task, String list) {
+		writer.writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
 	}
-	
-	private void addAndCommit(Task task, String comment) {
-		osInterface.runGitCommand("git add tasks/" + currentList + "/" + task.id + ".txt");
+
+	private void addAndCommit(Task task, String comment, String list) {
+		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 	
@@ -102,6 +102,9 @@ public class Tasks {
 				.findFirst();
 		
 		if (first.isPresent()) {
+			if (activeTaskID == first.get().id) {
+				throw new RuntimeException("Task is already active.");
+			}
 			if (activeTaskID != NO_ACTIVE_TASK) {
 				stopTask();
 			}
@@ -114,9 +117,9 @@ public class Tasks {
 			replaceTask(taskList, activeTask, newActiveTask);
 			
 			setCurrentList(taskList);
-			
-			writeTask(newActiveTask);
-			addAndCommit(newActiveTask, "Started task");
+
+			writeTask(newActiveTask, currentList);
+			addAndCommit(newActiveTask, "Started task", currentList);
 			
 			return newActiveTask;
 		}
@@ -130,15 +133,17 @@ public class Tasks {
 		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
 		
 		replaceTask(activeTaskList, activeTask, stoppedTask);
-		
-		writeTask(stoppedTask);
-		addAndCommit(stoppedTask, "Stopped task");
-		
+
+		writeTask(stoppedTask, activeTaskList);
+		addAndCommit(stoppedTask, "Stopped task", activeTaskList);
+
+		activeTaskList = "";
+
 		return stoppedTask;
 	}
 	
 	Task getActiveTask() {
-		Optional<Task> first = tasks.get(activeTaskList).stream()
+		Optional<Task> first = tasks.getOrDefault(activeTaskList, Collections.emptyList()).stream()
 				.filter(task -> task.id == activeTaskID)
 				.findFirst();
 		
@@ -164,9 +169,9 @@ public class Tasks {
 		Task finishedTask = activeTask.finish(osInterface.currentSeconds());
 		
 		replaceTask(activeTaskList, activeTask, finishedTask);
-		
-		writeTask(finishedTask);
-		addAndCommit(finishedTask, "Finished task");
+
+		writeTask(finishedTask, currentList);
+		addAndCommit(finishedTask, "Finished task", currentList);
 		
 		return finishedTask;
 	}
