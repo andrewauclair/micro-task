@@ -193,7 +193,7 @@ public class Tasks {
 		}
 	}
 	
-	Set<String> getListNames() {
+	public Set<String> getListNames() {
 		return tasks.keySet();
 	}
 
