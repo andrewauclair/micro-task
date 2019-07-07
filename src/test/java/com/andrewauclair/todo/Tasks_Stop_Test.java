@@ -133,6 +133,43 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void stopping_task_tells_task_writer_to_write_file_on_correct_list() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1);
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		Mockito.reset(writer);
+
+		Task task = tasks.stopTask();
+
+		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
+	}
+
+	@Test
+	void stopping_task_tells_git_control_to_add_file_and_commit_on_correct_list() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.startTask(2);
+
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+
+		Mockito.reset(osInterface);
+
+		tasks.stopTask();
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Stopped task 2 - 'Test 2'\"");
+	}
+
+	@Test
 	void on_stop_the_active_task_is_stopped_on_the_correct_list() {
 		tasks.addTask("Task 1");
 
@@ -148,5 +185,18 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.setCurrentList("default");
 
 		assertThat(tasks.getTasks()).containsOnly(stoppedTask);
+	}
+
+	@Test
+	void active_task_list_is_empty_string_after_stopping_task() {
+		tasks.addTask("Task 1");
+
+		tasks.startTask(1);
+
+		assertEquals("default", tasks.getActiveTaskList());
+
+		tasks.stopTask();
+
+		assertEquals("", tasks.getActiveTaskList());
 	}
 }

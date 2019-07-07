@@ -108,4 +108,15 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		assertThat(tasks.getTasks()).containsOnly(task);
 	}
+
+	@Test
+	void attempting_to_start_task_twice_throws_exception() {
+		tasks.addTask("Test 1");
+
+		tasks.startTask(1);
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(1));
+
+		assertEquals("Task is already active.", runtimeException.getMessage());
+	}
 }
