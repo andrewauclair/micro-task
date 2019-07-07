@@ -7,7 +7,8 @@ stages:
 build:
   stage: build
   script:
-    mvn package
+    - ./create-version.sh
+    - mvn package
   artifacts:
     paths:
       - run/
@@ -33,5 +34,6 @@ deploy:
     - tags
 
   script:
+    - ./create-version.sh
     - mvn package
     - ./upload-release.sh

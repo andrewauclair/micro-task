@@ -17,6 +17,7 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class Main {
@@ -86,7 +87,9 @@ public class Main {
 				
 				Completers.TreeCompleter.node("rename",
 						Completers.TreeCompleter.node(new RenameCompleter(tasks))
-				)
+				),
+
+				Completers.TreeCompleter.node("version")
 		);
 		
 		LineReader lineReader = LineReaderBuilder.builder()
@@ -99,9 +102,24 @@ public class Main {
 		
 		osInterface.clearScreen();
 		
+		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
+		Properties props = new Properties();
+		props.load(resourceAsStream);
+		
+		String version = (String) props.get("version");
+		
 		while (true) {
 			try {
-				commands.execute(lineReader.readLine(commands.getPrompt()));
+				String command = lineReader.readLine(commands.getPrompt());
+
+				// TODO Move this to Commands and the version loading to os interface as a String getVersion() method
+				if (command.equals("version")) {
+					System.out.println(version);
+					System.out.println();
+				}
+				else {
+					commands.execute(command);
+				}
 			}
 			catch (UserInterruptException ignored) {
 			}
