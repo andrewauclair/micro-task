@@ -4,10 +4,7 @@ package com.andrewauclair.todo;
 import com.andrewauclair.todo.os.ConsoleColors;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Commands {
@@ -136,27 +133,35 @@ public class Commands {
 
 	private void listCommand(String command) {
 		String[] s = command.split(" ");
-
-		boolean all = false;
-		boolean lists = false;
-		if (s.length == 2 && s[1].equals("--all")) {
-			all = true;
+		
+		List<String> parameters = Arrays.asList(s);
+		
+		boolean all = parameters.contains("--all");
+		boolean showTasks = parameters.contains("--tasks");
+		boolean showLists = parameters.contains("--lists");
+		
+		String list = tasks.getCurrentList();
+		
+		if (parameters.contains("--list")) {
+			list = parameters.get(parameters.indexOf("--list") + 1);
 		}
-		else if (s.length == 2 && s[1].equals("--lists")) {
-			lists = true;
-		}
-
-		if (lists) {
+		
+		if (showLists) {
 			tasks.getListNames().stream()
 					.sorted()
 					.forEach(this::printList);
 			output.println();
 		}
-		else {
-			List<Task> tasksList = tasks.getTasks().stream()
+		else if (showTasks) {
+			if (!list.equals(tasks.getCurrentList())) {
+				output.println("Tasks on list '" + list + "'");
+				output.println();
+			}
+			
+			List<Task> tasksList = tasks.getTasksForList(list).stream()
 					.filter(task -> task.state != Task.TaskState.Finished)
 					.collect(Collectors.toList());
-
+			
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 			tasksList.stream()
 					.limit(limit)
@@ -168,6 +173,10 @@ public class Commands {
 			else if (tasksList.size() == 0) {
 				output.println("No tasks.");
 			}
+			output.println();
+		}
+		else {
+			output.println("Invalid command.");
 			output.println();
 		}
 	}
