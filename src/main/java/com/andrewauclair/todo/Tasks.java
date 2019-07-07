@@ -74,8 +74,8 @@ public class Tasks {
 		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
-	
-	private String findListForTask(long id) {
+
+	String findListForTask(long id) {
 		for (String key : tasks.keySet()) {
 			Optional<Task> first = tasks.get(key).stream()
 					.filter(task -> task.id == id)
@@ -152,6 +152,10 @@ public class Tasks {
 		}
 		throw new RuntimeException("No active task.");
 	}
+
+	public boolean hasActiveTask() {
+		return activeTaskID != -1;
+	}
 	
 	List<Task> getTasks() {
 		return Collections.unmodifiableList(tasks.get(currentList));
@@ -208,8 +212,8 @@ public class Tasks {
 	boolean hasListWithName(String listName) {
 		return tasks.containsKey(listName);
 	}
-	
-	String getCurrentList() {
+
+	public String getCurrentList() {
 		return currentList;
 	}
 	
@@ -229,8 +233,8 @@ public class Tasks {
 		tasks.get(list).remove(oldTask);
 		tasks.get(list).add(newTask);
 	}
-	
-	long getActiveTaskID() {
+
+	public long getActiveTaskID() {
 		return activeTaskID;
 	}
 }
