@@ -56,16 +56,16 @@ public class Commands {
 
 	private void renameCommand(String command) {
 		String[] s = command.split(" ");
-		
+
 		long taskID = Long.parseLong(s[1]);
 		String newTitle = command.substring(command.substring(8).indexOf(' ') + 10, command.lastIndexOf('"'));
-		
+
 		Task task = tasks.renameTask(taskID, newTitle);
-		
+
 		output.println("Renamed task " + task.description());
 		output.println();
 	}
-	
+
 	private void finishCommand() {
 		Task task = tasks.finishTask();
 
@@ -197,59 +197,88 @@ public class Commands {
 	private void timesCommand(String command) {
 		String[] s = command.split(" ");
 
-		if (s.length != 2) {
-			output.println("Invalid command.");
+		// TODO Usage output if format is wrong, can we regex the format or something to verify it?
+//		if (s.length != 2) {
+//			output.println("Invalid command.");
+//			output.println();
+//			return;
+//		}
+
+		if (s[1].equals("--list")) {
+			String list = s[2];
+			output.println("Times for list '" + list + "'");
 			output.println();
-			return;
+
+			long totalTime = 0;
+			for (Task task : tasks.getTasksForList(list)) {
+				for (TaskTimes time : task.getTimes()) {
+					totalTime += getTotalTime(time);
+				}
+			}
+
+			output.print("Total time spent on list: ");
+
+			printTotalTime(totalTime);
+
+			output.println();
 		}
+		else if (s[1].equals("--task")) {
+			long taskID = Long.parseLong(s[2]);
 
-		long taskID;
-		if (s[1].equals("active")) {
-			taskID = tasks.getActiveTask().id;
-		}
-		else {
-			taskID = Long.parseLong(s[1]);
-		}
+			String list = tasks.findListForTask(taskID);
+			Optional<Task> firstTask = tasks.getTasksForList(list).stream()
+					.filter(task -> task.id == taskID)
+					.findFirst();
 
-		Optional<Task> firstTask = tasks.getTasks().stream()
-				.filter(task -> task.id == taskID)
-				.findFirst();
+			if (firstTask.isPresent()) {
+				Task task = firstTask.get();
 
-		if (firstTask.isPresent()) {
-			Task task = firstTask.get();
+				if (task.getTimes().size() == 0) {
+					output.println("No times for task " + task.description());
+				}
+				else {
+					output.println("Times for task " + task.description());
+					output.println();
 
-			if (task.getTimes().size() == 0) {
-				output.println("No times for task " + task.description());
+					long totalTime = 0;
+					for (TaskTimes time : task.getTimes()) {
+						output.println(time.description(tasks.osInterface.getZoneId()));
+
+						totalTime += getTotalTime(time);
+					}
+
+					output.println();
+					output.print("Total time: ");
+
+					printTotalTime(totalTime);
+				}
 			}
 			else {
-				output.println("Times for " + task.description());
-				output.println();
-
-				long totalTime = 0;
-				for (TaskTimes time : task.getTimes()) {
-					output.println(time.description(tasks.osInterface.getZoneId()));
-
-					totalTime += time.getDuration();
-
-					if (time.stop == TaskTimes.TIME_NOT_SET) {
-						totalTime += tasks.osInterface.currentSeconds() - time.start;
-					}
-				}
-
-				output.println();
-				output.print("Total time: ");
-
-				long hours = totalTime / (60 * 60);
-				long minutes = (totalTime - (hours * 60 * 60)) / 60;
-				long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
-
-				output.println(String.format("%02dh %02dm %02ds", hours, minutes, seconds));
+				output.println("Task not found.");
 			}
+			output.println();
 		}
 		else {
-			output.println("Task not found.");
+			output.println("Invalid command.");
+			output.println();
 		}
-		output.println();
+	}
+
+	private long getTotalTime(TaskTimes time) {
+		long totalTime = time.getDuration();
+
+		if (time.stop == TaskTimes.TIME_NOT_SET) {
+			totalTime += tasks.osInterface.currentSeconds() - time.start;
+		}
+		return totalTime;
+	}
+
+	private void printTotalTime(long totalTime) {
+		long hours = totalTime / (60 * 60);
+		long minutes = (totalTime - (hours * 60 * 60)) / 60;
+		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
+
+		output.println(String.format("%02dh %02dm %02ds", hours, minutes, seconds));
 	}
 
 	private void debugCommand(String command) {

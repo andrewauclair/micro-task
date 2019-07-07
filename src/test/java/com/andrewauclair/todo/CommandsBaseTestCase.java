@@ -15,8 +15,7 @@ import java.time.ZoneId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public
-class CommandsBaseTestCase {
+public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
@@ -33,6 +32,22 @@ class CommandsBaseTestCase {
 
 	void setTime(long time) {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(time);
+	}
+
+	// TODO I'm really not likely how much we have to set the mock return for doing times
+	void addTaskWithTimes(String name, long start, long stop) {
+		Task task = tasks.addTask(name);
+		setTime(start);
+		tasks.startTask(task.id);
+		setTime(stop);
+		tasks.stopTask();
+	}
+
+	void addTaskTimes(long id, long start, long stop) {
+		setTime(start);
+		tasks.startTask(id);
+		setTime(stop);
+		tasks.stopTask();
 	}
 
 	void assertOutput(String... lines) {

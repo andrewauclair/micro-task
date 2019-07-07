@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.jline.ActiveListCompleter;
+import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.os.OSInterface;
 import com.sun.jna.platform.win32.User32;
@@ -57,7 +59,16 @@ public class Main {
 				Completers.TreeCompleter.node("start"),
 				Completers.TreeCompleter.node("stop"),
 				Completers.TreeCompleter.node("finish"),
-				Completers.TreeCompleter.node("times"),
+
+				Completers.TreeCompleter.node("times",
+						Completers.TreeCompleter.node("--task",
+								Completers.TreeCompleter.node(new ActiveTaskCompleter(tasks))
+						),
+						Completers.TreeCompleter.node("--list",
+								Completers.TreeCompleter.node(new ActiveListCompleter(tasks))
+						)
+				),
+
 				Completers.TreeCompleter.node("create-list"),
 				Completers.TreeCompleter.node("switch-list"),
 				Completers.TreeCompleter.node("search"),
