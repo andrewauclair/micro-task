@@ -119,4 +119,19 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		assertEquals("Task is already active.", runtimeException.getMessage());
 	}
+
+	@Test
+	void starting_second_task_stops_active_task() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1);
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		tasks.startTask(2);
+
+		assertThat(tasks.getTasks().stream()
+				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);
+	}
 }

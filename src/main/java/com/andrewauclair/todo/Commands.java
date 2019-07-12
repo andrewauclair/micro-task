@@ -77,6 +77,13 @@ public class Commands {
 		String[] s = command.split(" ");
 		int taskID = Integer.parseInt(s[1]);
 
+		if (tasks.hasActiveTask()) {
+			Task activeTask = tasks.getActiveTask();
+
+			output.println("Stopped task " + activeTask.description());
+			output.println();
+		}
+
 		Task task = tasks.startTask(taskID);
 
 		output.println("Started task " + task.description());
