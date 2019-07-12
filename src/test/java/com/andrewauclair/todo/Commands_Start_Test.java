@@ -57,9 +57,21 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1);
-		tasks.startTask(2);
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		commands.execute("start 2");
 
 		assertThat(tasks.getTasks().stream()
 				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);
+
+		assertOutput(
+				"Stopped task 1 - 'Test 1'",
+				"",
+				"Started task 2 - 'Test 2'",
+				"",
+				"06/20/2019 07:50:02 PM -",
+				""
+		);
 	}
 }
