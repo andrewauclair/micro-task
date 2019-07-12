@@ -52,11 +52,37 @@ public class Tasks {
 			Task renamedTask = new Task(id, task, currentTask.state, currentTask.getTimes());
 			
 			replaceTask(listForTask, currentTask, renamedTask);
+
+			writeTask(renamedTask, currentList);
+			addAndCommit(renamedTask, "Renamed task", currentList);
+
 			return renamedTask;
 		}
 		throw new RuntimeException("Task " + id + " was not found.");
 	}
-	
+
+	void renameList(String oldName, String newName) {
+		if (!tasks.containsKey(oldName)) {
+			throw new RuntimeException("List '" + oldName + "' not found.");
+		}
+
+		tasks.put(newName, tasks.get(oldName));
+		tasks.remove(oldName);
+
+		for (Task task : tasks.get(newName)) {
+			osInterface.removeFile("git-data/tasks/" + oldName + "/" + task.id + ".txt");
+			writeTask(task, newName);
+
+			// add the deleted file and the new file
+			osInterface.runGitCommand("git add tasks/" + oldName + "/" + task.id + ".txt");
+			osInterface.runGitCommand("git add tasks/" + newName + "/" + task.id + ".txt");
+		}
+
+		osInterface.removeFile("git-data/tasks/" + oldName);
+
+		osInterface.runGitCommand("git commit -m \"Renamed list '" + oldName + "' to '" + newName + "'\"");
+	}
+
 	private void writeNextId() {
 		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
 			outputStream.write(String.valueOf(startingID).getBytes());
