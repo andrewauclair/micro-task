@@ -54,13 +54,28 @@ public class Commands {
 	private void renameCommand(String command) {
 		String[] s = command.split(" ");
 
-		long taskID = Long.parseLong(s[1]);
-		String newTitle = command.substring(command.substring(8).indexOf(' ') + 10, command.lastIndexOf('"'));
+		List<String> parameters = Arrays.asList(s);
 
-		Task task = tasks.renameTask(taskID, newTitle);
+		if (parameters.contains("--list")) {
+			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
+			tasks.renameList(s[2], newName);
 
-		output.println("Renamed task " + task.description());
-		output.println();
+			output.println("Renamed list '" + s[2] + "' to '" + newName + "'");
+			output.println();
+		}
+		else if (parameters.contains("--task")) {
+			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
+			long taskID = Long.parseLong(s[2]);
+
+			Task task = tasks.renameTask(taskID, newName);
+
+			output.println("Renamed task " + task.description());
+			output.println();
+		}
+		else {
+			output.println("Invalid command.");
+			output.println();
+		}
 	}
 
 	private void finishCommand() {

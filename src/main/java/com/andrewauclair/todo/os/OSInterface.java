@@ -74,6 +74,14 @@ public class OSInterface {
 		return new FileInputStream(new File(fileName));
 	}
 
+	public void removeFile(String fileName) {
+		boolean delete = new File(fileName).delete();
+
+		if (!delete) {
+			throw new RuntimeException("Failed to delete " + fileName);
+		}
+	}
+
 	public void clearScreen() {
 		//Clears Screen in java
 		try {

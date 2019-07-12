@@ -2,6 +2,8 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
@@ -34,7 +36,34 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		
 		assertEquals(task, renameTask);
 	}
-	
+
+	@Test
+	void renaming_a_task_writes_the_new_file() {
+		Task task = tasks.addTask("Testing the rename of a task");
+
+		// addTask will call the writer, don't want to know about that execution
+		Mockito.reset(writer);
+
+		Task renameTask = tasks.renameTask(1, "Renaming task");
+
+		Mockito.verify(writer).writeTask(renameTask, "git-data/tasks/default/1.txt");
+	}
+
+	@Test
+	void renaming_a_task_tells_git_control_to_add_file_and_commit() {
+		tasks.addTask("Testing the rename of a task");
+
+		// addTask will call the writer, don't want to know about that execution
+		Mockito.reset(writer);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.renameTask(1, "Renaming task");
+
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"");
+	}
+
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameTask(5, "Throws exception"));
@@ -56,5 +85,68 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		assertThat(tasks.getTasksForList("default"))
 				.containsOnly(task);
 	}
-	// TODO Test that you can rename a task on any list, currently it'll be stuck to the current list
+
+	@Test
+	void renaming_list_deletes_the_current_task_files_in_the_folder() {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		Mockito.reset(osInterface); // reset the os interface after it does all the git adds and commits above
+
+		tasks.renameList("one", "test");
+
+		Mockito.verify(osInterface).removeFile("git-data/tasks/one/1.txt");
+		Mockito.verify(osInterface).removeFile("git-data/tasks/one/2.txt");
+		Mockito.verify(osInterface).removeFile("git-data/tasks/one");
+	}
+
+	@Test
+	void renaming_list_writes_new_task_files_into_new_folder() {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		Task task1 = tasks.addTask("Test 1");
+		Task task2 = tasks.addTask("Test 2");
+
+		Mockito.reset(writer); // reset the writer after it does all the add writes above
+
+		tasks.renameList("one", "test");
+
+		Mockito.verify(writer).writeTask(task1, "git-data/tasks/test/1.txt");
+		Mockito.verify(writer).writeTask(task2, "git-data/tasks/test/2.txt");
+	}
+
+	@Test
+	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		Mockito.reset(osInterface); // reset the os interface after it does all the git adds and commits above
+
+		tasks.renameList("one", "test");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/one/2.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list 'one' to 'test'\"");
+	}
+
+	@Test
+	void list_rename_throws_exception_if_old_list_is_not_found() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("old", "new"));
+
+		assertEquals("List 'old' not found.", runtimeException.getMessage());
+	}
 }
