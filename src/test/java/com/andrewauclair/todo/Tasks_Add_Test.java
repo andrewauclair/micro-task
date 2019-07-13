@@ -154,6 +154,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	}
 	
 	@Test
+	void adding_task_with_quotes_in_name_creates_git_message_with_escaped_quotes() {
+		tasks.addTask("Test \"Quotes\"");
+		
+		Mockito.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Test \\\"Quotes\\\"'\"");
+	}
+	
+	@Test
 	void add_throws_exception_if_task_with_id_already_exists() {
 		tasks.addTask(new Task(1, "Test throw"));
 		
