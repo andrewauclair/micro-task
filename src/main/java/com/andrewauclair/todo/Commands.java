@@ -4,6 +4,8 @@ package com.andrewauclair.todo;
 import com.andrewauclair.todo.os.ConsoleColors;
 
 import java.io.PrintStream;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -282,31 +284,31 @@ public class Commands {
 				output.println();
 			}
 		}
-		else if (s[1].equals("--task")) {
+		else if (s[1].equals("--task") && !parameters.contains("--today")) {
 			long taskID = Long.parseLong(s[2]);
-
+			
 			String list = tasks.findListForTask(taskID);
 			Optional<Task> firstTask = tasks.getTasksForList(list).stream()
 					.filter(task -> task.id == taskID)
 					.findFirst();
-
+			
 			if (firstTask.isPresent()) {
 				Task task = firstTask.get();
-
+				
 				if (task.getTimes().size() == 0) {
 					output.println("No times for task " + task.description());
 				}
 				else {
 					output.println("Times for task " + task.description());
 					output.println();
-
+					
 					long totalTime = 0;
 					for (TaskTimes time : task.getTimes()) {
 						output.println(time.description(tasks.osInterface.getZoneId()));
-
+						
 						totalTime += getTotalTime(time);
 					}
-
+					
 					output.println();
 					output.print("Total time: ");
 					
@@ -317,6 +319,59 @@ public class Commands {
 			else {
 				output.println("Task not found.");
 			}
+			output.println();
+		}
+		else if (s[1].equals("--tasks") && parameters.contains("--today")) {
+			// get date and print it
+			output.print("Times for day ");
+			
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			
+			long epochSecond = tasks.osInterface.currentSeconds();
+			
+			ZoneId zoneId = tasks.osInterface.getZoneId();
+			
+			output.println(Instant.ofEpochSecond(epochSecond).atZone(zoneId).format(dateTimeFormatter));
+			
+			LocalTime midnight = LocalTime.MIDNIGHT;
+			LocalDate today = LocalDate.ofInstant(Instant.ofEpochSecond(epochSecond), zoneId);//LocalDate.now(zoneId);
+			LocalDateTime todayMidnight = LocalDateTime.of(today, midnight);
+			LocalDateTime tomorrowMidnight = todayMidnight.plusDays(1);
+			
+			long midnightStart = todayMidnight.atZone(zoneId).toEpochSecond();
+			long midnightStop = tomorrowMidnight.atZone(zoneId).toEpochSecond();
+			
+			output.println();
+			
+			long totalTime = 0;
+			
+			for (Task task : tasks.getTasksForList(tasks.getCurrentList())) {
+				boolean include = false;
+				long totalTaskTime = 0;
+				
+				for (TaskTimes time : task.getTimes()) {
+					if (time.start >= midnightStart && time.stop < midnightStop) {
+						include = true;
+						totalTaskTime += getTotalTime(time);
+					}
+				}
+				
+				if (include) {
+					printTotalTime(totalTaskTime, true);
+					output.print("   ");
+					output.println(task.description());
+					
+					totalTime += totalTaskTime;
+				}
+			}
+			
+			dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+//			output.println(Instant.ofEpochSecond(midnightStart).atZone(tasks.osInterface.getZoneId()).format(dateTimeFormatter));
+//			output.println(Instant.ofEpochSecond(aLong).atZone(tasks.osInterface.getZoneId()).format(dateTimeFormatter));
+			output.println();
+			output.print("Total time: ");
+			printTotalTime(totalTime, false);
+			output.println();
 			output.println();
 		}
 		else {
