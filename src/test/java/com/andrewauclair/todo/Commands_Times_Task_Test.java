@@ -58,11 +58,28 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 				"",
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM",
 				"",
-				"Total time: 00h 16m 40s",
+				"Total time: 16m 40s",
 				""
 		);
 	}
-
+	
+	@Test
+	void prints_total_time_under_a_minute() {
+		addTaskWithTimes("Test 1", 1561078202, 1561078260);
+		
+		Locale.setDefault(Locale.US);
+		commands.execute("times --task 1");
+		
+		assertOutput(
+				"Times for task 1 - 'Test 1'",
+				"",
+				"06/20/2019 07:50:02 PM - 06/20/2019 07:51:00 PM",
+				"",
+				"Total time: 58s",
+				""
+		);
+	}
+	
 	@Test
 	void times_command_prints_no_task_found_if_task_does_not_exist() {
 		commands.execute("times --task 1");

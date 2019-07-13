@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -89,6 +90,25 @@ class TaskReaderTest {
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)
+		);
+
+		assertEquals(expectedTask, task);
+	}
+
+	@Test
+	void task_with_no_times_has_empty_times_list_after_read() throws IOException {
+		String contents = "Test" + Utils.NL + "Inactive";
+
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+
+		TaskReader reader = new TaskReader(osInterface);
+
+		Task task = reader.readTask("git-data/1.txt");
+
+		Task expectedTask = new Task(1, "Test", Task.TaskState.Inactive,
+				Collections.emptyList()
 		);
 
 		assertEquals(expectedTask, task);

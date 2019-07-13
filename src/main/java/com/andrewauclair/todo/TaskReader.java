@@ -33,6 +33,7 @@ class TaskReader {
 		long stop = TaskTimes.TIME_NOT_SET;
 		List<TaskTimes> timesList = new ArrayList<>();
 
+		boolean readTimes = false;
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if (line.startsWith("start")) {
@@ -44,9 +45,11 @@ class TaskReader {
 
 				timesList.add(new TaskTimes(start, stop));
 			}
+
+			readTimes = true;
 		}
 
-		if (stop == TaskTimes.TIME_NOT_SET) {
+		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
 			timesList.add(new TaskTimes(start, stop));
 		}
 		return new Task(id, task, state, timesList);
