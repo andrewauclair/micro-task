@@ -23,7 +23,7 @@ class Commands_Times_List_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Times for list 'default'",
 				"",
-				"Total time spent on list: 00h 56m 40s",
+				"Total time spent on list: 56m 40s",
 				""
 		);
 	}

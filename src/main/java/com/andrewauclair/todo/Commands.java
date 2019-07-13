@@ -228,6 +228,8 @@ public class Commands {
 	private void timesCommand(String command) {
 		String[] s = command.split(" ");
 
+		List<String> parameters = Arrays.asList(s);
+
 		// TODO Usage output if format is wrong, can we regex the format or something to verify it?
 //		if (s.length != 2) {
 //			output.println("Invalid command.");
@@ -237,21 +239,48 @@ public class Commands {
 
 		if (s[1].equals("--list")) {
 			String list = s[2];
-			output.println("Times for list '" + list + "'");
-			output.println();
 
-			long totalTime = 0;
-			for (Task task : tasks.getTasksForList(list)) {
-				for (TaskTimes time : task.getTimes()) {
-					totalTime += getTotalTime(time);
+			if (parameters.contains("--summary")) {
+				output.println("Times summary for list '" + list + "'");
+				output.println();
+
+				List<Task> listTasks = new ArrayList<>(tasks.getTasksForList(list));
+
+				listTasks.sort(Comparator.comparingLong(this::getTotalTaskTime).reversed());
+
+				long totalTime = 0;
+
+				for (Task task : listTasks) {
+					long time = getTotalTaskTime(task);
+
+					totalTime += time;
+					
+					printTotalTime(time, true);
+					output.println("   " + task.description());
 				}
+				output.println();
+				printTotalTime(totalTime, false);
+				output.println("     - Total Time");
+				output.println();
 			}
+			else {
+				output.println("Times for list '" + list + "'");
+				output.println();
 
-			output.print("Total time spent on list: ");
+				long totalTime = 0;
+				for (Task task : tasks.getTasksForList(list)) {
+					for (TaskTimes time : task.getTimes()) {
+						totalTime += getTotalTime(time);
+					}
+				}
 
-			printTotalTime(totalTime);
+				output.print("Total time spent on list: ");
+				
+				printTotalTime(totalTime, false);
 
-			output.println();
+				output.println();
+				output.println();
+			}
 		}
 		else if (s[1].equals("--task")) {
 			long taskID = Long.parseLong(s[2]);
@@ -280,8 +309,9 @@ public class Commands {
 
 					output.println();
 					output.print("Total time: ");
-
-					printTotalTime(totalTime);
+					
+					printTotalTime(totalTime, false);
+					output.println();
 				}
 			}
 			else {
@@ -304,12 +334,35 @@ public class Commands {
 		return totalTime;
 	}
 
-	private void printTotalTime(long totalTime) {
+	private long getTotalTaskTime(Task task) {
+		long totalTime = 0;
+
+		for (TaskTimes time : task.getTimes()) {
+			totalTime += getTotalTime(time);
+		}
+		return totalTime;
+	}
+	
+	private void printTotalTime(long totalTime, boolean printExtraSpace) {
 		long hours = totalTime / (60 * 60);
 		long minutes = (totalTime - (hours * 60 * 60)) / 60;
 		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
 
-		output.println(String.format("%02dh %02dm %02ds", hours, minutes, seconds));
+		if (hours > 0) {
+			output.print(String.format("%02dh ", hours));
+		}
+		else if (printExtraSpace) {
+			output.print("    ");
+		}
+
+		if (minutes > 0) {
+			output.print(String.format("%02dm ", minutes));
+		}
+		else if (printExtraSpace) {
+			output.print("    ");
+		}
+
+		output.print(String.format("%02ds", seconds));
 	}
 
 	private void debugCommand(String command) {
