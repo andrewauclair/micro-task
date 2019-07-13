@@ -75,7 +75,8 @@ public class Main {
 						),
 						Completers.TreeCompleter.node("--list",
 								Completers.TreeCompleter.node(new ActiveListCompleter(tasks))
-						)
+						),
+						Completers.TreeCompleter.node("--today")
 				),
 				
 				Completers.TreeCompleter.node("create-list"),
@@ -101,6 +102,8 @@ public class Main {
 		bindCtrlBackspace(lineReader);
 		
 		osInterface.clearScreen();
+		
+		System.out.println(terminal.getSize());
 		
 		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
 		Properties props = new Properties();
