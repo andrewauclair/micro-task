@@ -5,6 +5,7 @@ import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
+import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
@@ -119,6 +120,15 @@ public class Main {
 				if (command.equals("version")) {
 					System.out.println(version);
 					System.out.println();
+				}
+				else if (command.equals("update --releases") || command.equals("update -r")) {
+					GitLabReleases.printReleases();
+				}
+				else if (command.equals("update --latest") || command.equals("update -l")) {
+					GitLabReleases.updateToRelease("");
+				}
+				else if (command.startsWith("update")) {
+					GitLabReleases.updateToRelease(command.split(" ")[1]);
 				}
 				else {
 					commands.execute(command);
