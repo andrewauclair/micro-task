@@ -30,7 +30,10 @@ public final class Task {
 	}
 
 	Task finish(long stop) {
-		return new Task(id, task, TaskState.Finished, addStopTime(stop));
+		if (state == TaskState.Active) {
+			return new Task(id, task, TaskState.Finished, addStopTime(stop));
+		}
+		return new Task(id, task, TaskState.Finished, taskTimes);
 	}
 
 	private List<TaskTimes> addStopTime(long stop) {

@@ -21,7 +21,7 @@ public class Commands {
 		this.tasks = tasks;
 		this.output = output;
 
-		commands.put("finish", command -> finishCommand());
+		commands.put("finish", this::finishCommand);
 		commands.put("start", this::startCommand);
 		commands.put("stop", command -> stopCommand());
 		commands.put("add", this::addCommand);
@@ -80,8 +80,17 @@ public class Commands {
 		}
 	}
 
-	private void finishCommand() {
-		Task task = tasks.finishTask();
+	private void finishCommand(String command) {
+		String[] s = command.split(" ");
+
+		Task task;
+
+		if (s.length == 2) {
+			task = tasks.finishTask(Long.parseLong(s[1]));
+		}
+		else {
+			task = tasks.finishTask();
+		}
 
 		output.println("Finished task " + task.description());
 		output.println();

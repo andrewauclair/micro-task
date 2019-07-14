@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class Tasks_Finish_Test extends TaskBaseTestCase {
+class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	@BeforeEach
 	void setup() throws IOException {
 		super.setup();
