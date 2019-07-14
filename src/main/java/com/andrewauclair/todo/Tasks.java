@@ -193,11 +193,11 @@ public class Tasks {
 	
 	Task finishTask() {
 		Task activeTask = getActiveTask();
-		
+
 		activeTaskID = NO_ACTIVE_TASK;
-		
+
 		Task finishedTask = activeTask.finish(osInterface.currentSeconds());
-		
+
 		replaceTask(activeTaskList, activeTask, finishedTask);
 
 		writeTask(finishedTask, currentList);
@@ -205,7 +205,27 @@ public class Tasks {
 		
 		return finishedTask;
 	}
-	
+
+	Task finishTask(long id) {
+		Optional<Task> optionalTask = getTask(id);
+
+		if (optionalTask.isPresent()) {
+			Task finishedTask = optionalTask.get().finish(osInterface.currentSeconds());
+
+			String taskList = findListForTask(id);
+
+			replaceTask(taskList, optionalTask.get(), finishedTask);
+
+			writeTask(finishedTask, taskList);
+			addAndCommit(finishedTask, "Finished task", taskList);
+
+			return finishedTask;
+		}
+		else {
+			throw new RuntimeException("Task not found.");
+		}
+	}
+
 	public void addTask(Task task) {
 		if (getTask(task.id).isPresent()) {
 			throw new RuntimeException("Task with ID " + task.id + " already exists.");

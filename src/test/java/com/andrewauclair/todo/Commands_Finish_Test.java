@@ -31,4 +31,33 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 
 		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Finished, task.state));
 	}
+
+	@Test
+	void providing_a_task_id_allows_user_to_finish_specific_task() {
+		tasks.addTask("Task 1");
+		tasks.addTask("Task 2");
+
+		tasks.startTask(1);
+
+		commands.execute("finish 2");
+
+		assertOutput(
+				"Finished task 2 - 'Task 2'",
+				"",
+				"Task finished in: 00h 00m 00s",
+				""
+		);
+
+		Optional<Task> optionalTask = tasks.getTask(1);
+
+		assertThat(optionalTask).isPresent();
+
+		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Active, task.state));
+
+		optionalTask = tasks.getTask(2);
+
+		assertThat(optionalTask).isPresent();
+
+		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Finished, task.state));
+	}
 }
