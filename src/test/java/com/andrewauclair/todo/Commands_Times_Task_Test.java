@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
@@ -104,7 +103,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 
 	// TODO Print some actual usage info
 	@Test
-	@Disabled("Removing until we do correct usage checking")
+//	@Disabled("Removing until we do correct usage checking")
 	void times_without_a_task_number_prints_invalid_command() {
 		commands.execute("times");
 
@@ -116,7 +115,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 
 	// TODO Print some actual usage info
 	@Test
-	@Disabled("Removing until we do correct usage checking")
+//	@Disabled("Removing until we do correct usage checking")
 	void times_with_too_many_arguments_prints_invalid_command() {
 		commands.execute("times 1 2");
 

@@ -233,6 +233,11 @@ public class Commands {
 		List<String> parameters = Arrays.asList(s);
 
 		// TODO Usage output if format is wrong, can we regex the format or something to verify it?
+		if (s.length == 1) {
+			output.println("Invalid command.");
+			output.println();
+			return;
+		}
 //		if (s.length != 2) {
 //			output.println("Invalid command.");
 //			output.println();
