@@ -177,7 +177,7 @@ public class Main {
 		main.bind((Widget) () -> {
 			short keyState = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_LCONTROL);
 			
-			if (keyState == 0) {
+			if ((keyState & 0x8000) == 0) {
 				return lineReader.getBuffer().backspace();
 			}
 			else {
