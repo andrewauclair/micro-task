@@ -15,9 +15,13 @@ class Commands_Times_Today_Test extends CommandsBaseTestCase {
 		long june21_8_06_42_pm = june20_8_06_42_pm + SECONDS_IN_DAY;
 		
 		addTaskWithTimes("Test 1 - Day 1", june20_7_50_02_pm, june20_8_06_42_pm);
-		addTaskWithTimes("Test 2 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm);
+		addTaskWithTimes("Test 2 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm + 10);
 		
 		addTaskWithTimes("Test 3 - Day 3", june21_7_50_02_pm + SECONDS_IN_DAY, june21_8_06_42_pm + SECONDS_IN_DAY);
+		
+		tasks.addList("test");
+		tasks.setCurrentList("test");
+		addTaskWithTimes("Test 4 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm);
 		
 		setTime(june21_8_06_42_pm);
 		
@@ -26,9 +30,10 @@ class Commands_Times_Today_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Times for day 06/21/2019",
 				"",
-				"    16m 40s   2 - 'Test 2 - Day 2'",
+				"    16m 50s   2 - 'Test 2 - Day 2'",
+				"    16m 40s   4 - 'Test 4 - Day 2'",
 				"",
-				"Total time: 16m 40s",
+				"Total time: 33m 30s",
 				""
 		);
 	}
