@@ -187,6 +187,12 @@ public class Tasks {
 		return Collections.unmodifiableList(tasks.get(currentList));
 	}
 	
+	List<Task> getAllTasks() {
+		List<Task> tasks = new ArrayList<>();
+		this.tasks.values().forEach(tasks::addAll);
+		return tasks;
+	}
+	
 	List<Task> getTasksForList(String listName) {
 		return Collections.unmodifiableList(tasks.get(listName));
 	}

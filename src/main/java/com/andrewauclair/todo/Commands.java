@@ -247,11 +247,6 @@ public class Commands {
 			output.println();
 			return;
 		}
-//		if (s.length != 2) {
-//			output.println("Invalid command.");
-//			output.println();
-//			return;
-//		}
 
 		if (s[1].equals("--list")) {
 			String list = s[2];
@@ -359,7 +354,12 @@ public class Commands {
 			
 			long totalTime = 0;
 			
-			for (Task task : tasks.getTasksForList(tasks.getCurrentList())) {
+			// TODO We should still use getTasksForList if --list was provided, going to skip that for now
+			List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());//tasks.getTasksForList(list));
+			
+			listTasks.sort(Comparator.comparingLong(this::getTotalTaskTime).reversed());
+			
+			for (Task task : listTasks) {
 				boolean include = false;
 				long totalTaskTime = 0;
 				
@@ -379,9 +379,6 @@ public class Commands {
 				}
 			}
 			
-			dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
-//			output.println(Instant.ofEpochSecond(midnightStart).atZone(tasks.osInterface.getZoneId()).format(dateTimeFormatter));
-//			output.println(Instant.ofEpochSecond(aLong).atZone(tasks.osInterface.getZoneId()).format(dateTimeFormatter));
 			output.println();
 			output.print("Total time: ");
 			printTotalTime(totalTime, false);
