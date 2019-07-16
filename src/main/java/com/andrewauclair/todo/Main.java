@@ -88,10 +88,21 @@ public class Main {
 				Completers.TreeCompleter.node("search"),
 				
 				Completers.TreeCompleter.node("rename",
-						Completers.TreeCompleter.node(new RenameCompleter(tasks))
+						Completers.TreeCompleter.node("--task",
+								Completers.TreeCompleter.node(new RenameCompleter(tasks))
+						),
+						Completers.TreeCompleter.node("--list",
+								Completers.TreeCompleter.node(new ListCompleter(tasks)
+								)
+						)
 				),
-
-				Completers.TreeCompleter.node("version")
+				
+				Completers.TreeCompleter.node("version"),
+				
+				Completers.TreeCompleter.node("update",
+						Completers.TreeCompleter.node("-r", "--releases"),
+						Completers.TreeCompleter.node("-l", "--latest")
+				)
 		);
 		
 		LineReader lineReader = LineReaderBuilder.builder()
@@ -115,16 +126,16 @@ public class Main {
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
-
+				
 				// TODO Move this to Commands and the version loading to os interface as a String getVersion() method
 				if (command.equals("version")) {
 					System.out.println(version);
 					System.out.println();
 				}
-				else if (command.equals("update --releases") || command.equals("update -r")) {
+				else if (command.startsWith("update --releases") || command.startsWith("update -r")) {
 					GitLabReleases.printReleases();
 				}
-				else if (command.equals("update --latest") || command.equals("update -l")) {
+				else if (command.startsWith("update --latest") || command.startsWith("update -l")) {
 					GitLabReleases.updateToRelease("");
 				}
 				else if (command.startsWith("update")) {
