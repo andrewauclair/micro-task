@@ -420,8 +420,8 @@ public class Commands {
 		else if (printExtraSpace) {
 			output.print("    ");
 		}
-
-		if (minutes > 0) {
+		
+		if (minutes > 0 || hours > 0) {
 			output.print(String.format("%02dm ", minutes));
 		}
 		else if (printExtraSpace) {
