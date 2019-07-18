@@ -15,8 +15,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
-
-		commands.execute("start 1");
+		
+		commands.execute(printStream, "start 1");
 
 		assertEquals("Started task 1 - 'Task 1'" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM -" + Utils.NL + Utils.NL, outputStream.toString());
@@ -38,8 +38,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		assertThat(stopTask.getTimes()).hasSize(1);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
-
-		commands.execute("start 1");
+		
+		commands.execute(printStream, "start 1");
 
 		assertEquals("Started task 1 - 'Task 1'" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM -" + Utils.NL + Utils.NL, outputStream.toString());
@@ -59,8 +59,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.startTask(1);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
-
-		commands.execute("start 2");
+		
+		commands.execute(printStream, "start 2");
 
 		assertThat(tasks.getTasks().stream()
 				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);

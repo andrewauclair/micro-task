@@ -19,7 +19,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask();
 		tasks.startTask(3);
 		
-		commands.execute("list --tasks");
+		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
 				"  1 - 'Task 1'",
@@ -40,7 +40,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
 		
-		commands.execute("list --tasks --list default");
+		commands.execute(printStream, "list --tasks --list default");
 		
 		assertOutput(
 				"Tasks on list 'default'",
@@ -56,7 +56,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		IntStream.range(1, 40)
 				.forEach(num -> tasks.addTask("Test " + num));
 		
-		commands.execute("list --tasks");
+		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
 				"  1 - 'Test 1'",
@@ -90,7 +90,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				.forEach(num -> tasks.addTask("Test " + num));
 		
 		// TODO This should also accept "list -ta"
-		commands.execute("list --tasks --all");
+		commands.execute(printStream, "list --tasks --all");
 		
 		assertOutput(
 				"  1 - 'Test 1'",
@@ -121,14 +121,14 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void list_command_does_not_throw_the_no_active_task_exception() {
-		commands.execute("list --tasks");
+		commands.execute(printStream, "list --tasks");
 		
 		assertEquals("No tasks." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 	
 	@Test
 	void list_with_no_tasks_flag_is_invalid() {
-		commands.execute("list");
+		commands.execute(printStream, "list");
 		
 		assertOutput(
 				"Invalid command.",

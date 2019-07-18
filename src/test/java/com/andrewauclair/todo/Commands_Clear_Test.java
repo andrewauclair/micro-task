@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 class Commands_Clear_Test extends CommandsBaseTestCase {
 	@Test
 	void clear_command_calls_os_interface_clearScreen_function() {
-		commands.execute("clear");
+		commands.execute(printStream, "clear");
 
 		Mockito.verify(osInterface).clearScreen();
 	}

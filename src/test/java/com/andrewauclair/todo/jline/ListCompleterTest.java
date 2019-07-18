@@ -21,9 +21,9 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	
 	@Test
 	void candidates_list_contains_all_lists() {
-		commands.execute("create-list alpha");
-		commands.execute("create-list bravo");
-		commands.execute("create-list charlie");
+		commands.execute(printStream, "create-list alpha");
+		commands.execute(printStream, "create-list bravo");
+		commands.execute(printStream, "create-list charlie");
 		
 		List<Candidate> candidates = new ArrayList<>();
 		

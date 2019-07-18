@@ -1,7 +1,10 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.command.ListCreateCommand;
+import com.andrewauclair.todo.command.ListSwitchCommand;
 import com.andrewauclair.todo.os.ConsoleColors;
+import org.jline.builtins.Completers.TreeCompleter.Node;
 
 import java.io.PrintStream;
 import java.time.*;
@@ -12,75 +15,33 @@ import java.util.stream.Collectors;
 public class Commands {
 	private static final int MAX_DISPLAYED_TASKS = 20;
 	private final Tasks tasks;
-	private final PrintStream output;
 	private final Map<String, Command> commands = new HashMap<>();
-
+	
+	private final Map<String, com.andrewauclair.todo.command.Command> newCommands = new HashMap<>();
+	
 	private boolean debugEnabled = false;
-
-	Commands(Tasks tasks, PrintStream output) {
+	
+	Commands(Tasks tasks) {
 		this.tasks = tasks;
-		this.output = output;
-
+		
+		newCommands.put("create-list", new ListCreateCommand(tasks));
+		newCommands.put("switch-list", new ListSwitchCommand(tasks));
+		
 		commands.put("finish", this::finishCommand);
 		commands.put("start", this::startCommand);
-		commands.put("stop", command -> stopCommand());
+		commands.put("stop", this::stopCommand);
 		commands.put("add", this::addCommand);
-		commands.put("active", command -> activeCommand());
+		commands.put("active", this::activeCommand);
 		commands.put("list", this::listCommand);
 		commands.put("times", this::timesCommand);
 		commands.put("debug", this::debugCommand);
-		commands.put("create-list", this::listCreateCommand);
-		commands.put("switch-list", this::listSwitchCommand);
 		commands.put("rename", this::renameCommand);
 		commands.put("search", this::searchCommand);
-		commands.put("clear", command -> tasks.osInterface.clearScreen());
-		commands.put("exit", command -> tasks.osInterface.exit());
+		commands.put("clear", (output1, command) -> tasks.osInterface.clearScreen());
+		commands.put("exit", (output1, command) -> tasks.osInterface.exit());
 	}
-
-	private void searchCommand(String command) {
-		String searchText = command.substring(8, command.lastIndexOf("\""));
-
-		List<Task> searchResults = tasks.getTasks().stream()
-				.filter(task -> task.task.contains(searchText))
-				.collect(Collectors.toList());
-
-		output.println("Search Results (" + searchResults.size() + "):");
-		output.println();
-
-		for (Task task : searchResults) {
-			output.println(task.description().replace(searchText, ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED + searchText + ConsoleColors.ANSI_RESET));
-		}
-		output.println();
-	}
-
-	private void renameCommand(String command) {
-		String[] s = command.split(" ");
-
-		List<String> parameters = Arrays.asList(s);
-
-		if (parameters.contains("--list")) {
-			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
-			tasks.renameList(s[2], newName);
-
-			output.println("Renamed list '" + s[2] + "' to '" + newName + "'");
-			output.println();
-		}
-		else if (parameters.contains("--task")) {
-			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
-			long taskID = Long.parseLong(s[2]);
-
-			Task task = tasks.renameTask(taskID, newName);
-
-			output.println("Renamed task " + task.description());
-			output.println();
-		}
-		else {
-			output.println("Invalid command.");
-			output.println();
-		}
-	}
-
-	private void finishCommand(String command) {
+	
+	private void finishCommand(PrintStream output, String command) {
 		String[] s = command.split(" ");
 
 		Task task;
@@ -98,8 +59,8 @@ public class Commands {
 		output.println(new TaskDuration(task.getTimes()));
 		output.println();
 	}
-
-	private void startCommand(String command) {
+	
+	private void startCommand(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		int taskID = Integer.parseInt(s[1]);
 
@@ -121,8 +82,8 @@ public class Commands {
 		output.println(startTime.description(tasks.osInterface.getZoneId()));
 		output.println();
 	}
-
-	private void stopCommand() {
+	
+	private void stopCommand(PrintStream output, String command) {
 		Task task = tasks.stopTask();
 
 		output.println("Stopped task " + task.description());
@@ -137,8 +98,8 @@ public class Commands {
 		output.println(new TaskDuration(stopTime));
 		output.println();
 	}
-
-	private void addCommand(String command) {
+	
+	private void addCommand(PrintStream output, String command) {
 		String taskTitle = command.substring(5, command.lastIndexOf('"'));
 
 		Task task = tasks.addTask(taskTitle);
@@ -146,8 +107,8 @@ public class Commands {
 		output.println("Added task " + task.description());
 		output.println();
 	}
-
-	private void activeCommand() {
+	
+	private void activeCommand(PrintStream output, String command) {
 		Task task = tasks.getActiveTask();
 
 		output.println("Active task is " + task.description());
@@ -163,8 +124,8 @@ public class Commands {
 		output.println(new TaskDuration(activeTime));
 		output.println();
 	}
-
-	private void listCommand(String command) {
+	
+	private void listCommand(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		
 		List<String> parameters = Arrays.asList(s);
@@ -182,7 +143,7 @@ public class Commands {
 		if (showLists) {
 			tasks.getListNames().stream()
 					.sorted()
-					.forEach(this::printList);
+					.forEach(str -> printList(output, str));
 			output.println();
 		}
 		else if (showTasks) {
@@ -198,7 +159,7 @@ public class Commands {
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 			tasksList.stream()
 					.limit(limit)
-					.forEach(this::printTask);
+					.forEach(str -> printTask(output, str));
 
 			if (tasksList.size() > limit) {
 				output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
@@ -213,30 +174,8 @@ public class Commands {
 			output.println();
 		}
 	}
-
-	private void printList(String list) {
-		if (list.equals(tasks.getCurrentList())) {
-			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
-		}
-		else {
-			output.print("  ");
-			output.println(list);
-		}
-	}
-
-	private void printTask(Task task) {
-		if (task.id == tasks.getActiveTaskID()) {
-			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
-		}
-		else {
-			output.print("  ");
-			output.println(task.description());
-		}
-	}
-
-	private void timesCommand(String command) {
+	
+	private void timesCommand(PrintStream output, String command) {
 		String[] s = command.split(" ");
 
 		List<String> parameters = Arrays.asList(s);
@@ -266,11 +205,11 @@ public class Commands {
 
 					totalTime += time;
 					
-					printTotalTime(time, true);
+					printTotalTime(output, time, true);
 					output.println("   " + task.description());
 				}
 				output.println();
-				printTotalTime(totalTime, false);
+				printTotalTime(output, totalTime, false);
 				output.println("     - Total Time");
 				output.println();
 			}
@@ -287,7 +226,7 @@ public class Commands {
 
 				output.print("Total time spent on list: ");
 				
-				printTotalTime(totalTime, false);
+				printTotalTime(output, totalTime, false);
 
 				output.println();
 				output.println();
@@ -321,7 +260,7 @@ public class Commands {
 					output.println();
 					output.print("Total time: ");
 					
-					printTotalTime(totalTime, false);
+					printTotalTime(output, totalTime, false);
 					output.println();
 				}
 			}
@@ -371,7 +310,7 @@ public class Commands {
 				}
 				
 				if (include) {
-					printTotalTime(totalTaskTime, true);
+					printTotalTime(output, totalTaskTime, true);
 					output.print("   ");
 					output.println(task.description());
 					
@@ -381,13 +320,82 @@ public class Commands {
 			
 			output.println();
 			output.print("Total time: ");
-			printTotalTime(totalTime, false);
+			printTotalTime(output, totalTime, false);
 			output.println();
 			output.println();
 		}
 		else {
 			output.println("Invalid command.");
 			output.println();
+		}
+	}
+	
+	private void debugCommand(PrintStream output, String command) {
+		String[] s = command.split(" ");
+		
+		if (s[1].equals("enable")) {
+			debugEnabled = true;
+		}
+		else if (s[1].equals("disable")) {
+			debugEnabled = false;
+		}
+		else {
+			output.println("Invalid command.");
+			output.println();
+		}
+	}
+	
+	private void renameCommand(PrintStream output, String command) {
+		String[] s = command.split(" ");
+		
+		List<String> parameters = Arrays.asList(s);
+		
+		if (parameters.contains("--list")) {
+			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
+			tasks.renameList(s[2], newName);
+			
+			output.println("Renamed list '" + s[2] + "' to '" + newName + "'");
+			output.println();
+		}
+		else if (parameters.contains("--task")) {
+			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
+			long taskID = Long.parseLong(s[2]);
+			
+			Task task = tasks.renameTask(taskID, newName);
+			
+			output.println("Renamed task " + task.description());
+			output.println();
+		}
+		else {
+			output.println("Invalid command.");
+			output.println();
+		}
+	}
+	
+	private void searchCommand(PrintStream output, String command) {
+		String searchText = command.substring(8, command.lastIndexOf("\""));
+		
+		List<Task> searchResults = tasks.getTasks().stream()
+				.filter(task -> task.task.contains(searchText))
+				.collect(Collectors.toList());
+		
+		output.println("Search Results (" + searchResults.size() + "):");
+		output.println();
+		
+		for (Task task : searchResults) {
+			output.println(task.description().replace(searchText, ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED + searchText + ConsoleColors.ANSI_RESET));
+		}
+		output.println();
+	}
+	
+	private void printList(PrintStream output, String list) {
+		if (list.equals(tasks.getCurrentList())) {
+			output.print("* ");
+			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
+		}
+		else {
+			output.print("  ");
+			output.println(list);
 		}
 	}
 
@@ -409,7 +417,18 @@ public class Commands {
 		return totalTime;
 	}
 	
-	private void printTotalTime(long totalTime, boolean printExtraSpace) {
+	private void printTask(PrintStream output, Task task) {
+		if (task.id == tasks.getActiveTaskID()) {
+			output.print("* ");
+			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+		}
+		else {
+			output.print("  ");
+			output.println(task.description());
+		}
+	}
+	
+	private void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
 		long hours = totalTime / (60 * 60);
 		long minutes = (totalTime - (hours * 60 * 60)) / 60;
 		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
@@ -431,78 +450,28 @@ public class Commands {
 		output.print(String.format("%02ds", seconds));
 	}
 
-	private void debugCommand(String command) {
-		String[] s = command.split(" ");
-
-		if (s[1].equals("enable")) {
-			debugEnabled = true;
-		}
-		else if (s[1].equals("disable")) {
-			debugEnabled = false;
-		}
-		else {
-			output.println("Invalid command.");
-			output.println();
-		}
-	}
-
-	private void listCreateCommand(String command) {
-		String[] s = command.split(" ");
-
-		if (s.length != 2) {
-			output.println("Invalid command.");
-			output.println();
-			return;
-		}
-
-		String list = s[1].toLowerCase();
-
-		boolean added = tasks.addList(list);
-
-		if (added) {
-			output.println("Created new list '" + list + "'");
-		}
-		else {
-			output.println("List '" + list + "' already exists.");
-		}
-		output.println();
-	}
-
-	private void listSwitchCommand(String command) {
-		String[] s = command.split(" ");
-
-		if (s.length != 2) {
-			output.println("Invalid command.");
-			output.println();
-			return;
-		}
-
-		String list = s[1].toLowerCase();
-
-		boolean exists = tasks.setCurrentList(list);
-
-		if (exists) {
-			output.println("Switched to list '" + list + "'");
-		}
-		else {
-			output.println("List '" + list + "' does not exist.");
-		}
-		output.println();
-	}
-
 	public boolean isDebugEnabled() {
 		return debugEnabled;
 	}
-
-	public void execute(String command) {
+	
+	public void execute(PrintStream output, String command) {
 		try {
 			commands.keySet().stream()
 					.filter(command::startsWith)
 					.findFirst()
-					.ifPresentOrElse(name -> commands.get(name).execute(command),
+					.ifPresentOrElse(name -> commands.get(name).execute(output, command),
 							() -> {
-								output.println("Unknown command.");
-								output.println();
+								Optional<String> newCommand = newCommands.keySet().stream()
+										.filter(command::startsWith)
+										.findFirst();
+								
+								if (newCommand.isPresent()) {
+									newCommands.get(newCommand.get()).print(output, command);
+								}
+								else {
+									output.println("Unknown command.");
+									output.println();
+								}
 							});
 		}
 		catch (RuntimeException e) {
@@ -529,8 +498,18 @@ public class Commands {
 		}
 		return prompt + ">";
 	}
-
+	
+	public List<Node> getAutoCompleteNodes() {
+		List<Node> nodes = new ArrayList<>();
+		
+		for (com.andrewauclair.todo.command.Command value : newCommands.values()) {
+			nodes.addAll(value.getAutoCompleteNodes());
+		}
+		
+		return nodes;
+	}
+	
 	private interface Command {
-		void execute(String command);
+		void execute(PrintStream output, String command);
 	}
 }

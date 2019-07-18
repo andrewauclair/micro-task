@@ -18,8 +18,9 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
+
+import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
@@ -27,7 +28,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		OSInterface osInterface = new OSInterface();
 		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(System.out, osInterface), System.out, osInterface);
-		Commands commands = new Commands(tasks, System.out);
+		Commands commands = new Commands(tasks);
 		
 		osInterface.setCommands(commands);
 		
@@ -52,58 +53,66 @@ public class Main {
 				.nativeSignals(true)
 				.build();
 		
-		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(
-				Completers.TreeCompleter.node("active"),
-				Completers.TreeCompleter.node("clear"),
-				Completers.TreeCompleter.node("exit"),
-				Completers.TreeCompleter.node("list",
-						Completers.TreeCompleter.node("--tasks",
-								Completers.TreeCompleter.node("--list",
-										Completers.TreeCompleter.node(new ListCompleter(tasks))
-								)
-						),
-						Completers.TreeCompleter.node("--lists")
-				),
-				Completers.TreeCompleter.node("debug"),
-				Completers.TreeCompleter.node("add"),
-				Completers.TreeCompleter.node("start"),
-				Completers.TreeCompleter.node("stop"),
-				Completers.TreeCompleter.node("finish"),
+		List<Completers.TreeCompleter.Node> treeNodes = new ArrayList<>(Arrays.asList(
+				node("active"),
+				node("clear"),
+				node("exit"),
 				
-				Completers.TreeCompleter.node("times",
-						Completers.TreeCompleter.node("--task",
-								Completers.TreeCompleter.node(new ActiveTaskCompleter(tasks))
-						),
-						Completers.TreeCompleter.node("--list",
-								Completers.TreeCompleter.node(new ActiveListCompleter(tasks))
-						),
-						Completers.TreeCompleter.node("--today")
-				),
-				
-				Completers.TreeCompleter.node("create-list"),
-				Completers.TreeCompleter.node("switch-list",
-						Completers.TreeCompleter.node(new ListCompleter(tasks)
-						)
-				),
-				Completers.TreeCompleter.node("search"),
-				
-				Completers.TreeCompleter.node("rename",
-						Completers.TreeCompleter.node("--task",
-								Completers.TreeCompleter.node(new RenameCompleter(tasks))
-						),
-						Completers.TreeCompleter.node("--list",
-								Completers.TreeCompleter.node(new ListCompleter(tasks)
+				node("list",
+						node("--tasks",
+								node("--list",
+										node(new ListCompleter(tasks))
 								)
 						)
 				),
 				
-				Completers.TreeCompleter.node("version"),
+				node("list",
+						node("--lists")
+				),
 				
-				Completers.TreeCompleter.node("update",
-						Completers.TreeCompleter.node("-r", "--releases"),
-						Completers.TreeCompleter.node("-l", "--latest")
+				node("debug"),
+				node("add"),
+				node("start"),
+				node("stop"),
+				node("finish"),
+				
+				node("times",
+						node("--tasks",
+								node(new ActiveTaskCompleter(tasks)),
+								node("--today")
+						)
+				),
+				
+				node("times",
+						node("--list",
+								node(new ActiveListCompleter(tasks)),
+								node("--today")
+						)
+				),
+				
+				node("search"),
+				
+				node("rename",
+						node("--task",
+								node(new RenameCompleter(tasks))
+						),
+						node("--list",
+								node(new ListCompleter(tasks)
+								)
+						)
+				),
+				
+				node("version"),
+				
+				node("update",
+						node("-r", "--releases"),
+						node("-l", "--latest")
 				)
-		);
+		));
+		
+		treeNodes.addAll(commands.getAutoCompleteNodes());
+		
+		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(treeNodes);
 		
 		LineReader lineReader = LineReaderBuilder.builder()
 				.terminal(terminal)
@@ -142,7 +151,7 @@ public class Main {
 					GitLabReleases.updateToRelease(command.split(" ")[1]);
 				}
 				else {
-					commands.execute(command);
+					commands.execute(System.out, command);
 				}
 			}
 			catch (UserInterruptException ignored) {

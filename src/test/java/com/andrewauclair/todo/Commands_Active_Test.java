@@ -10,7 +10,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(1);
 		setTime(1561079202);
-		commands.execute("active");
+		commands.execute(printStream, "active");
 
 		assertOutput(
 				"Active task is 1 - 'Task 1'",
@@ -24,7 +24,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 
 	@Test
 	void prints_no_active_task_when_there_is_no_active_task() {
-		commands.execute("active");
+		commands.execute(printStream, "active");
 
 		assertOutput(
 				"No active task.",

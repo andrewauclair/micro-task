@@ -253,7 +253,7 @@ public class Tasks {
 		return getTask(id, currentList);
 	}
 	
-	boolean addList(String listName) {
+	public boolean addList(String listName) {
 		if (tasks.containsKey(listName)) {
 			return false;
 		}
@@ -273,7 +273,7 @@ public class Tasks {
 		return activeTaskList;
 	}
 	
-	boolean setCurrentList(String listName) {
+	public boolean setCurrentList(String listName) {
 		boolean exists = tasks.containsKey(listName);
 		if (exists) {
 			currentList = listName;

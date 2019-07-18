@@ -12,8 +12,8 @@ class Commands_Times_Summary_Test extends CommandsBaseTestCase {
 		tasks.addTask(new Task(30, "Test 3", Task.TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
 		
 		setTime(3610);
-
-		commands.execute("times --list default --summary");
+		
+		commands.execute(printStream, "times --list default --summary");
 
 		assertOutput(
 				"Times summary for list 'default'",
