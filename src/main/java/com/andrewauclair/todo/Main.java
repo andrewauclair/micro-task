@@ -61,8 +61,9 @@ public class Main {
 				node("list",
 						node("--tasks",
 								node("--list",
-										node(new ListCompleter(tasks))
-								)
+										node(new ListCompleter(tasks), node("--all"))
+								),
+								node("--all")
 						)
 				),
 				
