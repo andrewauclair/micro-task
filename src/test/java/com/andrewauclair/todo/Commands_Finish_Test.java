@@ -16,7 +16,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(2);
 		setTime(1561079202);
-		commands.execute("finish");
+		commands.execute(printStream, "finish");
 
 		assertOutput(
 				"Finished task 2 - 'Task 2'",
@@ -38,8 +38,8 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 2");
 
 		tasks.startTask(1);
-
-		commands.execute("finish 2");
+		
+		commands.execute(printStream, "finish 2");
 
 		assertOutput(
 				"Finished task 2 - 'Task 2'",

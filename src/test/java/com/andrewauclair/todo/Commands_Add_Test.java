@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Commands_Add_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_add_command() {
-		commands.execute("add \"Task 1\"");
-		commands.execute("add \"Task 2\"");
+		commands.execute(printStream, "add \"Task 1\"");
+		commands.execute(printStream, "add \"Task 2\"");
 
 		assertOutput(
 				"Added task 1 - 'Task 1'",
@@ -27,7 +27,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 	@Test
 	void add_command_ignores_extra_whitespace() {
-		commands.execute("add \"Task 1\"    ");
+		commands.execute(printStream, "add \"Task 1\"    ");
 
 		assertOutput(
 				"Added task 1 - 'Task 1'",

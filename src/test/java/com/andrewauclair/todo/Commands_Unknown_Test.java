@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Unknown_Test extends CommandsBaseTestCase {
 	@Test
 	void prints_unknown_command_when_command_is_not_found() {
-		commands.execute("junk");
+		commands.execute(printStream, "junk");
 
 		assertEquals("Unknown command." + Utils.NL + Utils.NL, outputStream.toString());
 	}

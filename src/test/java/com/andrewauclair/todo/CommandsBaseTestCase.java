@@ -19,10 +19,10 @@ public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	private final PrintStream printStream = new PrintStream(outputStream);
+	public final PrintStream printStream = new PrintStream(outputStream);
 	public final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
-
-	public final Commands commands = new Commands(tasks, printStream);
+	
+	public final Commands commands = new Commands(tasks);
 
 	@BeforeEach
 	void setup() throws IOException {

@@ -23,7 +23,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_basic_rename_completion() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("1");
 
@@ -37,7 +37,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_rename_no_candidates_when_id_is_not_complete_with_whitespace_after() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("1 ");
 
@@ -50,7 +50,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_rename_with_no_id_returns_empty_list() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("");
 
@@ -63,7 +63,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_rename_with_invalid_id_returns_empty_list() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("rename 123");
 
@@ -76,7 +76,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_rename_with_id_that_is_not_a_number_returns_empty_list() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("rename 12a82");
 
@@ -89,7 +89,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_rename_no_candidates_after_task_name_has_been_added() {
-		commands.execute("add \"Test\"");
+		commands.execute(printStream, "add \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("rename 123 \"New Name Here\"");
 

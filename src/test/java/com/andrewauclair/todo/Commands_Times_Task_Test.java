@@ -25,7 +25,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		setTime(1561085202);
 
 		Locale.setDefault(Locale.US);
-		commands.execute("times --task 2");
+		commands.execute(printStream, "times --task 2");
 
 		assertOutput(
 				"Times for task 2 - 'Test 2'",
@@ -50,7 +50,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		Locale.setDefault(Locale.US);
-		commands.execute("times --task 1");
+		commands.execute(printStream, "times --task 1");
 
 		assertOutput(
 				"Times for task 1 - 'Test 1'",
@@ -67,7 +67,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		addTaskWithTimes("Test 1", 1561078202, 1561078260);
 		
 		Locale.setDefault(Locale.US);
-		commands.execute("times --task 1");
+		commands.execute(printStream, "times --task 1");
 		
 		assertOutput(
 				"Times for task 1 - 'Test 1'",
@@ -81,7 +81,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void times_command_prints_no_task_found_if_task_does_not_exist() {
-		commands.execute("times --task 1");
+		commands.execute(printStream, "times --task 1");
 
 		assertOutput(
 				"Task not found.",
@@ -92,8 +92,8 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void times_command_prints_no_times_for_task_when_task_has_never_been_started() {
 		tasks.addTask("Test");
-
-		commands.execute("times --task 1");
+		
+		commands.execute(printStream, "times --task 1");
 
 		assertOutput(
 				"No times for task 1 - 'Test'",
@@ -105,7 +105,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
 //	@Disabled("Removing until we do correct usage checking")
 	void times_without_a_task_number_prints_invalid_command() {
-		commands.execute("times");
+		commands.execute(printStream, "times");
 
 		assertOutput(
 				"Invalid command.",
@@ -117,7 +117,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
 //	@Disabled("Removing until we do correct usage checking")
 	void times_with_too_many_arguments_prints_invalid_command() {
-		commands.execute("times 1 2");
+		commands.execute(printStream, "times 1 2");
 
 		assertOutput(
 				"Invalid command.",
@@ -154,7 +154,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		setTime(1561085202);
 
 		Locale.setDefault(Locale.US);
-		commands.execute("times --task 2");
+		commands.execute(printStream, "times --task 2");
 
 		String expected = "Times for task 2 - 'Test 2'" + Utils.NL + Utils.NL +
 				"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL +

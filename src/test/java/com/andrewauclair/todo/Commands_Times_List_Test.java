@@ -17,8 +17,8 @@ class Commands_Times_List_Test extends CommandsBaseTestCase {
 
 		addTaskWithTimes("Task 3", 1000, 3000);
 		addTaskTimes(3, 3800, 4700);
-
-		commands.execute("times --list default");
+		
+		commands.execute(printStream, "times --list default");
 
 		assertOutput(
 				"Times for list 'default'",

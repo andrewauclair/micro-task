@@ -19,7 +19,7 @@ class Commands_List_Manage_Test {
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final PrintStream printStream = new PrintStream(outputStream);
 	private final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
-	private final Commands commands = new Commands(tasks, printStream);
+	private final Commands commands = new Commands(tasks);
 
 	@BeforeEach
 	void setup() throws IOException {
@@ -43,7 +43,7 @@ class Commands_List_Manage_Test {
 
 	@Test
 	void create_new_list_of_tasks() {
-		commands.execute("create-list test-tasks");
+		commands.execute(printStream, "create-list test-tasks");
 
 		assertTrue(commands.hasListWithName("test-tasks"));
 
@@ -52,11 +52,11 @@ class Commands_List_Manage_Test {
 
 	@Test
 	void switch_to_another_list() {
-		commands.execute("create-list test-tasks");
+		commands.execute(printStream, "create-list test-tasks");
 
 		outputStream.reset();
-
-		commands.execute("switch-list test-tasks");
+		
+		commands.execute(printStream, "switch-list test-tasks");
 
 		assertEquals("test-tasks", commands.getListName());
 
@@ -67,21 +67,21 @@ class Commands_List_Manage_Test {
 	void each_list_has_its_own_set_of_tasks() {
 		tasks.addTask("default List Task 1");
 		tasks.addTask("default List Task 2");
-
-		commands.execute("create-list test-tasks");
-		commands.execute("switch-list test-tasks");
+		
+		commands.execute(printStream, "create-list test-tasks");
+		commands.execute(printStream, "switch-list test-tasks");
 
 		tasks.addTask("test-tasks List Task 1");
 		tasks.addTask("test-tasks List Task 2");
-
-		commands.execute("switch-list default");
+		
+		commands.execute(printStream, "switch-list default");
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "default List Task 1"),
 				new Task(2, "default List Task 2")
 		);
-
-		commands.execute("switch-list test-tasks");
+		
+		commands.execute(printStream, "switch-list test-tasks");
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(3, "test-tasks List Task 1"),
@@ -91,18 +91,18 @@ class Commands_List_Manage_Test {
 
 	@Test
 	void can_not_create_a_new_list_with_a_name_that_already_exists() {
-		commands.execute("create-list test");
+		commands.execute(printStream, "create-list test");
 
 		outputStream.reset();
-
-		commands.execute("create-list test");
+		
+		commands.execute(printStream, "create-list test");
 
 		assertEquals("List 'test' already exists." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void can_not_switch_to_a_list_that_does_not_exist() {
-		commands.execute("switch-list test");
+		commands.execute(printStream, "switch-list test");
 
 		assertEquals("List 'test' does not exist." + Utils.NL + Utils.NL, outputStream.toString());
 		assertEquals("default", tasks.getCurrentList());
@@ -111,35 +111,35 @@ class Commands_List_Manage_Test {
 	// TODO I think these style tests can be parameterized
 	@Test
 	void switch_list_without_a_task_number_prints_invalid_command() {
-		commands.execute("switch-list");
+		commands.execute(printStream, "switch-list");
 
 		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void switch_list_with_too_many_arguments_prints_invalid_command() {
-		commands.execute("switch-list test two");
+		commands.execute(printStream, "switch-list test two");
 
 		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void create_list_without_a_task_number_prints_invalid_command() {
-		commands.execute("create-list");
+		commands.execute(printStream, "create-list");
 
 		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void create_list_with_too_many_arguments_prints_invalid_command() {
-		commands.execute("create-list test two");
+		commands.execute(printStream, "create-list test two");
 
 		assertEquals("Invalid command." + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void create_list_is_always_lower_case() {
-		commands.execute("create-list RaNDOm");
+		commands.execute(printStream, "create-list RaNDOm");
 
 		assertTrue(commands.hasListWithName("random"));
 
@@ -149,8 +149,8 @@ class Commands_List_Manage_Test {
 	@Test
 	void create_list_already_exists_is_always_lower_case() {
 		tasks.addList("random");
-
-		commands.execute("create-list RaNDOm");
+		
+		commands.execute(printStream, "create-list RaNDOm");
 
 		assertTrue(commands.hasListWithName("random"));
 
@@ -160,15 +160,15 @@ class Commands_List_Manage_Test {
 	@Test
 	void switch_list_is_always_lower_case() {
 		tasks.addList("random");
-
-		commands.execute("switch-list ranDOM");
+		
+		commands.execute(printStream, "switch-list ranDOM");
 
 		assertEquals("Switched to list 'random'" + Utils.NL + Utils.NL, outputStream.toString());
 	}
 
 	@Test
 	void switch_list_does_not_exist_is_always_lower_case() {
-		commands.execute("switch-list ranDOM");
+		commands.execute(printStream, "switch-list ranDOM");
 
 		assertEquals("List 'random' does not exist." + Utils.NL + Utils.NL, outputStream.toString());
 	}

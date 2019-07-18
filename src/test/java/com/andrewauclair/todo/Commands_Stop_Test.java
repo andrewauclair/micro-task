@@ -15,7 +15,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(1);
 		setTime(1561079202);
-		commands.execute("stop");
+		commands.execute(printStream, "stop");
 
 		assertEquals("Stopped task 1 - 'Task 1'" + Utils.NL + Utils.NL +
 						"06/20/2019 07:50:02 PM - 06/20/2019 08:06:42 PM" + Utils.NL + Utils.NL +
@@ -35,13 +35,13 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(1);
 		setTime(1561079202);
-		commands.execute("stop");
+		commands.execute(printStream, "stop");
 		setTime(1561080202);
 		tasks.startTask(1);
 		setTime(1561081202);
 		outputStream.reset();
-
-		commands.execute("stop");
+		
+		commands.execute(printStream, "stop");
 
 		assertEquals("Stopped task 1 - 'Task 1'" + Utils.NL + Utils.NL +
 						"06/20/2019 08:23:22 PM - 06/20/2019 08:40:02 PM" + Utils.NL + Utils.NL +

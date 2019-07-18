@@ -12,8 +12,8 @@ class Commands_List_Lists_Test extends CommandsBaseTestCase {
 		tasks.addList("todo-app-tasks");
 		tasks.addList("test");
 		tasks.addList("abcd");
-
-		commands.execute("list --lists");
+		
+		commands.execute(printStream, "list --lists");
 
 		assertOutput(
 				"  abcd",

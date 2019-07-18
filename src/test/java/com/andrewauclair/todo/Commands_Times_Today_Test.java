@@ -25,7 +25,7 @@ class Commands_Times_Today_Test extends CommandsBaseTestCase {
 		
 		setTime(june21_8_06_42_pm);
 		
-		commands.execute("times --tasks --today");
+		commands.execute(printStream, "times --tasks --today");
 		
 		assertOutput(
 				"Times for day 06/21/2019",
