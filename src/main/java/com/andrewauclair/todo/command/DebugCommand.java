@@ -2,7 +2,6 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Tasks;
-import com.andrewauclair.todo.jline.ListCompleter;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -11,42 +10,37 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
-public class ListSwitchCommand extends Command {
+public class DebugCommand extends Command {
 	private final Tasks tasks;
 	
-	public ListSwitchCommand(Tasks tasks) {
+	private boolean debugEnabled = false;
+	
+	public DebugCommand(Tasks tasks) {
 		this.tasks = tasks;
+	}
+	
+	public boolean isDebugEnabled() {
+		return debugEnabled;
 	}
 	
 	@Override
 	public void print(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		
-		if (s.length != 2) {
-			output.println("Invalid command.");
-			output.println();
-			return;
+		if (s[1].equals("enable")) {
+			debugEnabled = true;
 		}
-		
-		String list = s[1].toLowerCase();
-		
-		boolean exists = tasks.setCurrentList(list);
-		
-		if (exists) {
-			output.println("Switched to list '" + list + "'");
+		else if (s[1].equals("disable")) {
+			debugEnabled = false;
 		}
 		else {
-			output.println("List '" + list + "' does not exist.");
+			output.println("Invalid command.");
+			output.println();
 		}
-		output.println();
 	}
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
-				node("switch-list",
-						node(new ListCompleter(tasks, false))
-				)
-		);
+		return Collections.singletonList(node("debug"));
 	}
 }

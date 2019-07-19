@@ -11,7 +11,8 @@ import java.util.*;
 public class Tasks {
 	private static final int NO_ACTIVE_TASK = -1;
 	
-	final OSInterface osInterface;
+	// TODO Don't make this public
+	public final OSInterface osInterface;
 	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
 	private final TaskWriter writer;
@@ -30,7 +31,7 @@ public class Tasks {
 		tasks.put("default", new ArrayList<>());
 	}
 	
-	Task addTask(String task) {
+	public Task addTask(String task) {
 		Task newTask = new Task(startingID++, task);
 		tasks.get(currentList).add(newTask);
 		
@@ -43,7 +44,7 @@ public class Tasks {
 		return newTask;
 	}
 	
-	Task renameTask(long id, String task) {
+	public Task renameTask(long id, String task) {
 		String listForTask = findListForTask(id);
 		Optional<Task> optionalTask = getTask(id, listForTask);
 		
@@ -60,8 +61,39 @@ public class Tasks {
 		}
 		throw new RuntimeException("Task " + id + " was not found.");
 	}
-
-	void renameList(String oldName, String newName) {
+	
+	public String findListForTask(long id) {
+		for (String key : tasks.keySet()) {
+			Optional<Task> first = tasks.get(key).stream()
+					.filter(task -> task.id == id)
+					.findFirst();
+			
+			if (first.isPresent()) {
+				return key;
+			}
+		}
+		return currentList;
+	}
+	
+	private void writeNextId() {
+		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
+			outputStream.write(String.valueOf(startingID).getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+		}
+	}
+	
+	private void writeTask(Task task, String list) {
+		writer.writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
+	}
+	
+	private void addAndCommit(Task task, String comment, String list) {
+		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
+	}
+	
+	public void renameList(String oldName, String newName) {
 		if (!tasks.containsKey(oldName)) {
 			throw new RuntimeException("List '" + oldName + "' not found.");
 		}
@@ -82,37 +114,6 @@ public class Tasks {
 
 		osInterface.runGitCommand("git commit -m \"Renamed list '" + oldName + "' to '" + newName + "'\"");
 	}
-
-	private void writeNextId() {
-		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
-			outputStream.write(String.valueOf(startingID).getBytes());
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-		}
-	}
-
-	private void writeTask(Task task, String list) {
-		writer.writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
-	}
-
-	private void addAndCommit(Task task, String comment, String list) {
-		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
-	}
-
-	String findListForTask(long id) {
-		for (String key : tasks.keySet()) {
-			Optional<Task> first = tasks.get(key).stream()
-					.filter(task -> task.id == id)
-					.findFirst();
-			
-			if (first.isPresent()) {
-				return key;
-			}
-		}
-		return currentList;
-	}
 	
 	private Optional<Task> getTask(long id, String list) {
 		return tasks.get(list).stream()
@@ -120,7 +121,7 @@ public class Tasks {
 				.findFirst();
 	}
 	
-	Task startTask(long id) {
+	public Task startTask(long id) {
 		String taskList = findListForTask(id);
 		
 		Optional<Task> first = tasks.get(taskList).stream()
@@ -152,7 +153,7 @@ public class Tasks {
 		throw new RuntimeException("Task " + id + " was not found.");
 	}
 	
-	Task stopTask() {
+	public Task stopTask() {
 		Task activeTask = getActiveTask();
 		activeTaskID = NO_ACTIVE_TASK;
 		
@@ -168,7 +169,7 @@ public class Tasks {
 		return stoppedTask;
 	}
 	
-	Task getActiveTask() {
+	public Task getActiveTask() {
 		Optional<Task> first = tasks.getOrDefault(activeTaskList, Collections.emptyList()).stream()
 				.filter(task -> task.id == activeTaskID)
 				.findFirst();
@@ -183,21 +184,21 @@ public class Tasks {
 		return activeTaskID != -1;
 	}
 	
-	List<Task> getTasks() {
+	public List<Task> getTasks() {
 		return Collections.unmodifiableList(tasks.get(currentList));
 	}
 	
-	List<Task> getAllTasks() {
+	public List<Task> getAllTasks() {
 		List<Task> tasks = new ArrayList<>();
 		this.tasks.values().forEach(tasks::addAll);
 		return tasks;
 	}
 	
-	List<Task> getTasksForList(String listName) {
+	public List<Task> getTasksForList(String listName) {
 		return Collections.unmodifiableList(tasks.get(listName));
 	}
 	
-	Task finishTask() {
+	public Task finishTask() {
 		Task activeTask = getActiveTask();
 
 		activeTaskID = NO_ACTIVE_TASK;
@@ -211,8 +212,8 @@ public class Tasks {
 		
 		return finishedTask;
 	}
-
-	Task finishTask(long id) {
+	
+	public Task finishTask(long id) {
 		Optional<Task> optionalTask = getTask(id);
 
 		if (optionalTask.isPresent()) {
@@ -269,7 +270,7 @@ public class Tasks {
 		return currentList;
 	}
 	
-	String getActiveTaskList() {
+	public String getActiveTaskList() {
 		return activeTaskList;
 	}
 	

@@ -1,10 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.jline.ActiveListCompleter;
-import com.andrewauclair.todo.jline.ActiveTaskCompleter;
-import com.andrewauclair.todo.jline.ListCompleter;
-import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.sun.jna.platform.win32.User32;
@@ -54,55 +50,6 @@ public class Main {
 				.build();
 		
 		List<Completers.TreeCompleter.Node> treeNodes = new ArrayList<>(Arrays.asList(
-				node("active"),
-				node("clear"),
-				node("exit"),
-				
-				node("list",
-						node("--tasks",
-								node("--list",
-										node(new ListCompleter(tasks), node("--all"))
-								),
-								node("--all")
-						)
-				),
-				
-				node("list",
-						node("--lists")
-				),
-				
-				node("debug"),
-				node("add"),
-				node("start"),
-				node("stop"),
-				node("finish"),
-				
-				node("times",
-						node("--tasks",
-								node(new ActiveTaskCompleter(tasks)),
-								node("--today")
-						)
-				),
-				
-				node("times",
-						node("--list",
-								node(new ActiveListCompleter(tasks)),
-								node("--today")
-						)
-				),
-				
-				node("search"),
-				
-				node("rename",
-						node("--task",
-								node(new RenameCompleter(tasks))
-						),
-						node("--list",
-								node(new ListCompleter(tasks)
-								)
-						)
-				),
-				
 				node("version"),
 				
 				node("update",

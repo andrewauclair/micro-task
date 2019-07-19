@@ -6,22 +6,22 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-final class TaskTimes {
-	static final long TIME_NOT_SET = Long.MIN_VALUE;
-
-	final long start;
-	final long stop;
+public final class TaskTimes {
+	public static final long TIME_NOT_SET = Long.MIN_VALUE;
+	
+	public final long start;
+	public final long stop;
 
 	TaskTimes(long start) {
 		this(start, TIME_NOT_SET);
 	}
-
-	TaskTimes(long start, long stop) {
+	
+	public TaskTimes(long start, long stop) {
 		this.start = start;
 		this.stop = stop;
 	}
-
-	long getDuration() {
+	
+	public long getDuration() {
 		if (stop == TIME_NOT_SET) {
 			return 0;
 		}
@@ -53,8 +53,8 @@ final class TaskTimes {
 		}
 		return start + " - " + stop;
 	}
-
-	String description(ZoneId zone) {
+	
+	public String description(ZoneId zone) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(dateTimeFormatter);
 

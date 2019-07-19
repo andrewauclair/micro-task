@@ -32,8 +32,8 @@ public class OSInterface {
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(new File("git-data"));
 		builder.command(command.split(" "));
-
-		if (commands.isDebugEnabled()) {
+		
+		if (commands.getDebugCommand().isDebugEnabled()) {
 			System.out.println("run: " + command);
 			builder.inheritIO();
 		}
