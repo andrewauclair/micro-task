@@ -35,6 +35,7 @@ public class Commands {
 		commands.put("update", new UpdateCommand(gitLabReleases));
 		commands.put("clear", new ClearCommand(tasks));
 		commands.put("exit", new ExitCommand(tasks));
+		commands.put("move", new MoveCommand(tasks));
 	}
 
 	public void execute(PrintStream output, String command) {

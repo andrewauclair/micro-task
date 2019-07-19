@@ -61,6 +61,33 @@ public class Tasks {
 		}
 		throw new RuntimeException("Task " + id + " was not found.");
 	}
+
+	public Task moveTask(long id, String list) {
+		String listForTask = findListForTask(id);
+		Optional<Task> optionalTask = getTask(id, listForTask);
+
+		if (optionalTask.isPresent()) {
+			Task task = optionalTask.get();
+
+			if (!getListNames().contains(list)) {
+				throw new RuntimeException("List '" + list + "' was not found.");
+			}
+
+			tasks.get(listForTask).remove(task);
+			tasks.get(list).add(task);
+
+			osInterface.removeFile("git-data/tasks/" + listForTask + "/" + task.id + ".txt");
+
+			writeTask(task, list);
+			osInterface.runGitCommand("git add tasks/" + listForTask + "/" + task.id + ".txt");
+			osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+			osInterface.runGitCommand("git commit -m \"Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list + "'\"");
+
+
+			return optionalTask.get();
+		}
+		throw new RuntimeException("Task " + id + " was not found.");
+	}
 	
 	public String findListForTask(long id) {
 		for (String key : tasks.keySet()) {
