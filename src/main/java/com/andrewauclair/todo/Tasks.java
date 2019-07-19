@@ -98,6 +98,14 @@ public class Tasks {
 			throw new RuntimeException("List '" + oldName + "' not found.");
 		}
 
+		if (currentList.equals(oldName)) {
+			currentList = newName;
+		}
+
+		if (activeTaskList.equals(oldName)) {
+			activeTaskList = newName;
+		}
+
 		tasks.put(newName, tasks.get(oldName));
 		tasks.remove(oldName);
 
