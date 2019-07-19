@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,8 @@ class Commands_List_Manage_Test {
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final PrintStream printStream = new PrintStream(outputStream);
 	private final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
-	private final Commands commands = new Commands(tasks);
+	private final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
+	private final Commands commands = new Commands(tasks, gitLabReleases);
 
 	@BeforeEach
 	void setup() throws IOException {

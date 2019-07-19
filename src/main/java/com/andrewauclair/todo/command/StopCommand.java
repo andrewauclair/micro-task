@@ -21,7 +21,7 @@ public class StopCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		Task task = tasks.stopTask();
 		
 		output.println("Stopped task " + task.description());

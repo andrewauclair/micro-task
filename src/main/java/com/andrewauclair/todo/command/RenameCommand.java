@@ -22,7 +22,7 @@ public class RenameCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		
 		List<String> parameters = Arrays.asList(s);

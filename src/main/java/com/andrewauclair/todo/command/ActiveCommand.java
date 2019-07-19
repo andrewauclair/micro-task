@@ -21,7 +21,7 @@ public class ActiveCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		Task task = tasks.getActiveTask();
 		
 		output.println("Active task is " + task.description());
