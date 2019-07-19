@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 public abstract class Command {
-	public abstract void print(PrintStream output, String command);
+	public abstract void execute(PrintStream output, String command);
 	
 	public abstract List<Node> getAutoCompleteNodes();
 }

@@ -11,29 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GitLabReleases {
-	private static List<String> getVersions() throws IOException {
-		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "http://localhost:3000/api/v4/projects/24/releases"
-
-		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/releases");
-		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection();
-
-		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
-
-		connection.setDoOutput(true);
-
-		BufferedReader iny = new BufferedReader(
-				new InputStreamReader(connection.getInputStream()));
-		String output;
-		StringBuilder response = new StringBuilder();
-
-		while ((output = iny.readLine()) != null) {
-			response.append(output);
-		}
-		iny.close();
-
-		String jsonStr = response.toString();
-
-		JSONArray array = new JSONArray(jsonStr);
+	public List<String> getVersions() throws IOException {
+		JSONArray array = getReleasesJSON();
 
 		List<String> releaseNames = new ArrayList<>();
 
@@ -48,20 +27,7 @@ public class GitLabReleases {
 		return releaseNames;
 	}
 
-	public static void printReleases() throws IOException {
-		List<String> releases = getVersions();
-
-		System.out.println("Releases found on GitLab");
-		System.out.println();
-
-		for (String release : releases) {
-			System.out.println(release);
-		}
-
-		System.out.println();
-	}
-
-	public static void updateToRelease(String release) throws IOException {
+	private JSONArray getReleasesJSON() throws IOException {
 		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "http://localhost:3000/api/v4/projects/24/releases"
 
 		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/releases");
@@ -83,7 +49,11 @@ public class GitLabReleases {
 
 		String jsonStr = response.toString();
 
-		JSONArray array = new JSONArray(jsonStr);
+		return new JSONArray(jsonStr);
+	}
+
+	public boolean updateToRelease(String release) throws IOException {
+		JSONArray array = getReleasesJSON();
 
 		for (int i = 0; i < array.length() - 1; i++) {
 			JSONObject obj = array.getJSONObject(i);
@@ -109,6 +79,8 @@ public class GitLabReleases {
 					}
 
 					System.out.println("Updated to version '" + releaseName + "'");
+
+					return true;
 				}
 				catch (IOException e) {
 					// handle exception
@@ -118,5 +90,7 @@ public class GitLabReleases {
 				break;
 			}
 		}
+
+		return false;
 	}
 }

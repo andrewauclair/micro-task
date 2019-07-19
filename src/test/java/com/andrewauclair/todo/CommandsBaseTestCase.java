@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,10 +20,11 @@ public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	public final PrintStream printStream = new PrintStream(outputStream);
-	public final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
-	
-	public final Commands commands = new Commands(tasks);
+	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
+	protected final PrintStream printStream = new PrintStream(outputStream);
+	protected final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
+
+	protected final Commands commands = new Commands(tasks, gitLabReleases);
 
 	@BeforeEach
 	void setup() throws IOException {

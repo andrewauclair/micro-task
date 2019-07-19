@@ -19,7 +19,7 @@ public class AddCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		String taskTitle = command.substring(5, command.lastIndexOf('"'));
 		
 		Task task = tasks.addTask(taskTitle);

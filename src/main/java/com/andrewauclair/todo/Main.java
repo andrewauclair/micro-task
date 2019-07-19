@@ -14,9 +14,7 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-
-import static org.jline.builtins.Completers.TreeCompleter.node;
+import java.util.Scanner;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
@@ -24,7 +22,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		OSInterface osInterface = new OSInterface();
 		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(System.out, osInterface), System.out, osInterface);
-		Commands commands = new Commands(tasks);
+		Commands commands = new Commands(tasks, new GitLabReleases());
 		
 		osInterface.setCommands(commands);
 		
@@ -48,19 +46,8 @@ public class Main {
 				.jna(true)
 				.nativeSignals(true)
 				.build();
-		
-		List<Completers.TreeCompleter.Node> treeNodes = new ArrayList<>(Arrays.asList(
-				node("version"),
-				
-				node("update",
-						node("-r", "--releases"),
-						node("-l", "--latest")
-				)
-		));
-		
-		treeNodes.addAll(commands.getAutoCompleteNodes());
-		
-		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(treeNodes);
+
+		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(commands.getAutoCompleteNodes());
 		
 		LineReader lineReader = LineReaderBuilder.builder()
 				.terminal(terminal)
@@ -73,34 +60,12 @@ public class Main {
 		osInterface.clearScreen();
 		
 		System.out.println(terminal.getSize());
-		
-		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
-		Properties props = new Properties();
-		props.load(resourceAsStream);
-		
-		String version = (String) props.get("version");
-		
+
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
-				
-				// TODO Move this to Commands and the version loading to os interface as a String getVersion() method
-				if (command.equals("version")) {
-					System.out.println(version);
-					System.out.println();
-				}
-				else if (command.startsWith("update --releases") || command.startsWith("update -r")) {
-					GitLabReleases.printReleases();
-				}
-				else if (command.startsWith("update --latest") || command.startsWith("update -l")) {
-					GitLabReleases.updateToRelease("");
-				}
-				else if (command.startsWith("update")) {
-					GitLabReleases.updateToRelease(command.split(" ")[1]);
-				}
-				else {
-					commands.execute(System.out, command);
-				}
+
+				commands.execute(System.out, command);
 			}
 			catch (UserInterruptException ignored) {
 			}
@@ -109,7 +74,8 @@ public class Main {
 			}
 		}
 	}
-	
+
+	// TODO Get this under test
 	private static void readTasks(OSInterface osInterface, Tasks tasks) throws IOException {
 		TaskReader reader = new TaskReader(osInterface);
 		

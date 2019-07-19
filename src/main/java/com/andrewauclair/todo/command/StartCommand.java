@@ -20,7 +20,7 @@ public class StartCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		int taskID = Integer.parseInt(s[1]);
 		

@@ -14,7 +14,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class DebugCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		DebugCommand command = new DebugCommand(tasks);
+		DebugCommand command = new DebugCommand();
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

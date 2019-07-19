@@ -21,7 +21,7 @@ public class SearchCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		String searchText = command.substring(8, command.lastIndexOf("\""));
 		
 		List<Task> searchResults = tasks.getTasks().stream()

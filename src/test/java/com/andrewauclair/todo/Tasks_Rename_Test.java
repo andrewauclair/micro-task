@@ -39,7 +39,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_a_task_writes_the_new_file() {
-		Task task = tasks.addTask("Testing the rename of a task");
+		tasks.addTask("Testing the rename of a task");
 
 		// addTask will call the writer, don't want to know about that execution
 		Mockito.reset(writer);

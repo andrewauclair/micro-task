@@ -18,8 +18,8 @@ public class ClearCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
-	
+	public void execute(PrintStream output, String command) {
+		tasks.osInterface.clearScreen();
 	}
 	
 	@Override

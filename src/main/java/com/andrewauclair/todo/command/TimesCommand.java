@@ -23,7 +23,7 @@ public class TimesCommand extends Command {
 	}
 	
 	@Override
-	public void print(PrintStream output, String command) {
+	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		
 		List<String> parameters = Arrays.asList(s);
@@ -118,7 +118,7 @@ public class TimesCommand extends Command {
 			output.println();
 		}
 		else if (s[1].equals("--tasks") && parameters.contains("--today")) {
-			// get date and print it
+			// get date and execute it
 			output.print("Times for day ");
 			
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");

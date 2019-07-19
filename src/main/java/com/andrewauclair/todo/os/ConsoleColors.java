@@ -52,7 +52,7 @@ public class ConsoleColors {
 		ANSI_FG_BRIGHT_CYAN("\u001B[36;1m"),
 		ANSI_FG_BRIGHT_WHITE("\u001B[37;1m");
 
-		private String str;
+		private final String str;
 
 		ConsoleForegroundColor(String str) {
 			this.str = str;
@@ -82,7 +82,7 @@ public class ConsoleColors {
 		ANSI_BG_BRIGHT_CYAN("\u001B[46;1m"),
 		ANSI_BG_BRIGHT_WHITE("\u001B[47;1m");
 
-		private String str;
+		private final String str;
 
 		ConsoleBackgroundColor(String str) {
 			this.str = str;

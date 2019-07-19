@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// Test for a simple times command to print out a task times list, might just be a temporary step towards bigger better features
+// Test for a simple times command to execute out a task times list, might just be a temporary step towards bigger better features
 class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void times_command_prints_all_task_times() {

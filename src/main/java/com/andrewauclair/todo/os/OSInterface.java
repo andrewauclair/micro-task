@@ -2,10 +2,12 @@
 package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Commands;
+import com.andrewauclair.todo.Main;
 
 import java.io.*;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Properties;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterface {
@@ -94,6 +96,14 @@ public class OSInterface {
 		}
 		catch (IOException | InterruptedException ignored) {
 		}
+	}
+
+	public String getVersion() throws IOException {
+		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
+		Properties props = new Properties();
+		props.load(resourceAsStream);
+
+		return (String) props.get("version");
 	}
 
 	public void exit() {
