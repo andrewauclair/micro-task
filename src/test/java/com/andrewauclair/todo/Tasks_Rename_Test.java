@@ -144,6 +144,32 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void renaming_current_list_changes_the_name_of_current_list() {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.renameList("one", "two");
+
+		assertEquals("two", tasks.getCurrentList());
+	}
+
+	@Test
+	void renaming_active_list_changes_the_name_of_active_list() {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.addTask("Test");
+
+		tasks.startTask(1);
+
+		tasks.renameList("one", "two");
+
+		assertEquals("two", tasks.getActiveTaskList());
+	}
+
+	@Test
 	void list_rename_throws_exception_if_old_list_is_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("old", "new"));
 
