@@ -1,8 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Task;
+import com.andrewauclair.todo.TaskDuration;
 import com.andrewauclair.todo.Tasks;
-import com.andrewauclair.todo.jline.ListCompleter;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -11,10 +12,10 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
-public class ListSwitchCommand extends Command {
+public class FinishCommand extends Command {
 	private final Tasks tasks;
 	
-	public ListSwitchCommand(Tasks tasks) {
+	public FinishCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	
@@ -22,31 +23,24 @@ public class ListSwitchCommand extends Command {
 	public void print(PrintStream output, String command) {
 		String[] s = command.split(" ");
 		
-		if (s.length != 2) {
-			output.println("Invalid command.");
-			output.println();
-			return;
-		}
+		Task task;
 		
-		String list = s[1].toLowerCase();
-		
-		boolean exists = tasks.setCurrentList(list);
-		
-		if (exists) {
-			output.println("Switched to list '" + list + "'");
+		if (s.length == 2) {
+			task = tasks.finishTask(Long.parseLong(s[1]));
 		}
 		else {
-			output.println("List '" + list + "' does not exist.");
+			task = tasks.finishTask();
 		}
+		
+		output.println("Finished task " + task.description());
+		output.println();
+		output.print("Task finished in: ");
+		output.println(new TaskDuration(task.getTimes()));
 		output.println();
 	}
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
-				node("switch-list",
-						node(new ListCompleter(tasks, false))
-				)
-		);
+		return Collections.singletonList(node("finish"));
 	}
 }

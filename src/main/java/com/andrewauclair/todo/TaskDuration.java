@@ -4,14 +4,14 @@ package com.andrewauclair.todo;
 import java.util.Collections;
 import java.util.List;
 
-class TaskDuration {
+public class TaskDuration {
 	private final List<TaskTimes> times;
-
-	TaskDuration(TaskTimes times) {
+	
+	public TaskDuration(TaskTimes times) {
 		this.times = Collections.singletonList(times);
 	}
-
-	TaskDuration(List<TaskTimes> times) {
+	
+	public TaskDuration(List<TaskTimes> times) {
 		this.times = times;
 	}
 

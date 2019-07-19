@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Objects;
 
 public final class Task {
-	final long id;
+	public final long id;
 	public final String task;
-	final TaskState state;
+	public final TaskState state;
 	private final List<TaskTimes> taskTimes;
 
 	Task(long id, String task) {
@@ -51,8 +51,8 @@ public final class Task {
 		List<TaskTimes> times = addStopTime(stop);
 		return new Task(id, task, TaskState.Inactive, times);
 	}
-
-	List<TaskTimes> getTimes() {
+	
+	public List<TaskTimes> getTimes() {
 		return taskTimes;
 	}
 
@@ -86,12 +86,12 @@ public final class Task {
 				", taskTimes=" + taskTimes +
 				'}';
 	}
-
-	String description() {
+	
+	public String description() {
 		return id + " - '" + task + "'";
 	}
-
-	enum TaskState {
+	
+	public enum TaskState {
 		Inactive(0, "Inactive"),
 		Active(1, "Active"),
 		Finished(2, "Finished");

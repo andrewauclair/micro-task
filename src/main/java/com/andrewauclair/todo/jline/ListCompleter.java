@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 
 public class ListCompleter implements Completer {
 	private final Tasks tasks;
-	
-	public ListCompleter(Tasks tasks) {
+	private final boolean includeCurrentList;
+
+	public ListCompleter(Tasks tasks, boolean includeCurrentList) {
 		this.tasks = tasks;
+		this.includeCurrentList = includeCurrentList;
 	}
 	
 	@Override
@@ -24,6 +26,7 @@ public class ListCompleter implements Completer {
 		Objects.requireNonNull(line);
 		
 		List<Candidate> names = tasks.getListNames().stream()
+				.filter(list -> includeCurrentList || !list.equals(tasks.getCurrentList()))
 				.map(Candidate::new)
 				.collect(Collectors.toList());
 		

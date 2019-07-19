@@ -10,15 +10,15 @@ class Commands_Debug_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_debug_enable_command() {
 		commands.execute(printStream, "debug enable");
-
-		assertTrue(commands.isDebugEnabled());
+		
+		assertTrue(commands.getDebugCommand().isDebugEnabled());
 	}
 
 	@Test
 	void execute_debug_disable_command() {
 		commands.execute(printStream, "debug enable");
 		commands.execute(printStream, "debug disable");
-		assertFalse(commands.isDebugEnabled());
+		assertFalse(commands.getDebugCommand().isDebugEnabled());
 	}
 
 	@Test

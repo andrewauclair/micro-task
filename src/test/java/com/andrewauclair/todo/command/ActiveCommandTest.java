@@ -2,7 +2,6 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.CommandsBaseTestCase;
-import com.andrewauclair.todo.jline.ListCompleter;
 import org.jline.builtins.Completers;
 import org.junit.jupiter.api.Test;
 
@@ -12,15 +11,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
-class ListSwitchCommandTest extends CommandsBaseTestCase {
+class ActiveCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		ListSwitchCommand command = new ListSwitchCommand(tasks);
+		ActiveCommand command = new ActiveCommand(tasks);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
-				Collections.singletonList(node("switch-list", node(new ListCompleter(tasks, false))))
+				Collections.singletonList(node("active"))
 		);
 	}
 }
