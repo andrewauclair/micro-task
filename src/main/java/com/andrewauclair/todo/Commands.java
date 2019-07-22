@@ -36,6 +36,7 @@ public class Commands {
 		commands.put("clear", new ClearCommand(tasks));
 		commands.put("exit", new ExitCommand(tasks));
 		commands.put("move", new MoveCommand(tasks));
+		commands.put("set", new SetCommand(tasks));
 	}
 
 	public void execute(PrintStream output, String command) {

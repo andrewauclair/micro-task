@@ -23,9 +23,14 @@ public class ActiveCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		Task task = tasks.getActiveTask();
-		
 		output.println("Active task is " + task.description());
 		output.println();
+		
+		if (task.getIssue() != -1) {
+			output.println("Issue: " + task.getIssue());
+			output.println();
+		}
+		
 		output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
 		output.println();
 		

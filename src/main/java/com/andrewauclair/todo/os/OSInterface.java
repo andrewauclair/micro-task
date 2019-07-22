@@ -57,8 +57,8 @@ public class OSInterface {
 	public ZoneId getZoneId() {
 		return ZoneId.systemDefault();
 	}
-
-	public OutputStream createOutputStream(String fileName) throws IOException {
+	
+	public DataOutputStream createOutputStream(String fileName) throws IOException {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use createOutputStream in tests.");
 		}
@@ -66,7 +66,7 @@ public class OSInterface {
 		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			System.out.println("Failed to create directory: " + file.getParentFile());
 		}
-		return new FileOutputStream(file);
+		return new DataOutputStream(new FileOutputStream(file));
 	}
 
 	public InputStream createInputStream(String fileName) throws IOException {

@@ -32,7 +32,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(2, "Renaming task");
 		
-		Task task = new Task(2, "Renaming task", Task.TaskState.Active, Collections.singletonList(new TaskTimes(0)));
+		Task task = new Task(2, "Renaming task", TaskState.Active, Collections.singletonList(new TaskTimes(0)));
 		
 		assertEquals(task, renameTask);
 	}

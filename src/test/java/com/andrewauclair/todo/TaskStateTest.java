@@ -8,19 +8,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TaskStateTest {
 	@Test
 	void task_state_inactive() {
-		assertEquals(0, Task.TaskState.Inactive.getValue());
-		assertEquals("Inactive", Task.TaskState.Inactive.toString());
+		assertEquals(0, TaskState.Inactive.getValue());
+		assertEquals("Inactive", TaskState.Inactive.toString());
 	}
 
 	@Test
 	void task_state_active() {
-		assertEquals(1, Task.TaskState.Active.getValue());
-		assertEquals("Active", Task.TaskState.Active.toString());
+		assertEquals(1, TaskState.Active.getValue());
+		assertEquals("Active", TaskState.Active.toString());
 	}
 
 	@Test
 	void task_finished_inactive() {
-		assertEquals(2, Task.TaskState.Finished.getValue());
-		assertEquals("Finished", Task.TaskState.Finished.toString());
+		assertEquals(2, TaskState.Finished.getValue());
+		assertEquals("Finished", TaskState.Finished.toString());
 	}
 }

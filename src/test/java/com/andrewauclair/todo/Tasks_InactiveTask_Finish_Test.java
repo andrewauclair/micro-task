@@ -34,10 +34,10 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask(1);
 
-		Task finishedTask = new Task(1, "Testing tasks", Task.TaskState.Finished, Collections.emptyList());
+		Task finishedTask = new Task(1, "Testing tasks", TaskState.Finished, Collections.emptyList());
 		assertThat(tasks.getTasks()).containsOnly(
 				finishedTask,
-				new Task(2, "Testing tasks 2", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)))
+				new Task(2, "Testing tasks 2", TaskState.Active, Collections.singletonList(new TaskTimes(1234)))
 		);
 
 		assertEquals(finishedTask, task);
@@ -56,7 +56,7 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	void finish_with_no_active_task_does_not_throw_exception() {
 		Task finishedTask = tasks.finishTask(2);
 
-		assertEquals(new Task(2, "Testing tasks 2", Task.TaskState.Finished, Collections.emptyList()), finishedTask);
+		assertEquals(new Task(2, "Testing tasks 2", TaskState.Finished, Collections.emptyList()), finishedTask);
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import com.andrewauclair.todo.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,9 +21,26 @@ public class AddCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String taskTitle = command.substring(5, command.lastIndexOf('"'));
+		String[] s = command.split(" ");
+		
+		List<String> parameters = Arrays.asList(s);
+		
+		int titleEnd = command.lastIndexOf('"');
+		String taskTitle = command.substring(command.substring(0, titleEnd - 1).lastIndexOf('"') + 1, titleEnd);
 		
 		Task task = tasks.addTask(taskTitle);
+		
+		if (parameters.contains("--issue")) {
+			task = tasks.setIssue(task.id, Long.parseLong(parameters.get(parameters.indexOf("--issue") + 1)));
+		}
+		
+		if (parameters.contains("--charge")) {
+			int chargeStart = command.indexOf('"');
+			String charge = command.substring(chargeStart + 1);
+			charge = charge.substring(0, charge.indexOf('"'));
+			
+			task = tasks.setCharge(task.id, charge);
+		}
 		
 		output.println("Added task " + task.description());
 		output.println();

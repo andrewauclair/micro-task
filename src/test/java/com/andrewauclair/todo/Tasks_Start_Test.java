@@ -22,7 +22,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Task newActiveTask = tasks.startTask(task.id);
 
 		Task oldTask = new Task(2, "Testing task start command");
-		Task activeTask = new Task(2, "Testing task start command", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
+		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -132,6 +132,6 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(2);
 
 		assertThat(tasks.getTasks().stream()
-				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);
+				.filter(task -> task.state == TaskState.Active)).hasSize(1);
 	}
 }

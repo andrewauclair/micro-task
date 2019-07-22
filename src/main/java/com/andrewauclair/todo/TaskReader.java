@@ -23,12 +23,23 @@ class TaskReader {
 
 		long id;
 		String task;
-		Task.TaskState state;
+		TaskState state;
 
 		id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
 		task = scanner.nextLine();
-		state = Task.TaskState.valueOf(scanner.nextLine());
-
+		state = TaskState.valueOf(scanner.nextLine());
+		
+		String issue = "";
+		String timeTrack = "";
+		
+		if (scanner.hasNextLine()) {
+			issue = scanner.nextLine();
+			
+			if (!issue.isEmpty()) {
+				timeTrack = scanner.nextLine();
+			}
+		}
+		
 		long start = 0;
 		long stop = TaskTimes.TIME_NOT_SET;
 		List<TaskTimes> timesList = new ArrayList<>();
@@ -52,6 +63,8 @@ class TaskReader {
 		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
 			timesList.add(new TaskTimes(start, stop));
 		}
-		return new Task(id, task, state, timesList);
+		
+		long issueNum = issue.isEmpty() ? -1 : Long.parseLong(issue);
+		return new Task(id, task, state, timesList, issueNum, timeTrack);
 	}
 }

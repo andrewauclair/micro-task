@@ -19,7 +19,9 @@ class TaskReaderTest {
 	@Test
 	void read_task_with_just_a_start() throws IOException {
 		String contents = "Test" + Utils.NL +
-				"Active" + Utils.NL + Utils.NL +
+				"Active" + Utils.NL +
+				"12345" + Utils.NL +
+				"Issues" + Utils.NL + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333";
@@ -32,11 +34,13 @@ class TaskReaderTest {
 
 		Task task = reader.readTask("git-data/tasks/default/1.txt");
 
-		Task expectedTask = new Task(1, "Test", Task.TaskState.Active,
+		Task expectedTask = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
-				)
+				),
+				12345,
+				"Issues"
 		);
 
 		assertEquals(expectedTask, task);
@@ -58,7 +62,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask("git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", Task.TaskState.Active,
+		Task expectedTask = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
@@ -85,7 +89,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask("git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", Task.TaskState.Inactive,
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
@@ -97,7 +101,7 @@ class TaskReaderTest {
 
 	@Test
 	void task_with_no_times_has_empty_times_list_after_read() throws IOException {
-		String contents = "Test" + Utils.NL + "Inactive";
+		String contents = "Test" + Utils.NL + "Inactive" + Utils.NL + "12345" + Utils.NL + "Issues";
 
 		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
 
@@ -107,10 +111,59 @@ class TaskReaderTest {
 
 		Task task = reader.readTask("git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", Task.TaskState.Inactive,
-				Collections.emptyList()
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+				Collections.emptyList(),
+				12345,
+				"Issues"
 		);
 
+		assertEquals(expectedTask, task);
+	}
+	
+	// this test should be kept as is, minus compile changes, this verifies that we can still read the original file format
+	@Test
+	void task_reader_reads_version_1_file_format_before_issues() throws IOException {
+		String contents = "Test" + Utils.NL +
+				"Inactive" + Utils.NL + Utils.NL +
+				"start 1234" + Utils.NL +
+				"stop 4567" + Utils.NL +
+				"start 3333" + Utils.NL +
+				"stop 5555";
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask("git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+				Arrays.asList(
+						new TaskTimes(1234, 4567),
+						new TaskTimes(3333, 5555)
+				)
+		);
+		
+		assertEquals(expectedTask, task);
+	}
+	
+	@Test
+	void task_reader_reads_version_1_file_with_title_an_state() throws IOException {
+		String contents = "Test" + Utils.NL + "Inactive";
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask("git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+				Collections.emptyList()
+		);
+		
 		assertEquals(expectedTask, task);
 	}
 }
