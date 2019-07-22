@@ -21,11 +21,6 @@ public class TaskBuilder {
 		charge = task.getCharge();
 	}
 	
-	public TaskBuilder withState(TaskState state) {
-		this.state = state;
-		return this;
-	}
-	
 	public TaskBuilder withIssue(long issue) {
 		this.issue = issue;
 		return this;
