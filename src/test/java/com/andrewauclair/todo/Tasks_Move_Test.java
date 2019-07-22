@@ -73,7 +73,32 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		assertThat(tasks.getTasksForList("one"))
 				.containsOnly(task);
 	}
-
+	
+	@Test
+	void moving_the_active_task_changes_active_list() {
+		tasks.addTask("Test 1");
+		tasks.addList("one");
+		
+		tasks.startTask(1);
+		
+		tasks.moveTask(1, "one");
+		
+		assertEquals("one", tasks.getActiveTaskList());
+	}
+	
+	@Test
+	void moving_inactive_task_does_not_change_active_task_list() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addList("one");
+		
+		tasks.startTask(2);
+		
+		tasks.moveTask(1, "one");
+		
+		assertEquals("default", tasks.getActiveTaskList());
+	}
+	
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(5, "one"));

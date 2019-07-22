@@ -75,7 +75,11 @@ public class Tasks {
 
 			tasks.get(listForTask).remove(task);
 			tasks.get(list).add(task);
-
+			
+			if (task.state == TaskState.Active) {
+				activeTaskList = list;
+			}
+			
 			osInterface.removeFile("git-data/tasks/" + listForTask + "/" + task.id + ".txt");
 
 			writeTask(task, list);
