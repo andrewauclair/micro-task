@@ -26,7 +26,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Inactive, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Inactive, task.state));
 	}
 
 	@Test
@@ -52,6 +52,6 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Inactive, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Inactive, task.state));
 	}
 }

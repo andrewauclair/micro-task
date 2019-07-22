@@ -29,7 +29,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Finished, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Finished, task.state));
 	}
 
 	@Test
@@ -52,12 +52,12 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Active, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Active, task.state));
 
 		optionalTask = tasks.getTask(2);
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Finished, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Finished, task.state));
 	}
 }

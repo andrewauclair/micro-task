@@ -1,3 +1,4 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Tasks;
@@ -12,11 +13,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class VersionCommand extends Command {
 	private final Tasks tasks;
-
+	
 	public VersionCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-
+	
 	@Override
 	public void execute(PrintStream output, String command) {
 		try {
@@ -27,7 +28,7 @@ public class VersionCommand extends Command {
 		}
 		output.println();
 	}
-
+	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Collections.singletonList(node("version"));

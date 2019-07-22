@@ -20,7 +20,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Task oldTask = tasks.startTask(2);
 
-		Task expectedOldTask = new Task(2, "Test 2", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
+		Task expectedOldTask = new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
 		assertEquals(expectedOldTask, tasks.getActiveTask());
 		assertEquals(expectedOldTask, oldTask);
 
@@ -30,7 +30,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		ActiveTaskAsserts.assertNoActiveTask(tasks);
 
-		assertEquals(new Task(2, "Test 2", Task.TaskState.Inactive, Collections.singletonList(new TaskTimes(1234, 4567))), stoppedTask);
+		assertEquals(new Task(2, "Test 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234, 4567))), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.ZoneId;
@@ -28,7 +29,7 @@ public class CommandsBaseTestCase {
 
 	@BeforeEach
 	void setup() throws IOException {
-		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 	}
 

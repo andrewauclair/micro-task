@@ -174,7 +174,9 @@ public class Tasks {
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			
-			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
+//			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
+			
+			Task newActiveTask = new TaskBuilder(activeTask).activate(osInterface.currentSeconds());
 			
 			replaceTask(taskList, activeTask, newActiveTask);
 			
@@ -192,7 +194,7 @@ public class Tasks {
 		Task activeTask = getActiveTask();
 		activeTaskID = NO_ACTIVE_TASK;
 		
-		Task stoppedTask = activeTask.stop(osInterface.currentSeconds());
+		Task stoppedTask = new TaskBuilder(activeTask).stop(osInterface.currentSeconds());
 		
 		replaceTask(activeTaskList, activeTask, stoppedTask);
 
@@ -238,8 +240,8 @@ public class Tasks {
 
 		activeTaskID = NO_ACTIVE_TASK;
 
-		Task finishedTask = activeTask.finish(osInterface.currentSeconds());
-
+		Task finishedTask = new TaskBuilder(activeTask).finish(osInterface.currentSeconds());
+		
 		replaceTask(activeTaskList, activeTask, finishedTask);
 
 		writeTask(finishedTask, currentList);
@@ -252,7 +254,7 @@ public class Tasks {
 		Optional<Task> optionalTask = getTask(id);
 
 		if (optionalTask.isPresent()) {
-			Task finishedTask = optionalTask.get().finish(osInterface.currentSeconds());
+			Task finishedTask = new TaskBuilder(optionalTask.get()).finish(osInterface.currentSeconds());
 
 			String taskList = findListForTask(id);
 
@@ -275,7 +277,7 @@ public class Tasks {
 		
 		tasks.get(currentList).add(task);
 		
-		if (task.state == Task.TaskState.Active) {
+		if (task.state == TaskState.Active) {
 			activeTaskList = currentList;
 			activeTaskID = task.id;
 		}
@@ -324,5 +326,41 @@ public class Tasks {
 
 	public long getActiveTaskID() {
 		return activeTaskID;
+	}
+	
+	public Task setIssue(long id, long issue) {
+		Optional<Task> optionalTask = getTask(id);
+		
+		Task task = new TaskBuilder(optionalTask.get())
+				.withIssue(issue)
+				.build();
+		
+		String list = findListForTask(optionalTask.get().id);
+		replaceTask(list, optionalTask.get(), task);
+		
+		writeTask(task, list);
+		
+		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Set issue for task " + task.id + " to " + issue + "\"");
+		
+		return task;
+	}
+	
+	public Task setCharge(long id, String charge) {
+		Optional<Task> optionalTask = getTask(id);
+		
+		Task task = new TaskBuilder(optionalTask.get())
+				.withCharge(charge)
+				.build();
+		
+		String list = findListForTask(task.id);
+		replaceTask(list, optionalTask.get(), task);
+		
+		writeTask(task, list);
+		
+		osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Set charge for task " + task.id + " to '" + charge + "'\"");
+		
+		return task;
 	}
 }

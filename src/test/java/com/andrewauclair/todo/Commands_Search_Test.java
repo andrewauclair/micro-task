@@ -1,3 +1,4 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("some days are long, mondays are the longest days");
 		
 		commands.execute(printStream, "search \"monday\"");
-
+		
 		assertEquals("Search Results (4):" + Utils.NL + Utils.NL +
 						"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'" + Utils.NL +
 						"3 - 'finish this task by \u001B[1m\u001B[7mmonday\u001B[0m'" + Utils.NL +

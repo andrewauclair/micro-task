@@ -6,8 +6,8 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +38,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_tasks_tells_write_to_write_next_id_file() throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(outputStream);
+		
+		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(outputStream));
 
 		tasks.addTask("Test");
 
@@ -97,7 +97,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void write_next_id_prints_exception_to_output() throws IOException {
-		OutputStream outputStream = Mockito.mock(OutputStream.class);
+		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
 
 		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
@@ -146,7 +146,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
 
-		Task task = new Task(1, "Test", Task.TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
+		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
 		tasks.addTask(task);
 

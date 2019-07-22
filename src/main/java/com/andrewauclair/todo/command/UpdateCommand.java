@@ -1,3 +1,4 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.GitLabReleases;
@@ -12,17 +13,17 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class UpdateCommand extends Command {
 	private final GitLabReleases gitLabReleases;
-
+	
 	public UpdateCommand(GitLabReleases gitLabReleases) {
 		this.gitLabReleases = gitLabReleases;
 	}
-
+	
 	@Override
 	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
-
+		
 		String arg = s[1];
-
+		
 		List<String> versions;
 		try {
 			versions = gitLabReleases.getVersions();
@@ -33,7 +34,7 @@ public class UpdateCommand extends Command {
 			output.println();
 			return;
 		}
-
+		
 		if (arg.equals("-r") || arg.equals("--releases")) {
 			output.println("Releases found on GitLab");
 			output.println();
@@ -47,11 +48,11 @@ public class UpdateCommand extends Command {
 		}
 		output.println();
 	}
-
+	
 	private void updateToVersion(PrintStream output, String version) {
 		try {
 			boolean updated = gitLabReleases.updateToRelease(version);
-
+			
 			if (updated) {
 				output.println("Updated to version '" + version + "'");
 			}
@@ -64,7 +65,7 @@ public class UpdateCommand extends Command {
 			output.println("Failed to update to version '" + version + "'");
 		}
 	}
-
+	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Collections.singletonList(

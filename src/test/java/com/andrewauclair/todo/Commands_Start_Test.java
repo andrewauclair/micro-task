@@ -25,7 +25,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Active, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Active, task.state));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		assertThat(optionalTask).isPresent();
 
-		optionalTask.ifPresent(task -> assertEquals(Task.TaskState.Active, task.state));
+		optionalTask.ifPresent(task -> assertEquals(TaskState.Active, task.state));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start 2");
 
 		assertThat(tasks.getTasks().stream()
-				.filter(task -> task.state == Task.TaskState.Active)).hasSize(1);
+				.filter(task -> task.state == TaskState.Active)).hasSize(1);
 
 		assertOutput(
 				"Stopped task 1 - 'Test 1'",

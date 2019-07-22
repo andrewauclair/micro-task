@@ -3,6 +3,7 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.OSInterface;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -18,11 +19,15 @@ class TaskWriter {
 	}
 
 	boolean writeTask(Task task, String fileName) {
-		try (OutputStream outputStream = osInterface.createOutputStream(fileName)) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
 			writeNL(outputStream);
 			outputStream.write(task.state.toString().getBytes());
-
+			writeNL(outputStream);
+			outputStream.write(String.valueOf(task.getIssue()).getBytes());
+			writeNL(outputStream);
+			outputStream.write(task.getCharge().getBytes());
+			
 			List<TaskTimes> times = task.getTimes();
 
 			if (times.size() > 0) {

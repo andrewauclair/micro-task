@@ -1,3 +1,4 @@
+// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.CommandsBaseTestCase;
@@ -14,9 +15,9 @@ class VersionCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
 		VersionCommand command = new VersionCommand(tasks);
-
+		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
-
+		
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
 				Collections.singletonList(node("version"))
 		);

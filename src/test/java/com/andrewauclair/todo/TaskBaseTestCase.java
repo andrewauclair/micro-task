@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -20,7 +21,7 @@ class TaskBaseTestCase {
 
 	@BeforeEach
 	void setup() throws IOException {
-		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
 	}
 }

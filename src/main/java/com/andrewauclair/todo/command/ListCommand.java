@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Task;
+import com.andrewauclair.todo.TaskState;
 import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
@@ -52,7 +53,7 @@ public class ListCommand extends Command {
 			}
 			
 			List<Task> tasksList = tasks.getTasksForList(list).stream()
-					.filter(task -> task.state != Task.TaskState.Finished)
+					.filter(task -> task.state != TaskState.Finished)
 					.collect(Collectors.toList());
 			
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
