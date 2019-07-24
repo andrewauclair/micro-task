@@ -166,4 +166,23 @@ class TaskReaderTest {
 		
 		assertEquals(expectedTask, task);
 	}
+	
+	@Test
+	void task_reader_reads_version_1_file_with_title_an_state_and_blank_line() throws IOException {
+		String contents = "Test" + Utils.NL + "Inactive" + Utils.NL;
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask("git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+				Collections.emptyList()
+		);
+		
+		assertEquals(expectedTask, task);
+	}
 }
