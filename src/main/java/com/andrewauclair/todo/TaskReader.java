@@ -35,7 +35,7 @@ class TaskReader {
 		if (scanner.hasNextLine()) {
 			issue = scanner.nextLine();
 			
-			if (!issue.isEmpty()) {
+			if (!issue.isEmpty() && scanner.hasNextLine()) {
 				timeTrack = scanner.nextLine();
 			}
 		}
