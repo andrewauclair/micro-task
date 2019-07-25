@@ -247,9 +247,9 @@ public class Tasks {
 		Task finishedTask = new TaskBuilder(activeTask).finish(osInterface.currentSeconds());
 		
 		replaceTask(activeTaskList, activeTask, finishedTask);
-
-		writeTask(finishedTask, currentList);
-		addAndCommit(finishedTask, "Finished task", currentList);
+		
+		writeTask(finishedTask, activeTaskList);
+		addAndCommit(finishedTask, "Finished task", activeTaskList);
 		
 		return finishedTask;
 	}
