@@ -178,8 +178,6 @@ public class Tasks {
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			
-//			Task newActiveTask = activeTask.activate(osInterface.currentSeconds());
-			
 			Task newActiveTask = new TaskBuilder(activeTask).activate(osInterface.currentSeconds());
 			
 			replaceTask(taskList, activeTask, newActiveTask);
@@ -275,7 +273,8 @@ public class Tasks {
 	}
 
 	public void addTask(Task task) {
-		if (getTask(task.id).isPresent()) {
+		String existingList = findListForTask(task.id);
+		if (getTask(task.id, existingList).isPresent()) {
 			throw new RuntimeException("Task with ID " + task.id + " already exists.");
 		}
 		
