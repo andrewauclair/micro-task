@@ -168,4 +168,15 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
+
+	@Test
+	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
+		tasks.addTask("Test");
+		tasks.addList("one");
+		tasks.setCurrentList("one");
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here'))))")));
+
+		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
+	}
 }

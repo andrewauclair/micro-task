@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.sun.jna.platform.win32.User32;
@@ -39,9 +40,15 @@ public class Main {
 			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"");
 			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
-		
-		readTasks(osInterface, tasks);
-		
+
+		try {
+			readTasks(osInterface, tasks);
+		}
+		catch (Exception e) {
+			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
+			e.printStackTrace();
+		}
+
 		Terminal terminal = TerminalBuilder.builder()
 				.jna(true)
 				.nativeSignals(true)
