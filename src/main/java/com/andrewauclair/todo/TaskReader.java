@@ -56,7 +56,11 @@ class TaskReader {
 
 				timesList.add(new TaskTimes(start, stop));
 			}
+			if (line.startsWith("add")) {
+				long add = Integer.parseInt(line.substring(4));
 
+				timesList.add(new TaskTimes(add));
+			}
 			readTimes = true;
 		}
 

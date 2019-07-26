@@ -22,6 +22,7 @@ class TaskReaderTest {
 				"Active" + Utils.NL +
 				"12345" + Utils.NL +
 				"Issues" + Utils.NL + Utils.NL +
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333";
@@ -36,6 +37,7 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
+						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				),
@@ -50,6 +52,7 @@ class TaskReaderTest {
 	void read_task_with_start_stop_and_start_again() throws IOException {
 		String contents = "Test" + Utils.NL +
 				"Active" + Utils.NL + Utils.NL +
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333";
@@ -64,6 +67,7 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
+						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				)
@@ -76,6 +80,7 @@ class TaskReaderTest {
 	void read_task_with_multiple_starts_and_stops() throws IOException {
 		String contents = "Test" + Utils.NL +
 				"Inactive" + Utils.NL + Utils.NL +
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333" + Utils.NL +
@@ -91,6 +96,7 @@ class TaskReaderTest {
 
 		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
 				Arrays.asList(
+						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)

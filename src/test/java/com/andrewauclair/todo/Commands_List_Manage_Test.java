@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,15 +81,15 @@ class Commands_List_Manage_Test {
 		commands.execute(printStream, "switch-list default");
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "default List Task 1"),
-				new Task(2, "default List Task 2")
+				new Task(1, "default List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))),
+				new Task(2, "default List Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))
 		);
 		
 		commands.execute(printStream, "switch-list test-tasks");
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(3, "test-tasks List Task 1"),
-				new Task(4, "test-tasks List Task 2")
+				new Task(3, "test-tasks List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))),
+				new Task(4, "test-tasks List Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))
 		);
 	}
 

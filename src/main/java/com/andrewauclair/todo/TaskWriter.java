@@ -33,15 +33,21 @@ class TaskWriter {
 			if (times.size() > 0) {
 				writeNL(outputStream);
 
-				for (TaskTimes time : times) {
-					writeNL(outputStream);
-					outputStream.write("start ".getBytes());
-					outputStream.write(String.valueOf(time.start).getBytes());
+				writeNL(outputStream);
+				outputStream.write("add ".getBytes());
+				outputStream.write(String.valueOf(times.get(0).start).getBytes());
 
-					if (time.stop != TaskTimes.TIME_NOT_SET) {
+				if (times.size() > 1) {
+					for (TaskTimes time : times.subList(1, times.size())) {
 						writeNL(outputStream);
-						outputStream.write("stop ".getBytes());
-						outputStream.write(String.valueOf(time.stop).getBytes());
+						outputStream.write("start ".getBytes());
+						outputStream.write(String.valueOf(time.start).getBytes());
+
+						if (time.stop != TaskTimes.TIME_NOT_SET) {
+							writeNL(outputStream);
+							outputStream.write("stop ".getBytes());
+							outputStream.write(String.valueOf(time.stop).getBytes());
+						}
 					}
 				}
 			}

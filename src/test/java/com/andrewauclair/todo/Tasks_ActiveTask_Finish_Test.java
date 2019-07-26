@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,8 +24,8 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
-		assertThat(tasks.getTasks()).containsOnly(new Task(1, "Testing tasks"),
-				new Task(2, "Testing tasks 2"));
+		assertThat(tasks.getTasks()).containsOnly(new Task(1, "Testing tasks", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))),
+				new Task(2, "Testing tasks 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
@@ -34,9 +35,9 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 
-		Task finishedTask = new Task(2, "Testing tasks 2", TaskState.Finished, Collections.singletonList(new TaskTimes(1234, 4567)));
+		Task finishedTask = new Task(2, "Testing tasks 2", TaskState.Finished, Arrays.asList(new TaskTimes(0), new TaskTimes(1234, 4567)));
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Testing tasks"),
+				new Task(1, "Testing tasks", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))),
 				finishedTask
 		);
 
@@ -99,7 +100,10 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 
-		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, 4567));
+		assertThat(task.getTimes()).containsOnly(
+				new TaskTimes(0),
+				new TaskTimes(1234, 4567)
+		);
 	}
 
 	@Test
@@ -123,10 +127,12 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 		Task finishTask = tasks.finishTask();
 
 		assertThat(stop.getTimes()).containsOnly(
+				new TaskTimes(0),
 				new TaskTimes(1234, 2345)
 		);
 
 		assertThat(finishTask.getTimes()).containsOnly(
+				new TaskTimes(0),
 				new TaskTimes(1234, 2345),
 				new TaskTimes(3456, 4567)
 		);
