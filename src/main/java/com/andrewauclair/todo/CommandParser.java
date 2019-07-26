@@ -43,7 +43,7 @@ public final class CommandParser {
 					if (commandOption.getArgumentCount() > 0) {
 						String arg1 = s[i + 1];
 						
-						if (arg1.startsWith("\"") && arg1.endsWith("\"")) {
+						if (arg1.startsWith("\"")) {
 							arg1 = arg1.substring(1, arg1.length() - 1);
 						}
 						argsOut.add(new CommandArgument(commandOption.getName(), arg1));
@@ -72,7 +72,7 @@ public final class CommandParser {
 		if (commandOption.getArgumentCount() > 0) {
 			String arg1 = s[i + 1];
 			
-			if (arg1.startsWith("\"") && arg1.endsWith("\"")) {
+			if (arg1.startsWith("\"")) {
 				arg1 = arg1.substring(1, arg1.length() - 1);
 			}
 			argsOut.add(new CommandArgument(commandOption.getName(), arg1));
