@@ -10,8 +10,8 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finish_writes_file_on_correct_list() {
 		tasks.addTask("Test");
 		tasks.addList("one");
-		
-		tasks.startTask(1);
+
+		tasks.startTask(1, false);
 		
 		tasks.setCurrentList("one");
 		
@@ -28,8 +28,8 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finish_tells_git_control_to_add_correct_files() {
 		tasks.addTask("Test");
 		tasks.addList("one");
-		
-		tasks.startTask(1);
+
+		tasks.startTask(1, false);
 		
 		tasks.setCurrentList("one");
 		

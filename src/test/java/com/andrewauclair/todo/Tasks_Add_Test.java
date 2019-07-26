@@ -111,7 +111,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void user_can_finish_the_active_task_when_it_is_on_a_different_list() {
 		tasks.addTask("Task 1");
 
-		Task task = tasks.startTask(1);
+		Task task = tasks.startTask(1, false);
 
 		tasks.addList("test");
 		tasks.setCurrentList("test");
@@ -127,7 +127,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void on_finish_the_active_task_is_finished_on_the_correct_list() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		tasks.addList("test");
 		tasks.setCurrentList("test");

@@ -22,7 +22,7 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 	@Test
 	void activating_a_task_displays_the_active_task_number_in_prompt() {
 		tasks.addTask("Test");
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		assertEquals("default - 1>", commands.getPrompt());
 	}

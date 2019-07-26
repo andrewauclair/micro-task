@@ -28,7 +28,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void rename_task_saves_state_and_times() {
 		tasks.addTask("Inactive task");
 		tasks.addTask("Active task");
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 		
 		Task renameTask = tasks.renameTask(2, "Renaming task");
 		
@@ -162,7 +162,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Test");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		tasks.renameList("one", "two");
 

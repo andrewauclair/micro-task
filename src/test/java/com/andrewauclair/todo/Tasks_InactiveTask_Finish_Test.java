@@ -28,7 +28,7 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
@@ -45,7 +45,7 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void finishing_a_specific_task_does_not_reset_the_active_task() {
-		Task oldTask = tasks.startTask(1);
+		Task oldTask = tasks.startTask(1, false);
 
 		tasks.finishTask(2);
 

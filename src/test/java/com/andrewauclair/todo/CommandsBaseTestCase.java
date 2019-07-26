@@ -41,14 +41,14 @@ public class CommandsBaseTestCase {
 	void addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);
-		tasks.startTask(task.id);
+		tasks.startTask(task.id, false);
 		setTime(stop);
 		tasks.stopTask();
 	}
 
 	void addTaskTimes(long id, long start, long stop) {
 		setTime(start);
-		tasks.startTask(id);
+		tasks.startTask(id, false);
 		setTime(stop);
 		tasks.stopTask();
 	}

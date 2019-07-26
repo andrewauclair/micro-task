@@ -78,8 +78,8 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void moving_the_active_task_changes_active_list() {
 		tasks.addTask("Test 1");
 		tasks.addList("one");
-		
-		tasks.startTask(1);
+
+		tasks.startTask(1, false);
 		
 		tasks.moveTask(1, "one");
 		
@@ -91,8 +91,8 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		tasks.addList("one");
-		
-		tasks.startTask(2);
+
+		tasks.startTask(2, false);
 		
 		tasks.moveTask(1, "one");
 		

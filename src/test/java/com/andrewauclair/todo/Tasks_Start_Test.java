@@ -19,7 +19,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task newActiveTask = tasks.startTask(task.id);
+		Task newActiveTask = tasks.startTask(task.id, false);
 
 		Task oldTask = new Task(2, "Testing task start command");
 		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
@@ -32,7 +32,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_non_existent_id_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(5));
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(5, false));
 
 		assertEquals("Task 5 was not found.", runtimeException.getMessage());
 	}
@@ -44,7 +44,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.reset(writer);
 
-		Task task2 = tasks.startTask(1);
+		Task task2 = tasks.startTask(1, false);
 
 		Mockito.verify(writer).writeTask(task2, "git-data/tasks/default/1.txt");
 	}
@@ -56,7 +56,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.reset(osInterface);
 
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -70,7 +70,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task task = tasks.startTask(1);
+		Task task = tasks.startTask(1, false);
 
 		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, Long.MIN_VALUE));
 	}
@@ -86,7 +86,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		assertEquals("default", tasks.getCurrentList());
 	}
@@ -102,7 +102,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		Task task = tasks.stopTask();
 
@@ -113,9 +113,9 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	void attempting_to_start_task_twice_throws_exception() {
 		tasks.addTask("Test 1");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(1));
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(1, false));
 
 		assertEquals("Task is already active.", runtimeException.getMessage());
 	}
@@ -125,13 +125,30 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		assertThat(tasks.getTasks().stream()
 				.filter(task -> task.state == TaskState.Active)).hasSize(1);
+	}
+
+	@Test
+	void starting_second_task_finishes_active_task() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1, false);
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		tasks.startTask(2, true);
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Test 1", TaskState.Finished, Collections.singletonList(new TaskTimes(0, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+		);
 	}
 }

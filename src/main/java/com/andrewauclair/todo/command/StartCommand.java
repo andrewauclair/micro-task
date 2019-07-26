@@ -7,6 +7,7 @@ import com.andrewauclair.todo.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,16 +23,25 @@ public class StartCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
+
+		List<String> parameters = Arrays.asList(s);
+
 		int taskID = Integer.parseInt(s[1]);
 		
 		if (tasks.hasActiveTask()) {
 			Task activeTask = tasks.getActiveTask();
-			
-			output.println("Stopped task " + activeTask.description());
+
+			if (parameters.contains("--finish") || parameters.contains("-f")) {
+				output.println("Finished task " + activeTask.description());
+			}
+			else {
+				output.println("Stopped task " + activeTask.description());
+			}
+
 			output.println();
 		}
-		
-		Task task = tasks.startTask(taskID);
+
+		Task task = tasks.startTask(taskID, parameters.contains("--finish") || parameters.contains("-f"));
 		
 		output.println("Started task " + task.description());
 		output.println();
