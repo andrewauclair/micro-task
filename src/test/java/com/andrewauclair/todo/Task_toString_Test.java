@@ -4,13 +4,14 @@ package com.andrewauclair.todo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Task_toString_Test {
 	@Test
 	void task_description_has_number_and_title() {
-		assertEquals("1 - 'Test'", new Task(1, "Test").description());
+		assertEquals("1 - 'Test'", new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))).description());
 	}
 
 	@Test

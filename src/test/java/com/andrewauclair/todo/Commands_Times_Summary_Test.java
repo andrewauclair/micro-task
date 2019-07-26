@@ -3,14 +3,15 @@ package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 class Commands_Times_Summary_Test extends CommandsBaseTestCase {
 	@Test
 	void times_summary() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(0, 3590))));
-		tasks.addTask(new Task(2, "Test 2"));
-		tasks.addTask(new Task(30, "Test 3", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
+		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(0), new TaskTimes(0, 3590))));
+		tasks.addTask(new Task(2, "Test 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
+		tasks.addTask(new Task(30, "Test 3", TaskState.Inactive, Arrays.asList(new TaskTimes(0), new TaskTimes(0))));
 		
 		setTime(3610);
 		

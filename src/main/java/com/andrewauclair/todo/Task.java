@@ -12,10 +12,10 @@ public final class Task {
 	private final List<TaskTimes> taskTimes;
 	private final long issue;
 	private final String charge;
-	
-	Task(long id, String task) {
-		this(id, task, TaskState.Inactive, Collections.emptyList());
-	}
+
+//	Task(long id, String task) {
+//		this(id, task, TaskState.Inactive, Collections.emptyList());
+//	}
 
 	Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
@@ -37,6 +37,10 @@ public final class Task {
 	
 	public List<TaskTimes> getTimes() {
 		return taskTimes;
+	}
+
+	public List<TaskTimes> getStartStopTimes() {
+		return taskTimes.subList(1, taskTimes.size());
 	}
 
 	@Override

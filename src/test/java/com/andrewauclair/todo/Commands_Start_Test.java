@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,14 +38,19 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.startTask(1, false);
 		Task stopTask = tasks.stopTask();
 
-		assertThat(stopTask.getTimes()).hasSize(1);
+		// TODO assert the times instead of just the size
+		assertThat(stopTask.getTimes()).hasSize(2);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 		
 		commands.execute(printStream, "start 1");
 
-		assertEquals("Started task 1 - 'Task 1'" + Utils.NL + Utils.NL +
-				"06/20/2019 07:50:02 PM -" + Utils.NL + Utils.NL, outputStream.toString());
+		assertOutput(
+				"Started task 1 - 'Task 1'",
+				"",
+				"06/20/2019 07:50:02 PM -",
+				""
+		);
 
 		Optional<Task> optionalTask = tasks.getTask(1);
 
@@ -56,19 +61,21 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 	@Test
 	void starting_second_task_stops_active_task() {
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1, false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
-		
+
 		commands.execute(printStream, "start 2");
 
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(0, 1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+				new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(
@@ -84,6 +91,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"--finish", "-f"})
 	void finish_active_task_with_finish_option(String finish) {
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
+
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
@@ -94,8 +103,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start 2 " + finish);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Collections.singletonList(new TaskTimes(0, 1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(

@@ -45,8 +45,8 @@ public class StartCommand extends Command {
 		
 		output.println("Started task " + task.description());
 		output.println();
-		
-		List<TaskTimes> times = task.getTimes();
+
+		List<TaskTimes> times = task.getStartStopTimes();
 		TaskTimes startTime = times.get(times.size() - 1);
 		
 		output.println(startTime.description(tasks.osInterface.getZoneId()));

@@ -67,7 +67,7 @@ public class TimesCommand extends Command {
 				
 				long totalTime = 0;
 				for (Task task : tasks.getTasksForList(list)) {
-					for (TaskTimes time : task.getTimes()) {
+					for (TaskTimes time : task.getStartStopTimes()) {
 						totalTime += getTotalTime(time);
 					}
 				}
@@ -90,8 +90,8 @@ public class TimesCommand extends Command {
 			
 			if (firstTask.isPresent()) {
 				Task task = firstTask.get();
-				
-				if (task.getTimes().size() == 0) {
+
+				if (task.getStartStopTimes().size() == 0) {
 					output.println("No times for task " + task.description());
 				}
 				else {
@@ -99,7 +99,7 @@ public class TimesCommand extends Command {
 					output.println();
 					
 					long totalTime = 0;
-					for (TaskTimes time : task.getTimes()) {
+					for (TaskTimes time : task.getStartStopTimes()) {
 						output.println(time.description(tasks.osInterface.getZoneId()));
 						
 						totalTime += getTotalTime(time);
@@ -149,8 +149,8 @@ public class TimesCommand extends Command {
 			for (Task task : listTasks) {
 				boolean include = false;
 				long totalTaskTime = 0;
-				
-				for (TaskTimes time : task.getTimes()) {
+
+				for (TaskTimes time : task.getStartStopTimes()) {
 					if (time.start >= midnightStart && time.stop < midnightStop) {
 						include = true;
 						totalTaskTime += getTotalTime(time);
@@ -180,8 +180,8 @@ public class TimesCommand extends Command {
 	
 	private long getTotalTaskTime(Task task) {
 		long totalTime = 0;
-		
-		for (TaskTimes time : task.getTimes()) {
+
+		for (TaskTimes time : task.getStartStopTimes()) {
 			totalTime += getTotalTime(time);
 		}
 		return totalTime;

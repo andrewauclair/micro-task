@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,8 +18,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		tasks.addTask("Testing rename typo hre");
 		
 		Task renameTask = tasks.renameTask(1, "Testing rename typo here, fixed");
-		
-		Task task = new Task(1, "Testing rename typo here, fixed");
+
+		Task task = new Task(1, "Testing rename typo here, fixed", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		
 		assertEquals(task, renameTask);
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -31,8 +32,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		tasks.startTask(2, false);
 		
 		Task renameTask = tasks.renameTask(2, "Renaming task");
-		
-		Task task = new Task(2, "Renaming task", TaskState.Active, Collections.singletonList(new TaskTimes(0)));
+
+		Task task = new Task(2, "Renaming task", TaskState.Active, Arrays.asList(new TaskTimes(0), new TaskTimes(0)));
 		
 		assertEquals(task, renameTask);
 	}
@@ -77,8 +78,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		tasks.setCurrentList("testing-rename");
 		
 		Task renameTask = tasks.renameTask(1, "Renamed this task");
-		
-		Task task = new Task(1, "Renamed this task");
+
+		Task task = new Task(1, "Renamed this task", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		
 		assertEquals(task, renameTask);
 		

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,8 +22,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task newActiveTask = tasks.startTask(task.id, false);
 
-		Task oldTask = new Task(2, "Testing task start command");
-		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
+		Task oldTask = new Task(2, "Testing task start command", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Arrays.asList(new TaskTimes(0), new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -72,7 +73,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task task = tasks.startTask(1, false);
 
-		assertThat(task.getTimes()).containsOnly(new TaskTimes(1234, Long.MIN_VALUE));
+		// TODO We should now also test that the getStartStopTimes returns only the start stop times and not the add time
+		assertThat(task.getTimes()).containsOnly(new TaskTimes(0), new TaskTimes(1234, Long.MIN_VALUE));
 	}
 
 	@Test
@@ -147,8 +149,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(2, true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Collections.singletonList(new TaskTimes(0, 1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(0), new TaskTimes(0, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(0), new TaskTimes(1561078202L)))
 		);
 	}
 }

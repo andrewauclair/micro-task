@@ -25,10 +25,15 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_file() {
-		Task task = new Task(1, "Test");
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
-		
-		assertEquals("Test" + Utils.NL + "Inactive" + Utils.NL + "-1" + Utils.NL + "", outputStream.toString());
+
+		assertEquals("Test" + Utils.NL +
+				"Inactive" + Utils.NL +
+				"-1" + Utils.NL +
+				"" + Utils.NL +
+				"" + Utils.NL +
+				"add 1234", outputStream.toString());
 		assertTrue(writeTask);
 	}
 	
@@ -36,33 +41,38 @@ class TaskWriterTest {
 	void write_task_with_issue_and_charge() {
 		Task task = new Task(1, "Test", TaskState.Inactive, Collections.emptyList(), 12345, "Issues");
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
-		
-		assertEquals("Test" + Utils.NL + "Inactive" + Utils.NL + "12345" + Utils.NL + "Issues", outputStream.toString());
+
+		assertEquals("Test" + Utils.NL +
+				"Inactive" + Utils.NL +
+				"12345" + Utils.NL +
+				"Issues", outputStream.toString());
 		assertTrue(writeTask);
 	}
 	
 	@Test
 	void write_task_with_start_time() {
-		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1234)));
+		Task task = new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + Utils.NL +
 				"Active" + Utils.NL +
 				"-1" + Utils.NL +
 				"" + Utils.NL + Utils.NL + // charge
-				"start 1234", outputStream.toString());
+				"add 1234" + Utils.NL +
+				"start 2345", outputStream.toString());
 		assertTrue(writeTask);
 	}
 
 	@Test
 	void write_task_with_start_and_stop_times() {
-		Task task = new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1234, 4567)));
+		Task task = new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(123), new TaskTimes(1234, 4567)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + Utils.NL +
 				"Finished" + Utils.NL +
 				"-1" + Utils.NL +
 				"" + Utils.NL + Utils.NL + // charge
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567", outputStream.toString());
 		assertTrue(writeTask);
@@ -72,6 +82,7 @@ class TaskWriterTest {
 	void write_task_with_start_stop_and_start_again() {
 		Task task = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
+						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				)
@@ -83,6 +94,7 @@ class TaskWriterTest {
 				"Active" + Utils.NL +
 				"-1" + Utils.NL +
 				"" + Utils.NL + Utils.NL + // charge
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333", outputStream.toString());
@@ -93,6 +105,7 @@ class TaskWriterTest {
 	void write_task_with_multiple_starts_and_stops() {
 		Task task = new Task(1, "Test", TaskState.Inactive,
 				Arrays.asList(
+						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)
@@ -103,6 +116,7 @@ class TaskWriterTest {
 				"Inactive" + Utils.NL +
 				"-1" + Utils.NL +
 				"" + Utils.NL + Utils.NL + // charge
+				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
 				"start 3333" + Utils.NL +
@@ -123,7 +137,7 @@ class TaskWriterTest {
 
 		TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
 
-		Task task = new Task(1, "Test");
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		assertFalse(writer.writeTask(task, "test.txt"));
 
 		assertEquals("java.io.IOException" + Utils.NL, consoleOutput.toString());

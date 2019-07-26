@@ -32,7 +32,7 @@ public class Tasks {
 	}
 	
 	public Task addTask(String task) {
-		Task newTask = new Task(startingID++, task);
+		Task newTask = new Task(startingID++, task, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
 		tasks.get(currentList).add(newTask);
 		
 		writeNextId();

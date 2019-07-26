@@ -20,7 +20,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 
-		Task expectedTask = new Task(1, "Testing task add command");
+		Task expectedTask = new Task(1, "Testing task add command", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
@@ -89,7 +89,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void tasks_allows_us_to_add_an_actual_task_object_for_reloading_from_a_file() {
-		Task task = new Task(4, "Testing");
+		Task task = new Task(4, "Testing", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		tasks.addTask(task);
 
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -162,9 +162,9 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists() {
-		tasks.addTask(new Task(1, "Test throw"));
-		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here")));
+		tasks.addTask(new Task(1, "Test throw", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 		
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
@@ -175,7 +175,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList("one");
 		tasks.setCurrentList("one");
 
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here'))))")));
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
