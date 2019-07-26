@@ -54,9 +54,10 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		);
 	}
 	
-	@Test
-	void add_command_sets_issue_number() {
-		commands.execute(printStream, "add --issue 12345 --name \"Test 1\"");
+	@ParameterizedTest
+	@ValueSource(strings = {"--issue", "-i"})
+	void add_command_sets_issue_number(String param) {
+		commands.execute(printStream, "add " + param + " 12345 --name \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, Collections.emptyList(), 12345, "")
