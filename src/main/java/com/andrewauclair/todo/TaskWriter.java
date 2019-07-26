@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import java.util.List;
 
 class TaskWriter {
 	private final PrintStream output;
-	private final OSInterface osInterface;
+	private final OSInterfaceImpl osInterface;
 
-	TaskWriter(PrintStream output, OSInterface osInterface) {
+	TaskWriter(PrintStream output, OSInterfaceImpl osInterface) {
 		this.output = output;
 		this.osInterface = osInterface;
 	}

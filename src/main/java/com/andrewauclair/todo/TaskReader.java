@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 
 class TaskReader {
-	private final OSInterface osInterface;
+	private final OSInterfaceImpl osInterface;
 
-	TaskReader(OSInterface osInterface) {
+	TaskReader(OSInterfaceImpl osInterface) {
 		this.osInterface = osInterface;
 	}
 

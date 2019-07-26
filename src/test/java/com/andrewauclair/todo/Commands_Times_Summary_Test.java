@@ -14,7 +14,8 @@ class Commands_Times_Summary_Test extends CommandsBaseTestCase {
 		tasks.addTask(new Task(30, "Test 3", TaskState.Inactive, Arrays.asList(new TaskTimes(0), new TaskTimes(0))));
 		
 		setTime(3610);
-		
+		osInterface.setIncrementTime(false);
+
 		commands.execute(printStream, "times --list default --summary");
 		
 		assertOutput(

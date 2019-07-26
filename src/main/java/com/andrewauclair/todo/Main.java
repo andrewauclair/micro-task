@@ -3,7 +3,7 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Completers;
@@ -21,7 +21,7 @@ public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
 	
 	public static void main(String[] args) throws IOException {
-		OSInterface osInterface = new OSInterface();
+		OSInterfaceImpl osInterface = new OSInterfaceImpl();
 		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(System.out, osInterface), System.out, osInterface);
 		Commands commands = new Commands(tasks, new GitLabReleases());
 		
@@ -41,12 +41,16 @@ public class Main {
 			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
 
+		boolean exception = false;
+
 		try {
 			readTasks(osInterface, tasks);
 		}
 		catch (Exception e) {
 			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
 			e.printStackTrace();
+
+			exception = true;
 		}
 
 		Terminal terminal = TerminalBuilder.builder()
@@ -63,10 +67,12 @@ public class Main {
 				.build();
 		
 		bindCtrlBackspace(lineReader);
-		
-		osInterface.clearScreen();
-		
-		System.out.println(terminal.getSize());
+
+		if (!exception) {
+			osInterface.clearScreen();
+		}
+
+//		System.out.println(terminal.getSize());
 
 		while (true) {
 			try {
@@ -83,7 +89,7 @@ public class Main {
 	}
 
 	// TODO Get this under test
-	private static void readTasks(OSInterface osInterface, Tasks tasks) throws IOException {
+	private static void readTasks(OSInterfaceImpl osInterface, Tasks tasks) throws IOException {
 		TaskReader reader = new TaskReader(osInterface);
 		
 		File[] files = new File("git-data/tasks").listFiles();
@@ -126,8 +132,8 @@ public class Main {
 			}
 		}, KeyMap.ctrl(BACKSPACE_KEY));
 	}
-	
-	private static long getStartingID(OSInterface osInterface) {
+
+	private static long getStartingID(OSInterfaceImpl osInterface) {
 		try (InputStream inputStream = osInterface.createInputStream("git-data/next-id.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 			return scanner.nextLong();

@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -14,7 +14,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskReaderTest {
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	private final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
 
 	@Test
 	void read_task_with_just_a_start() throws IOException {

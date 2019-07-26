@@ -2,7 +2,7 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.GitLabReleases;
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Commands_List_Manage_Test {
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	private final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	private final PrintStream printStream = new PrintStream(outputStream);
 	private final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
