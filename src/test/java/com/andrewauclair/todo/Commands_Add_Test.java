@@ -2,6 +2,8 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 
@@ -11,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Commands_Add_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_add_command() {
-		commands.execute(printStream, "add \"Task 1\"");
-		commands.execute(printStream, "add \"Task 2\"");
+		commands.execute(printStream, "add -n \"Task 1\"");
+		commands.execute(printStream, "add --name \"Task 2\"");
 
 		assertOutput(
 				"Added task 1 - 'Task 1'",
@@ -26,10 +28,25 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				new Task(2, "Task 2")
 		);
 	}
-
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"--name", "-n"})
+	void uses_name_argument(String name) {
+		commands.execute(printStream, "add " + name + " \"Test\" --issue 12345");
+		
+		assertOutput(
+				"Added task 1 - 'Test'",
+				""
+		);
+		
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Test", TaskState.Inactive, Collections.emptyList(), 12345, "")
+		);
+	}
+	
 	@Test
 	void add_command_ignores_extra_whitespace() {
-		commands.execute(printStream, "add \"Task 1\"    ");
+		commands.execute(printStream, "add --name \"Task 1\"    ");
 
 		assertOutput(
 				"Added task 1 - 'Task 1'",
@@ -39,7 +56,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void add_command_sets_issue_number() {
-		commands.execute(printStream, "add --issue 12345 \"Test 1\"");
+		commands.execute(printStream, "add --issue 12345 --name \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, Collections.emptyList(), 12345, "")
@@ -53,7 +70,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void add_command_sets_time_charge() {
-		commands.execute(printStream, "add --charge \"Issues\" \"Test 1\"");
+		commands.execute(printStream, "add --charge \"Issues\" -n \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, Collections.emptyList(), -1, "Issues")
@@ -61,6 +78,16 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		
 		assertOutput(
 				"Added task 1 - 'Test 1'",
+				""
+		);
+	}
+	
+	@Test
+	void add_with_no_name_argument_outputs_missing_argument() {
+		commands.execute(printStream, "add \"Test\"");
+		
+		assertOutput(
+				"Missing name argument.",
 				""
 		);
 	}

@@ -1,18 +1,21 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.*;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class AddCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("name", 'n', Collections.singletonList("Name")),
+			new CommandOption("issue", 'i', Collections.singletonList("Issue")),
+			new CommandOption("charge", 'c', Collections.singletonList("Charge"))
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
 	public AddCommand(Tasks tasks) {
@@ -21,25 +24,30 @@ public class AddCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
+		List<CommandArgument> args = parser.parse(command);
+		Map<String, CommandArgument> argsMap = new HashMap<>();
 		
-		List<String> parameters = Arrays.asList(s);
+		for (CommandArgument arg : args) {
+			argsMap.put(arg.getName(), arg);
+		}
 		
-		int titleEnd = command.lastIndexOf('"');
-		String taskTitle = command.substring(command.substring(0, titleEnd - 1).lastIndexOf('"') + 1, titleEnd);
+		String taskTitle;
+		
+		if (argsMap.containsKey("name")) {
+			taskTitle = argsMap.get("name").getValue();
+		}
+		else {
+			throw new RuntimeException("Missing name argument.");
+		}
 		
 		Task task = tasks.addTask(taskTitle);
 		
-		if (parameters.contains("--issue")) {
-			task = tasks.setIssue(task.id, Long.parseLong(parameters.get(parameters.indexOf("--issue") + 1)));
+		if (argsMap.containsKey("issue")) {
+			task = tasks.setIssue(task.id, Long.parseLong(argsMap.get("issue").getValue()));
 		}
 		
-		if (parameters.contains("--charge")) {
-			int chargeStart = command.indexOf('"');
-			String charge = command.substring(chargeStart + 1);
-			charge = charge.substring(0, charge.indexOf('"'));
-			
-			task = tasks.setCharge(task.id, charge);
+		if (argsMap.containsKey("charge")) {
+			task = tasks.setCharge(task.id, argsMap.get("charge").getValue());
 		}
 		
 		output.println("Added task " + task.description());
