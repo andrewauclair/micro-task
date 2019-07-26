@@ -20,7 +20,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		addTaskTimes(2, 1561082202, 1561083202);
 
 		setTime(1561084202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		setTime(1561085202);
 
@@ -131,25 +131,25 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 
 		setTime(1561078202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		setTime(1561079202);
 		tasks.stopTask();
 
 		setTime(1561080202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		setTime(1561081202);
 		tasks.stopTask();
 
 		setTime(1561082202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		setTime(1561083202);
 		tasks.stopTask();
 
 		setTime(1561084202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 
 		setTime(1561085202);
 

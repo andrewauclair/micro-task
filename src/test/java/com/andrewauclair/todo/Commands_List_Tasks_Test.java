@@ -15,9 +15,9 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		tasks.addTask("Task 3");
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 		tasks.finishTask();
-		tasks.startTask(3);
+		tasks.startTask(3, false);
 		
 		commands.execute(printStream, "list --tasks");
 		
@@ -33,9 +33,9 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		tasks.addTask("Task 3");
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 		tasks.finishTask();
-		tasks.startTask(3);
+		tasks.startTask(3, false);
 		
 		tasks.addList("test");
 		tasks.setCurrentList("test");

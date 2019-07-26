@@ -13,7 +13,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 	void execute_stop_command() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		setTime(1561079202);
 		commands.execute(printStream, "stop");
 
@@ -33,11 +33,11 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 	void multiple_starts_and_stops_only_shows_the_latest_time() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		setTime(1561079202);
 		commands.execute(printStream, "stop");
 		setTime(1561080202);
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		setTime(1561081202);
 		outputStream.reset();
 		

@@ -2,8 +2,11 @@
 package com.andrewauclair.todo;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +35,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	void multiple_starts_prints_the_correct_start_time() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		Task stopTask = tasks.stopTask();
 
 		assertThat(stopTask.getTimes()).hasSize(1);
@@ -56,17 +59,47 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 		
 		commands.execute(printStream, "start 2");
 
-		assertThat(tasks.getTasks().stream()
-				.filter(task -> task.state == TaskState.Active)).hasSize(1);
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(0, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+		);
 
 		assertOutput(
 				"Stopped task 1 - 'Test 1'",
+				"",
+				"Started task 2 - 'Test 2'",
+				"",
+				"06/20/2019 07:50:02 PM -",
+				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"--finish", "-f"})
+	void finish_active_task_with_finish_option(String finish) {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.startTask(1, false);
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		commands.execute(printStream, "start 2 " + finish);
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Test 1", TaskState.Finished, Collections.singletonList(new TaskTimes(0, 1561078202L))),
+				new Task(2, "Test 2", TaskState.Active, Collections.singletonList(new TaskTimes(1561078202L)))
+		);
+
+		assertOutput(
+				"Finished task 1 - 'Test 1'",
 				"",
 				"Started task 2 - 'Test 2'",
 				"",

@@ -159,8 +159,8 @@ public class Tasks {
 				.filter(task -> task.id == id)
 				.findFirst();
 	}
-	
-	public Task startTask(long id) {
+
+	public Task startTask(long id, boolean finishActive) {
 		String taskList = findListForTask(id);
 		
 		Optional<Task> first = tasks.get(taskList).stream()
@@ -172,7 +172,12 @@ public class Tasks {
 				throw new RuntimeException("Task is already active.");
 			}
 			if (activeTaskID != NO_ACTIVE_TASK) {
-				stopTask();
+				if (finishActive) {
+					finishTask();
+				}
+				else {
+					stopTask();
+				}
 			}
 			activeTaskList = taskList;
 			activeTaskID = first.get().id;

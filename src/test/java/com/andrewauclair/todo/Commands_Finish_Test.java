@@ -14,7 +14,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		setTime(1561078202);
-		tasks.startTask(2);
+		tasks.startTask(2, false);
 		setTime(1561079202);
 		commands.execute(printStream, "finish");
 
@@ -37,7 +37,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		
 		commands.execute(printStream, "finish 2");
 

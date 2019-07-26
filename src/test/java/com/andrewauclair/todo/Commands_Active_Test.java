@@ -8,7 +8,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	void execute_active_command() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		setTime(1561079202);
 		commands.execute(printStream, "active");
 
@@ -36,7 +36,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	void prints_issue_number_when_active_task_has_an_associated_issue() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1);
+		tasks.startTask(1, false);
 		setTime(1561079202);
 		
 		tasks.setIssue(1, 12345);
