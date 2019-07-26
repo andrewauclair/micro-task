@@ -2,7 +2,6 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.os.GitLabReleases;
-import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -19,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
@@ -34,7 +33,8 @@ public class CommandsBaseTestCase {
 	}
 
 	void setTime(long time) {
-		Mockito.when(osInterface.currentSeconds()).thenReturn(time);
+//		Mockito.when(osInterface.currentSeconds()).thenReturn(time);
+		osInterface.setTime(time);
 	}
 
 	// TODO I'm really not liking how much we have to set the mock return for doing times

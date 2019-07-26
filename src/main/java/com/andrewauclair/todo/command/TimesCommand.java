@@ -2,10 +2,12 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Task;
+import com.andrewauclair.todo.TaskState;
 import com.andrewauclair.todo.TaskTimes;
 import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
+import com.andrewauclair.todo.os.ConsoleColors;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -142,10 +144,15 @@ public class TimesCommand extends Command {
 			long totalTime = 0;
 			
 			// TODO We should still use getTasksForList if --list was provided, going to skip that for now
-			List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());//tasks.getTasksForList(list));
-			
-			listTasks.sort(Comparator.comparingLong(this::getTotalTaskTime).reversed());
-			
+			List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
+
+			listTasks.sort(((Comparator<Task>) (o1, o2) -> {
+				long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop);
+				long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop);
+
+				return Long.compare(t1, t2);
+			}).reversed());
+
 			for (Task task : listTasks) {
 				boolean include = false;
 				long totalTaskTime = 0;
@@ -159,8 +166,19 @@ public class TimesCommand extends Command {
 				
 				if (include) {
 					printTotalTime(output, totalTaskTime, true);
-					output.print("   ");
-					output.println(task.description());
+
+					if (tasks.getActiveTaskID() == task.id) {
+						output.print(" * ");
+						ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+					}
+					else if (task.state == TaskState.Finished) {
+						output.print(" F ");
+						output.println(task.description());
+					}
+					else {
+						output.print("   ");
+						output.println(task.description());
+					}
 					
 					totalTime += totalTaskTime;
 				}
@@ -186,7 +204,18 @@ public class TimesCommand extends Command {
 		}
 		return totalTime;
 	}
-	
+
+	private long getTotalTimeInDay(Task task, long midnightStart, long midnightStop) {
+		long totalTime = 0;
+
+		for (TaskTimes time : task.getStartStopTimes()) {
+			if (time.start >= midnightStart && time.stop < midnightStop) {
+				totalTime += getTotalTime(time);
+			}
+		}
+		return totalTime;
+	}
+
 	private void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
 		long hours = totalTime / (60 * 60);
 		long minutes = (totalTime - (hours * 60 * 60)) / 60;

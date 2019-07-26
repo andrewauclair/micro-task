@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskWriterTest {
 	private final ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
 	private final OutputStream outputStream = new ByteArrayOutputStream();
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	private final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
 	private final TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
 
 	@BeforeEach
@@ -126,7 +126,7 @@ class TaskWriterTest {
 
 	@Test
 	void thrown_exception_makes_writeTask_return_false() throws IOException {
-		OSInterface osInterface = Mockito.mock(OSInterface.class);
+		OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
 		
 		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
