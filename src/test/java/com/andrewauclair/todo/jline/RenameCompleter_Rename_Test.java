@@ -23,7 +23,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 
 	@Test
 	void commands_completer_basic_rename_completion() {
-		commands.execute(printStream, "add \"Test\"");
+		commands.execute(printStream, "add -n \"Test\"");
 
 		Mockito.when(parsedLine.word()).thenReturn("1");
 

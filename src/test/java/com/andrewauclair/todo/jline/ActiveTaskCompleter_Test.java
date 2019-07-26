@@ -20,7 +20,7 @@ class ActiveTaskCompleter_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_id_is_in_candidates_list() {
-		commands.execute(printStream, "add \"Test\"");
+		commands.execute(printStream, "add -n \"Test\"");
 		commands.execute(printStream, "start 1");
 
 		Mockito.when(parsedLine.word()).thenReturn("");
