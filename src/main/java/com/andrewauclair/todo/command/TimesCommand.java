@@ -261,6 +261,10 @@ public class TimesCommand extends Command {
 								node(new ActiveTaskCompleter(tasks)),
 								node("--today")
 						)
+				),
+				node("times",
+						node("--task"
+						)
 				)
 		);
 	}
