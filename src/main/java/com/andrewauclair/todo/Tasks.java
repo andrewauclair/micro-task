@@ -32,18 +32,26 @@ public class Tasks {
 	}
 	
 	public Task addTask(String task) {
+		return addTask(task, currentList);
+	}
+
+	public Task addTask(String task, String list) {
+		if (!tasks.containsKey(list)) {
+			throw new RuntimeException("List '" + list + "' does not exist.");
+		}
+
 		Task newTask = new Task(startingID++, task, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
-		tasks.get(currentList).add(newTask);
-		
+		tasks.get(list).add(newTask);
+
 		writeNextId();
-		writeTask(newTask, currentList);
-		
+		writeTask(newTask, list);
+
 		osInterface.runGitCommand("git add next-id.txt");
-		addAndCommit(newTask, "Added task", currentList);
-		
+		addAndCommit(newTask, "Added task", list);
+
 		return newTask;
 	}
-	
+
 	public Task renameTask(long id, String task) {
 		String listForTask = findListForTask(id);
 		Optional<Task> optionalTask = getTask(id, listForTask);
