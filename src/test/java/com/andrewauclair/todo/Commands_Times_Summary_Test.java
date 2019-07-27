@@ -23,7 +23,6 @@ class Commands_Times_Summary_Test extends CommandsBaseTestCase {
 				"",
 				"01h 00m 10s   30 - 'Test 3'",
 				"    59m 50s   1 - 'Test 1'",
-				"        00s   2 - 'Test 2'",
 				"",
 				"02h 00m 00s     - Total Time",
 				""

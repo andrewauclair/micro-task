@@ -54,9 +54,11 @@ public class TimesCommand extends Command {
 					long time = getTotalTaskTime(task);
 					
 					totalTime += time;
-					
-					printTotalTime(output, time, true);
-					output.println("   " + task.description());
+
+					if (time > 0) {
+						printTotalTime(output, time, true);
+						output.println("   " + task.description());
+					}
 				}
 				output.println();
 				printTotalTime(output, totalTime, false);
