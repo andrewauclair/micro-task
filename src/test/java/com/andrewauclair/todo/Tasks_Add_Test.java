@@ -159,7 +159,66 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		Mockito.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Test \\\"Quotes\\\"'\"");
 	}
-	
+
+	@Test
+	void adding_task_to_a_specific_list() {
+		tasks.addList("one");
+		tasks.addTask("Test", "one");
+
+		assertThat(tasks.getTasksForList("one")).containsOnly(
+				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))
+		);
+	}
+
+	@Test
+	void adding_task_to_specific_list_tells_task_writer_to_write_file() {
+		tasks.addList("one");
+
+		Task task1 = tasks.addTask("Testing task add command 1", "one");
+		Task task2 = tasks.addTask("Testing task add command 2", "one");
+
+		Mockito.verify(writer).writeTask(task1, "git-data/tasks/one/1.txt");
+		Mockito.verify(writer).writeTask(task2, "git-data/tasks/one/2.txt");
+	}
+
+	@Test
+	void adding_tasks_to_specific_list_tells_writer_to_write_next_id_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(outputStream));
+
+		tasks.addList("one");
+		tasks.addTask("Test", "one");
+
+		assertEquals("2", outputStream.toString());
+	}
+
+	@Test
+	void adding_task_to_specific_list_tells_git_control_to_add_file_and_commit() {
+		tasks.addList("test");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.addTask("Testing task add command 1", "test");
+
+		order.verify(osInterface).runGitCommand("git add next-id.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
+
+		tasks.addTask("Testing task add command 2", "test");
+
+		order.verify(osInterface).runGitCommand("git add next-id.txt");
+		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - 'Testing task add command 2'\"");
+	}
+
+	@Test
+	void add_to_specific_list_throws_exception_if_list_does_not_exist() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask("Test", "one"));
+
+		assertEquals("List 'one' does not exist.", runtimeException.getMessage());
+	}
+
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists() {
 		tasks.addTask(new Task(1, "Test throw", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));

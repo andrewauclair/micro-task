@@ -13,7 +13,8 @@ public class AddCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("name", 'n', Collections.singletonList("Name")),
 			new CommandOption("issue", 'i', Collections.singletonList("Issue")),
-			new CommandOption("charge", 'c', Collections.singletonList("Charge"))
+			new CommandOption("charge", 'c', Collections.singletonList("Charge")),
+			new CommandOption("list", 'l', Collections.singletonList("List"))
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
@@ -39,8 +40,14 @@ public class AddCommand extends Command {
 		else {
 			throw new RuntimeException("Missing name argument.");
 		}
-		
-		Task task = tasks.addTask(taskTitle);
+
+		String list = tasks.getCurrentList();
+
+		if (argsMap.containsKey("list")) {
+			list = argsMap.get("list").getValue();
+		}
+
+		Task task = tasks.addTask(taskTitle, list);
 		
 		if (argsMap.containsKey("issue")) {
 			task = tasks.setIssue(task.id, Long.parseLong(argsMap.get("issue").getValue()));

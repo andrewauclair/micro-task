@@ -15,6 +15,7 @@ import java.io.PrintStream;
 @ExtendWith(MockitoExtension.class)
 class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
+	// TODO Migrate this to the MockOSInterface
 	final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final Tasks tasks = new Tasks(1, writer, new PrintStream(outputStream), osInterface);

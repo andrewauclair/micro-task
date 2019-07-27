@@ -43,7 +43,23 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), 12345, "")
 		);
 	}
-	
+
+	@ParameterizedTest
+	@ValueSource(strings = {"--list", "-l"})
+	void add_task_to_specific_list(String option) {
+		tasks.addList("one");
+		commands.execute(printStream, "add " + option + " one -n \"Test\"");
+
+		assertOutput(
+				"Added task 1 - 'Test'",
+				""
+		);
+
+		assertThat(tasks.getTasksForList("one")).containsOnly(
+				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+		);
+	}
+
 	@Test
 	void add_command_ignores_extra_whitespace() {
 		commands.execute(printStream, "add --name \"Task 1\"    ");
