@@ -2,11 +2,13 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Task;
+import com.andrewauclair.todo.TaskState;
 import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.os.ConsoleColors;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,9 +25,14 @@ public class SearchCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		String searchText = command.substring(8, command.lastIndexOf("\""));
-		
+
+		String[] s = command.split(" ");
+
+		List<String> parameters = Arrays.asList(s);
+
 		List<Task> searchResults = tasks.getTasks().stream()
 				.filter(task -> task.task.contains(searchText))
+				.filter(task -> (parameters.contains("--finished") || parameters.contains("-f")) == (task.state == TaskState.Finished))
 				.collect(Collectors.toList());
 		
 		output.println("Search Results (" + searchResults.size() + "):");
