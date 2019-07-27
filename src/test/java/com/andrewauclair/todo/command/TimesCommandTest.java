@@ -33,6 +33,10 @@ class TimesCommandTest extends CommandsBaseTestCase {
 										node(new ActiveTaskCompleter(tasks)),
 										node("--today")
 								)
+						),
+						node("times",
+								node("--task"
+								)
 						)
 				)
 		);
