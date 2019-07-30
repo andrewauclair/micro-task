@@ -32,7 +32,7 @@ public class Commands {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(tasks));
-		commands.put("update", new UpdateCommand(gitLabReleases));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks));
 		commands.put("clear", new ClearCommand(tasks));
 		commands.put("exit", new ExitCommand(tasks));
 		commands.put("move", new MoveCommand(tasks));
