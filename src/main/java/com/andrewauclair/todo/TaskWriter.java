@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterfaceImpl;
+import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,16 +9,16 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-class TaskWriter {
+public class TaskWriter {
 	private final PrintStream output;
-	private final OSInterfaceImpl osInterface;
+	private final OSInterface osInterface;
 
-	TaskWriter(PrintStream output, OSInterfaceImpl osInterface) {
+	public TaskWriter(PrintStream output, OSInterface osInterface) {
 		this.output = output;
 		this.osInterface = osInterface;
 	}
 
-	boolean writeTask(Task task, String fileName) {
+	public boolean writeTask(Task task, String fileName) {
 		try (DataOutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
 			writeNL(outputStream);

@@ -15,7 +15,8 @@ public class Tasks {
 	public final OSInterface osInterface;
 	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
-	private final TaskWriter writer;
+	// TODO Don't make this public
+	public final TaskWriter writer;
 	private long startingID;
 	private long activeTaskID = NO_ACTIVE_TASK;
 	

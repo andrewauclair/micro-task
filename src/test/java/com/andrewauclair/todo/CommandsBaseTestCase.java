@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
-	private final TaskWriter writer = Mockito.mock(TaskWriter.class);
+	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
