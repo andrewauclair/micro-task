@@ -1,10 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.TaskState;
-import com.andrewauclair.todo.TaskTimes;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.*;
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
@@ -18,6 +15,17 @@ import java.util.*;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class TimesCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("tasks", CommandOption.NO_SHORTNAME, Collections.emptyList()),
+			new CommandOption("summary", CommandOption.NO_SHORTNAME, Collections.emptyList()),
+			new CommandOption("today", CommandOption.NO_SHORTNAME, Collections.emptyList()),
+			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
+			new CommandOption("task", CommandOption.NO_SHORTNAME, Collections.singletonList("Task")),
+			new CommandOption("day", 'd', Collections.singletonList("Day")),
+			new CommandOption("month", 'm', Collections.singletonList("Month")),
+			new CommandOption("year", 'y', Collections.singletonList("Year"))
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
 	public TimesCommand(Tasks tasks) {
@@ -26,6 +34,13 @@ public class TimesCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
+		List<CommandArgument> args = parser.parse(command);
+		Map<String, CommandArgument> argsMap = new HashMap<>();
+
+		for (CommandArgument arg : args) {
+			argsMap.put(arg.getName(), arg);
+		}
+
 		String[] s = command.split(" ");
 		
 		List<String> parameters = Arrays.asList(s);
@@ -122,82 +137,104 @@ public class TimesCommand extends Command {
 			output.println();
 		}
 		else if (s[1].equals("--tasks") && parameters.contains("--today")) {
-			// get date and execute it
-			output.print("Times for day ");
-			
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-			
 			long epochSecond = tasks.osInterface.currentSeconds();
-			
-			ZoneId zoneId = tasks.osInterface.getZoneId();
-			
-			output.println(Instant.ofEpochSecond(epochSecond).atZone(zoneId).format(dateTimeFormatter));
-			
-			LocalTime midnight = LocalTime.MIDNIGHT;
-			LocalDate today = LocalDate.ofInstant(Instant.ofEpochSecond(epochSecond), zoneId);//LocalDate.now(zoneId);
-			LocalDateTime todayMidnight = LocalDateTime.of(today, midnight);
-			LocalDateTime tomorrowMidnight = todayMidnight.plusDays(1);
-			
-			long midnightStart = todayMidnight.atZone(zoneId).toEpochSecond();
-			long midnightStop = tomorrowMidnight.atZone(zoneId).toEpochSecond();
-			
-			output.println();
-			
-			long totalTime = 0;
-			
+
+			Instant instant = Instant.ofEpochSecond(epochSecond);
+
+			displayTimesForDay(output, instant);
+
 			// TODO We should still use getTasksForList if --list was provided, going to skip that for now
-			List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
+		}
+		else if (s[1].equals("--tasks")) {
+			int month = Integer.parseInt(argsMap.get("month").getValue());
+			int day = Integer.parseInt(argsMap.get("day").getValue());
+			int year = Integer.parseInt(argsMap.get("year").getValue());
 
-			listTasks.sort(((Comparator<Task>) (o1, o2) -> {
-				long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop);
-				long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop);
+			LocalDate of = LocalDate.of(year, month, day);
 
-				return Long.compare(t1, t2);
-			}).reversed());
+			ZoneId zoneId = tasks.osInterface.getZoneId();
 
-			for (Task task : listTasks) {
-				boolean include = false;
-				long totalTaskTime = 0;
+			Instant instant = of.atStartOfDay(zoneId).toInstant();
 
-				for (TaskTimes time : task.getStartStopTimes()) {
-					if (time.start >= midnightStart && time.stop < midnightStop) {
-						include = true;
-						totalTaskTime += getTotalTime(time);
-					}
-				}
-				
-				if (include) {
-					printTotalTime(output, totalTaskTime, true);
-
-					if (tasks.getActiveTaskID() == task.id) {
-						output.print(" * ");
-						ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
-					}
-					else if (task.state == TaskState.Finished) {
-						output.print(" F ");
-						output.println(task.description());
-					}
-					else {
-						output.print("   ");
-						output.println(task.description());
-					}
-					
-					totalTime += totalTaskTime;
-				}
-			}
-			
-			output.println();
-			output.print("Total time: ");
-			printTotalTime(output, totalTime, false);
-			output.println();
-			output.println();
+			displayTimesForDay(output, instant);
+			// TODO We should still use getTasksForList if --list was provided, going to skip that for now
 		}
 		else {
 			output.println("Invalid command.");
 			output.println();
 		}
 	}
-	
+
+	private void displayTimesForDay(PrintStream output, Instant day) {
+		// get date and execute it
+		output.print("Times for day ");
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+		ZoneId zoneId = tasks.osInterface.getZoneId();
+
+		output.println(day.atZone(zoneId).format(dateTimeFormatter));
+
+		LocalTime midnight = LocalTime.MIDNIGHT;
+		LocalDate today = LocalDate.ofInstant(day, zoneId);
+		LocalDateTime todayMidnight = LocalDateTime.of(today, midnight);
+		LocalDateTime tomorrowMidnight = todayMidnight.plusDays(1);
+
+		long midnightStart = todayMidnight.atZone(zoneId).toEpochSecond();
+		long midnightStop = tomorrowMidnight.atZone(zoneId).toEpochSecond();
+
+		output.println();
+
+		long totalTime = 0;
+
+		// TODO We should still use getTasksForList if --list was provided, going to skip that for now
+		List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
+
+		listTasks.sort(((Comparator<Task>) (o1, o2) -> {
+			long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop);
+			long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop);
+
+			return Long.compare(t1, t2);
+		}).reversed());
+
+		for (Task task : listTasks) {
+			boolean include = false;
+			long totalTaskTime = 0;
+
+			for (TaskTimes time : task.getStartStopTimes()) {
+				if (time.start >= midnightStart && time.stop < midnightStop) {
+					include = true;
+					totalTaskTime += getTotalTime(time);
+				}
+			}
+
+			if (include) {
+				printTotalTime(output, totalTaskTime, true);
+
+				if (tasks.getActiveTaskID() == task.id) {
+					output.print(" * ");
+					ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+				}
+				else if (task.state == TaskState.Finished) {
+					output.print(" F ");
+					output.println(task.description());
+				}
+				else {
+					output.print("   ");
+					output.println(task.description());
+				}
+
+				totalTime += totalTaskTime;
+			}
+		}
+
+		output.println();
+		output.print("Total time: ");
+		printTotalTime(output, totalTime, false);
+		output.println();
+		output.println();
+	}
+
 	private long getTotalTaskTime(Task task) {
 		long totalTime = 0;
 
