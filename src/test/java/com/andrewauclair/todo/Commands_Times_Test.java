@@ -9,7 +9,7 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --junk");
 
 		assertOutput(
-				"Invalid command.",
+				"Unknown option 'junk'",
 				""
 		);
 	}
