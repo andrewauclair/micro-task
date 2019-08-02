@@ -9,8 +9,8 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_a_task() {
 		tasks.addTask("Testing the rename of a task");
-		
-		commands.execute(printStream, "rename --task 1 \"This is the new name of the task\"");
+
+		commands.execute(printStream, "rename --task 1 -n \"This is the new name of the task\"");
 
 		assertOutput(
 				"Renamed task 1 - 'This is the new name of the task'",
@@ -21,8 +21,8 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_a_task_ignores_extra_whitespace() {
 		tasks.addTask("Testing the rename of a task");
-		
-		commands.execute(printStream, "rename --task 1 \"This is the new name of the task\"      ");
+
+		commands.execute(printStream, "rename -t 1 --name \"This is the new name of the task\"      ");
 
 		assertOutput(
 				"Renamed task 1 - 'This is the new name of the task'",
@@ -33,8 +33,8 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_a_list() {
 		tasks.addList("test");
-		
-		commands.execute(printStream, "rename --list test \"new name\"");
+
+		commands.execute(printStream, "rename --list test -n \"new name\"");
 
 		assertThat(tasks.getListNames()).containsOnly("default", "new name");
 

@@ -19,7 +19,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 		tasks.startTask(2, false);
 
-		Task activeTask = new Task(2, "Testing 2", TaskState.Active, Arrays.asList(new TaskTimes(0), new TaskTimes(1234)));
+		Task activeTask = new Task(2, "Testing 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 	}

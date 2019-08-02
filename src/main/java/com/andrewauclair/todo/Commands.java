@@ -3,6 +3,7 @@ package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.command.*;
 import com.andrewauclair.todo.os.GitLabReleases;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers.TreeCompleter.Node;
 
 import java.io.PrintStream;
@@ -16,25 +17,25 @@ public class Commands {
 
 	private final Map<String, Command> commands = new HashMap<>();
 
-	Commands(Tasks tasks, GitLabReleases gitLabReleases) {
+	Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
 		this.tasks = tasks;
 
 		commands.put("create-list", new ListCreateCommand(tasks));
 		commands.put("switch-list", new ListSwitchCommand(tasks));
 		commands.put("finish", new FinishCommand(tasks));
-		commands.put("start", new StartCommand(tasks));
-		commands.put("stop", new StopCommand(tasks));
+		commands.put("start", new StartCommand(tasks, osInterface));
+		commands.put("stop", new StopCommand(tasks, osInterface));
 		commands.put("add", new AddCommand(tasks));
-		commands.put("active", new ActiveCommand(tasks));
+		commands.put("active", new ActiveCommand(tasks, osInterface));
 		commands.put("list", new ListCommand(tasks));
-		commands.put("times", new TimesCommand(tasks));
+		commands.put("times", new TimesCommand(tasks, osInterface));
 		commands.put("debug", new DebugCommand());
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
-		commands.put("version", new VersionCommand(tasks));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks));
-		commands.put("clear", new ClearCommand(tasks));
-		commands.put("exit", new ExitCommand(tasks));
+		commands.put("version", new VersionCommand(tasks, osInterface));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks, osInterface));
+		commands.put("clear", new ClearCommand(tasks, osInterface));
+		commands.put("exit", new ExitCommand(tasks, osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set", new SetCommand(tasks));
 	}

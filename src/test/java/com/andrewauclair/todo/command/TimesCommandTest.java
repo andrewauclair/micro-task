@@ -16,7 +16,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class TimesCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		TimesCommand command = new TimesCommand(tasks);
+		TimesCommand command = new TimesCommand(tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

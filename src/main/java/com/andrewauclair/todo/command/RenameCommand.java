@@ -1,45 +1,54 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.*;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class RenameCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("list", 'l', Collections.singletonList("List")),
+			new CommandOption("task", 't', Collections.singletonList("Task")),
+			new CommandOption("name", 'n', Collections.singletonList("Name"))
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
 	public RenameCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-	
+
+	// TODO Although it isn't really possible, we shouldn't allow list and task at the same time. it'll just run like a list rename, as it always has, but it should throw an error, this should be part of the CommandParser options
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-		
-		List<String> parameters = Arrays.asList(s);
-		
-		if (parameters.contains("--list")) {
-			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
-			tasks.renameList(s[2], newName);
-			
-			output.println("Renamed list '" + s[2] + "' to '" + newName + "'");
+		List<CommandArgument> args = parser.parse(command);
+		Map<String, CommandArgument> argsMap = new HashMap<>();
+
+		for (CommandArgument arg : args) {
+			argsMap.put(arg.getName(), arg);
+		}
+
+		if (argsMap.containsKey("list")) {
+			String newName = argsMap.get("name").getValue();
+			String list = argsMap.get("list").getValue();
+
+			tasks.renameList(list, newName);
+
+			output.println("Renamed list '" + list + "' to '" + newName + "'");
 			output.println();
 		}
-		else if (parameters.contains("--task")) {
-			String newName = command.substring(command.indexOf("\"") + 1, command.lastIndexOf("\""));
-			long taskID = Long.parseLong(s[2]);
-			
+		else if (argsMap.containsKey("task")) {
+			String newName = argsMap.get("name").getValue();
+			long taskID = Long.parseLong(argsMap.get("task").getValue());
+
 			Task task = tasks.renameTask(taskID, newName);
-			
+
 			output.println("Renamed task " + task.description());
 			output.println();
 		}

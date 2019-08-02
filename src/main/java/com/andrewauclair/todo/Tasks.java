@@ -10,13 +10,11 @@ import java.util.*;
 
 public class Tasks {
 	private static final int NO_ACTIVE_TASK = -1;
-	
-	// TODO Don't make this public
-	public final OSInterface osInterface;
+
+	private final OSInterface osInterface;
 	private final PrintStream output;
 	private final Map<String, List<Task>> tasks = new HashMap<>();
-	// TODO Don't make this public
-	public final TaskWriter writer;
+	private final TaskWriter writer;
 	private long startingID;
 	private long activeTaskID = NO_ACTIVE_TASK;
 	
@@ -31,7 +29,11 @@ public class Tasks {
 		
 		tasks.put("default", new ArrayList<>());
 	}
-	
+
+	public TaskWriter getWriter() {
+		return writer;
+	}
+
 	public Task addTask(String task) {
 		return addTask(task, currentList);
 	}

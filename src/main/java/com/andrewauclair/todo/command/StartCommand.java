@@ -4,6 +4,7 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.Task;
 import com.andrewauclair.todo.TaskTimes;
 import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -15,9 +16,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class StartCommand extends Command {
 	private final Tasks tasks;
-	
-	public StartCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public StartCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -48,8 +51,8 @@ public class StartCommand extends Command {
 
 		List<TaskTimes> times = task.getStartStopTimes();
 		TaskTimes startTime = times.get(times.size() - 1);
-		
-		output.println(startTime.description(tasks.osInterface.getZoneId()));
+
+		output.println(startTime.description(osInterface.getZoneId()));
 		output.println();
 	}
 	

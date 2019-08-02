@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -12,14 +13,16 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class ExitCommand extends Command {
 	private final Tasks tasks;
-	
-	public ExitCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public ExitCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		tasks.osInterface.exit();
+		osInterface.exit();
 	}
 	
 	@Override

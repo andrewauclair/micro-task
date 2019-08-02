@@ -5,6 +5,7 @@ import com.andrewauclair.todo.Task;
 import com.andrewauclair.todo.TaskDuration;
 import com.andrewauclair.todo.TaskTimes;
 import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -15,9 +16,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class ActiveCommand extends Command {
 	private final Tasks tasks;
-	
-	public ActiveCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public ActiveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -36,8 +39,8 @@ public class ActiveCommand extends Command {
 		
 		List<TaskTimes> times = task.getTimes();
 		TaskTimes activeTime = times.get(times.size() - 1);
-		
-		activeTime = new TaskTimes(activeTime.start, tasks.osInterface.currentSeconds());
+
+		activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
 		output.print("Current time elapsed: ");
 		output.println(new TaskDuration(activeTime));
 		output.println();

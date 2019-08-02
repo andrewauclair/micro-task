@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTimesTest {
 	@Test
@@ -52,5 +52,17 @@ class TaskTimesTest {
 		TaskTimes times = new TaskTimes(1561078202, 1561080022);
 
 		assertEquals("1561078202 - 1561080022", times.toString());
+	}
+
+	@Test
+	void start_time_can_not_be_before_stop_time() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskTimes(2000, 1000));
+
+		assertEquals("Stop time can not come before start time.", runtimeException.getMessage());
+	}
+
+	@Test
+	void exception_is_only_thrown_if_stop_time_is_set() {
+		assertDoesNotThrow(() -> new TaskTimes(1000, TaskTimes.TIME_NOT_SET));
 	}
 }

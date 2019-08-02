@@ -23,7 +23,7 @@ class Commands_List_Manage_Test {
 	private final PrintStream printStream = new PrintStream(outputStream);
 	private final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
 	private final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
-	private final Commands commands = new Commands(tasks, gitLabReleases);
+	private final Commands commands = new Commands(tasks, gitLabReleases, osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {

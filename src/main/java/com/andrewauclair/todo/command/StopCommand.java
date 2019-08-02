@@ -5,6 +5,7 @@ import com.andrewauclair.todo.Task;
 import com.andrewauclair.todo.TaskDuration;
 import com.andrewauclair.todo.TaskTimes;
 import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -15,9 +16,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class StopCommand extends Command {
 	private final Tasks tasks;
-	
-	public StopCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public StopCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -29,8 +32,8 @@ public class StopCommand extends Command {
 		
 		List<TaskTimes> times = task.getTimes();
 		TaskTimes stopTime = times.get(times.size() - 1);
-		
-		output.println(stopTime.description(tasks.osInterface.getZoneId()));
+
+		output.println(stopTime.description(osInterface.getZoneId()));
 		output.println();
 		output.print("Task was active for: ");
 		output.println(new TaskDuration(stopTime));

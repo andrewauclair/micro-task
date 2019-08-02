@@ -20,7 +20,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 
-		Task expectedTask = new Task(1, "Testing task add command", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task expectedTask = new Task(1, "Testing task add command", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)));
 
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
@@ -166,7 +166,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Test", "one");
 
 		assertThat(tasks.getTasksForList("one")).containsOnly(
-				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))
+				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		);
 	}
 
