@@ -14,7 +14,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class ActiveCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		ActiveCommand command = new ActiveCommand(tasks);
+		ActiveCommand command = new ActiveCommand(tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

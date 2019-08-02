@@ -17,6 +17,10 @@ public final class TaskTimes {
 	}
 	
 	public TaskTimes(long start, long stop) {
+		if (stop < start && stop != TIME_NOT_SET) {
+			throw new RuntimeException("Stop time can not come before start time.");
+		}
+
 		this.start = start;
 		this.stop = stop;
 	}

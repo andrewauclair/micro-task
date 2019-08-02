@@ -19,7 +19,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(1, "Testing rename typo here, fixed");
 
-		Task task = new Task(1, "Testing rename typo here, fixed", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task task = new Task(1, "Testing rename typo here, fixed", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)));
 		
 		assertEquals(task, renameTask);
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -33,7 +33,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(2, "Renaming task");
 
-		Task task = new Task(2, "Renaming task", TaskState.Active, Arrays.asList(new TaskTimes(0), new TaskTimes(0)));
+		Task task = new Task(2, "Renaming task", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(3000)));
 		
 		assertEquals(task, renameTask);
 	}
@@ -79,7 +79,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(1, "Renamed this task");
 
-		Task task = new Task(1, "Renamed this task", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task task = new Task(1, "Renamed this task", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)));
 		
 		assertEquals(task, renameTask);
 		

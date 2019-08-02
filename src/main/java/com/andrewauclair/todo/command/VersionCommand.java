@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.IOException;
@@ -13,15 +14,17 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class VersionCommand extends Command {
 	private final Tasks tasks;
-	
-	public VersionCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public VersionCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
 	public void execute(PrintStream output, String command) {
 		try {
-			output.println(tasks.osInterface.getVersion());
+			output.println(osInterface.getVersion());
 		}
 		catch (IOException e) {
 			output.println("Unknown");

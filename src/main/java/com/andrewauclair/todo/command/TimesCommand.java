@@ -5,6 +5,7 @@ import com.andrewauclair.todo.*;
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -27,9 +28,11 @@ public class TimesCommand extends Command {
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
-	
-	public TimesCommand(Tasks tasks) {
+	private final OSInterface osInterface;
+
+	public TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -119,7 +122,7 @@ public class TimesCommand extends Command {
 					
 					long totalTime = 0;
 					for (TaskTimes time : task.getStartStopTimes()) {
-						output.println(time.description(tasks.osInterface.getZoneId()));
+						output.println(time.description(osInterface.getZoneId()));
 						
 						totalTime += getTotalTime(time);
 					}
@@ -137,7 +140,7 @@ public class TimesCommand extends Command {
 			output.println();
 		}
 		else if (s[1].equals("--tasks") && parameters.contains("--today")) {
-			long epochSecond = tasks.osInterface.currentSeconds();
+			long epochSecond = osInterface.currentSeconds();
 
 			Instant instant = Instant.ofEpochSecond(epochSecond);
 
@@ -152,7 +155,7 @@ public class TimesCommand extends Command {
 
 			LocalDate of = LocalDate.of(year, month, day);
 
-			ZoneId zoneId = tasks.osInterface.getZoneId();
+			ZoneId zoneId = osInterface.getZoneId();
 
 			Instant instant = of.atStartOfDay(zoneId).toInstant();
 
@@ -171,7 +174,7 @@ public class TimesCommand extends Command {
 
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-		ZoneId zoneId = tasks.osInterface.getZoneId();
+		ZoneId zoneId = osInterface.getZoneId();
 
 		output.println(day.atZone(zoneId).format(dateTimeFormatter));
 
@@ -281,7 +284,7 @@ public class TimesCommand extends Command {
 		long totalTime = time.getDuration();
 		
 		if (time.stop == TaskTimes.TIME_NOT_SET) {
-			totalTime += tasks.osInterface.currentSeconds() - time.start;
+			totalTime += osInterface.currentSeconds() - time.start;
 		}
 		return totalTime;
 	}

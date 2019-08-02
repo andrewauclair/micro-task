@@ -14,7 +14,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class VersionCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		VersionCommand command = new VersionCommand(tasks);
+		VersionCommand command = new VersionCommand(tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

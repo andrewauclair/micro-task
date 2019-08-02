@@ -15,7 +15,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class UpdateCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		UpdateCommand command = new UpdateCommand(new GitLabReleases(), tasks);
+		UpdateCommand command = new UpdateCommand(new GitLabReleases(), tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

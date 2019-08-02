@@ -38,8 +38,10 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.startTask(1, false);
 		Task stopTask = tasks.stopTask();
 
-		// TODO assert the times instead of just the size
-		assertThat(stopTask.getTimes()).hasSize(2);
+		assertThat(stopTask.getTimes()).containsOnly(
+				new TaskTimes(1000),
+				new TaskTimes(2000, 3000)
+		);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 		

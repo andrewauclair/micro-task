@@ -4,6 +4,7 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.Task;
 import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.os.GitLabReleases;
+import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
 import java.io.IOException;
@@ -18,10 +19,12 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class UpdateCommand extends Command {
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
-	public UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks) {
+	public UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -56,11 +59,11 @@ public class UpdateCommand extends Command {
 
 			for (Task task : taskList) {
 				String list = tasks.findListForTask(task.id);
-				tasks.writer.writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
-				tasks.osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+				tasks.getWriter().writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
+				osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
 			}
 
-			tasks.osInterface.runGitCommand("git commit -m \"Updating task files.\"");
+			osInterface.runGitCommand("git commit -m \"Updating task files.\"");
 
 			output.println("Updated all tasks.");
 		}

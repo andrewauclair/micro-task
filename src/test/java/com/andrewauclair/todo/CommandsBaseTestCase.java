@@ -18,13 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class CommandsBaseTestCase {
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
+	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
 
-	protected final Commands commands = new Commands(tasks, gitLabReleases);
+	protected final Commands commands = new Commands(tasks, gitLabReleases, osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {

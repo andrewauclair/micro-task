@@ -13,10 +13,6 @@ public final class Task {
 	private final long issue;
 	private final String charge;
 
-//	Task(long id, String task) {
-//		this(id, task, TaskState.Inactive, Collections.emptyList());
-//	}
-
 	Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
 		this.task = task;

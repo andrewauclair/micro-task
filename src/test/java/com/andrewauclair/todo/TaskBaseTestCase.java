@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
-import com.andrewauclair.todo.os.OSInterfaceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -15,8 +14,7 @@ import java.io.PrintStream;
 @ExtendWith(MockitoExtension.class)
 class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	// TODO Migrate this to the MockOSInterface
-	final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
+	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	final Tasks tasks = new Tasks(1, writer, new PrintStream(outputStream), osInterface);
 
