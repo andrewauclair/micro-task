@@ -17,7 +17,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 				"",
 				"Active task is on the 'default' list",
 				"",
-				"Current time elapsed: 00h 16m 40s",
+				"Current time elapsed: 16m 40s",
 				""
 		);
 	}
@@ -50,7 +50,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 				"",
 				"Active task is on the 'default' list",
 				"",
-				"Current time elapsed: 00h 16m 40s",
+				"Current time elapsed: 16m 40s",
 				""
 		);
 	}

@@ -33,11 +33,9 @@ public class CommandsBaseTestCase {
 	}
 
 	void setTime(long time) {
-//		Mockito.when(osInterface.currentSeconds()).thenReturn(time);
 		osInterface.setTime(time);
 	}
 
-	// TODO I'm really not liking how much we have to set the mock return for doing times
 	void addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);

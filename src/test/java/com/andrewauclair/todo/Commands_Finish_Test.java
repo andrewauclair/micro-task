@@ -21,7 +21,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Finished task 2 - 'Task 2'",
 				"",
-				"Task finished in: 00h 16m 40s",
+				"Task finished in: 16m 40s",
 				""
 		);
 
@@ -44,7 +44,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Finished task 2 - 'Task 2'",
 				"",
-				"Task finished in: 00h 00m 00s",
+				"Task finished in: 00s",
 				""
 		);
 

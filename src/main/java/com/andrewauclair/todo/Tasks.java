@@ -156,12 +156,13 @@ public class Tasks {
 			writeTask(task, newName);
 
 			// add the deleted file and the new file
-			osInterface.runGitCommand("git add tasks/" + oldName + "/" + task.id + ".txt");
-			osInterface.runGitCommand("git add tasks/" + newName + "/" + task.id + ".txt");
+//			osInterface.runGitCommand("git add tasks/" + oldName + "/" + task.id + ".txt");
+//			osInterface.runGitCommand("git add tasks/" + newName + "/" + task.id + ".txt");
 		}
 
 		osInterface.removeFile("git-data/tasks/" + oldName);
 
+		osInterface.runGitCommand("git add .");
 		osInterface.runGitCommand("git commit -m \"Renamed list '" + oldName + "' to '" + newName + "'\"");
 	}
 	
