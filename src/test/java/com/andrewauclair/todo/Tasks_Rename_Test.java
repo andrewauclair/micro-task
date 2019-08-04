@@ -137,10 +137,11 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/2.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
+//		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
+//		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
+//		order.verify(osInterface).runGitCommand("git add tasks/one/2.txt");
+//		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
+		order.verify(osInterface).runGitCommand("git add .");
 		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list 'one' to 'test'\"");
 	}
 

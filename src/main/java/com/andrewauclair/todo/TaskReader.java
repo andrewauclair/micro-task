@@ -67,7 +67,9 @@ class TaskReader {
 		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
 			timesList.add(new TaskTimes(start, stop));
 		}
-		
+
+		scanner.close();
+
 		long issueNum = issue.isEmpty() ? -1 : Long.parseLong(issue);
 		return new Task(id, task, state, timesList, issueNum, timeTrack);
 	}
