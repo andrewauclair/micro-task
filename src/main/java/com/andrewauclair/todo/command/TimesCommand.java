@@ -185,14 +185,13 @@ public class TimesCommand extends Command {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		output.println(day.atZone(zoneId).format(dateTimeFormatter));
-
-		LocalTime midnight = LocalTime.MIDNIGHT;
+		
 		LocalDate today = LocalDate.ofInstant(day, zoneId);
-		LocalDateTime todayMidnight = LocalDateTime.of(today, midnight);
-		LocalDateTime tomorrowMidnight = todayMidnight.plusDays(1);
-
-		long midnightStart = todayMidnight.atZone(zoneId).toEpochSecond();
-		long midnightStop = tomorrowMidnight.atZone(zoneId).toEpochSecond();
+		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(1);
+		
+		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
+		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
 
 		output.println();
 
@@ -213,7 +212,7 @@ public class TimesCommand extends Command {
 			long totalTaskTime = 0;
 
 			for (TaskTimes time : task.getStartStopTimes()) {
-				if (time.start >= midnightStart && time.stop < midnightStop) {
+				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 					include = true;
 					totalTaskTime += getTotalTime(time);
 				}
