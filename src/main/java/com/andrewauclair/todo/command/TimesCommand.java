@@ -152,13 +152,18 @@ public class TimesCommand extends Command {
 			// TODO We should still use getTasksForList if --list was provided, going to skip that for now
 		}
 		else if (s[1].equals("--tasks")) {
-			int month = Integer.parseInt(argsMap.get("month").getValue());
+			long epochSecond = osInterface.currentSeconds();
+			
+			Instant epochInstant = Instant.ofEpochSecond(epochSecond);
+			
+			ZoneId zoneId = osInterface.getZoneId();
+			
 			int day = Integer.parseInt(argsMap.get("day").getValue());
-			int year = Integer.parseInt(argsMap.get("year").getValue());
-
+			int month = argsMap.get("month") != null ? Integer.parseInt(argsMap.get("month").getValue()) : epochInstant.atZone(zoneId).getMonthValue();
+			int year = argsMap.get("year") != null ? Integer.parseInt(argsMap.get("year").getValue()) : epochInstant.atZone(zoneId).getYear();
+			
 			LocalDate of = LocalDate.of(year, month, day);
 
-			ZoneId zoneId = osInterface.getZoneId();
 
 			Instant instant = of.atStartOfDay(zoneId).toInstant();
 
