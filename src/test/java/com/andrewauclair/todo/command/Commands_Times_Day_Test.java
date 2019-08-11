@@ -3,12 +3,15 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Times_Day_Test extends CommandsBaseTestCase {
 	private static final long SECONDS_IN_DAY = 86400;
-
-	@Test
-	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight() {
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"-m 6 -d 21 -y 2019", "-m 6 -d 21", "-d 21 -y 2019"})
+	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight(String parameters) {
 		long june20_7_50_02_pm = 1561084202;
 		long june20_8_06_42_pm = 1561085202;
 
@@ -36,8 +39,8 @@ class Commands_Times_Day_Test extends CommandsBaseTestCase {
 
 		setTime(june21_8_06_42_pm + SECONDS_IN_DAY);
 		osInterface.setIncrementTime(false);
-
-		commands.execute(printStream, "times --tasks --month 6 --day 21 --year 2019");
+		
+		commands.execute(printStream, "times --tasks " + parameters);
 
 		assertOutput(
 				"Times for day 06/21/2019",
