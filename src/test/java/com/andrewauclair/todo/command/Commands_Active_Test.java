@@ -33,6 +33,18 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
+	void commands_prints_exception_to_System_out_only_once() {
+		System.setOut(printStream);
+		
+		commands.execute(System.out, "active");
+		
+		assertOutput(
+				"No active task.",
+				""
+		);
+	}
+	
+	@Test
 	void prints_issue_number_when_active_task_has_an_associated_issue() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
