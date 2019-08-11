@@ -11,7 +11,7 @@ public class ConsoleColors {
 	public static final String ANSI_REVERSED = "\u001B[7m";
 
 	// TODO I could write some simple tests for this stuff
-	public static void print(PrintStream stream, ConsoleForegroundColor color, String message) {
+	private static void print(PrintStream stream, ConsoleForegroundColor color, String message) {
 		stream.print(color);
 		stream.print(message);
 		stream.print(ANSI_RESET);
@@ -21,8 +21,8 @@ public class ConsoleColors {
 		print(stream, color, message);
 		stream.println();
 	}
-
-	public static void print(PrintStream stream, ConsoleForegroundColor fgColor, ConsoleBackgroundColor bgColor, String message) {
+	
+	private static void print(PrintStream stream, ConsoleForegroundColor fgColor, ConsoleBackgroundColor bgColor, String message) {
 		stream.print(bgColor);
 		stream.print(fgColor);
 		stream.print(message);

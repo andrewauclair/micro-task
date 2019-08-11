@@ -1,11 +1,14 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.*;
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskState;
+import com.andrewauclair.todo.task.TaskTimes;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -109,7 +112,7 @@ public class TimesCommand extends Command {
 			Optional<Task> firstTask = tasks.getTasksForList(list).stream()
 					.filter(task -> task.id == taskID)
 					.findFirst();
-			
+
 			if (firstTask.isPresent()) {
 				Task task = firstTask.get();
 

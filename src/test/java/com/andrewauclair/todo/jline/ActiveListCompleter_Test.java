@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.jline;
 
-import com.andrewauclair.todo.CommandsBaseTestCase;
+import com.andrewauclair.todo.command.CommandsBaseTestCase;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
@@ -20,8 +20,8 @@ class ActiveListCompleter_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_id_is_in_candidates_list() {
-		commands.execute(printStream, "create-list test");
-		commands.execute(printStream, "switch-list test");
+		commands.execute(printStream, "mklist test");
+		commands.execute(printStream, "chlist test");
 
 		Mockito.when(parsedLine.word()).thenReturn("");
 
@@ -30,7 +30,7 @@ class ActiveListCompleter_Test extends CommandsBaseTestCase {
 		completer.complete(lineReader, parsedLine, candidates);
 
 		assertThat(candidates).hasSize(1);
-		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("test")));
+		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("/test")));
 	}
 
 	@Test
@@ -42,6 +42,6 @@ class ActiveListCompleter_Test extends CommandsBaseTestCase {
 		completer.complete(lineReader, parsedLine, candidates);
 
 		assertThat(candidates).hasSize(1);
-		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("default")));
+		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("/default")));
 	}
 }

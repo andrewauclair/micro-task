@@ -1,10 +1,10 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.IOException;
@@ -44,31 +44,35 @@ public class UpdateCommand extends Command {
 			return;
 		}
 		
-		if (arg.equals("-r") || arg.equals("--releases")) {
+		switch (arg) {
+		case "-r":
+		case "--releases":
 			output.println("Releases found on GitLab");
 			output.println();
 			versions.forEach(output::println);
-		}
-		else if (arg.equals("-l") || arg.equals("--latest")) {
+			break;
+		case "-l":
+		case "--latest":
 			updateToVersion(output, versions.get(versions.size() - 1));
-		}
-		else if (arg.equals("--tasks")) {
+			break;
+		case "--tasks":
 			List<Task> taskList = new ArrayList<>(tasks.getAllTasks());
-
+			
 			taskList.sort(Comparator.comparingLong(o -> o.id));
-
+			
 			for (Task task : taskList) {
 				String list = tasks.findListForTask(task.id);
-				tasks.getWriter().writeTask(task, "git-data/tasks/" + list + "/" + task.id + ".txt");
-				osInterface.runGitCommand("git add tasks/" + list + "/" + task.id + ".txt");
+				tasks.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
+				osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
 			}
-
+			
 			osInterface.runGitCommand("git commit -m \"Updating task files.\"");
-
+			
 			output.println("Updated all tasks.");
-		}
-		else {
+			break;
+		default:
 			updateToVersion(output, arg);
+			break;
 		}
 		output.println();
 	}

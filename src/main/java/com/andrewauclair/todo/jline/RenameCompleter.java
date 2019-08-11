@@ -1,8 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.jline;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;

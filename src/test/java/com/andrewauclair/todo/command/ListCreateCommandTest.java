@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.CommandsBaseTestCase;
 import org.jline.builtins.Completers.TreeCompleter.Node;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +18,7 @@ class ListCreateCommandTest extends CommandsBaseTestCase {
 		List<Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
-				Collections.singletonList(node("create-list"))
+				Collections.singletonList(node("mklist"))
 		);
 	}
 }

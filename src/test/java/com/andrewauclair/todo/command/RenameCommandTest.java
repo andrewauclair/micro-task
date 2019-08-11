@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.CommandsBaseTestCase;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
 import org.jline.builtins.Completers;

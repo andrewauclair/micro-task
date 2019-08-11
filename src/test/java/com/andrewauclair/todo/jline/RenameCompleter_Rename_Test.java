@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.jline;
 
-import com.andrewauclair.todo.CommandsBaseTestCase;
+import com.andrewauclair.todo.command.CommandsBaseTestCase;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;

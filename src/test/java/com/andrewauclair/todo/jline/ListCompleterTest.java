@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.jline;
 
-import com.andrewauclair.todo.CommandsBaseTestCase;
+import com.andrewauclair.todo.command.CommandsBaseTestCase;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
@@ -23,9 +23,9 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	void candidates_list_contains_all_lists() {
 		final ListCompleter completer = new ListCompleter(tasks, true);
 
-		commands.execute(printStream, "create-list alpha");
-		commands.execute(printStream, "create-list bravo");
-		commands.execute(printStream, "create-list charlie");
+		commands.execute(printStream, "mklist alpha");
+		commands.execute(printStream, "mklist bravo");
+		commands.execute(printStream, "mklist /charlie");
 		
 		List<Candidate> candidates = new ArrayList<>();
 		
@@ -36,10 +36,10 @@ class ListCompleterTest extends CommandsBaseTestCase {
 				.collect(Collectors.toList());
 		
 		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("default")),
-				new TestCandidate(new Candidate("alpha")),
-				new TestCandidate(new Candidate("bravo")),
-				new TestCandidate(new Candidate("charlie"))
+				new TestCandidate(new Candidate("/default")),
+				new TestCandidate(new Candidate("/alpha")),
+				new TestCandidate(new Candidate("/bravo")),
+				new TestCandidate(new Candidate("/charlie"))
 		);
 	}
 
@@ -47,9 +47,9 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	void list_completer_supports_mode_that_excludes_the_current_list() {
 		final ListCompleter completer = new ListCompleter(tasks, false);
 
-		commands.execute(printStream, "create-list alpha");
-		commands.execute(printStream, "create-list bravo");
-		commands.execute(printStream, "create-list charlie");
+		commands.execute(printStream, "mklist alpha");
+		commands.execute(printStream, "mklist bravo");
+		commands.execute(printStream, "mklist charlie");
 
 		List<Candidate> candidates = new ArrayList<>();
 
@@ -60,9 +60,9 @@ class ListCompleterTest extends CommandsBaseTestCase {
 				.collect(Collectors.toList());
 
 		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("alpha")),
-				new TestCandidate(new Candidate("bravo")),
-				new TestCandidate(new Candidate("charlie"))
+				new TestCandidate(new Candidate("/alpha")),
+				new TestCandidate(new Candidate("/bravo")),
+				new TestCandidate(new Candidate("/charlie"))
 		);
 	}
 }

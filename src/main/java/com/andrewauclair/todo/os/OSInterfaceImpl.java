@@ -1,12 +1,14 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.os;
 
-import com.andrewauclair.todo.Commands;
 import com.andrewauclair.todo.Main;
+import com.andrewauclair.todo.command.Commands;
 
 import java.io.*;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
@@ -90,7 +92,19 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Failed to delete " + fileName);
 		}
 	}
-
+	
+	@Override
+	public List<TaskFileInfo> listFiles(String folder) {
+		File[] files = new File(folder).listFiles();
+		List<TaskFileInfo> info = new ArrayList<>();
+		if (files != null) {
+			for (File file : files) {
+				info.add(new TaskFileInfo(file.getName(), file.getAbsolutePath(), file.isDirectory()));
+			}
+		}
+		return info;
+	}
+	
 	@Override
 	public void clearScreen() {
 		//Clears Screen in java
@@ -110,7 +124,9 @@ public class OSInterfaceImpl implements OSInterface {
 	public String getVersion() throws IOException {
 		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
 		Properties props = new Properties();
-		props.load(resourceAsStream);
+		if (resourceAsStream != null) {
+			props.load(resourceAsStream);
+		}
 
 		return (String) props.get("version");
 	}
