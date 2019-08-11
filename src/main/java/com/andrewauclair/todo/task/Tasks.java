@@ -303,7 +303,8 @@ public class Tasks {
 	}
 
 	public Task finishTask(long id) {
-		Optional<Task> optionalTask = getTask(id);
+		String list = findListForTask(id);
+		Optional<Task> optionalTask = getTask(id, list);
 
 		if (optionalTask.isPresent()) {
 			return getList(findListForTask(id)).finishTask(id, writer);
