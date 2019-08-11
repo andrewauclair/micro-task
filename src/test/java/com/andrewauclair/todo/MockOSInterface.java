@@ -1,12 +1,15 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MockOSInterface implements OSInterface {
 	private long time = 1000;
@@ -47,11 +50,12 @@ public class MockOSInterface implements OSInterface {
 
 	@Override
 	public DataOutputStream createOutputStream(String fileName) throws IOException {
+		// throws IOException for tests even though it's not used
 		return null;
 	}
 
 	@Override
-	public InputStream createInputStream(String fileName) throws IOException {
+	public InputStream createInputStream(String fileName) {
 		return null;
 	}
 
@@ -59,7 +63,12 @@ public class MockOSInterface implements OSInterface {
 	public void removeFile(String fileName) {
 
 	}
-
+	
+	@Override
+	public List<TaskFileInfo> listFiles(String folder) {
+		return new ArrayList<>();
+	}
+	
 	@Override
 	public void clearScreen() {
 
@@ -67,6 +76,7 @@ public class MockOSInterface implements OSInterface {
 
 	@Override
 	public String getVersion() throws IOException {
+		// needs to have throws IOException to pass tests even though it's unused
 		return null;
 	}
 

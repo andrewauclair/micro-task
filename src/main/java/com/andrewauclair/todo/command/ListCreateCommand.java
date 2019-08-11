@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -30,18 +30,20 @@ public class ListCreateCommand extends Command {
 		String list = s[1].toLowerCase();
 		
 		boolean added = tasks.addList(list);
-		
+
+		String actualList = tasks.getAbsoluteListName(list);
+
 		if (added) {
-			output.println("Created new list '" + list + "'");
+			output.println("Created new list '" + actualList + "'");
 		}
 		else {
-			output.println("List '" + list + "' already exists.");
+			output.println("List '" + actualList + "' already exists.");
 		}
 		output.println();
 	}
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("create-list"));
+		return Collections.singletonList(node("mklist"));
 	}
 }

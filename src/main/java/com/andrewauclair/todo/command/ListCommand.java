@@ -1,15 +1,14 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.TaskState;
-import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
+import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,10 @@ public class ListCommand extends Command {
 		
 		if (parameters.contains("--list")) {
 			list = parameters.get(parameters.indexOf("--list") + 1);
+		}
+
+		if (!list.startsWith("/")) {
+			list = "/" + list;
 		}
 		
 		if (showLists) {
@@ -70,7 +73,24 @@ public class ListCommand extends Command {
 			output.println();
 		}
 		else {
-			output.println("Invalid command.");
+			TaskGroup activeGroup = tasks.getActiveGroup();
+
+			List<TaskContainer> children = activeGroup.getChildren().stream()
+					.sorted(Comparator.comparing(TaskContainer::getName))
+					.collect(Collectors.toList());
+
+			output.println("Current group is '" + activeGroup.getFullPath() + "'");
+			output.println();
+
+			for (TaskContainer child : children) {
+				if (child instanceof TaskList) {
+					printListRelative(output, (TaskList) child);
+				}
+				else {
+					output.print("  ");
+					output.println(child.getName() + "/");
+				}
+			}
 			output.println();
 		}
 	}
@@ -85,7 +105,18 @@ public class ListCommand extends Command {
 			output.println(list);
 		}
 	}
-	
+
+	private void printListRelative(PrintStream output, TaskList list) {
+		if (list.getFullPath().equals(tasks.getCurrentList())) {
+			output.print("* ");
+			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
+		}
+		else {
+			output.print("  ");
+			output.println(list.getName());
+		}
+	}
+
 	private void printTask(PrintStream output, Task task) {
 		if (task.id == tasks.getActiveTaskID()) {
 			output.print("* ");

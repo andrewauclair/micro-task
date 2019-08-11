@@ -1,9 +1,9 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Task;
-import com.andrewauclair.todo.TaskDuration;
-import com.andrewauclair.todo.Tasks;
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskDuration;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;

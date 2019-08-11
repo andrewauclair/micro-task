@@ -1,9 +1,15 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.os.OSInterfaceImpl;
+import com.andrewauclair.todo.task.TaskLoader;
+import com.andrewauclair.todo.task.TaskReader;
+import com.andrewauclair.todo.task.TaskWriter;
+import com.andrewauclair.todo.task.Tasks;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Completers;
@@ -44,7 +50,8 @@ public class Main {
 		boolean exception = false;
 
 		try {
-			readTasks(osInterface, tasks);
+			TaskLoader loader = new TaskLoader(tasks, new TaskReader(osInterface), osInterface);
+			loader.load();
 		}
 		catch (Exception e) {
 			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
@@ -87,34 +94,6 @@ public class Main {
 			}
 		}
 	}
-
-	// TODO Get this under test
-	private static void readTasks(OSInterfaceImpl osInterface, Tasks tasks) throws IOException {
-		TaskReader reader = new TaskReader(osInterface);
-		
-		File[] files = new File("git-data/tasks").listFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (file.isDirectory()) {
-					String listName = file.getName();
-					tasks.addList(listName);
-					tasks.setCurrentList(listName);
-					
-					File[] listTasks = file.listFiles();
-					
-					if (listTasks != null) {
-						for (File listTask : listTasks) {
-							if (listTask.getName().endsWith(".txt")) {
-								Task task = reader.readTask("git-data/tasks/" + listName + "/" + listTask.getName());
-								
-								tasks.addTask(task);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 	
 	private static void bindCtrlBackspace(LineReader lineReader) {
 		KeyMap<Binding> main = lineReader.getKeyMaps().get(LineReader.MAIN);
@@ -132,8 +111,8 @@ public class Main {
 			}
 		}, KeyMap.ctrl(BACKSPACE_KEY));
 	}
-
-	private static long getStartingID(OSInterfaceImpl osInterface) {
+	
+	private static long getStartingID(OSInterface osInterface) {
 		try (InputStream inputStream = osInterface.createInputStream("git-data/next-id.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 			return scanner.nextLong();

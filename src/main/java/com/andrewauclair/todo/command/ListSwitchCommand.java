@@ -1,8 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.Tasks;
 import com.andrewauclair.todo.jline.ListCompleter;
+import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -27,11 +27,13 @@ public class ListSwitchCommand extends Command {
 			output.println();
 			return;
 		}
-		
-		String list = s[1].toLowerCase();
-		
-		boolean exists = tasks.setCurrentList(list);
-		
+
+		String listParameter = s[1].toLowerCase();
+
+		boolean exists = tasks.setCurrentList(listParameter);
+
+		String list = tasks.getAbsoluteListName(listParameter);
+
 		if (exists) {
 			output.println("Switched to list '" + list + "'");
 		}
@@ -44,7 +46,7 @@ public class ListSwitchCommand extends Command {
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Collections.singletonList(
-				node("switch-list",
+				node("chlist",
 						node(new ListCompleter(tasks, false))
 				)
 		);
