@@ -38,6 +38,12 @@ class Commands_Times_Day_Test extends CommandsBaseTestCase {
 		tasks.finishTask(4);
 
 		setTime(june21_8_06_42_pm + SECONDS_IN_DAY);
+		
+		tasks.addTask("Active Task");
+		
+		tasks.stopTask();
+		tasks.startTask(5, false);
+		
 		osInterface.setIncrementTime(false);
 		
 		commands.execute(printStream, "times --tasks " + parameters);
@@ -45,8 +51,8 @@ class Commands_Times_Day_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Times for day 06/21/2019",
 				"",
-				"    16m 50s   2 - 'Test 2 - Day 2'",
 				"    16m 40s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "5 - 'Test 5 - Day 2'" + ConsoleColors.ANSI_RESET,
+				"    16m 50s   2 - 'Test 2 - Day 2'",
 				"    16m 40s F 4 - 'Test 4 - Day 2'",
 				"",
 				"Total time: 50m 10s",
