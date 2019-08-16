@@ -37,7 +37,75 @@ public class TimesCommand extends Command {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-	
+
+	static List<Task> getTasksForDay(Instant day, OSInterface osInterface, Tasks tasks) {
+		ZoneId zoneId = osInterface.getZoneId();
+
+		LocalDate today = LocalDate.ofInstant(day, zoneId);
+		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(1);
+
+		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
+		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
+
+		List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
+
+		List<Task> dayTasks = new ArrayList<>();
+
+		for (Task task : listTasks) {
+			for (TaskTimes time : task.getStartStopTimes()) {
+				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
+					dayTasks.add(task);
+					break;
+				}
+			}
+		}
+
+		return dayTasks;
+	}
+
+	static long getTotalTimeInDay(Task task, long midnightStart, long midnightStop, OSInterface osInterface) {
+		long totalTime = 0;
+
+		for (TaskTimes time : task.getStartStopTimes()) {
+			if (time.start >= midnightStart && time.stop < midnightStop) {
+				totalTime += getTotalTime(time, osInterface);
+			}
+		}
+		return totalTime;
+	}
+
+	static void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
+		long hours = totalTime / (60 * 60);
+		long minutes = (totalTime - (hours * 60 * 60)) / 60;
+		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
+
+		if (hours > 0) {
+			output.print(String.format("%02dh ", hours));
+		}
+		else if (printExtraSpace) {
+			output.print("    ");
+		}
+
+		if (minutes > 0 || hours > 0) {
+			output.print(String.format("%02dm ", minutes));
+		}
+		else if (printExtraSpace) {
+			output.print("    ");
+		}
+
+		output.print(String.format("%02ds", seconds));
+	}
+
+	static long getTotalTime(TaskTimes time, OSInterface osInterface) {
+		long totalTime = time.getDuration();
+
+		if (time.stop == TaskTimes.TIME_NOT_SET) {
+			totalTime += osInterface.currentSeconds() - time.start;
+		}
+		return totalTime;
+	}
+
 	@Override
 	public void execute(PrintStream output, String command) {
 		List<CommandArgument> args = parser.parse(command);
@@ -48,32 +116,32 @@ public class TimesCommand extends Command {
 		}
 
 		String[] s = command.split(" ");
-		
+
 		List<String> parameters = Arrays.asList(s);
-		
+
 		// TODO Usage output if format is wrong, can we regex the format or something to verify it?
 		if (s.length == 1) {
 			output.println("Invalid command.");
 			output.println();
 			return;
 		}
-		
+
 		if (s[1].equals("--list")) {
 			String list = s[2];
-			
+
 			if (parameters.contains("--summary")) {
 				output.println("Times summary for list '" + list + "'");
 				output.println();
-				
+
 				List<Task> listTasks = new ArrayList<>(tasks.getTasksForList(list));
-				
+
 				listTasks.sort(Comparator.comparingLong(this::getTotalTaskTime).reversed());
-				
+
 				long totalTime = 0;
-				
+
 				for (Task task : listTasks) {
 					long time = getTotalTaskTime(task);
-					
+
 					totalTime += time;
 
 					if (time > 0) {
@@ -89,25 +157,25 @@ public class TimesCommand extends Command {
 			else {
 				output.println("Times for list '" + list + "'");
 				output.println();
-				
+
 				long totalTime = 0;
 				for (Task task : tasks.getTasksForList(list)) {
 					for (TaskTimes time : task.getStartStopTimes()) {
-						totalTime += getTotalTime(time);
+						totalTime += getTotalTime(time, osInterface);
 					}
 				}
-				
+
 				output.print("Total time spent on list: ");
-				
+
 				printTotalTime(output, totalTime, false);
-				
+
 				output.println();
 				output.println();
 			}
 		}
 		else if (s[1].equals("--task") && !parameters.contains("--today")) {
 			long taskID = Long.parseLong(s[2]);
-			
+
 			String list = tasks.findListForTask(taskID);
 			Optional<Task> firstTask = tasks.getTasksForList(list).stream()
 					.filter(task -> task.id == taskID)
@@ -122,17 +190,17 @@ public class TimesCommand extends Command {
 				else {
 					output.println("Times for task " + task.description());
 					output.println();
-					
+
 					long totalTime = 0;
 					for (TaskTimes time : task.getStartStopTimes()) {
 						output.println(time.description(osInterface.getZoneId()));
-						
-						totalTime += getTotalTime(time);
+
+						totalTime += getTotalTime(time, osInterface);
 					}
-					
+
 					output.println();
 					output.print("Total time: ");
-					
+
 					printTotalTime(output, totalTime, false);
 					output.println();
 				}
@@ -153,15 +221,15 @@ public class TimesCommand extends Command {
 		}
 		else if (s[1].equals("--tasks")) {
 			long epochSecond = osInterface.currentSeconds();
-			
+
 			Instant epochInstant = Instant.ofEpochSecond(epochSecond);
-			
+
 			ZoneId zoneId = osInterface.getZoneId();
-			
+
 			int day = Integer.parseInt(argsMap.get("day").getValue());
 			int month = argsMap.get("month") != null ? Integer.parseInt(argsMap.get("month").getValue()) : epochInstant.atZone(zoneId).getMonthValue();
 			int year = argsMap.get("year") != null ? Integer.parseInt(argsMap.get("year").getValue()) : epochInstant.atZone(zoneId).getYear();
-			
+
 			LocalDate of = LocalDate.of(year, month, day);
 
 
@@ -185,11 +253,11 @@ public class TimesCommand extends Command {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		output.println(day.atZone(zoneId).format(dateTimeFormatter));
-		
+
 		LocalDate today = LocalDate.ofInstant(day, zoneId);
 		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
 		LocalDateTime nextMidnight = midnight.plusDays(1);
-		
+
 		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
 		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
 
@@ -198,11 +266,11 @@ public class TimesCommand extends Command {
 		long totalTime = 0;
 
 		// TODO We should still use getTasksForList if --list was provided, going to skip that for now
-		List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
+		List<Task> listTasks = getTasksForDay(day, osInterface, tasks);
 
 		listTasks.sort(((Comparator<Task>) (o1, o2) -> {
-			long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop);
-			long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop);
+			long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop, osInterface);
+			long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop, osInterface);
 
 			return Long.compare(t1, t2);
 		}).reversed());
@@ -214,7 +282,7 @@ public class TimesCommand extends Command {
 			for (TaskTimes time : task.getStartStopTimes()) {
 				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 					include = true;
-					totalTaskTime += getTotalTime(time);
+					totalTaskTime += getTotalTime(time, osInterface);
 				}
 			}
 
@@ -249,49 +317,7 @@ public class TimesCommand extends Command {
 		long totalTime = 0;
 
 		for (TaskTimes time : task.getStartStopTimes()) {
-			totalTime += getTotalTime(time);
-		}
-		return totalTime;
-	}
-
-	private long getTotalTimeInDay(Task task, long midnightStart, long midnightStop) {
-		long totalTime = 0;
-
-		for (TaskTimes time : task.getStartStopTimes()) {
-			if (time.start >= midnightStart && time.stop < midnightStop) {
-				totalTime += getTotalTime(time);
-			}
-		}
-		return totalTime;
-	}
-
-	private void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
-		long hours = totalTime / (60 * 60);
-		long minutes = (totalTime - (hours * 60 * 60)) / 60;
-		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));
-		
-		if (hours > 0) {
-			output.print(String.format("%02dh ", hours));
-		}
-		else if (printExtraSpace) {
-			output.print("    ");
-		}
-		
-		if (minutes > 0 || hours > 0) {
-			output.print(String.format("%02dm ", minutes));
-		}
-		else if (printExtraSpace) {
-			output.print("    ");
-		}
-		
-		output.print(String.format("%02ds", seconds));
-	}
-	
-	private long getTotalTime(TaskTimes time) {
-		long totalTime = time.getDuration();
-		
-		if (time.stop == TaskTimes.TIME_NOT_SET) {
-			totalTime += osInterface.currentSeconds() - time.start;
+			totalTime += getTotalTime(time, osInterface);
 		}
 		return totalTime;
 	}

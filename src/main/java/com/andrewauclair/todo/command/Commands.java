@@ -40,6 +40,7 @@ public class Commands {
 		commands.put("set", new SetCommand(tasks));
 		commands.put("mkgrp", new GroupCreateCommand(tasks));
 		commands.put("chgrp", new GroupSwitchCommand(tasks));
+		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
 	}
 	
 	public void execute(PrintStream output, String command) {
