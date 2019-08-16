@@ -29,7 +29,7 @@ public class RenameCompleter implements Completer {
 
 			Optional<Task> task = tasks.getTask(taskID);
 
-			task.ifPresent(value -> candidates.add(new Candidate(taskID + " \"" + value.task + "\"")));
+			task.ifPresent(value -> candidates.add(new Candidate(taskID + " -n \"" + value.task + "\"")));
 		}
 		catch (NumberFormatException ignored) {
 		}
