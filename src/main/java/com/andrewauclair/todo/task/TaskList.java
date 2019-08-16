@@ -137,7 +137,6 @@ public final class TaskList implements TaskContainer {
 		return "TaskList{" +
 				"name='" + name + '\'' +
 				", fullPath='" + fullPath + '\'' +
-				", osInterface=" + osInterface +
 				", tasks=" + tasks +
 				'}';
 	}

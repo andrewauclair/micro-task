@@ -89,12 +89,7 @@ public final class TaskGroup implements TaskContainer {
 
 				Optional<TaskGroup> result = group.getGroupAbsolute(path);
 
-				if (!result.isPresent()) {
-					if (group.getFullPath().equals(path)) {
-						return Optional.of(group);
-					}
-				}
-				else {
+				if (result.isPresent()) {
 					return result;
 				}
 			}
