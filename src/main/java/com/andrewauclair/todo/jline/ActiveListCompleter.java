@@ -22,6 +22,6 @@ public class ActiveListCompleter implements Completer {
 		Objects.requireNonNull(reader);
 		Objects.requireNonNull(line);
 
-		candidates.add(new Candidate(tasks.getCurrentList()));
+		candidates.add(new Candidate(tasks.getActiveList()));
 	}
 }

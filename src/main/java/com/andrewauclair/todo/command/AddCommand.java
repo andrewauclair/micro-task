@@ -42,7 +42,7 @@ public class AddCommand extends Command {
 			throw new RuntimeException("Missing name argument.");
 		}
 
-		String list = tasks.getCurrentList();
+		String list = tasks.getActiveList();
 
 		if (argsMap.containsKey("list")) {
 			list = argsMap.get("list").getValue();

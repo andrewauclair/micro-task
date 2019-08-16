@@ -90,13 +90,13 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
 
-		assertEquals("/test", tasks.getCurrentList());
+		assertEquals("/test", tasks.getActiveList());
 
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1, false);
 
-		assertEquals("/default", tasks.getCurrentList());
+		assertEquals("/default", tasks.getActiveList());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addList("test");
 		tasks.setCurrentList("test");
 
-		assertEquals("/test", tasks.getCurrentList());
+		assertEquals("/test", tasks.getActiveList());
 
 		tasks.addTask("Test 2");
 
