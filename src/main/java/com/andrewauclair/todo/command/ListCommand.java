@@ -32,8 +32,8 @@ public class ListCommand extends Command {
 		boolean all = parameters.contains("--all");
 		boolean showTasks = parameters.contains("--tasks");
 		boolean showLists = parameters.contains("--lists");
-		
-		String list = tasks.getCurrentList();
+
+		String list = tasks.getActiveList();
 		
 		if (parameters.contains("--list")) {
 			list = parameters.get(parameters.indexOf("--list") + 1);
@@ -50,7 +50,7 @@ public class ListCommand extends Command {
 			output.println();
 		}
 		else if (showTasks) {
-			if (!list.equals(tasks.getCurrentList())) {
+			if (!list.equals(tasks.getActiveList())) {
 				output.println("Tasks on list '" + list + "'");
 				output.println();
 			}
@@ -96,7 +96,7 @@ public class ListCommand extends Command {
 	}
 	
 	private void printList(PrintStream output, String list) {
-		if (list.equals(tasks.getCurrentList())) {
+		if (list.equals(tasks.getActiveList())) {
 			output.print("* ");
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
 		}
@@ -107,7 +107,7 @@ public class ListCommand extends Command {
 	}
 
 	private void printListRelative(PrintStream output, TaskList list) {
-		if (list.getFullPath().equals(tasks.getCurrentList())) {
+		if (list.getFullPath().equals(tasks.getActiveList())) {
 			output.print("* ");
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
 		}

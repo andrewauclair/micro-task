@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Commands_List_Manage_Test extends CommandsBaseTestCase {
 	@Test
 	void starting_list_is_called_default() {
-		assertEquals("/default", tasks.getCurrentList());
+		assertEquals("/default", tasks.getActiveList());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "chlist test-tasks");
 
-		assertEquals("/test-tasks", tasks.getCurrentList());
+		assertEquals("/test-tasks", tasks.getActiveList());
 
 		assertOutput(
 				"Switched to list '/test-tasks'",
@@ -90,7 +90,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "chlist /test/one");
 
-		assertEquals("/test/one", tasks.getCurrentList());
+		assertEquals("/test/one", tasks.getActiveList());
 
 		assertOutput(
 				"Switched to list '/test/one'",
@@ -161,7 +161,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 				"List '/test' does not exist.",
 				""
 		);
-		assertEquals("/default", tasks.getCurrentList());
+		assertEquals("/default", tasks.getActiveList());
 	}
 
 	// TODO I think these style tests can be parameterized

@@ -153,7 +153,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		tasks.renameList("one", "two");
 
-		assertEquals("/two", tasks.getCurrentList());
+		assertEquals("/two", tasks.getActiveList());
 	}
 
 	@Test

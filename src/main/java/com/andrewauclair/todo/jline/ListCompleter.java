@@ -26,7 +26,7 @@ public class ListCompleter implements Completer {
 		Objects.requireNonNull(line);
 		
 		List<Candidate> names = tasks.getListNames().stream()
-				.filter(list -> includeCurrentList || !list.equals(tasks.getCurrentList()))
+				.filter(list -> includeCurrentList || !list.equals(tasks.getActiveList()))
 				.map(Candidate::new)
 				.collect(Collectors.toList());
 		

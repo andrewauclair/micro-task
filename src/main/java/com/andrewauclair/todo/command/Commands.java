@@ -67,7 +67,7 @@ public class Commands {
 	}
 	
 	public String getPrompt() {
-		String prompt = tasks.getCurrentList() + " - ";
+		String prompt = tasks.getActiveList() + " - ";
 		try {
 			prompt += tasks.getActiveTask().id;
 		}

@@ -81,7 +81,30 @@ public final class TaskGroup implements TaskContainer {
 				.filter(list -> list.getFullPath().equals(path))
 				.findFirst();
 	}
-	
+
+	Optional<TaskGroup> getGroupAbsolute(String path) {
+		for (TaskContainer child : children) {
+			if (child instanceof TaskGroup) {
+				TaskGroup group = (TaskGroup) child;
+
+				Optional<TaskGroup> result = group.getGroupAbsolute(path);
+
+				if (!result.isPresent()) {
+					if (group.getFullPath().equals(path)) {
+						return Optional.of(group);
+					}
+				}
+				else {
+					return result;
+				}
+			}
+		}
+		if (getFullPath().equals(path)) {
+			return Optional.of(this);
+		}
+		return Optional.empty();
+	}
+
 	public List<TaskContainer> getChildren() {
 		return Collections.unmodifiableList(children);
 	}

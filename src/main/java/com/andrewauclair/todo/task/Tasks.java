@@ -17,31 +17,23 @@ public class Tasks {
 
 	private final OSInterface osInterface;
 	private final PrintStream output;
-	
-	// TODO I think we should get rid of this and get groups from using activeGroup and rootGroup
-	private final List<TaskGroup> groups = new ArrayList<>();
-	private TaskGroup activeGroup = new TaskGroup("/");
-	private final TaskGroup rootGroup = activeGroup;
-
 	private final TaskWriter writer;
-	private long startingID;
-	private long activeTaskID = NO_ACTIVE_TASK;
 
-	private String currentList = "/default";
-	
-	// TODO Could we maybe just make a function to get this so we don't have to track it?
-	private String activeTaskList = "";
-	
+	private final TaskGroup rootGroup = new TaskGroup("/");
+
+	private TaskGroup activeGroup = rootGroup;
+	private long activeTaskID = NO_ACTIVE_TASK;
+	private String activeList = "/default";
+
+	private long startingID;
+
 	public Tasks(long startID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.startingID = startID;
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
 
-		TaskList defaultList = new TaskList("/default", osInterface);
-
-		activeGroup.addChild(defaultList);
-		groups.add(activeGroup);
+		activeGroup.addChild(new TaskList(activeList, osInterface));
 	}
 
 	public TaskWriter getWriter() {
@@ -49,7 +41,7 @@ public class Tasks {
 	}
 
 	public Task addTask(String task) {
-		return addTask(task, currentList);
+		return addTask(task, activeList);
 	}
 	
 	public Task addTask(String task, String list) {
@@ -88,10 +80,6 @@ public class Tasks {
 			getList(listForTask).removeTask(task);
 			getList(absoluteList).addTask(task);
 			
-			if (task.state == TaskState.Active) {
-				activeTaskList = absoluteList;
-			}
-			
 			osInterface.removeFile("git-data/tasks" + listForTask + "/" + task.id + ".txt");
 			
 			writeTask(task, absoluteList);
@@ -110,11 +98,11 @@ public class Tasks {
 		if (!listForTask.isPresent()) {
 //			throw new RuntimeException("Couldn't find list for task: " + id);
 			// TODO I'd rather throw an exception, but we use this in a few places that throw different exceptions instead
-			return currentList;
+			return activeList;
 		}
 		return listForTask.get();
 	}
-	
+
 	private Optional<Task> getTask(long id, String list) {
 		TaskList realList = getList(list);
 		if (realList.containsTask(id)) {
@@ -217,7 +205,6 @@ public class Tasks {
 					stopTask();
 				}
 			}
-			activeTaskList = taskList;
 			activeTaskID = first.get().id;
 			Task activeTask = first.get();
 			
@@ -226,9 +213,9 @@ public class Tasks {
 			replaceTask(taskList, activeTask, newActiveTask);
 			
 			setCurrentList(taskList);
-			
-			writeTask(newActiveTask, currentList);
-			addAndCommit(newActiveTask, "Started task", currentList);
+
+			writeTask(newActiveTask, activeList);
+			addAndCommit(newActiveTask, "Started task", activeList);
 			
 			return newActiveTask;
 		}
@@ -241,12 +228,12 @@ public class Tasks {
 
 		Task stoppedTask = new TaskBuilder(activeTask).stop(osInterface.currentSeconds());
 
-		replaceTask(activeTaskList, activeTask, stoppedTask);
+		String list = findListForTask(activeTask.id);
 
-		writeTask(stoppedTask, activeTaskList);
-		addAndCommit(stoppedTask, "Stopped task", activeTaskList);
+		replaceTask(list, activeTask, stoppedTask);
 
-		activeTaskList = "";
+		writeTask(stoppedTask, list);
+		addAndCommit(stoppedTask, "Stopped task", list);
 
 		return stoppedTask;
 	}
@@ -271,7 +258,7 @@ public class Tasks {
 		if (group.isPresent()) {
 			boolean exists = group.get().containsListAbsolute(absoluteList);
 			if (exists) {
-				currentList = absoluteList;
+				activeList = absoluteList;
 			}
 			return exists;
 		}
@@ -280,7 +267,7 @@ public class Tasks {
 	
 	// TODO I think this should have activeGroup, not rootGroup
 	public List<Task> getTasks() {
-		return getList(rootGroup, currentList).getTasks();
+		return getList(rootGroup, activeList).getTasks();
 	}
 
 	public Task finishTask() {
@@ -293,7 +280,7 @@ public class Tasks {
 	}
 	
 	public Task getActiveTask() {
-		if (activeTaskID == -1) {
+		if (activeTaskID == NO_ACTIVE_TASK) {
 			throw new RuntimeException("No active task.");
 		}
 		TaskList list = getList(findListForTask(activeTaskID));
@@ -338,7 +325,7 @@ public class Tasks {
 	}
 
 	public Optional<Task> getTask(long id) {
-		return getTask(id, currentList);
+		return getTask(id, activeList);
 	}
 
 	public void renameList(String oldName, String newName) {
@@ -356,12 +343,8 @@ public class Tasks {
 			throw new RuntimeException("List '" + absoluteOldList + "' not found.");
 		}
 
-		if (currentList.equals(absoluteOldList)) {
-			currentList = absoluteNewList;
-		}
-
-		if (activeTaskList.equals(absoluteOldList)) {
-			activeTaskList = absoluteNewList;
+		if (activeList.equals(absoluteOldList)) {
+			activeList = absoluteNewList;
 		}
 
 		TaskList oldList = getList(theGroup, absoluteOldList);
@@ -386,20 +369,21 @@ public class Tasks {
 			throw new RuntimeException("Task with ID " + task.id + " already exists.");
 		}
 
-		getList(activeGroup, currentList).addTask(task);
+		getList(activeGroup, activeList).addTask(task);
 		
 		if (task.state == TaskState.Active) {
-			activeTaskList = currentList;
 			activeTaskID = task.id;
 		}
 	}
 
-	public String getCurrentList() {
-		return currentList;
+	public String getActiveList() {
+		return activeList;
 	}
 
 	public String getActiveTaskList() {
-		return activeTaskList;
+		Optional<String> list = rootGroup.findListForTask(activeTaskID);
+
+		return list.orElse("");
 	}
 	
 	public boolean hasListWithName(String name) {
@@ -483,9 +467,7 @@ public class Tasks {
 	}
 
 	private Optional<TaskGroup> getGroup(String name) {
-		return groups.stream()
-				.filter(group -> group.getFullPath().equals(name))
-				.findFirst();
+		return rootGroup.getGroupAbsolute(name);
 	}
 
 	public TaskGroup createGroup(String groupName) {
@@ -519,9 +501,6 @@ public class Tasks {
 					e.printStackTrace(output);
 				}
 				parentGroup.get().addChild(newGroup);
-			}
-			if (!groups.contains(newGroup)) {
-				groups.add(newGroup);
 			}
 		}
 

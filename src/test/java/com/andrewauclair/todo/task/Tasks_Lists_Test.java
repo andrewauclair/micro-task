@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Tasks_Lists_Test extends TaskBaseTestCase {
 	@Test
 	void starting_list_is_default() {
-		assertEquals("/default", tasks.getCurrentList());
+		assertEquals("/default", tasks.getActiveList());
 	}
 
 	@Test
