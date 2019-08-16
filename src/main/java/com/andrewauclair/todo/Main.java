@@ -81,6 +81,14 @@ public class Main {
 
 //		System.out.println(terminal.getSize());
 
+		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
+			// set active list to the list of the active task
+			tasks.setCurrentList(tasks.getActiveTaskList());
+
+			// set active group to the group of the active task
+			tasks.switchGroup(tasks.groupNameFromList(tasks.getActiveTaskList()));
+		}
+
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());

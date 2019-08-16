@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Tasks {
-	private static final int NO_ACTIVE_TASK = -1;
+	public static final int NO_ACTIVE_TASK = -1;
 
 	private final OSInterface osInterface;
 	private final PrintStream output;
@@ -148,7 +148,7 @@ public class Tasks {
 		return name;
 	}
 
-	private String groupNameFromList(String name) {
+	public String groupNameFromList(String name) {
 		String absoluteList = getAbsoluteListName(name);
 
 		String groupName = absoluteList.substring(0, absoluteList.lastIndexOf('/') + 1);
