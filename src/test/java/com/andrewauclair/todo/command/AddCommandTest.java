@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.ActiveListCompleter;
 import org.jline.builtins.Completers;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +15,24 @@ class AddCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
 		AddCommand command = new AddCommand(tasks);
-		
+
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
-		
+
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
-				Collections.singletonList(node("add"))
+				Collections.singletonList(
+						node("add",
+								node("--list",
+										node(new ActiveListCompleter(tasks))
+								),
+								node("-l",
+										node(new ActiveListCompleter(tasks))
+								),
+								node("--name"),
+								node("-n")
+						)//,
+//				node("add",
+//				)
+				)
 		);
 	}
 }
