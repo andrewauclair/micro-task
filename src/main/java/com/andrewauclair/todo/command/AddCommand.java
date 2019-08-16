@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
@@ -64,6 +65,19 @@ public class AddCommand extends Command {
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("add"));
+		return Collections.singletonList(
+				node("add",
+						node("--list",
+								node(new ActiveListCompleter(tasks))
+						),
+						node("-l",
+								node(new ActiveListCompleter(tasks))
+						),
+						node("--name"),
+						node("-n")
+				)//,
+//				node("add",
+//				)
+		);
 	}
 }
