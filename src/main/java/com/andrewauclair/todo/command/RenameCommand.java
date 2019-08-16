@@ -53,6 +53,12 @@ public class RenameCommand extends Command {
 			output.println();
 		}
 		else if (argsMap.containsKey("task")) {
+			if (!argsMap.containsKey("name")) {
+				output.println("Missing name parameter.");
+				output.println();
+				return;
+			}
+
 			String newName = argsMap.get("name").getValue();
 			long taskID = Long.parseLong(argsMap.get("task").getValue());
 

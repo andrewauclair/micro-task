@@ -71,7 +71,17 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
+	@Test
+	void rename_requires_name_parameter() {
+		commands.execute(printStream, "rename --task 2 \"Test\"");
+
+		assertOutput(
+				"Missing name parameter.",
+				""
+		);
+	}
+
 	@Test
 	void rename_task_prints_invalid_command_when_no_parameters_are_provided() {
 		commands.execute(printStream, "rename");

@@ -32,7 +32,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 		completer.complete(lineReader, parsedLine, candidates);
 
 		assertThat(candidates).hasSize(1);
-		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("1 \"Test\"")));
+		assertThat(new TestCandidate(candidates.get(0))).isEqualTo(new TestCandidate(new Candidate("1 -n \"Test\"")));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 	void commands_completer_rename_with_invalid_id_returns_empty_list() {
 		commands.execute(printStream, "add \"Test\"");
 
-		Mockito.when(parsedLine.word()).thenReturn("rename 123");
+		Mockito.when(parsedLine.word()).thenReturn("rename --task 123");
 
 		List<Candidate> candidates = new ArrayList<>();
 
@@ -78,7 +78,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 	void commands_completer_rename_with_id_that_is_not_a_number_returns_empty_list() {
 		commands.execute(printStream, "add \"Test\"");
 
-		Mockito.when(parsedLine.word()).thenReturn("rename 12a82");
+		Mockito.when(parsedLine.word()).thenReturn("rename --task 12a82");
 
 		List<Candidate> candidates = new ArrayList<>();
 
@@ -91,7 +91,7 @@ class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
 	void commands_completer_rename_no_candidates_after_task_name_has_been_added() {
 		commands.execute(printStream, "add \"Test\"");
 
-		Mockito.when(parsedLine.word()).thenReturn("rename 123 \"New Name Here\"");
+		Mockito.when(parsedLine.word()).thenReturn("rename --task 123 -n \"New Name Here\"");
 
 		List<Candidate> candidates = new ArrayList<>();
 
