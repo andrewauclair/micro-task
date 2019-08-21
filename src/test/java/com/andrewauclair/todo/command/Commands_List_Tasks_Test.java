@@ -151,4 +151,41 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void list_all_tasks_in_the_active_group() {
+		tasks.addTask("Task 1");
+		tasks.addTask("Task 2");
+		tasks.addTask("Task 3");
+		tasks.startTask(2, false);
+		tasks.finishTask();
+		tasks.startTask(3, false);
+		
+		tasks.addList("one");
+		tasks.addList("two");
+		
+		tasks.setCurrentList("one");
+		tasks.addTask("Task 4");
+		tasks.addTask("Task 5");
+		tasks.addTask("Task 6");
+		
+		tasks.setCurrentList("two");
+		tasks.addTask("Task 7");
+		tasks.addTask("Task 8");
+		tasks.addTask("Task 9");
+		
+		commands.execute(printStream, "list --tasks --group");
+		
+		assertOutput(
+				"  4 - 'Task 4'",
+				"  5 - 'Task 5'",
+				"  6 - 'Task 6'",
+				"  1 - 'Task 1'",
+				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"  7 - 'Task 7'",
+				"  8 - 'Task 8'",
+				"  9 - 'Task 9'",
+				""
+		);
+	}
 }

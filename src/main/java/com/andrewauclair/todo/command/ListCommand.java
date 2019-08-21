@@ -7,6 +7,7 @@ import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -32,13 +33,14 @@ public class ListCommand extends Command {
 		boolean all = parameters.contains("--all");
 		boolean showTasks = parameters.contains("--tasks");
 		boolean showLists = parameters.contains("--lists");
-
+		boolean useGroup = parameters.contains("--group");
+		
 		String list = tasks.getActiveList();
 		
 		if (parameters.contains("--list")) {
 			list = parameters.get(parameters.indexOf("--list") + 1);
 		}
-
+		
 		if (!list.startsWith("/")) {
 			list = "/" + list;
 		}
@@ -55,14 +57,24 @@ public class ListCommand extends Command {
 				output.println();
 			}
 			
-			List<Task> tasksList = tasks.getTasksForList(list).stream()
-					.filter(task -> task.state != TaskState.Finished)
-					.collect(Collectors.toList());
-			
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
-			tasksList.stream()
-					.limit(limit)
-					.forEach(str -> printTask(output, str));
+			
+			List<Task> tasksList = new ArrayList<>();
+			
+			if (useGroup) {
+				for (String listName : tasks.getListNames()) {
+					tasksList.addAll(tasks.getTasksForList(listName).stream()
+							.filter(task -> task.state != TaskState.Finished)
+							.collect(Collectors.toList()));
+				}
+			}
+			else {
+				tasksList.addAll(tasks.getTasksForList(list).stream()
+						.filter(task -> task.state != TaskState.Finished)
+						.collect(Collectors.toList()));
+			}
+			
+			printTasks(output, tasksList, limit);
 			
 			if (tasksList.size() > limit) {
 				output.println("(" + (tasksList.size() - MAX_DISPLAYED_TASKS) + " more tasks.)");
@@ -74,14 +86,14 @@ public class ListCommand extends Command {
 		}
 		else {
 			TaskGroup activeGroup = tasks.getActiveGroup();
-
+			
 			List<TaskContainer> children = activeGroup.getChildren().stream()
 					.sorted(Comparator.comparing(TaskContainer::getName))
 					.collect(Collectors.toList());
-
+			
 			output.println("Current group is '" + activeGroup.getFullPath() + "'");
 			output.println();
-
+			
 			for (TaskContainer child : children) {
 				if (child instanceof TaskList) {
 					printListRelative(output, (TaskList) child);
@@ -95,6 +107,12 @@ public class ListCommand extends Command {
 		}
 	}
 	
+	private void printTasks(PrintStream output, List<Task> tasksList, int limit) {
+		tasksList.stream()
+				.limit(limit)
+				.forEach(str -> printTask(output, str));
+	}
+	
 	private void printList(PrintStream output, String list) {
 		if (list.equals(tasks.getActiveList())) {
 			output.print("* ");
@@ -105,7 +123,7 @@ public class ListCommand extends Command {
 			output.println(list);
 		}
 	}
-
+	
 	private void printListRelative(PrintStream output, TaskList list) {
 		if (list.getFullPath().equals(tasks.getActiveList())) {
 			output.print("* ");
@@ -116,7 +134,7 @@ public class ListCommand extends Command {
 			output.println(list.getName());
 		}
 	}
-
+	
 	private void printTask(PrintStream output, Task task) {
 		if (task.id == tasks.getActiveTaskID()) {
 			output.print("* ");
@@ -136,7 +154,10 @@ public class ListCommand extends Command {
 								node("--list",
 										node(new ListCompleter(tasks, true), node("--all"))
 								),
-								node("--all")
+								node("--all"),
+								node("--group",
+										node("--all")
+								)
 						)
 				),
 				node("list",

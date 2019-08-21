@@ -25,7 +25,10 @@ class ListCommandTest extends CommandsBaseTestCase {
 										node("--list",
 												node(new ListCompleter(tasks, true), node("--all"))
 										),
-										node("--all")
+										node("--all"),
+										node("--group",
+												node("--all")
+										)
 								)
 						),
 						node("list",
