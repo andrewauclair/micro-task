@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -58,7 +59,35 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"version-1",
 				"version-2",
-				"version-3",
+				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "version-3" + ConsoleColors.ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void lists_only_the_newest_5_versions_and_highlights_newest() throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList(
+				"19.1.1",
+				"19.1.2",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				"19.1.7"
+		));
+		
+		commands.execute(printStream, "update -r");
+		
+		assertOutput(
+				"Releases found on GitLab",
+				"",
+				"2 older releases",
+				"",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}

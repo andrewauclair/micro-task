@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
@@ -17,10 +18,12 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class UpdateCommand extends Command {
+	private static final int MAX_DISPLAYED_VERSIONS = 5;
+	
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-
+	
 	public UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasks = tasks;
@@ -49,7 +52,24 @@ public class UpdateCommand extends Command {
 		case "--releases":
 			output.println("Releases found on GitLab");
 			output.println();
-			versions.forEach(output::println);
+			
+			int toDisplay = Math.min(versions.size(), MAX_DISPLAYED_VERSIONS);
+			
+			if (versions.size() > 5) {
+				output.println((versions.size() - 5) + " older releases");
+				output.println();
+			}
+			
+			for (int i = versions.size() - toDisplay; i < versions.size(); i++) {
+				if (i + 1 == versions.size()) {
+					output.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
+				}
+				output.print(versions.get(i));
+				if (i + 1 == versions.size()) {
+					output.print(ConsoleColors.ANSI_RESET);
+				}
+				output.println();
+			}
 			break;
 		case "-l":
 		case "--latest":
