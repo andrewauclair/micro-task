@@ -31,8 +31,12 @@ public class ListSwitchCommand extends Command {
 		String listParameter = s[1].toLowerCase();
 
 		boolean exists = tasks.setCurrentList(listParameter);
-
+		
 		String list = tasks.getAbsoluteListName(listParameter);
+		
+		String group = tasks.groupNameFromList(list);
+		
+		tasks.switchGroup(group);
 
 		if (exists) {
 			output.println("Switched to list '" + list + "'");

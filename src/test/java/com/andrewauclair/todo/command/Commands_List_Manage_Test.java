@@ -112,6 +112,14 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void switching_lists_switches_to_group_of_active_list() {
+		commands.execute(printStream, "mklist /test/one");
+		commands.execute(printStream, "chlist /test/one");
+		
+		assertEquals("/test", tasks.getActiveGroup().getFullPath());
+	}
 
 	@Test
 	void each_list_has_its_own_set_of_tasks() {
@@ -162,6 +170,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 				""
 		);
 		assertEquals("/default", tasks.getActiveList());
+		assertEquals("/", tasks.getActiveGroup().getFullPath());
 	}
 
 	// TODO I think these style tests can be parameterized
