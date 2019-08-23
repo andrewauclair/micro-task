@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.task.TaskGroup;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
@@ -38,6 +39,6 @@ public class GroupSwitchCommand extends Command {
 
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("chgrp"));
+		return Collections.singletonList(node("chgrp", node(new GroupCompleter(tasks, false))));
 	}
 }

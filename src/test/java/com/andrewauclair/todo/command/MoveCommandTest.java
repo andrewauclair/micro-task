@@ -2,8 +2,8 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.ListCompleter;
+import com.andrewauclair.todo.os.LongCompleter;
 import org.jline.builtins.Completers;
-import org.jline.reader.impl.completer.NullCompleter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -22,7 +22,7 @@ class MoveCommandTest extends CommandsBaseTestCase {
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
 				Collections.singletonList(
 						node("move",
-								node(new NullCompleter(),
+								node(new LongCompleter(),
 										node(new ListCompleter(tasks, false)
 										)
 								)

@@ -186,7 +186,25 @@ public class Tasks {
 
 		return lists;
 	}
-	
+
+	public Set<String> getGroupNames() {
+		return getGroupNames(rootGroup);
+	}
+
+	private Set<String> getGroupNames(TaskGroup group) {
+		Set<String> lists = group.getChildren().stream()
+				.filter(child -> child instanceof TaskGroup)
+				.map(TaskContainer::getFullPath)
+				.collect(Collectors.toSet());
+
+		group.getChildren().stream()
+				.filter(child -> child instanceof TaskGroup)
+				.map(child -> (TaskGroup) child)
+				.forEach(nestedGroup -> lists.addAll(getGroupNames(nestedGroup)));
+
+		return lists;
+	}
+
 	// TODO Can we move most of this to TaskList?
 	public Task startTask(long id, boolean finishActive) {
 		String taskList = findListForTask(id);
