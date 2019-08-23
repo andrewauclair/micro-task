@@ -282,10 +282,9 @@ public class Tasks {
 		}
 		return false;
 	}
-	
-	// TODO I think this should have activeGroup, not rootGroup
+
 	public List<Task> getTasks() {
-		return getList(rootGroup, activeList).getTasks();
+		return getList(activeGroup, activeList).getTasks();
 	}
 
 	public Task finishTask() {
