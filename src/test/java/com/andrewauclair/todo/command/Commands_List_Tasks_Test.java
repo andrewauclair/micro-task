@@ -154,6 +154,12 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void list_all_tasks_in_the_active_group() {
+		tasks.createGroup("/test");
+		tasks.switchGroup("/test");
+
+		tasks.addList("/test/default");
+		tasks.setCurrentList("/test/default");
+
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		tasks.addTask("Task 3");
@@ -173,15 +179,29 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 7");
 		tasks.addTask("Task 8");
 		tasks.addTask("Task 9");
-		
+
+		// add extra tasks that shouldn't be shown
+		tasks.setCurrentList("/default");
+		tasks.addTask("Hidden 1");
+		tasks.addTask("Hidden 2");
+
+		tasks.addList("/hide");
+		tasks.setCurrentList("/hide");
+
+		tasks.addTask("Hidden 3");
+
+		commands.execute(printStream, "chlist /test/two");
+
+		outputStream.reset();
+
 		commands.execute(printStream, "list --tasks --group");
 		
 		assertOutput(
+				"  1 - 'Task 1'",
+				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
 				"  4 - 'Task 4'",
 				"  5 - 'Task 5'",
 				"  6 - 'Task 6'",
-				"  1 - 'Task 1'",
-				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
 				"  7 - 'Task 7'",
 				"  8 - 'Task 8'",
 				"  9 - 'Task 9'",

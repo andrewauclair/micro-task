@@ -33,6 +33,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		tasks.addList("none");
 
 		tasks.createGroup("/one/two");
+		tasks.createGroup("/one/three");
 		tasks.switchGroup("/one/two");
 		tasks.addList("charlie");
 		tasks.addList("bravo");
