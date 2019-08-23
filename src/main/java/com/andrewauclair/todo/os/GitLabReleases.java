@@ -66,8 +66,6 @@ public class GitLabReleases {
 			String jar = "https://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
 
 			if (release.isEmpty() || releaseName.equals(release)) {
-				System.out.println("Downloading: " + releaseName);
-
 				// download the jar file and rename it to todo-app.jar
 
 				try (BufferedInputStream in = new BufferedInputStream(new URL(jar).openStream());
@@ -77,8 +75,6 @@ public class GitLabReleases {
 					while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
 						fileOutputStream.write(dataBuffer, 0, bytesRead);
 					}
-
-					System.out.println("Updated to version '" + releaseName + "'");
 
 					return true;
 				}
