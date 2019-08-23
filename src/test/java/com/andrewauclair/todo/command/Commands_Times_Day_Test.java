@@ -16,9 +16,10 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 				"",
 				"01h 49m 15s F 3 - 'Test 3'",
 				"01h 01m 39s   2 - 'Test 2'",
+				"    32m 20s R 5 - 'Test 5'",
 				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
-				"Total time: 03h 01m 15s",
+				"Total time: 03h 33m 35s",
 				""
 		);
 	}

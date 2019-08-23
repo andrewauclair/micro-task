@@ -25,10 +25,12 @@ public class TaskWriter {
 			writeNL(outputStream);
 			outputStream.write(task.state.toString().getBytes());
 			writeNL(outputStream);
-			outputStream.write(String.valueOf(task.getIssue()).getBytes());
+			outputStream.write(String.valueOf(task.isRecurring()).getBytes());
 			writeNL(outputStream);
 			outputStream.write(task.getProject().getBytes());
-			
+			writeNL(outputStream);
+			outputStream.write(task.getFeature().getBytes());
+
 			List<TaskTimes> times = task.getTimes();
 
 			if (times.size() > 0) {

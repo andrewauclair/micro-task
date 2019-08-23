@@ -10,7 +10,7 @@ public final class Task {
 	public final String task;
 	public final TaskState state;
 	private final List<TaskTimes> taskTimes;
-	private final long issue;
+	private final boolean recurring;
 	private final String project;
 	private final String feature;
 	
@@ -19,21 +19,21 @@ public final class Task {
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
-		issue = -1;
+		recurring = false;
 		project = "";
 		feature = "";
 	}
 
-	public Task(long id, String task, TaskState state, List<TaskTimes> times, long issue, String project) {
-		this(id, task, state, times, issue, project, "");
+	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring, String project) {
+		this(id, task, state, times, recurring, project, "");
 	}
 
-	public Task(long id, String task, TaskState state, List<TaskTimes> times, long issue, String project, String feature) {
+	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring, String project, String feature) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
-		this.issue = issue;
+		this.recurring = recurring;
 		this.project = project;
 		this.feature = feature;
 	}
@@ -48,7 +48,7 @@ public final class Task {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, taskTimes, issue, project, feature);
+		return Objects.hash(id, task, state, taskTimes, recurring, project, feature);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public final class Task {
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
 				Objects.equals(taskTimes, otherTask.taskTimes) &&
-				issue == otherTask.issue &&
+				recurring == otherTask.recurring &&
 				Objects.equals(project, otherTask.project) &&
 				Objects.equals(feature, otherTask.feature);
 	}
@@ -77,7 +77,7 @@ public final class Task {
 				", task='" + task + '\'' +
 				", state=" + state +
 				", taskTimes=" + taskTimes +
-				", issue=" + issue +
+				", recurring=" + recurring +
 				", project='" + project + '\'' +
 				", feature='" + feature + '\'' +
 				'}';
@@ -86,9 +86,9 @@ public final class Task {
 	public String description() {
 		return id + " - '" + task + "'";
 	}
-	
-	public long getIssue() {
-		return issue;
+
+	public boolean isRecurring() {
+		return recurring;
 	}
 
 	public String getProject() {

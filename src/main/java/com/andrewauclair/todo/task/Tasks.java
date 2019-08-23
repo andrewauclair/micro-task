@@ -436,20 +436,20 @@ public class Tasks {
 		return activeTaskID;
 	}
 
-	public Task setIssue(long id, long issue) {
+	public Task setRecurring(long id, boolean recurring) {
 		Optional<Task> optionalTask = getTask(id);
 
 		Task task = new TaskBuilder(optionalTask.get())
-				.withIssue(issue)
+				.withRecurring(recurring)
 				.build();
 
-		String list = findListForTask(optionalTask.get().id);
+		String list = findListForTask(task.id);
 		replaceTask(list, optionalTask.get(), task);
 
 		writeTask(task, list);
 
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set issue for task " + task.id + " to " + issue + "\"");
+		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"");
 
 		return task;
 	}

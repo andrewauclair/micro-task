@@ -27,27 +27,31 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_file() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)), false, "Project", "Feature");
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 		
 		Assertions.assertEquals("Test" + Utils.NL +
 				"Inactive" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL +
+				"false" + Utils.NL +
+				"Project" + Utils.NL +
+				"Feature" + Utils.NL +
 				"" + Utils.NL +
 				"add 1234", outputStream.toString());
 		assertTrue(writeTask);
 	}
 	
 	@Test
-	void write_task_with_issue_and_charge() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.emptyList(), 12345, "Issues");
+	void write_recurring_task_with_project_and_feature() {
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, "Project", "Feature");
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertEquals("Test" + Utils.NL +
 				"Inactive" + Utils.NL +
-				"12345" + Utils.NL +
-				"Issues", outputStream.toString());
+				"true" + Utils.NL +
+				"Project" + Utils.NL +
+				"Feature" + Utils.NL +
+				"" + Utils.NL +
+				"add 1000", outputStream.toString());
 		assertTrue(writeTask);
 	}
 	
@@ -58,8 +62,10 @@ class TaskWriterTest {
 
 		assertEquals("Test" + Utils.NL +
 				"Active" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL + // charge
+				"false" + Utils.NL +
+				"" + Utils.NL + // project
+				"" + Utils.NL + // feature
+				"" + Utils.NL +
 				"add 1234" + Utils.NL +
 				"start 2345", outputStream.toString());
 		assertTrue(writeTask);
@@ -72,8 +78,10 @@ class TaskWriterTest {
 
 		assertEquals("Test" + Utils.NL +
 				"Finished" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL + // charge
+				"false" + Utils.NL +
+				"" + Utils.NL + // project
+				"" + Utils.NL + // feature
+				"" + Utils.NL +
 				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567", outputStream.toString());
@@ -94,8 +102,10 @@ class TaskWriterTest {
 
 		assertEquals("Test" + Utils.NL +
 				"Active" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL + // charge
+				"false" + Utils.NL +
+				"" + Utils.NL + // project
+				"" + Utils.NL + // feature
+				"" + Utils.NL +
 				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +
@@ -116,8 +126,10 @@ class TaskWriterTest {
 
 		assertEquals("Test" + Utils.NL +
 				"Inactive" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL + // charge
+				"false" + Utils.NL +
+				"" + Utils.NL + // project
+				"" + Utils.NL + // feature
+				"" + Utils.NL +
 				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"stop 4567" + Utils.NL +

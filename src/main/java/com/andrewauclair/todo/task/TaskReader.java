@@ -15,8 +15,8 @@ public class TaskReader {
 	public TaskReader(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-	
-	public Task readTask(long id, String fileName) throws IOException {
+
+	Task readTask(long id, String fileName) throws IOException {
 		InputStream inputStream = osInterface.createInputStream(fileName);
 
 		Scanner scanner = new Scanner(inputStream);
@@ -26,17 +26,10 @@ public class TaskReader {
 
 		task = scanner.nextLine();
 		state = TaskState.valueOf(scanner.nextLine());
-		
-		String issue = "";
-		String timeTrack = "";
-		
-		if (scanner.hasNextLine()) {
-			issue = scanner.nextLine();
-			
-			if (!issue.isEmpty() && scanner.hasNextLine()) {
-				timeTrack = scanner.nextLine();
-			}
-		}
+
+		boolean recurring = Boolean.parseBoolean(scanner.nextLine());
+		String project = scanner.nextLine();
+		String feature = scanner.nextLine();
 		
 		long start = 0;
 		long stop = TaskTimes.TIME_NOT_SET;
@@ -48,6 +41,8 @@ public class TaskReader {
 			if (line.startsWith("start")) {
 				start = Integer.parseInt(line.substring(6));
 				stop = TaskTimes.TIME_NOT_SET;
+
+				readTimes = true;
 			}
 			if (line.startsWith("stop")) {
 				stop = Integer.parseInt(line.substring(5));
@@ -59,7 +54,6 @@ public class TaskReader {
 
 				timesList.add(new TaskTimes(add));
 			}
-			readTimes = true;
 		}
 
 		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
@@ -68,7 +62,6 @@ public class TaskReader {
 
 		scanner.close();
 
-		long issueNum = issue.isEmpty() ? -1 : Long.parseLong(issue);
-		return new Task(id, task, state, timesList, issueNum, timeTrack);
+		return new Task(id, task, state, timesList, recurring, project, feature);
 	}
 }

@@ -14,28 +14,28 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class AddCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("name", 'n', Collections.singletonList("Name")),
-			new CommandOption("issue", 'i', Collections.singletonList("Issue")),
+			new CommandOption("recurring", 'r'),
 			new CommandOption("charge", 'c', Collections.singletonList("Charge")),
 			new CommandOption("list", 'l', Collections.singletonList("List"))
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
-	
+
 	public AddCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	@Override
 	public void execute(PrintStream output, String command) {
 		List<CommandArgument> args = parser.parse(command);
 		Map<String, CommandArgument> argsMap = new HashMap<>();
-		
+
 		for (CommandArgument arg : args) {
 			argsMap.put(arg.getName(), arg);
 		}
-		
+
 		String taskTitle;
-		
+
 		if (argsMap.containsKey("name")) {
 			taskTitle = argsMap.get("name").getValue();
 		}
@@ -50,9 +50,9 @@ public class AddCommand extends Command {
 		}
 
 		Task task = tasks.addTask(taskTitle, list);
-		
-		if (argsMap.containsKey("issue")) {
-			task = tasks.setIssue(task.id, Long.parseLong(argsMap.get("issue").getValue()));
+
+		if (argsMap.containsKey("recurring")) {
+			task = tasks.setRecurring(task.id, true);
 		}
 		
 		if (argsMap.containsKey("charge")) {

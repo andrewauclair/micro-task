@@ -240,6 +240,10 @@ public class TimesCommand extends Command {
 				output.print(" F ");
 				output.println(task.description());
 			}
+			else if (task.isRecurring()) {
+				output.print(" R ");
+				output.println(task.description());
+			}
 			else {
 				output.print("   ");
 				output.println(task.description());

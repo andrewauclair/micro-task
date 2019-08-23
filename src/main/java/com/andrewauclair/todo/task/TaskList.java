@@ -69,6 +69,9 @@ public final class TaskList implements TaskContainer {
 		Optional<Task> optionalTask = getTask(id);
 		
 		if (optionalTask.isPresent()) {
+			if (optionalTask.get().isRecurring()) {
+				throw new RuntimeException("Recurring tasks cannot be finished.");
+			}
 			Task finishedTask = new TaskBuilder(optionalTask.get()).finish(osInterface.currentSeconds());
 			
 			replaceTask(optionalTask.get(), finishedTask);
