@@ -11,7 +11,8 @@ public final class Task {
 	public final TaskState state;
 	private final List<TaskTimes> taskTimes;
 	private final long issue;
-	private final String charge;
+	private final String project;
+	private final String feature;
 	
 	public Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
@@ -19,18 +20,24 @@ public final class Task {
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
 		issue = -1;
-		charge = "";
+		project = "";
+		feature = "";
 	}
-	
-	public Task(long id, String task, TaskState state, List<TaskTimes> times, long issue, String charge) {
+
+	public Task(long id, String task, TaskState state, List<TaskTimes> times, long issue, String project) {
+		this(id, task, state, times, issue, project, "");
+	}
+
+	public Task(long id, String task, TaskState state, List<TaskTimes> times, long issue, String project, String feature) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
 		this.issue = issue;
-		this.charge = charge;
+		this.project = project;
+		this.feature = feature;
 	}
-	
+
 	public List<TaskTimes> getTimes() {
 		return taskTimes;
 	}
@@ -41,7 +48,7 @@ public final class Task {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, taskTimes, issue, charge);
+		return Objects.hash(id, task, state, taskTimes, issue, project, feature);
 	}
 
 	@Override
@@ -59,7 +66,8 @@ public final class Task {
 				state == otherTask.state &&
 				Objects.equals(taskTimes, otherTask.taskTimes) &&
 				issue == otherTask.issue &&
-				Objects.equals(charge, otherTask.charge);
+				Objects.equals(project, otherTask.project) &&
+				Objects.equals(feature, otherTask.feature);
 	}
 
 	@Override
@@ -70,7 +78,8 @@ public final class Task {
 				", state=" + state +
 				", taskTimes=" + taskTimes +
 				", issue=" + issue +
-				", charge='" + charge + '\'' +
+				", project='" + project + '\'' +
+				", feature='" + feature + '\'' +
 				'}';
 	}
 	
@@ -81,8 +90,12 @@ public final class Task {
 	public long getIssue() {
 		return issue;
 	}
-	
-	public String getCharge() {
-		return charge;
+
+	public String getProject() {
+		return project;
+	}
+
+	public String getFeature() {
+		return feature;
 	}
 }

@@ -24,12 +24,17 @@ public class SetCommand extends Command {
 		long taskID = Long.parseLong(s[1]);
 		String setType = s[2];
 		String setArg = s[3];
-		
-		if (setType.equals("--issue")) {
-			tasks.setIssue(taskID, Long.parseLong(setArg));
-		}
-		else {
-			tasks.setCharge(taskID, command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));
+
+		switch (setType) {
+			case "--issue":
+				tasks.setIssue(taskID, Long.parseLong(setArg));
+				break;
+			case "--project":
+				tasks.setProject(taskID, command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));
+				break;
+			case "--feature":
+				tasks.setFeature(taskID, command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));
+				break;
 		}
 	}
 	
