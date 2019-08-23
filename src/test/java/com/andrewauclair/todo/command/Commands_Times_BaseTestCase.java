@@ -41,6 +41,9 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 		addTaskWithTimes("Test 3", currentTime + (4 * HOUR), HOUR + (49 * MINUTE) + 15);
 		addTaskWithTimes("Test 4", currentTime + (56 * HOUR), (32 * MINUTE) + 2);
 
+		Task recurringTask = addTaskWithTimes("Test 5", currentTime + (4 * HOUR), (32 * MINUTE) + 20);
+		tasks.setRecurring(recurringTask.id, true);
+
 		currentTime = june18_8_am;
 
 		addTaskTimes(1, currentTime, 25 * MINUTE + 45);
@@ -76,12 +79,12 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 		tasks.setProject(2, "Project 2");
 	}
 
-	void addTaskWithTimes(String name, long start, long length) {
+	Task addTaskWithTimes(String name, long start, long length) {
 		Task task = tasks.addTask(name);
 		setTime(start);
 		tasks.startTask(task.id, false);
 		setTime(start + length);
-		tasks.stopTask();
+		return tasks.stopTask();
 	}
 
 	void addTaskTimes(long id, long start, long length) {

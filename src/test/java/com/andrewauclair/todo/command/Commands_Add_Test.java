@@ -31,19 +31,19 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				new Task(2, "Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(2000)))
 		);
 	}
-	
+
 	@ParameterizedTest
-	@ValueSource(strings = {"--name", "-n"})
-	void uses_name_argument(String name) {
-		commands.execute(printStream, "add " + name + " \"Test\" --issue 12345");
-		
+	@ValueSource(strings = {"--recurring", "-r"})
+	void add_recurring_task(String recurring) {
+		commands.execute(printStream, "add " + recurring + " -n \"Test\"");
+
 		assertOutput(
 				"Added task 1 - 'Test'",
 				""
 		);
-		
+
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), 12345, "")
+				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, "")
 		);
 	}
 
@@ -73,27 +73,12 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		);
 	}
 	
-	@ParameterizedTest
-	@ValueSource(strings = {"--issue", "-i"})
-	void add_command_sets_issue_number(String param) {
-		commands.execute(printStream, "add " + param + " 12345 --name \"Test 1\"");
-		
-		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), 12345, "")
-		);
-		
-		assertOutput(
-				"Added task 1 - 'Test 1'",
-				""
-		);
-	}
-	
 	@Test
 	void add_command_sets_time_charge() {
 		commands.execute(printStream, "add --charge \"Issues\" -n \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), -1, "Issues")
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), false, "Issues")
 		);
 		
 		assertOutput(

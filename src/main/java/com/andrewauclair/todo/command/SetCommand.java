@@ -26,8 +26,8 @@ public class SetCommand extends Command {
 		String setArg = s[3];
 
 		switch (setType) {
-			case "--issue":
-				tasks.setIssue(taskID, Long.parseLong(setArg));
+			case "--recurring":
+				tasks.setRecurring(taskID, Boolean.parseBoolean(setArg));
 				break;
 			case "--project":
 				tasks.setProject(taskID, command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));

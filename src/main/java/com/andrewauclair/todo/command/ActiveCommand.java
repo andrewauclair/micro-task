@@ -29,11 +29,6 @@ public class ActiveCommand extends Command {
 		output.println("Active task is " + task.description());
 		output.println();
 		
-		if (task.getIssue() != -1) {
-			output.println("Issue: " + task.getIssue());
-			output.println();
-		}
-		
 		output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
 		output.println();
 		

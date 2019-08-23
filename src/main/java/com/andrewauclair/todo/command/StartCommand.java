@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
@@ -30,22 +31,25 @@ public class StartCommand extends Command {
 		List<String> parameters = Arrays.asList(s);
 
 		int taskID = Integer.parseInt(s[1]);
-		
-		if (tasks.hasActiveTask()) {
-			Task activeTask = tasks.getActiveTask();
 
+		Optional<Task> activeTask = Optional.empty();
+		if (tasks.hasActiveTask()) {
+			activeTask = Optional.of(tasks.getActiveTask());
+		}
+
+		Task task = tasks.startTask(taskID, parameters.contains("--finish") || parameters.contains("-f"));
+
+		if (activeTask.isPresent()) {
 			if (parameters.contains("--finish") || parameters.contains("-f")) {
-				output.println("Finished task " + activeTask.description());
+				output.println("Finished task " + activeTask.get().description());
 			}
 			else {
-				output.println("Stopped task " + activeTask.description());
+				output.println("Stopped task " + activeTask.get().description());
 			}
 
 			output.println();
 		}
 
-		Task task = tasks.startTask(taskID, parameters.contains("--finish") || parameters.contains("-f"));
-		
 		output.println("Started task " + task.description());
 		output.println();
 

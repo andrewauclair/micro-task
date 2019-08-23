@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
@@ -64,5 +65,17 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 				new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000, 3000))),
 				task
 		);
+	}
+
+	@Test
+	void recurring_tasks_cannot_be_finished() {
+		tasks.addTask("Test");
+		tasks.setRecurring(1, true);
+
+		tasks.startTask(1, false);
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::finishTask);
+
+		assertEquals("Recurring tasks cannot be finished.", runtimeException.getMessage());
 	}
 }

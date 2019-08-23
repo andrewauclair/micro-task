@@ -42,12 +42,12 @@ class CommandsBaseTestCase {
 		osInterface.setTime(time);
 	}
 
-	void addTaskWithTimes(String name, long start, long stop) {
+	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);
 		tasks.startTask(task.id, false);
 		setTime(stop);
-		tasks.stopTask();
+		return tasks.stopTask();
 	}
 
 	void addTaskTimes(long id, long start, long stop) {

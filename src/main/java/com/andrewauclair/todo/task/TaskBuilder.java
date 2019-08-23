@@ -9,7 +9,7 @@ class TaskBuilder {
 	private String task;
 	private TaskState state;
 	private final List<TaskTimes> taskTimes;
-	private long issue;
+	private boolean recurring;
 	private String project;
 	private String feature;
 
@@ -18,13 +18,13 @@ class TaskBuilder {
 		this.task = task.task;
 		state = task.state;
 		taskTimes = new ArrayList<>(task.getTimes());
-		issue = task.getIssue();
+		recurring = task.isRecurring();
 		project = task.getProject();
 		feature = task.getFeature();
 	}
 
-	TaskBuilder withIssue(long issue) {
-		this.issue = issue;
+	TaskBuilder withRecurring(boolean recurring) {
+		this.recurring = recurring;
 		return this;
 	}
 
@@ -71,6 +71,6 @@ class TaskBuilder {
 	}
 
 	Task build() {
-		return new Task(id, task, state, taskTimes, issue, project, feature);
+		return new Task(id, task, state, taskTimes, recurring, project, feature);
 	}
 }

@@ -153,4 +153,20 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void recurring_tasks_cannot_be_finished() {
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		tasks.setRecurring(1, true);
+		tasks.startTask(1, false);
+
+		commands.execute(printStream, "start 2 -f");
+
+		assertOutput(
+				"Recurring tasks cannot be finished.",
+				""
+		);
+	}
 }
