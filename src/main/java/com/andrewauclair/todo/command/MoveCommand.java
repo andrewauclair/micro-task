@@ -2,10 +2,10 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.ListCompleter;
+import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
-import org.jline.reader.impl.completer.NullCompleter;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class MoveCommand extends Command {
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Collections.singletonList(
 				node("move",
-						node(new NullCompleter(),
+						node(new LongCompleter(),
 								node(new ListCompleter(tasks, false)
 								)
 						)
