@@ -2,12 +2,14 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.OSInterface;
-import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskFilter;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -43,22 +45,17 @@ class EndOfDayCommand extends Command {
 
 		Instant instant = Instant.ofEpochSecond(epochSecond);
 
-		List<Task> tasks = TimesCommand.getTasksForDay(instant, osInterface, this.tasks);
-
 		ZoneId zoneId = osInterface.getZoneId();
 
 		LocalDate today = LocalDate.ofInstant(instant, zoneId);
-		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(1);
 
-		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
-		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
+		List<TaskFilter.TaskFilterResult> data = new TaskFilter(this.tasks).filterForDay(today.getMonth().getValue(), today.getDayOfMonth(), today.getYear()).getData();
 
 		// total the task times and determine how much time is left, then add that to the current seconds
 		long totalTime = 0;
 
-		for (Task task : tasks) {
-			totalTime += TimesCommand.getTotalTimeInDay(task, midnightStart, midnightStop, osInterface);
+		for (TaskFilter.TaskFilterResult result : data) {
+			totalTime += result.getTotal();
 		}
 
 		output.print("End of Day is ");

@@ -10,7 +10,8 @@ class TaskBuilder {
 	private TaskState state;
 	private final List<TaskTimes> taskTimes;
 	private long issue;
-	private String charge;
+	private String project;
+	private String feature;
 
 	TaskBuilder(Task task) {
 		id = task.id;
@@ -18,7 +19,8 @@ class TaskBuilder {
 		state = task.state;
 		taskTimes = new ArrayList<>(task.getTimes());
 		issue = task.getIssue();
-		charge = task.getCharge();
+		project = task.getProject();
+		feature = task.getFeature();
 	}
 
 	TaskBuilder withIssue(long issue) {
@@ -26,8 +28,13 @@ class TaskBuilder {
 		return this;
 	}
 
-	TaskBuilder withCharge(String charge) {
-		this.charge = charge;
+	TaskBuilder withProject(String project) {
+		this.project = project;
+		return this;
+	}
+
+	TaskBuilder withFeature(String feature) {
+		this.feature = feature;
 		return this;
 	}
 	
@@ -64,6 +71,6 @@ class TaskBuilder {
 	}
 
 	Task build() {
-		return new Task(id, task, state, taskTimes, issue, charge);
+		return new Task(id, task, state, taskTimes, issue, project, feature);
 	}
 }

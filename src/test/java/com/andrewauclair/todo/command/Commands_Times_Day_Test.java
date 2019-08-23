@@ -2,92 +2,23 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.ConsoleColors;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class Commands_Times_Day_Test extends CommandsBaseTestCase {
-	private static final long SECONDS_IN_DAY = 86400;
-	
+class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 	@ParameterizedTest
-	@ValueSource(strings = {"-m 6 -d 21 -y 2019", "-m 6 -d 21", "-d 21 -y 2019"})
+	@ValueSource(strings = {"-m 6 -d 17 -y 2019", "-m 6 -d 17", "-d 17 -y 2019"})
 	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight(String parameters) {
-		long june20_7_50_02_pm = 1561084202;
-		long june20_8_06_42_pm = 1561085202;
-
-		long june21_7_50_02_pm = june20_7_50_02_pm + SECONDS_IN_DAY;
-		long june21_8_06_42_pm = june20_8_06_42_pm + SECONDS_IN_DAY;
-
-		addTaskWithTimes("Test 1 - Day 1", june20_7_50_02_pm, june20_8_06_42_pm);
-		addTaskWithTimes("Test 2 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm + 10);
-
-		addTaskWithTimes("Test 3 - Day 3", june21_7_50_02_pm + SECONDS_IN_DAY, june21_8_06_42_pm + SECONDS_IN_DAY);
-
-		tasks.addList("test");
-		tasks.setCurrentList("test");
-		addTaskWithTimes("Test 4 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm);
-
-		addTaskWithTimes("Test 5 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm);
-
-		setTime(june21_8_06_42_pm + SECONDS_IN_DAY);
-
-		tasks.startTask(5, false);
-
-		setTime(june21_8_06_42_pm + SECONDS_IN_DAY);
-
-		tasks.finishTask(4);
-
-		setTime(june21_8_06_42_pm + SECONDS_IN_DAY);
-		
-		tasks.addTask("Active Task");
-		
-		tasks.stopTask();
-		tasks.startTask(5, false);
-		
-		osInterface.setIncrementTime(false);
-		
 		commands.execute(printStream, "times --tasks " + parameters);
 
 		assertOutput(
-				"Times for day 06/21/2019",
+				"Times for day 06/17/2019",
 				"",
-				"    16m 40s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "5 - 'Test 5 - Day 2'" + ConsoleColors.ANSI_RESET,
-				"    16m 50s   2 - 'Test 2 - Day 2'",
-				"    16m 40s F 4 - 'Test 4 - Day 2'",
+				"01h 49m 15s F 3 - 'Test 3'",
+				"01h 01m 39s   2 - 'Test 2'",
+				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
-				"Total time: 50m 10s",
-				""
-		);
-	}
-
-	@Test
-	void times_are_sorted_by_the_daily_time_not_total_time() {
-		long june20_7_50_02_pm = 1561084202;
-		long june20_8_06_42_pm = 1561085202;
-
-		long june21_7_50_02_pm = june20_7_50_02_pm + SECONDS_IN_DAY;
-		long june21_8_06_42_pm = june20_8_06_42_pm + SECONDS_IN_DAY;
-
-		osInterface.setTime(june20_7_50_02_pm);
-
-		addTaskWithTimes("Test 1 - Day 1", june20_7_50_02_pm, june20_8_06_42_pm);
-		addTaskWithTimes("Test 2 - Day 2", june21_7_50_02_pm, june21_8_06_42_pm + 6000);
-
-		addTaskTimes(1, 1000, 20000);
-
-		addTaskTimes(1, june21_7_50_02_pm, june21_8_06_42_pm + 5000);
-
-		osInterface.setTime(june21_7_50_02_pm);
-
-		commands.execute(printStream, "times --tasks --today");
-
-		assertOutput(
-				"Times for day 06/21/2019",
-				"",
-				"01h 56m 40s   2 - 'Test 2 - Day 2'",
-				"01h 40m 00s   1 - 'Test 1 - Day 1'",
-				"",
-				"Total time: 03h 36m 40s",
+				"Total time: 03h 01m 15s",
 				""
 		);
 	}

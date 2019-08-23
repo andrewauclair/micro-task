@@ -27,7 +27,7 @@ public class TaskWriter {
 			writeNL(outputStream);
 			outputStream.write(String.valueOf(task.getIssue()).getBytes());
 			writeNL(outputStream);
-			outputStream.write(task.getCharge().getBytes());
+			outputStream.write(task.getProject().getBytes());
 			
 			List<TaskTimes> times = task.getTimes();
 

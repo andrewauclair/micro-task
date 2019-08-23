@@ -23,8 +23,9 @@ class Task_toString_Test {
 						new TaskTimes(8473)
 				),
 				12345,
-				"Issues"
+				"Issues",
+				"Feature"
 		);
-		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, 3456 - 5555, 8473], issue=12345, charge='Issues'}", task.toString());
+		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, 3456 - 5555, 8473], issue=12345, project='Issues', feature='Feature'}", task.toString());
 	}
 }

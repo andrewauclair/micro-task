@@ -56,7 +56,7 @@ public class AddCommand extends Command {
 		}
 		
 		if (argsMap.containsKey("charge")) {
-			task = tasks.setCharge(task.id, argsMap.get("charge").getValue());
+			task = tasks.setProject(task.id, argsMap.get("charge").getValue());
 		}
 		
 		output.println("Added task " + task.description());

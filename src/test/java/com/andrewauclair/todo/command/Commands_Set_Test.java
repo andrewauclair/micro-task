@@ -24,17 +24,28 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-	void execute_set_charge_command() {
+	void execute_set_project_command() {
 		tasks.addTask("Test 1");
-		
-		commands.execute(printStream, "set 1 --charge \"Issues\"");
+
+		commands.execute(printStream, "set 1 --project \"Issues\"");
 		
 		Optional<Task> task = tasks.getTask(1);
 		
 		assertTrue(task.isPresent());
-		
-		assertEquals("Issues", task.get().getCharge());
+
+		assertEquals("Issues", task.get().getProject());
 	}
-	
-	// TODO write file, git add, git commit
+
+	@Test
+	void execute_set_feature_command() {
+		tasks.addTask("Test 1");
+
+		commands.execute(printStream, "set 1 --feature \"Feature\"");
+
+		Optional<Task> task = tasks.getTask(1);
+
+		assertTrue(task.isPresent());
+
+		assertEquals("Feature", task.get().getFeature());
+	}
 }

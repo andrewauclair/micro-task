@@ -5,14 +5,13 @@ import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
-import com.andrewauclair.todo.task.Task;
-import com.andrewauclair.todo.task.TaskState;
-import com.andrewauclair.todo.task.TaskTimes;
-import com.andrewauclair.todo.task.Tasks;
+import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -36,43 +35,6 @@ public class TimesCommand extends Command {
 	public TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
-	}
-
-	static List<Task> getTasksForDay(Instant day, OSInterface osInterface, Tasks tasks) {
-		ZoneId zoneId = osInterface.getZoneId();
-
-		LocalDate today = LocalDate.ofInstant(day, zoneId);
-		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(1);
-
-		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
-		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
-
-		List<Task> listTasks = new ArrayList<>(tasks.getAllTasks());
-
-		List<Task> dayTasks = new ArrayList<>();
-
-		for (Task task : listTasks) {
-			for (TaskTimes time : task.getStartStopTimes()) {
-				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
-					dayTasks.add(task);
-					break;
-				}
-			}
-		}
-
-		return dayTasks;
-	}
-
-	static long getTotalTimeInDay(Task task, long midnightStart, long midnightStop, OSInterface osInterface) {
-		long totalTime = 0;
-
-		for (TaskTimes time : task.getStartStopTimes()) {
-			if (time.start >= midnightStart && time.stop < midnightStop) {
-				totalTime += getTotalTime(time, osInterface);
-			}
-		}
-		return totalTime;
 	}
 
 	static void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
@@ -255,55 +217,35 @@ public class TimesCommand extends Command {
 		output.println(day.atZone(zoneId).format(dateTimeFormatter));
 
 		LocalDate today = LocalDate.ofInstant(day, zoneId);
-		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(1);
-
-		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
-		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
 
 		output.println();
 
 		long totalTime = 0;
 
 		// TODO We should still use getTasksForList if --list was provided, going to skip that for now
-		List<Task> listTasks = getTasksForDay(day, osInterface, tasks);
+		List<TaskFilter.TaskFilterResult> data = new TaskFilter(tasks).filterForDay(today.getMonth().getValue(), today.getDayOfMonth(), today.getYear()).getData();
 
-		listTasks.sort(((Comparator<Task>) (o1, o2) -> {
-			long t1 = getTotalTimeInDay(o1, midnightStart, midnightStop, osInterface);
-			long t2 = getTotalTimeInDay(o2, midnightStart, midnightStop, osInterface);
+		data.sort(Comparator.comparingLong(TaskFilter.TaskFilterResult::getTotal).reversed());
 
-			return Long.compare(t1, t2);
-		}).reversed());
+		for (TaskFilter.TaskFilterResult result : data) {
+			printTotalTime(output, result.getTotal(), true);
 
-		for (Task task : listTasks) {
-			boolean include = false;
-			long totalTaskTime = 0;
+			Task task = result.getTask();
 
-			for (TaskTimes time : task.getStartStopTimes()) {
-				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
-					include = true;
-					totalTaskTime += getTotalTime(time, osInterface);
-				}
+			if (tasks.getActiveTaskID() == task.id) {
+				output.print(" * ");
+				ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+			}
+			else if (task.state == TaskState.Finished) {
+				output.print(" F ");
+				output.println(task.description());
+			}
+			else {
+				output.print("   ");
+				output.println(task.description());
 			}
 
-			if (include) {
-				printTotalTime(output, totalTaskTime, true);
-
-				if (tasks.getActiveTaskID() == task.id) {
-					output.print(" * ");
-					ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
-				}
-				else if (task.state == TaskState.Finished) {
-					output.print(" F ");
-					output.println(task.description());
-				}
-				else {
-					output.print("   ");
-					output.println(task.description());
-				}
-
-				totalTime += totalTaskTime;
-			}
+			totalTime += result.getTotal();
 		}
 
 		output.println();

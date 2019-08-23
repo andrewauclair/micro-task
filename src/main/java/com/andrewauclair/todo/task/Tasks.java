@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Tasks {
 	public static final int NO_ACTIVE_TASK = -1;
 
-	private final OSInterface osInterface;
+	final OSInterface osInterface;
 	private final PrintStream output;
 	private final TaskWriter writer;
 
@@ -437,11 +437,11 @@ public class Tasks {
 		return task;
 	}
 
-	public Task setCharge(long id, String charge) {
+	public Task setProject(long id, String project) {
 		Optional<Task> optionalTask = getTask(id);
 
 		Task task = new TaskBuilder(optionalTask.get())
-				.withCharge(charge)
+				.withProject(project)
 				.build();
 
 		String list = findListForTask(task.id);
@@ -450,11 +450,29 @@ public class Tasks {
 		writeTask(task, list);
 
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set charge for task " + task.id + " to '" + charge + "'\"");
+		osInterface.runGitCommand("git commit -m \"Set project for task " + task.id + " to '" + project + "'\"");
 
 		return task;
 	}
-	
+
+	public Task setFeature(long id, String feature) {
+		Optional<Task> optionalTask = getTask(id);
+
+		Task task = new TaskBuilder(optionalTask.get())
+				.withFeature(feature)
+				.build();
+
+		String list = findListForTask(task.id);
+		replaceTask(list, optionalTask.get(), task);
+
+		writeTask(task, list);
+
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Set feature for task " + task.id + " to '" + feature + "'\"");
+
+		return task;
+	}
+
 	String getGroupPath() {
 		return activeGroup.getFullPath();
 	}
