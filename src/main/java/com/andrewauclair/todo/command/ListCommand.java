@@ -62,10 +62,14 @@ public class ListCommand extends Command {
 			List<Task> tasksList = new ArrayList<>();
 			
 			if (useGroup) {
-				for (String listName : tasks.getListNames()) {
-					tasksList.addAll(tasks.getTasksForList(listName).stream()
-							.filter(task -> task.state != TaskState.Finished)
-							.collect(Collectors.toList()));
+				for (TaskContainer child : tasks.getActiveGroup().getChildren()) {
+					if (child instanceof TaskList) {
+						TaskList listChild = (TaskList) child;
+
+						tasksList.addAll(listChild.getTasks().stream()
+								.filter(task -> task.state != TaskState.Finished)
+								.collect(Collectors.toList()));
+					}
 				}
 			}
 			else {

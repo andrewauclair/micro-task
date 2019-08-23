@@ -110,8 +110,8 @@ public final class TaskList implements TaskContainer {
 				.filter(task -> task.id == id)
 				.findFirst();
 	}
-	
-	List<Task> getTasks() {
+
+	public List<Task> getTasks() {
 		return Collections.unmodifiableList(tasks);
 	}
 
