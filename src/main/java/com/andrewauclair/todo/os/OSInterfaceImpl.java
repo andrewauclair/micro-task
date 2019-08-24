@@ -5,6 +5,8 @@ import com.andrewauclair.todo.Main;
 import com.andrewauclair.todo.command.Commands;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -134,5 +136,10 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public void exit() {
 		System.exit(0);
+	}
+
+	@Override
+	public void moveFolder(String src, String dest) throws IOException {
+		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 }

@@ -1,9 +1,13 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.Utils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,7 +102,104 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		assertEquals("/default", tasks.getActiveTaskList());
 	}
-	
+
+	@Test
+	void moving_list_moves_folder_of_files() throws IOException {
+		tasks.addList("/test/one");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.moveList("/test/one", "/");
+
+		order.verify(osInterface).moveFolder("/test/one", "/one");
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved list '/test/one' to group '/'\"");
+	}
+
+	@Test
+	void moving_group_moves_folder_of_files() throws IOException {
+		tasks.createGroup("/one");
+		tasks.createGroup("/two");
+
+		Mockito.reset(osInterface);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.moveGroup("/one", "/two");
+
+		order.verify(osInterface).moveFolder("/one", "/two/one");
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one' to group '/two'\"");
+	}
+
+	@Test
+	void moving_active_list_changes_active_list_name() {
+		tasks.addList("/test/one");
+		tasks.setCurrentList("/test/one");
+
+		tasks.moveList("/test/one", "/");
+
+		assertEquals("/one", tasks.getActiveList());
+	}
+
+	@Test
+	void moving_active_group_changes_active_group_name() {
+		tasks.createGroup("/one");
+		tasks.createGroup("/two");
+
+		tasks.switchGroup("/one");
+
+		tasks.moveGroup("/one", "/two");
+
+		assertEquals("/two/one", tasks.getActiveGroup().getFullPath());
+	}
+
+	@Test
+	void throws_exception_trying_to_move_list_that_does_not_exist() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/test/one", "/"));
+
+		assertEquals("List '/test/one' does not exist.", runtimeException.getMessage());
+	}
+
+	@Test
+	void throws_exception_when_destination_group_does_not_exist() {
+		tasks.addList("one");
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/one", "/test"));
+
+		assertEquals("Group '/test' does not exist.", runtimeException.getMessage());
+	}
+
+	@Test
+	void throws_exception_trying_to_move_group_that_does_not_exist() {
+		tasks.createGroup("/two");
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one", "/two"));
+
+		assertEquals("Group '/one' does not exist.", runtimeException.getMessage());
+	}
+
+	@Test
+	void throws_exception_trying_to_move_to_group_that_does_not_exist() {
+		tasks.createGroup("/one");
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one", "/two"));
+
+		assertEquals("Group '/two' does not exist.", runtimeException.getMessage());
+	}
+
+	@Test
+	void catch_moveFolder_io_exception() throws IOException {
+		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
+
+		tasks.addList("/test/one");
+		tasks.setCurrentList("/test/one");
+
+		tasks.moveList("/test/one", "/");
+
+		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
+	}
+
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(5, "one"));

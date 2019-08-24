@@ -1,10 +1,14 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.Utils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -88,6 +92,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled
 	void renaming_list_deletes_the_current_task_files_in_the_folder() {
 		tasks.addList("one");
 
@@ -106,6 +111,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled
 	void renaming_list_writes_new_task_files_into_new_folder() {
 		tasks.addList("one");
 
@@ -123,6 +129,54 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		Mockito.reset(osInterface, writer);
+
+		tasks.renameList("one", "test");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).moveFolder("/one", "/test");
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
+
+		Mockito.verifyNoMoreInteractions(osInterface);
+		Mockito.verifyZeroInteractions(writer);
+	}
+
+	@Test
+	void catch_IOException_from_moveFolder_for_renameList() throws IOException {
+		tasks.addList("one");
+
+		tasks.setCurrentList("one");
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		Mockito.reset(osInterface, writer);
+
+		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
+
+		tasks.renameList("one", "test");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).moveFolder("/one", "/test");
+
+		Mockito.verifyNoMoreInteractions(osInterface);
+		Mockito.verifyZeroInteractions(writer);
+
+		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
+	}
+
+	@Test
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
 		tasks.addList("one");
 
@@ -137,10 +191,6 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-//		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
-//		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
-//		order.verify(osInterface).runGitCommand("git add tasks/one/2.txt");
-//		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
 		order.verify(osInterface).runGitCommand("git add .");
 		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
 	}

@@ -30,7 +30,9 @@ public interface OSInterface {
 	String getVersion() throws IOException;
 
 	void exit();
-	
+
+	void moveFolder(String src, String dest) throws IOException;
+
 	class TaskFileInfo {
 		String name;
 		String path;

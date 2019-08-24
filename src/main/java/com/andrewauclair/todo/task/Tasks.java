@@ -92,6 +92,89 @@ public class Tasks {
 		throw new RuntimeException("Task " + id + " was not found.");
 	}
 
+	public void moveList(String list, String group) {
+		String absoluteList = getAbsoluteListName(list);
+
+		Optional<TaskGroup> currentGroup = getGroup(groupNameFromList(absoluteList));
+
+		Optional<TaskGroup> newGroup = getGroup(group);
+
+		if (currentGroup.isPresent() && newGroup.isPresent()) {
+			Optional<TaskList> listAbsolute = currentGroup.get().getListAbsolute(absoluteList);
+
+			if (listAbsolute.isPresent()) {
+				currentGroup.get().removeChild(listAbsolute.get());
+				String groupPath = newGroup.get().getFullPath();
+
+				TaskList newList;
+				if (groupPath.equals("/")) {
+					newList = listAbsolute.get().rename(groupPath + listAbsolute.get().getName());
+				}
+				else {
+					newList = listAbsolute.get().rename(groupPath + "/" + listAbsolute.get().getName());
+				}
+				newGroup.get().addChild(newList);
+
+				try {
+					osInterface.moveFolder(absoluteList, newList.getFullPath());
+				}
+				catch (IOException e) {
+					e.printStackTrace(output);
+					return;
+				}
+
+				osInterface.runGitCommand("git add .");
+				osInterface.runGitCommand("git commit -m \"Moved list '" + absoluteList + "' to group '" + groupPath + "'\"");
+
+				if (activeList.equals(absoluteList)) {
+					activeList = newList.getFullPath();
+				}
+			}
+		}
+		else if (!currentGroup.isPresent()) {
+			throw new RuntimeException("List '" + absoluteList + "' does not exist.");
+		}
+		else {
+			throw new RuntimeException("Group '" + group + "' does not exist.");
+		}
+	}
+
+	public void moveGroup(String group, String destGroup) {
+		Optional<TaskGroup> groupToMove = getGroup(group);
+		Optional<TaskGroup> optDestGroup = getGroup(destGroup);
+
+		if (groupToMove.isPresent() && optDestGroup.isPresent()) {
+			getGroup(groupToMove.get().getParent()).get().removeChild(groupToMove.get());
+			String groupPath = optDestGroup.get().getFullPath();
+
+			TaskGroup newGroup = new TaskGroup(groupToMove.get().getName(), groupPath);
+			groupToMove.get().getChildren().forEach(newGroup::addChild);
+
+			optDestGroup.get().addChild(newGroup);
+
+			try {
+				osInterface.moveFolder(groupToMove.get().getFullPath(), newGroup.getFullPath());
+			}
+			catch (IOException e) {
+				e.printStackTrace(output);
+				return;
+			}
+
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Moved group '" + groupToMove.get().getFullPath() + "' to group '" + optDestGroup.get().getFullPath() + "'\"");
+
+			if (activeGroup.getFullPath().equals(groupToMove.get().getFullPath())) {
+				activeGroup = newGroup;
+			}
+		}
+		else if (!groupToMove.isPresent()) {
+			throw new RuntimeException("Group '" + group + "' does not exist.");
+		}
+		else {
+			throw new RuntimeException("Group '" + destGroup + "' does not exist.");
+		}
+	}
+
 	// TODO This should probably be Optional<String>, returning the current list when we couldn't find the task is odd
 	public String findListForTask(long id) {
 		Optional<String> listForTask = rootGroup.findListForTask(id);
@@ -368,12 +451,13 @@ public class Tasks {
 		theGroup.removeChild(oldList);
 		theGroup.addChild(oldList.rename(absoluteNewList));
 
-		for (Task task : getList(theGroup, absoluteNewList).getTasks()) {
-			osInterface.removeFile("git-data/tasks" + absoluteOldList + "/" + task.id + ".txt");
-			writeTask(task, absoluteNewList);
+		try {
+			osInterface.moveFolder(absoluteOldList, absoluteNewList);
 		}
-
-		osInterface.removeFile("git-data/tasks" + absoluteOldList);
+		catch (IOException e) {
+			e.printStackTrace(output);
+			return;
+		}
 
 		osInterface.runGitCommand("git add .");
 		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"");

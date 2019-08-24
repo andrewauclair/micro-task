@@ -23,11 +23,33 @@ public class MoveCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
-		
-		Task task = tasks.moveTask(Long.parseLong(s[1]), s[2]);
-		
-		output.println("Moved task " + task.id + " to list '" + s[2] + "'");
-		output.println();
+
+		String type = s[1];
+
+		if (type.equals("--task")) {
+			Task task = tasks.moveTask(Long.parseLong(s[2]), s[3]);
+
+			output.println("Moved task " + task.id + " to list '" + s[3] + "'");
+			output.println();
+		}
+		else if (type.equals("--list")) {
+			String list = s[2];
+			String group = s[3];
+
+			tasks.moveList(list, group);
+
+			output.println("Moved list " + list + " to group '" + group + "'");
+			output.println();
+		}
+		else {
+			String srcGroup = s[2];
+			String destGroup = s[3];
+
+			tasks.moveGroup(srcGroup, destGroup);
+
+			output.println("Moved group '" + srcGroup + "' to group '" + destGroup + "'");
+			output.println();
+		}
 	}
 	
 	@Override
