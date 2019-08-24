@@ -54,6 +54,12 @@ public final class TaskGroup implements TaskContainer {
 				Objects.equals(children, taskGroup.children);
 	}
 
+	public TaskGroup rename(String newName) {
+		TaskGroup group = new TaskGroup(newName, parent);
+		group.children.addAll(children);
+		return group;
+	}
+
 	public String getParent() {
 		return parent;
 	}

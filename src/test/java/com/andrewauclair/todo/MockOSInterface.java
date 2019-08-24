@@ -84,4 +84,8 @@ public class MockOSInterface implements OSInterface {
 	public void exit() {
 
 	}
+
+	@Override
+	public void moveFolder(String src, String dest) throws IOException {
+	}
 }
