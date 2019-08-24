@@ -132,13 +132,13 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		tasks.addList("/one/two");
-		tasks.setCurrentList("/one/two");
+		tasks.setActiveList("/one/two");
 
 		tasks.addTask("Test 2");
 
 		tasks.startTask(2, false);
 
-		tasks.setCurrentList("/default");
+		tasks.setActiveList("/default");
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 

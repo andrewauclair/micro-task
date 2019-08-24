@@ -10,23 +10,29 @@ import java.util.Objects;
 
 public class TaskFilter {
 	private final OSInterface osInterface;
-	private List<Task> tasks = new ArrayList<>();
+	private final Tasks tasks;
+	private List<Task> allTasks = new ArrayList<>();
 	private List<TaskFilterResult> results = new ArrayList<>();
 
 	public TaskFilter(Tasks tasks) {
 		osInterface = tasks.osInterface;
-		this.tasks.addAll(tasks.getAllTasks());
+		this.tasks = tasks;
+		this.allTasks.addAll(tasks.getAllTasks());
 	}
-
-	static long getTotalTime(TaskTimes time, OSInterface osInterface) {
-		long totalTime = time.getDuration();
-
-		if (time.stop == TaskTimes.TIME_NOT_SET) {
-			totalTime += osInterface.currentSeconds() - time.start;
+	
+	public TaskFilter filterForList(String list) {
+		List<Task> newTasks = new ArrayList<>();
+		
+		for (Task task : allTasks) {
+			if (tasks.findListForTask(task.id).equals(list)) {
+				newTasks.add(task);
+			}
 		}
-		return totalTime;
+		
+		allTasks = newTasks;
+		return this;
 	}
-
+	
 	public TaskFilter filterForDay(int month, int day, int year) {
 		LocalDate of = LocalDate.of(year, month, day);
 
@@ -42,13 +48,13 @@ public class TaskFilter {
 
 		List<Task> newTasks = new ArrayList<>();
 		List<TaskFilterResult> newResults = new ArrayList<>();
-
-		for (Task task : tasks) {
+		
+		for (Task task : allTasks) {
 			long totalTime = 0;
 
 			for (TaskTimes time : task.getStartStopTimes()) {
 				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
-					totalTime += getTotalTime(time, osInterface);
+					totalTime += time.getDuration(osInterface);
 				}
 			}
 
@@ -57,12 +63,16 @@ public class TaskFilter {
 				newResults.add(new TaskFilterResult(totalTime, task));
 			}
 		}
-		tasks = newTasks;
+		allTasks = newTasks;
 		results = newResults;
 
 		return this;
 	}
-
+	
+	public List<Task> getTasks() {
+		return allTasks;
+	}
+	
 	public List<TaskFilterResult> getData() {
 		return results;
 	}

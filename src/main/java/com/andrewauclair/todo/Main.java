@@ -83,7 +83,7 @@ public class Main {
 
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
 			// set active list to the list of the active task
-			tasks.setCurrentList(tasks.getActiveTaskList());
+			tasks.setActiveList(tasks.getActiveTaskList());
 
 			// set active group to the group of the active task
 			tasks.switchGroup(tasks.groupNameFromList(tasks.getActiveTaskList()));

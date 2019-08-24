@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.Task;
@@ -8,7 +9,7 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
@@ -54,10 +55,22 @@ public class MoveCommand extends Command {
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
+		return Arrays.asList(
 				node("move",
 						node(new LongCompleter(),
 								node(new ListCompleter(tasks, false)
+								)
+						)
+				),
+				node("move",
+						node(new ListCompleter(tasks, true),
+								node(new GroupCompleter(tasks, false)
+								)
+						)
+				),
+				node("move",
+						node(new GroupCompleter(tasks, true),
+								node(new GroupCompleter(tasks, false)
 								)
 						)
 				)

@@ -30,7 +30,7 @@ public class ListSwitchCommand extends Command {
 
 		String listParameter = s[1].toLowerCase();
 
-		boolean exists = tasks.setCurrentList(listParameter);
+		boolean exists = tasks.setActiveList(listParameter);
 		
 		String list = tasks.getAbsoluteListName(listParameter);
 		

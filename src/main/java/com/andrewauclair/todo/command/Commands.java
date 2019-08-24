@@ -22,7 +22,7 @@ public class Commands {
 
 		commands.put("mklist", new ListCreateCommand(tasks));
 		commands.put("chlist", new ListSwitchCommand(tasks));
-		commands.put("finish", new FinishCommand(tasks));
+		commands.put("finish", new FinishCommand(tasks, osInterface));
 		commands.put("start", new StartCommand(tasks, osInterface));
 		commands.put("stop", new StopCommand(tasks, osInterface));
 		commands.put("add", new AddCommand(tasks));

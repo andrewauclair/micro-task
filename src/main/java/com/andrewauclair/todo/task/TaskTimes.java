@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -25,9 +27,9 @@ public final class TaskTimes {
 		this.stop = stop;
 	}
 	
-	public long getDuration() {
+	public long getDuration(OSInterface osInterface) {
 		if (stop == TIME_NOT_SET) {
-			return 0;
+			return osInterface.currentSeconds() - start;
 		}
 		return stop - start;
 	}

@@ -6,7 +6,7 @@ import org.jline.builtins.Completers.TreeCompleter.Node;
 import java.io.PrintStream;
 import java.util.List;
 
-public abstract class Command {
+abstract class Command {
 	public abstract void execute(PrintStream output, String command);
 	
 	public abstract List<Node> getAutoCompleteNodes();

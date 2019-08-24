@@ -79,7 +79,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");
 		tasks.addList("testing-rename");
-		tasks.setCurrentList("testing-rename");
+		tasks.setActiveList("testing-rename");
 		
 		Task renameTask = tasks.renameTask(1, "Renamed this task");
 
@@ -96,7 +96,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_list_deletes_the_current_task_files_in_the_folder() {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -115,7 +115,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_list_writes_new_task_files_into_new_folder() {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		Task task1 = tasks.addTask("Test 1");
 		Task task2 = tasks.addTask("Test 2");
@@ -132,7 +132,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -155,7 +155,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void catch_IOException_from_moveFolder_for_renameList() throws IOException {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -180,7 +180,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -199,7 +199,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_current_list_changes_the_name_of_current_list() {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.renameList("one", "two");
 
@@ -210,7 +210,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void renaming_active_list_changes_the_name_of_active_list() {
 		tasks.addList("one");
 
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.addTask("Test");
 

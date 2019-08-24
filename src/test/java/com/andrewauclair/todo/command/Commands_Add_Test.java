@@ -105,7 +105,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 		tasks.addList("/test/one");
 
-		tasks.setCurrentList("/test/one");
+		tasks.setActiveList("/test/one");
 
 		commands.execute(printStream, "add -n \"Test 1\"");
 

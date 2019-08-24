@@ -1,12 +1,13 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.LongCompleter;
 import org.jline.builtins.Completers;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,10 +21,22 @@ class MoveCommandTest extends CommandsBaseTestCase {
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
-				Collections.singletonList(
+				Arrays.asList(
 						node("move",
 								node(new LongCompleter(),
 										node(new ListCompleter(tasks, false)
+										)
+								)
+						),
+						node("move",
+								node(new ListCompleter(tasks, true),
+										node(new GroupCompleter(tasks, false)
+										)
+								)
+						),
+						node("move",
+								node(new GroupCompleter(tasks, true),
+										node(new GroupCompleter(tasks, false)
 										)
 								)
 						)

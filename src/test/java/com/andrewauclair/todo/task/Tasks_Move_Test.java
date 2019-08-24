@@ -67,7 +67,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void can_move_task_on_different_list() {
 		Task task = tasks.addTask("Task to move");
 		tasks.addList("one");
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		tasks.moveTask(1, "one");
 
@@ -135,7 +135,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_active_list_changes_active_list_name() {
 		tasks.addList("/test/one");
-		tasks.setCurrentList("/test/one");
+		tasks.setActiveList("/test/one");
 
 		tasks.moveList("/test/one", "/");
 
@@ -189,17 +189,29 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	void catch_moveFolder_io_exception() throws IOException {
+	void catch_moveFolder_io_exception_in_moveList() throws IOException {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
 
 		tasks.addList("/test/one");
-		tasks.setCurrentList("/test/one");
+		tasks.setActiveList("/test/one");
 
 		tasks.moveList("/test/one", "/");
 
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
-
+	
+	@Test
+	void catch_moveFolder_io_exception_in_moveGroup() throws IOException {
+		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
+		
+		tasks.createGroup("/test/one");
+		tasks.switchGroup("/test/one");
+		
+		tasks.moveGroup("/test/one", "/");
+		
+		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
+	}
+	
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(5, "one"));
