@@ -37,7 +37,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.startTask(3, false);
 		
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 		
 		commands.execute(printStream, "list --tasks --list default");
 		
@@ -158,7 +158,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.switchGroup("/test");
 
 		tasks.addList("/test/default");
-		tasks.setCurrentList("/test/default");
+		tasks.setActiveList("/test/default");
 
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
@@ -170,23 +170,23 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addList("one");
 		tasks.addList("two");
 		
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 		tasks.addTask("Task 4");
 		tasks.addTask("Task 5");
 		tasks.addTask("Task 6");
 		
-		tasks.setCurrentList("two");
+		tasks.setActiveList("two");
 		tasks.addTask("Task 7");
 		tasks.addTask("Task 8");
 		tasks.addTask("Task 9");
 
 		// add extra tasks that shouldn't be shown
-		tasks.setCurrentList("/default");
+		tasks.setActiveList("/default");
 		tasks.addTask("Hidden 1");
 		tasks.addTask("Hidden 2");
 
 		tasks.addList("/hide");
-		tasks.setCurrentList("/hide");
+		tasks.setActiveList("/hide");
 
 		tasks.addTask("Hidden 3");
 

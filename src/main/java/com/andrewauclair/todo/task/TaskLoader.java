@@ -33,7 +33,7 @@ public class TaskLoader {
 				}
 				else {
 					tasks.addList(name);
-					tasks.setCurrentList(name);
+					tasks.setActiveList(name);
 				}
 				loadTasks(fileInfo.getPath());
 				

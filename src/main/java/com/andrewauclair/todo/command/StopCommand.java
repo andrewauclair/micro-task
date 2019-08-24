@@ -36,7 +36,7 @@ public class StopCommand extends Command {
 		output.println(stopTime.description(osInterface.getZoneId()));
 		output.println();
 		output.print("Task was active for: ");
-		output.println(new TaskDuration(stopTime));
+		output.println(new TaskDuration(stopTime, osInterface));
 		output.println();
 	}
 	

@@ -36,7 +36,7 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 		addTaskWithTimes("Test 1", currentTime, (10 * MINUTE) + 21);
 		addTaskWithTimes("Test 2", currentTime + (3 * HOUR), HOUR + MINUTE + 39);
 
-		tasks.setCurrentList("/one/design");
+		tasks.setActiveList("/one/design");
 
 		addTaskWithTimes("Test 3", currentTime + (4 * HOUR), HOUR + (49 * MINUTE) + 15);
 		addTaskWithTimes("Test 4", currentTime + (56 * HOUR), (32 * MINUTE) + 2);
@@ -50,7 +50,7 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 
 		addTaskWithTimes("Test 7", currentTime + (30 * MINUTE), (15 * MINUTE) + 24);
 
-		tasks.setCurrentList("/one/two/stuff");
+		tasks.setActiveList("/one/two/stuff");
 
 		addTaskWithTimes("Test 6", currentTime + HOUR, 20 * MINUTE);
 

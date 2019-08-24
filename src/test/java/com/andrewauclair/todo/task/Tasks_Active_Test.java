@@ -31,7 +31,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(1, false);
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		Task activeTask = tasks.getActiveTask();
 

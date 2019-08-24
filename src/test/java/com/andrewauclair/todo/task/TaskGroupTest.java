@@ -53,4 +53,13 @@ class TaskGroupTest extends TaskBaseTestCase {
 
 		assertEquals("TaskGroup{name='test', fullPath='/test', parent=/, children=[]}", group.toString());
 	}
+	
+	@Test
+	void rename() {
+		TaskGroup group = new TaskGroup("test", "/");
+		
+		TaskGroup renamed = group.rename("one");
+		
+		assertEquals("TaskGroup{name='one', fullPath='/one', parent=/, children=[]}", renamed.toString());
+	}
 }

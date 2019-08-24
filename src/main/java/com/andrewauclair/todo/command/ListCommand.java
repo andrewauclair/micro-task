@@ -20,7 +20,7 @@ public class ListCommand extends Command {
 	
 	private final Tasks tasks;
 	
-	public ListCommand(Tasks tasks) {
+	ListCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	

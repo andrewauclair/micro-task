@@ -18,8 +18,8 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class StartCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-
-	public StartCommand(Tasks tasks, OSInterface osInterface) {
+	
+	StartCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}

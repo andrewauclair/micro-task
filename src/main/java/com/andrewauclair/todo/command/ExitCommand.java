@@ -13,7 +13,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class ExitCommand extends Command {
 	private final OSInterface osInterface;
 	
-	public ExitCommand(OSInterface osInterface) {
+	ExitCommand(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
 	

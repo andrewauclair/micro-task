@@ -61,5 +61,41 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void today_for_single_list() {
+		setTime(june17_8_am);
+		
+		commands.execute(printStream, "times --tasks --today --list /one/design");
+		
+		// TODO I would like the first line to be "Times for list '/one/design' on day 06/17/2019
+		assertOutput(
+				"Times for day 06/17/2019",
+				"",
+				"01h 49m 15s F 3 - 'Test 3'",
+				"    32m 20s R 5 - 'Test 5'",
+				"",
+				"Total time: 02h 21m 35s",
+				""
+		);
+	}
+	
+	@Test
+	void specific_day_for_single_list() {
+		setTime(june17_8_am);
+		
+		commands.execute(printStream, "times --tasks -d 17 --list /one/design");
+		
+		// TODO I would like the first line to be "Times for list '/one/design' on day 06/17/2019
+		assertOutput(
+				"Times for day 06/17/2019",
+				"",
+				"01h 49m 15s F 3 - 'Test 3'",
+				"    32m 20s R 5 - 'Test 5'",
+				"",
+				"Total time: 02h 21m 35s",
+				""
+		);
+	}
 	// TODO Test that this output is cut off on the right if task name is too long, "Execute the instructions in ...", cut off at the space that fits
 }

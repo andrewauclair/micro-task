@@ -43,7 +43,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		addTaskWithTimes("Test 1", 1561078202, 1561079202);
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		tasks.addTask("Test 1");
 

@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.Tasks;
@@ -14,9 +15,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class FinishCommand extends Command {
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 	
-	public FinishCommand(Tasks tasks) {
+	FinishCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 	
 	@Override
@@ -35,7 +38,7 @@ public class FinishCommand extends Command {
 		output.println("Finished task " + task.description());
 		output.println();
 		output.print("Task finished in: ");
-		output.println(new TaskDuration(task.getTimes()));
+		output.println(new TaskDuration(task, osInterface));
 		output.println();
 	}
 	

@@ -1,24 +1,34 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.util.Collections;
 import java.util.List;
 
 public class TaskDuration {
 	private final List<TaskTimes> times;
+	private final OSInterface osInterface;
 	
-	public TaskDuration(TaskTimes times) {
+	public TaskDuration(TaskTimes times, OSInterface osInterface) {
 		this.times = Collections.singletonList(times);
-	}
-	
-	public TaskDuration(List<TaskTimes> times) {
-		this.times = times;
+		this.osInterface = osInterface;
 	}
 
+//	public TaskDuration(List<TaskTimes> times, OSInterface osInterface) {
+//		this.times = times;
+//		this.osInterface = osInterface;
+//	}
+	
+	public TaskDuration(Task task, OSInterface osInterface) {
+		times = task.getStartStopTimes();
+		this.osInterface = osInterface;
+	}
+	
 	@Override
 	public String toString() {
 		long totalTime = times.stream()
-				.map(TaskTimes::getDuration)
+				.map(times -> times.getDuration(osInterface))
 				.reduce(0L, Long::sum);
 
 		long hours = totalTime / (60 * 60);

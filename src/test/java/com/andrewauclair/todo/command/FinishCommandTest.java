@@ -13,7 +13,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class FinishCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		FinishCommand command = new FinishCommand(tasks);
+		FinishCommand command = new FinishCommand(tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		

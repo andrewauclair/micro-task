@@ -37,7 +37,7 @@ public class ActiveCommand extends Command {
 
 		activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
 		output.print("Current time elapsed: ");
-		output.println(new TaskDuration(activeTime));
+		output.println(new TaskDuration(activeTime, osInterface));
 		output.println();
 	}
 	

@@ -45,12 +45,12 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		tasks.addTask("default List Task 2");
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		tasks.addTask("test List Task 1");
 		tasks.addTask("test List Task 2");
 
-		tasks.setCurrentList("default");
+		tasks.setActiveList("default");
 
 		assertThat(tasks.getTasksForList("default")).containsOnly(
 				new Task(1, "default List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
@@ -65,7 +65,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	
 	@Test
 	void setCurrentList_returns_false_when_group_does_not_exist() {
-		assertFalse(tasks.setCurrentList("/one/two"));
+		assertFalse(tasks.setActiveList("/one/two"));
 	}
 	
 	@Test

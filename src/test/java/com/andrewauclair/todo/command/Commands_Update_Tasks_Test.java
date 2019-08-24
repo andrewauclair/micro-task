@@ -12,7 +12,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 		tasks.addList("one");
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");

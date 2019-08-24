@@ -51,7 +51,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		Task task = tasks.addTask("Testing task");
 
@@ -80,7 +80,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		tasks.addTask("Testing task add command 1");
 
@@ -116,7 +116,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(1, false);
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");
 
@@ -132,13 +132,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.startTask(1, false);
 
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");
 
 		Task finishedTask = tasks.finishTask();
 
-		tasks.setCurrentList("default");
+		tasks.setActiveList("default");
 
 		assertThat(tasks.getTasks()).containsOnly(finishedTask);
 	}
@@ -146,7 +146,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_task_that_is_active_sets_it_as_the_active_task() {
 		tasks.addList("test");
-		tasks.setCurrentList("test");
+		tasks.setActiveList("test");
 
 		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
@@ -219,7 +219,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.createGroup("/test/one");
 		tasks.switchGroup("/test/one");
 		tasks.addList("two");
-		tasks.setCurrentList("two");
+		tasks.setActiveList("two");
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 
@@ -248,7 +248,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
 		tasks.addTask("Test");
 		tasks.addList("one");
-		tasks.setCurrentList("one");
+		tasks.setActiveList("one");
 
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 

@@ -25,7 +25,7 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	void move_task_between_lists_in_different_groups() {
 		tasks.addList("/one/two/three");
 		tasks.addList("/one/test/five");
-		tasks.setCurrentList("/one/two/three");
+		tasks.setActiveList("/one/two/three");
 		
 		tasks.addTask("Test 1");
 
@@ -43,7 +43,7 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	void move_list_from_one_group_to_another() {
 		tasks.addList("/one/two/three");
 		tasks.addList("/one/test/five");
-		tasks.setCurrentList("/one/two/three");
+		tasks.setActiveList("/one/two/three");
 
 		tasks.addTask("Test 1");
 
@@ -62,7 +62,7 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	void move_list_to_root_group() {
 		tasks.addList("/one/two/three");
 		tasks.addList("/one/test/five");
-		tasks.setCurrentList("/one/two/three");
+		tasks.setActiveList("/one/two/three");
 
 		tasks.addTask("Test 1");
 

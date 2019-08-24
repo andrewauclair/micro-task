@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.os.OSInterface;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +46,19 @@ public final class Task {
 
 	public List<TaskTimes> getStartStopTimes() {
 		return taskTimes.subList(1, taskTimes.size());
+	}
+	
+	public long getElapsedTime(OSInterface osInterface) {
+		long total = 0;
+		for (TaskTimes time : getStartStopTimes()) {
+			if (time.stop != TaskTimes.TIME_NOT_SET) {
+				total += time.stop - time.start;
+			}
+			else {
+				total += osInterface.currentSeconds() - time.start;
+			}
+		}
+		return total;
 	}
 
 	@Override

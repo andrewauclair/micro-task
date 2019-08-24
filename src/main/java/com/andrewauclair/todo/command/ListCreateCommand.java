@@ -13,7 +13,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class ListCreateCommand extends Command {
 	private final Tasks tasks;
 	
-	public ListCreateCommand(Tasks tasks) {
+	ListCreateCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	
