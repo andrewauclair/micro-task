@@ -22,8 +22,8 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void task_group_can_contain_task_lists() {
 		TaskGroup group = new TaskGroup("test");
-		
-		TaskList list = new TaskList("test", osInterface);
+
+		TaskList list = new TaskList("test", osInterface, writer);
 		group.addChild(list);
 		
 		assertThat(group.getChildren()).containsOnly(

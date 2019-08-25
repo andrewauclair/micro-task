@@ -70,7 +70,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		assertEquals("/", group.getParent());
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("/default", osInterface),
+				new TaskList("/default", osInterface, writer),
 				new TaskGroup("test", "/")
 		);
 	}
@@ -87,7 +87,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		one.addChild(new TaskGroup("two", "/test/one"));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("/default", osInterface),
+				new TaskList("/default", osInterface, writer),
 				expected
 		);
 	}
