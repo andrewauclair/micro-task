@@ -84,6 +84,6 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.finishTask(3));
 
-		assertEquals("Task not found.", runtimeException.getMessage());
+		assertEquals("Task 3 was not found.", runtimeException.getMessage());
 	}
 }

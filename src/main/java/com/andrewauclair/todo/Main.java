@@ -28,7 +28,7 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		OSInterfaceImpl osInterface = new OSInterfaceImpl();
-		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(System.out, osInterface), System.out, osInterface);
+		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(osInterface), System.out, osInterface);
 		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
 		
 		osInterface.setCommands(commands);

@@ -15,10 +15,9 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskWriterTest {
-	private final ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
 	private final OutputStream outputStream = new ByteArrayOutputStream();
 	private final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
-	private final TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
+	private final TaskWriter writer = new TaskWriter(osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {
@@ -149,7 +148,9 @@ class TaskWriterTest {
 
 		ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
 
-		TaskWriter writer = new TaskWriter(new PrintStream(consoleOutput), osInterface);
+		System.setErr(new PrintStream(consoleOutput));
+
+		TaskWriter writer = new TaskWriter(osInterface);
 
 		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		assertFalse(writer.writeTask(task, "test.txt"));

@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TaskList_toString_Test extends TaskBaseTestCase {
 	@Test
 	void to_string() {
-		TaskList list = new TaskList("Test", osInterface);
-		list.addTask(1, "Do Something", writer);
+		TaskList list = new TaskList("Test", osInterface, writer);
+		list.addTask(1, "Do Something");
 
 		assertEquals("TaskList{name='Test', fullPath='Test', tasks=[Task{id=1, task='Do Something', state=Inactive, taskTimes=[1000], recurring=false, project='', feature=''}]}", list.toString());
 	}

@@ -37,8 +37,8 @@ class TaskBuilder {
 		this.feature = feature;
 		return this;
 	}
-	
-	Task activate(long start) {
+
+	Task start(long start) {
 		taskTimes.add(new TaskTimes(start));
 		state = TaskState.Active;
 		return build();

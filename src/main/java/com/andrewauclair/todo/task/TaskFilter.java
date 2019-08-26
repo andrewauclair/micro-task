@@ -21,15 +21,7 @@ public class TaskFilter {
 	}
 	
 	public TaskFilter filterForList(String list) {
-		List<Task> newTasks = new ArrayList<>();
-		
-		for (Task task : allTasks) {
-			if (tasks.findListForTask(task.id).equals(list)) {
-				newTasks.add(task);
-			}
-		}
-		
-		allTasks = newTasks;
+		allTasks = tasks.getTasksForList(list);
 		return this;
 	}
 	

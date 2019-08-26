@@ -39,6 +39,14 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	@Override
+	public List<Task> getTasks() {
+		List<Task> tasks = new ArrayList<>();
+		children.forEach(child -> tasks.addAll(child.getTasks()));
+
+		return tasks;
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(name, fullPath, parent, children);
 	}
@@ -127,21 +135,13 @@ public final class TaskGroup implements TaskContainer {
 				.anyMatch(group -> group.getFullPath().equals(newGroup.getFullPath()));
 	}
 
-	Optional<String> findListForTask(long id) {
+	@Override
+	public Optional<String> findListForTask(long id) {
 		for (TaskContainer child : getChildren()) {
-			if (child instanceof TaskList) {
-				TaskList list = (TaskList) child;
+			Optional<String> list = child.findListForTask(id);
 
-				if (list.containsTask(id)) {
-					return Optional.of(list.getFullPath());
-				}
-			}
-			else {
-				Optional<String> list = ((TaskGroup) child).findListForTask(id);
-
-				if (list.isPresent()) {
-					return list;
-				}
+			if (list.isPresent()) {
+				return list;
 			}
 		}
 		return Optional.empty();

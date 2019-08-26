@@ -70,9 +70,9 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		TaskList list = new TaskList("one", osInterface);
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> list.finishTask(3, writer));
-		
-		assertEquals("Task not found.", runtimeException.getMessage());
+		TaskList list = new TaskList("one", osInterface, writer);
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> list.finishTask(3));
+
+		assertEquals("Task 3 was not found.", runtimeException.getMessage());
 	}
 }

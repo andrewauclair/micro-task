@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Stop_Test extends TaskBaseTestCase {
 	@Test
@@ -202,6 +203,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		tasks.stopTask();
 
-		assertEquals("", tasks.getActiveTaskList());
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTaskList);
+		assertEquals("No active task.", runtimeException.getMessage());
 	}
 }

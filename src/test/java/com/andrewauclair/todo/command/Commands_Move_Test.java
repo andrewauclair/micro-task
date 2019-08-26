@@ -1,19 +1,29 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskState;
+import com.andrewauclair.todo.task.TaskTimes;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Commands_Move_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_move_command() {
-		tasks.addList("one");
 		tasks.addTask("Test 1");
+
+		tasks.addList("one");
 
 		commands.execute(printStream, "move --task 1 one");
 
-		assertEquals("/one", tasks.findListForTask(1));
+		assertThat(tasks.getTasksForList("/one")).containsOnly(
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+		);
 
 		assertOutput(
 				"Moved task 1 to list 'one'",
@@ -30,8 +40,10 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "move --task 1 /one/test/five");
-		
-		assertEquals("/one/test/five", tasks.findListForTask(1));
+
+		assertThat(tasks.getTasksForList("/one/test/five")).containsOnly(
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+		);
 		
 		assertOutput(
 				"Moved task 1 to list '/one/test/five'",
