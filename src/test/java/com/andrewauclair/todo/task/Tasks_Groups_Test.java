@@ -37,18 +37,18 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void create_new_group() {
-		tasks.createGroup("/test");
+		tasks.createGroup("/test/");
 		
-		assertTrue(tasks.hasGroupPath("/test"));
+		assertTrue(tasks.hasGroupPath("/test/"));
 	}
 	
 	@Test
 	void switch_groups() {
-		tasks.createGroup("/test");
+		tasks.createGroup("/test/");
 		
-		tasks.switchGroup("/test");
+		tasks.switchGroup("/test/");
 		
-		assertEquals("/test", tasks.getGroupPath());
+		assertEquals("/test/", tasks.getGroupPath());
 	}
 	
 	@Test
@@ -60,9 +60,9 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void new_active_group_has_root_as_parent() {
-		tasks.createGroup("/test");
+		tasks.createGroup("/test/");
 		
-		tasks.switchGroup("/test");
+		tasks.switchGroup("/test/");
 		
 		TaskGroup group = tasks.getActiveGroup();
 
@@ -77,14 +77,14 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 	@Test
 	void group_is_only_added_once_when_creating_nested_group() {
-		tasks.createGroup("/test");
-		tasks.createGroup("/test/one");
-		tasks.createGroup("/test/one/two");
+		tasks.createGroup("/test/");
+		tasks.createGroup("/test/one/");
+		tasks.createGroup("/test/one/two/");
 
 		TaskGroup expected = new TaskGroup("test", "/");
-		TaskGroup one = new TaskGroup("one", "/test");
+		TaskGroup one = new TaskGroup("one", "/test/");
 		expected.addChild(one);
-		one.addChild(new TaskGroup("two", "/test/one"));
+		one.addChild(new TaskGroup("two", "/test/one/"));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
 				new TaskList("/default", osInterface, writer),
@@ -94,20 +94,20 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 	@Test
 	void nested_groups_have_a_parent_that_is_not_root() {
-		tasks.createGroup("/test/two");
+		tasks.createGroup("/test/two/");
 		
-		tasks.switchGroup("/test/two");
+		tasks.switchGroup("/test/two/");
 		
 		TaskGroup group = tasks.getActiveGroup();
-
-		assertEquals("/test", group.getParent());
+		
+		assertEquals("/test/", group.getParent());
 	}
 	
 	@Test
 	void switch_group_fails_if_group_path_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.switchGroup("/test"));
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.switchGroup("/test/"));
 		
-		assertEquals("Group '/test' does not exist.", runtimeException.getMessage());
+		assertEquals("Group '/test/' does not exist.", runtimeException.getMessage());
 		
 		// path should not have changed
 		assertEquals("/", tasks.getGroupPath());

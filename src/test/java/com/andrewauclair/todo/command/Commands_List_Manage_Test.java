@@ -53,8 +53,8 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 
 	@Test
 	void create_nested_relative_list() {
-		commands.execute(printStream, "mkgrp /test/one");
-		commands.execute(printStream, "chgrp /test/one");
+		commands.execute(printStream, "mkgrp /test/one/");
+		commands.execute(printStream, "chgrp /test/one/");
 
 		outputStream.reset();
 
@@ -101,7 +101,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 	@Test
 	void switch_to_nested_list() {
 		commands.execute(printStream, "mklist /test/one");
-		commands.execute(printStream, "chgrp /test");
+		commands.execute(printStream, "chgrp /test/");
 
 		outputStream.reset();
 
@@ -118,7 +118,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mklist /test/one");
 		commands.execute(printStream, "chlist /test/one");
 		
-		assertEquals("/test", tasks.getActiveGroup().getFullPath());
+		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 
 	@Test

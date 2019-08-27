@@ -25,6 +25,11 @@ public class ActiveCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
+		output.println("Active group is '" + tasks.getActiveGroup().getFullPath() + "'");
+		output.println();
+		output.println("Active list is '" + tasks.getActiveList() + "'");
+		output.println();
+		
 		Task task = tasks.getActiveTask();
 		output.println("Active task is " + task.description());
 		output.println();

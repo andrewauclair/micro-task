@@ -41,17 +41,17 @@ class TaskGroupTest extends TaskBaseTestCase {
 
 	@Test
 	void create_task_group() {
-		TaskGroup group = new TaskGroup("one", "/two/three");
+		TaskGroup group = new TaskGroup("one", "/two/three/");
 
 		assertEquals("one", group.getName());
-		assertEquals("/two/three/one", group.getFullPath());
+		assertEquals("/two/three/one/", group.getFullPath());
 	}
 
 	@Test
 	void to_string() {
 		TaskGroup group = new TaskGroup("test", "/");
-
-		assertEquals("TaskGroup{name='test', fullPath='/test', parent=/, children=[]}", group.toString());
+		
+		assertEquals("TaskGroup{name='test', fullPath='/test/', parent=/, children=[]}", group.toString());
 	}
 	
 	@Test
@@ -60,6 +60,6 @@ class TaskGroupTest extends TaskBaseTestCase {
 		
 		TaskGroup renamed = group.rename("one");
 		
-		assertEquals("TaskGroup{name='one', fullPath='/one', parent=/, children=[]}", renamed.toString());
+		assertEquals("TaskGroup{name='one', fullPath='/one/', parent=/, children=[]}", renamed.toString());
 	}
 }

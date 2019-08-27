@@ -213,23 +213,47 @@ public class Tasks {
 		return name;
 	}
 
-	private String getFullName(String group, String path) {
-		if (group.equals("/")) {
-			return group + path;
-		}
-		return group + "/" + path;
-	}
-
 	public String groupNameFromList(String name) {
 		String absoluteList = getAbsoluteListName(name);
-
-		String groupName = absoluteList.substring(0, absoluteList.lastIndexOf('/') + 1);
+		
+		String groupName = absoluteList.substring(0, absoluteList.lastIndexOf('/') + 2);
 
 		if (!groupName.equals("/")) {
 			groupName = groupName.substring(0, groupName.length() - 1);
 		}
 
 		return groupName;
+	}
+	
+	public TaskGroup createGroup(String groupName) {
+		if (!groupName.startsWith("/")) {
+			groupName = getFullName(activeGroup.getFullPath(), groupName);
+		}
+		String currentParent = "/";
+		TaskGroup newGroup = null;
+		for (String group : groupName.substring(1).split("/")) {
+			if (group.isEmpty()) {
+				continue;
+			}
+			Optional<TaskGroup> parentGroup = getGroup(currentParent);
+			newGroup = new TaskGroup(group, currentParent);
+			currentParent += group + "/";
+			
+			if (!parentGroup.get().containsGroup(newGroup)) {
+				try {
+					osInterface.createOutputStream("git-data/tasks" + newGroup.getFullPath() + "group.txt");
+				}
+				catch (IOException e) {
+					e.printStackTrace(output);
+				}
+				parentGroup.get().addChild(newGroup);
+			}
+		}
+		
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"");
+		
+		return newGroup;
 	}
 
 	private TaskList getList(TaskGroup group, String name) {
@@ -541,40 +565,12 @@ public class Tasks {
 	private Optional<TaskGroup> getGroup(String name) {
 		return rootGroup.getGroupAbsolute(name);
 	}
-
-	public TaskGroup createGroup(String groupName) {
-		if (!groupName.startsWith("/")) {
-			groupName = getFullName(activeGroup.getFullPath(), groupName);
+	
+	private String getFullName(String group, String path) {
+		if (group.equals("/")) {
+			return group + path;
 		}
-		String currentParent = "/";
-		TaskGroup newGroup = null;
-		for (String group : groupName.substring(1).split("/")) {
-			if (group.isEmpty()) {
-				continue;
-			}
-			Optional<TaskGroup> parentGroup = getGroup(currentParent);
-			newGroup = new TaskGroup(group, currentParent);
-			if (currentParent.equals("/")) {
-				currentParent += group;
-			}
-			else {
-				currentParent += "/" + group;
-			}
-			if (!parentGroup.get().containsGroup(newGroup)) {
-				try {
-					osInterface.createOutputStream("git-data/tasks" + newGroup.getFullPath() + "/group.txt");
-				}
-				catch (IOException e) {
-					e.printStackTrace(output);
-				}
-				parentGroup.get().addChild(newGroup);
-			}
-		}
-
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"");
-
-		return newGroup;
+		return group + path;
 	}
 
 	public TaskGroup switchGroup(String groupName) {

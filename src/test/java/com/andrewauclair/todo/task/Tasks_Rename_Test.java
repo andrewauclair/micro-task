@@ -232,6 +232,6 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	void list_rename_throws_exception_if_old_group_does_not_exist() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("/one/two", "/one/three"));
 		
-		assertEquals("Group '/one' not found.", runtimeException.getMessage());
+		assertEquals("Group '/one/' not found.", runtimeException.getMessage());
 	}
 }

@@ -31,10 +31,10 @@ class Commands_List_Test extends CommandsBaseTestCase {
 	@Test
 	void list_groups_and_lists_for_nested_group() {
 		tasks.addList("none");
-
-		tasks.createGroup("/one/two");
-		tasks.createGroup("/one/three");
-		tasks.switchGroup("/one/two");
+		
+		tasks.createGroup("/one/two/");
+		tasks.createGroup("/one/three/");
+		tasks.switchGroup("/one/two/");
 		tasks.addList("charlie");
 		tasks.addList("bravo");
 		tasks.addList("alpha");
@@ -42,7 +42,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list");
 
 		assertOutput(
-				"Current group is '/one/two'",
+				"Current group is '/one/two/'",
 				"",
 				"  alpha",
 				"  bravo",

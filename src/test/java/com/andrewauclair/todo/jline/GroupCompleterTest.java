@@ -35,12 +35,12 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 				.collect(Collectors.toList());
 
 		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/test")),
-				new TestCandidate(new Candidate("/test/one")),
-				new TestCandidate(new Candidate("/test/one/two")),
-				new TestCandidate(new Candidate("/last")),
-				new TestCandidate(new Candidate("/three")),
-				new TestCandidate(new Candidate("/three/five"))
+				new TestCandidate(new Candidate("/test/")),
+				new TestCandidate(new Candidate("/test/one/")),
+				new TestCandidate(new Candidate("/test/one/two/")),
+				new TestCandidate(new Candidate("/last/")),
+				new TestCandidate(new Candidate("/three/")),
+				new TestCandidate(new Candidate("/three/five/"))
 		);
 	}
 
@@ -63,11 +63,12 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 				.collect(Collectors.toList());
 
 		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/test")),
-				new TestCandidate(new Candidate("/test/one/two")),
-				new TestCandidate(new Candidate("/last")),
-				new TestCandidate(new Candidate("/three")),
-				new TestCandidate(new Candidate("/three/five"))
+				new TestCandidate(new Candidate("/test/")),
+				new TestCandidate(new Candidate("/test/one/")),
+				new TestCandidate(new Candidate("/test/one/two/")),
+				new TestCandidate(new Candidate("/last/")),
+				new TestCandidate(new Candidate("/three/")),
+				new TestCandidate(new Candidate("/three/five/"))
 		);
 	}
 }

@@ -163,12 +163,12 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void starting_task_from_different_group() {
 		tasks.addList("/one/two/three/test");
-
-		tasks.switchGroup("/one/two/three");
+		
+		tasks.switchGroup("/one/two/three/");
 
 		tasks.addTask("Test");
-
-		tasks.switchGroup("/one/two");
+		
+		tasks.switchGroup("/one/two/");
 
 		Task task = tasks.startTask(1, false);
 

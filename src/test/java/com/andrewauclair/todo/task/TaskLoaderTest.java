@@ -13,8 +13,8 @@ import java.util.Collections;
 
 class TaskLoaderTest extends TaskBaseTestCase {
 	Tasks tasks = Mockito.mock(Tasks.class);
-	TaskReader reader = Mockito.mock(TaskReader.class);
-	TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	private TaskReader reader = Mockito.mock(TaskReader.class);
+	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
 	
 	@BeforeEach
 	void setup() throws IOException {
@@ -87,8 +87,8 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.verify(reader).readTask(3, "git-data/tasks/one/two/3.txt");
 		Mockito.verify(reader).readTask(4, "git-data/tasks/one/two/4.txt");
 		
-		order.verify(tasks).createGroup("one");
-		order.verify(tasks).switchGroup("one");
+		order.verify(tasks).createGroup("one/");
+		order.verify(tasks).switchGroup("one/");
 		order.verify(tasks).addList("two");
 		order.verify(tasks).setActiveList("two");
 		order.verify(tasks).addTask(new Task(3, "Test", TaskState.Inactive, Collections.emptyList()));

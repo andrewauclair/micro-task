@@ -28,8 +28,8 @@ public class TaskLoader {
 				
 				boolean isGroup = isGroupFolder(fileInfo.getPath());
 				if (isGroup) {
-					tasks.createGroup(name);
-					tasks.switchGroup(name);
+					tasks.createGroup(name + "/");
+					tasks.switchGroup(name + "/");
 				}
 				else {
 					tasks.addList(name);
