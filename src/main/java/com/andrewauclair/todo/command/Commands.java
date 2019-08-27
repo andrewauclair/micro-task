@@ -68,13 +68,18 @@ public class Commands {
 	}
 	
 	public String getPrompt() {
-		String prompt = tasks.getActiveList() + " - ";
-		try {
-			prompt += tasks.getActiveTask().id;
+		String prompt = "";
+		
+		if (tasks.groupNameFromList(tasks.getActiveList()).equals(tasks.getActiveGroup().getFullPath())) {
+			prompt += tasks.getActiveList();
 		}
-		catch (RuntimeException e) {
-			prompt += "none";
+		else {
+			prompt += tasks.getActiveGroup().getFullPath();
 		}
+		
+		prompt += " - ";
+		prompt += tasks.hasActiveTask() ? tasks.getActiveTaskID() : "none";
+		
 		return prompt + ">";
 	}
 	
