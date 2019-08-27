@@ -22,10 +22,10 @@ public final class TaskGroup implements TaskContainer {
 		this.parent = parent;
 		
 		if (parent.equals("/")) {
-			fullPath = "/" + name;
+			fullPath = "/" + name + "/";
 		}
 		else {
-			fullPath = parent + "/" + name;
+			fullPath = parent + name + "/";
 		}
 	}
 	

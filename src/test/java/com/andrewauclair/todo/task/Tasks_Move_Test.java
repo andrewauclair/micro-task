@@ -124,12 +124,12 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		Mockito.reset(osInterface);
 
 		InOrder order = Mockito.inOrder(osInterface);
-
-		tasks.moveGroup("/one", "/two");
-
-		order.verify(osInterface).moveFolder("/one", "/two/one");
+		
+		tasks.moveGroup("/one/", "/two/");
+		
+		order.verify(osInterface).moveFolder("/one/", "/two/one/");
 		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one' to group '/two'\"");
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one/' to group '/two/'\"");
 	}
 
 	@Test
@@ -144,14 +144,14 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void moving_active_group_changes_active_group_name() {
-		tasks.createGroup("/one");
-		tasks.createGroup("/two");
-
-		tasks.switchGroup("/one");
-
-		tasks.moveGroup("/one", "/two");
-
-		assertEquals("/two/one", tasks.getActiveGroup().getFullPath());
+		tasks.createGroup("/one/");
+		tasks.createGroup("/two/");
+		
+		tasks.switchGroup("/one/");
+		
+		tasks.moveGroup("/one/", "/two/");
+		
+		assertEquals("/two/one/", tasks.getActiveGroup().getFullPath());
 	}
 
 	@Test
@@ -181,11 +181,11 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void throws_exception_trying_to_move_to_group_that_does_not_exist() {
-		tasks.createGroup("/one");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one", "/two"));
-
-		assertEquals("Group '/two' does not exist.", runtimeException.getMessage());
+		tasks.createGroup("/one/");
+		
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one/", "/two/"));
+		
+		assertEquals("Group '/two/' does not exist.", runtimeException.getMessage());
 	}
 
 	@Test
@@ -204,10 +204,10 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void catch_moveFolder_io_exception_in_moveGroup() throws IOException {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
 		
-		tasks.createGroup("/test/one");
-		tasks.switchGroup("/test/one");
+		tasks.createGroup("/test/one/");
+		tasks.switchGroup("/test/one/");
 		
-		tasks.moveGroup("/test/one", "/");
+		tasks.moveGroup("/test/one/", "/");
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}

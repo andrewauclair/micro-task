@@ -154,8 +154,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void list_all_tasks_in_the_active_group() {
-		tasks.createGroup("/test");
-		tasks.switchGroup("/test");
+		tasks.createGroup("/test/");
+		tasks.switchGroup("/test/");
 
 		tasks.addList("/test/default");
 		tasks.setActiveList("/test/default");

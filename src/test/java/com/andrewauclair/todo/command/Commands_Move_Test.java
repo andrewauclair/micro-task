@@ -58,14 +58,14 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 		tasks.setActiveList("/one/two/three");
 
 		tasks.addTask("Test 1");
-
-		commands.execute(printStream, "move --list /one/two/three /one/test");
+		
+		commands.execute(printStream, "move --list /one/two/three /one/test/");
 
 		assertFalse(tasks.hasListWithName("/one/two/three"));
 		assertTrue(tasks.hasListWithName("/one/test/three"));
 
 		assertOutput(
-				"Moved list /one/two/three to group '/one/test'",
+				"Moved list /one/two/three to group '/one/test/'",
 				""
 		);
 	}
@@ -91,31 +91,31 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_group_from_one_group_to_another() {
-		tasks.createGroup("/one");
-		tasks.createGroup("/two");
-
-		commands.execute(printStream, "move --group /one /two");
-
-		assertFalse(tasks.hasGroupPath("/one"));
-		assertTrue(tasks.hasGroupPath("/two/one"));
+		tasks.createGroup("/one/");
+		tasks.createGroup("/two/");
+		
+		commands.execute(printStream, "move --group /one/ /two/");
+		
+		assertFalse(tasks.hasGroupPath("/one/"));
+		assertTrue(tasks.hasGroupPath("/two/one/"));
 
 		assertOutput(
-				"Moved group '/one' to group '/two'",
+				"Moved group '/one/' to group '/two/'",
 				""
 		);
 	}
 
 	@Test
 	void move_group_to_root_group() {
-		tasks.createGroup("/one/two");
-
-		commands.execute(printStream, "move --group /one/two /");
-
-		assertFalse(tasks.hasGroupPath("/one/two"));
-		assertTrue(tasks.hasGroupPath("/two"));
+		tasks.createGroup("/one/two/");
+		
+		commands.execute(printStream, "move --group /one/two/ /");
+		
+		assertFalse(tasks.hasGroupPath("/one/two/"));
+		assertTrue(tasks.hasGroupPath("/two/"));
 
 		assertOutput(
-				"Moved group '/one/two' to group '/'",
+				"Moved group '/one/two/' to group '/'",
 				""
 		);
 	}

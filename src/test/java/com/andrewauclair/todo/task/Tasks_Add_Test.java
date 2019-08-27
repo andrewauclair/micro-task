@@ -216,8 +216,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void add_task_to_nested_list() {
-		tasks.createGroup("/test/one");
-		tasks.switchGroup("/test/one");
+		tasks.createGroup("/test/one/");
+		tasks.switchGroup("/test/one/");
 		tasks.addList("two");
 		tasks.setActiveList("two");
 
@@ -259,8 +259,6 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_throws_exception_if_group_does_not_exist() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask("Test", "/one/two"));
 		
-		assertEquals("Group '/one' not found.", runtimeException.getMessage());
-		
-		
+		assertEquals("Group '/one/' not found.", runtimeException.getMessage());
 	}
 }
