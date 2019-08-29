@@ -86,7 +86,7 @@ public class Main {
 			tasks.setActiveList(tasks.getActiveTaskList());
 
 			// set active group to the group of the active task
-			tasks.switchGroup(tasks.groupNameFromList(tasks.getActiveTaskList()));
+			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
 
 		while (true) {

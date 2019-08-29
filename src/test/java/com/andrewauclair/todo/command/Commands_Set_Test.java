@@ -4,8 +4,6 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.task.Task;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class Commands_Set_Test extends CommandsBaseTestCase {
@@ -14,12 +12,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set 1 --recurring true");
-
-		Optional<Task> task = tasks.getTask(1);
-
-		assertTrue(task.isPresent());
-
-		assertTrue(task.get().isRecurring());
+		
+		Task task = tasks.getTask(1);
+		
+		assertTrue(task.isRecurring());
 	}
 
 	@Test
@@ -27,12 +23,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set 1 --recurring false");
-
-		Optional<Task> task = tasks.getTask(1);
-
-		assertTrue(task.isPresent());
-
-		assertFalse(task.get().isRecurring());
+		
+		Task task = tasks.getTask(1);
+		
+		assertFalse(task.isRecurring());
 	}
 
 	@Test
@@ -41,11 +35,9 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set 1 --project \"Issues\"");
 		
-		Optional<Task> task = tasks.getTask(1);
+		Task task = tasks.getTask(1);
 		
-		assertTrue(task.isPresent());
-
-		assertEquals("Issues", task.get().getProject());
+		assertEquals("Issues", task.getProject());
 	}
 
 	@Test
@@ -53,11 +45,9 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set 1 --feature \"Feature\"");
-
-		Optional<Task> task = tasks.getTask(1);
-
-		assertTrue(task.isPresent());
-
-		assertEquals("Feature", task.get().getFeature());
+		
+		Task task = tasks.getTask(1);
+		
+		assertEquals("Feature", task.getFeature());
 	}
 }

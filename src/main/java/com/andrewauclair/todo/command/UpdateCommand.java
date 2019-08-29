@@ -81,7 +81,7 @@ public class UpdateCommand extends Command {
 			taskList.sort(Comparator.comparingLong(o -> o.id));
 			
 			for (Task task : taskList) {
-				String list = tasks.findListForTask(task.id);
+				String list = tasks.findListForTask(task.id).getFullPath();
 				tasks.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 				osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
 			}

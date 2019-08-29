@@ -6,9 +6,6 @@ import com.andrewauclair.todo.task.TaskState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Finish_Test extends CommandsBaseTestCase {
@@ -27,12 +24,10 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 				"Task finished in: 16m 40s",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(2);
-
-		assertThat(optionalTask).isPresent();
 		
-		optionalTask.ifPresent(task -> Assertions.assertEquals(TaskState.Finished, task.state));
+		Task task = tasks.getTask(2);
+		
+		Assertions.assertEquals(TaskState.Finished, task.state);
 	}
 
 	@Test
@@ -50,17 +45,13 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 				"Task finished in: 00s",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(1);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> assertEquals(TaskState.Active, task.state));
-
-		optionalTask = tasks.getTask(2);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> assertEquals(TaskState.Finished, task.state));
+		
+		Task task = tasks.getTask(1);
+		
+		assertEquals(TaskState.Active, task.state);
+		
+		task = tasks.getTask(2);
+		
+		assertEquals(TaskState.Finished, task.state);
 	}
 }

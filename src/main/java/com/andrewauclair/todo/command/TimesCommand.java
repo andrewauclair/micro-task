@@ -131,8 +131,8 @@ public class TimesCommand extends Command {
 			long taskID = Long.parseLong(s[2]);
 
 			if (tasks.hasTaskWithID(taskID)) {
-				Optional<Task> firstTask = tasks.getTask(taskID);
-				Task task = firstTask.get();
+				Task firstTask = tasks.getTask(taskID);
+				Task task = firstTask;
 
 				if (task.getStartStopTimes().size() == 0) {
 					output.println("No times for task " + task.description());
@@ -156,7 +156,7 @@ public class TimesCommand extends Command {
 				}
 			}
 			else {
-				output.println("Task not found.");
+				output.println("Task does not exist.");
 			}
 			output.println();
 		}

@@ -70,7 +70,7 @@ public class Commands {
 	public String getPrompt() {
 		String prompt = "";
 		
-		if (tasks.groupNameFromList(tasks.getActiveList()).equals(tasks.getActiveGroup().getFullPath())) {
+		if (tasks.getGroupForList(tasks.getActiveList()).equals(tasks.getActiveGroup())) {
 			prompt += tasks.getActiveList();
 		}
 		else {

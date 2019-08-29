@@ -121,4 +121,11 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL + "java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
+	
+	@Test
+	void group_for_list_root() {
+		TaskGroup groupForList = tasks.getGroupForList("/default");
+		
+		assertEquals(tasks.getRootGroup(), groupForList);
+	}
 }

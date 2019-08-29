@@ -72,7 +72,13 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameTask(5, "Throws exception"));
-		assertEquals("Task 5 was not found.", runtimeException.getMessage());
+		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
+	}
+	
+	@Test
+	void getTask_throws_exception_if_task_was_not_found() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.getTask(5));
+		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
 	}
 	
 	@Test
@@ -224,14 +230,14 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	@Test
 	void list_rename_throws_exception_if_old_list_is_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("old", "new"));
-
-		assertEquals("List '/old' not found.", runtimeException.getMessage());
+		
+		assertEquals("List '/old' does not exist.", runtimeException.getMessage());
 	}
 	
 	@Test
 	void list_rename_throws_exception_if_old_group_does_not_exist() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("/one/two", "/one/three"));
 		
-		assertEquals("Group '/one/' not found.", runtimeException.getMessage());
+		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
 	}
 }
