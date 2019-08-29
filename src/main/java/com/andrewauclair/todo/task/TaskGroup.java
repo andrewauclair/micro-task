@@ -1,6 +1,10 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.os.OSInterface;
+
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 public final class TaskGroup implements TaskContainer {
@@ -88,12 +92,17 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	// finds lists by their absolute name
-	Optional<TaskList> getListAbsolute(String path) {
-		return children.stream()
+	TaskList getListAbsolute(String path) {
+		Optional<TaskList> optionalList = children.stream()
 				.filter(child -> child instanceof TaskList)
 				.map(child -> (TaskList) child)
 				.filter(list -> list.getFullPath().equals(path))
 				.findFirst();
+		
+		if (!optionalList.isPresent()) {
+			throw new RuntimeException("List '" + path + "' does not exist.");
+		}
+		return optionalList.get();
 	}
 
 	Optional<TaskGroup> getGroupAbsolute(String path) {
@@ -136,14 +145,57 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	@Override
-	public Optional<String> findListForTask(long id) {
+	public Optional<TaskList> findListForTask(long id) {
 		for (TaskContainer child : getChildren()) {
-			Optional<String> list = child.findListForTask(id);
+			Optional<TaskList> list = child.findListForTask(id);
 
 			if (list.isPresent()) {
 				return list;
 			}
 		}
 		return Optional.empty();
+	}
+	
+	TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
+		removeChild(list);
+		
+		TaskList newList = list.rename(group.getFullPath() + list.getName());
+		
+		group.addChild(newList);
+		
+		try {
+			osInterface.moveFolder(list.getFullPath(), newList.getFullPath());
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+			throw new RuntimeException("Failed to move list folder.");
+		}
+		
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"");
+		
+		return newList;
+	}
+	
+	TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
+		removeChild(group);
+		
+		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup.getFullPath());
+		group.getChildren().forEach(newGroup::addChild);
+		
+		destGroup.addChild(newGroup);
+		
+		try {
+			osInterface.moveFolder(group.getFullPath(), newGroup.getFullPath());
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+			throw new RuntimeException("Failed to move group folder.");
+		}
+		
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"");
+		
+		return newGroup;
 	}
 }

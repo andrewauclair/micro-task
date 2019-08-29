@@ -259,6 +259,6 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_throws_exception_if_group_does_not_exist() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask("Test", "/one/two"));
 		
-		assertEquals("Group '/one/' not found.", runtimeException.getMessage());
+		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
 	}
 }

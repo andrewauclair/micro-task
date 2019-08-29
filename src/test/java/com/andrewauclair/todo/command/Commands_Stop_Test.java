@@ -6,9 +6,6 @@ import com.andrewauclair.todo.task.TaskState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Stop_Test extends CommandsBaseTestCase {
@@ -28,12 +25,10 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 				"Task was active for: 16m 40s",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(1);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> Assertions.assertEquals(TaskState.Inactive, task.state));
+		
+		Task task = tasks.getTask(1);
+		
+		Assertions.assertEquals(TaskState.Inactive, task.state);
 	}
 
 	@Test
@@ -58,11 +53,9 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 				"Task was active for: 16m 40s",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(1);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> assertEquals(TaskState.Inactive, task.state));
+		
+		Task task = tasks.getTask(1);
+		
+		assertEquals(TaskState.Inactive, task.state);
 	}
 }

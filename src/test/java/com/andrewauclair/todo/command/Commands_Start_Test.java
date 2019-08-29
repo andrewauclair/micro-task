@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,12 +30,10 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				"06/20/2019 07:50:02 PM -",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(1);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> Assertions.assertEquals(TaskState.Active, task.state));
+		
+		Task task = tasks.getTask(1);
+		
+		Assertions.assertEquals(TaskState.Active, task.state);
 	}
 
 	@Test
@@ -61,12 +58,10 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				"06/20/2019 07:50:02 PM -",
 				""
 		);
-
-		Optional<Task> optionalTask = tasks.getTask(1);
-
-		assertThat(optionalTask).isPresent();
-
-		optionalTask.ifPresent(task -> assertEquals(TaskState.Active, task.state));
+		
+		Task task = tasks.getTask(1);
+		
+		assertEquals(TaskState.Active, task.state);
 	}
 
 	@Test

@@ -137,28 +137,34 @@ public final class TaskList implements TaskContainer {
 				.anyMatch(task -> task.id == taskID);
 	}
 
-	Task getTask(long id) {
-		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.id == id)
-				.findFirst();
-
-		if (optionalTask.isPresent()) {
-			return optionalTask.get();
+	@Override
+	public Optional<TaskList> findListForTask(long id) {
+		if (containsTask(id)) {
+			return Optional.of(this);
 		}
-		throw new RuntimeException("Task " + id + " was not found.");
+		return Optional.empty();
 	}
-
+	
 	@Override
 	public List<Task> getTasks() {
 		return Collections.unmodifiableList(tasks);
 	}
-
-	@Override
-	public Optional<String> findListForTask(long id) {
-		if (containsTask(id)) {
-			return Optional.of(getFullPath());
-		}
-		return Optional.empty();
+	
+	Task moveTask(long id, TaskList list) {
+		Task task = getTask(id);
+		
+		removeTask(task);
+		list.addTask(task);
+		
+		// TODO This can be replaced with moveFile
+		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+		
+		list.writeTask(task);
+		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git add tasks" + list.getFullPath() + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'\"");
+		
+		return task;
 	}
 
 	Task renameTask(long id, String task) {
@@ -173,7 +179,18 @@ public final class TaskList implements TaskContainer {
 
 		return renamedTask;
 	}
-
+	
+	Task getTask(long id) {
+		Optional<Task> optionalTask = tasks.stream()
+				.filter(task -> task.id == id)
+				.findFirst();
+		
+		if (optionalTask.isPresent()) {
+			return optionalTask.get();
+		}
+		throw new RuntimeException("Task " + id + " does not exist.");
+	}
+	
 	@Override
 	public String toString() {
 		return "TaskList{" +

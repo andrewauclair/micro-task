@@ -10,6 +10,6 @@ public interface TaskContainer {
 	String getFullPath();
 
 	List<Task> getTasks();
-
-	Optional<String> findListForTask(long id);
+	
+	Optional<TaskList> findListForTask(long id);
 }

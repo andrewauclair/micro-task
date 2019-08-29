@@ -10,7 +10,6 @@ import org.jline.reader.ParsedLine;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class RenameCompleter implements Completer {
 	private final Tasks tasks;
@@ -26,10 +25,10 @@ public class RenameCompleter implements Completer {
 
 		try {
 			long taskID = Long.parseLong(line.word());
-
-			Optional<Task> task = tasks.getTask(taskID);
-
-			task.ifPresent(value -> candidates.add(new Candidate(taskID + " -n \"" + value.task + "\"")));
+			
+			Task task = tasks.getTask(taskID);
+			
+			candidates.add(new Candidate(taskID + " -n \"" + task.task + "\""));
 		}
 		catch (NumberFormatException ignored) {
 		}

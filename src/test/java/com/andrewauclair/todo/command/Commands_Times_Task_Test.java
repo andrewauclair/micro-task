@@ -82,7 +82,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --task 1");
 
 		assertOutput(
-				"Task not found.",
+				"Task does not exist.",
 				""
 		);
 	}

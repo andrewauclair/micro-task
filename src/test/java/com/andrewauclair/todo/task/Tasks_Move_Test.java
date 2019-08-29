@@ -156,9 +156,9 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void throws_exception_trying_to_move_list_that_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/test/one", "/"));
-
-		assertEquals("List '/test/one' does not exist.", runtimeException.getMessage());
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/one", "/"));
+		
+		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
 	}
 
 	@Test
@@ -194,9 +194,11 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		tasks.addList("/test/one");
 		tasks.setActiveList("/test/one");
-
-		tasks.moveList("/test/one", "/");
-
+		
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/test/one", "/"));
+		
+		assertEquals("Failed to move list folder.", runtimeException.getMessage());
+		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
 	
@@ -207,7 +209,9 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.createGroup("/test/one/");
 		tasks.switchGroup("/test/one/");
 		
-		tasks.moveGroup("/test/one/", "/");
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/test/one/", "/"));
+		
+		assertEquals("Failed to move group folder.", runtimeException.getMessage());
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
@@ -215,7 +219,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void throws_exception_if_task_was_not_found() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(5, "one"));
-		assertEquals("Task 5 was not found.", runtimeException.getMessage());
+		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
 	}
 
 	@Test
@@ -223,6 +227,6 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(1, "one"));
-		assertEquals("List '/one' was not found.", runtimeException.getMessage());
+		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
 	}
 }

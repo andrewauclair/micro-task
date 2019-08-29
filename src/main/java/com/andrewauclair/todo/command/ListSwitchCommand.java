@@ -27,23 +27,18 @@ public class ListSwitchCommand extends Command {
 			output.println();
 			return;
 		}
-
+		
 		String listParameter = s[1].toLowerCase();
-
-		boolean exists = tasks.setActiveList(listParameter);
+		
+		tasks.setActiveList(listParameter);
 		
 		String list = tasks.getAbsoluteListName(listParameter);
 		
-		String group = tasks.groupNameFromList(list);
+		String group = tasks.getGroupForList(list).getFullPath();
 		
 		tasks.switchGroup(group);
-
-		if (exists) {
-			output.println("Switched to list '" + list + "'");
-		}
-		else {
-			output.println("List '" + list + "' does not exist.");
-		}
+		
+		output.println("Switched to list '" + list + "'");
 		output.println();
 	}
 	
