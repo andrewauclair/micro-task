@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
@@ -40,6 +41,16 @@ public class SetCommand extends Command {
 	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("set"));
+		return Collections.singletonList(
+				node("set",
+						node("--task",
+								node(new LongCompleter(),
+										node("--recurring"),
+										node("--project"),
+										node("--feature")
+								)
+						)
+				)
+		);
 	}
 }

@@ -23,20 +23,26 @@ class MoveCommandTest extends CommandsBaseTestCase {
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
 				Arrays.asList(
 						node("move",
-								node(new LongCompleter(),
-										node(new ListCompleter(tasks, false)
+								node("--task",
+										node(new LongCompleter(),
+												node(new ListCompleter(tasks, false)
+												)
 										)
 								)
 						),
 						node("move",
-								node(new ListCompleter(tasks, true),
-										node(new GroupCompleter(tasks, false)
+								node("--list",
+										node(new ListCompleter(tasks, true),
+												node(new GroupCompleter(tasks, false)
+												)
 										)
 								)
 						),
 						node("move",
-								node(new GroupCompleter(tasks, true),
-										node(new GroupCompleter(tasks, false)
+								node("--list",
+										node(new GroupCompleter(tasks, true),
+												node(new GroupCompleter(tasks, false)
+												)
 										)
 								)
 						)
