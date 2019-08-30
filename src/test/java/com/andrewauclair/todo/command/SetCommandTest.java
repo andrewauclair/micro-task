@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.LongCompleter;
 import org.jline.builtins.Completers;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +15,21 @@ class SetCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
 		SetCommand command = new SetCommand(tasks);
-		
+
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
-		
+
 		assertThat((Object) autoCompleteNodes).isEqualToComparingFieldByFieldRecursively(
-				Collections.singletonList(node("set"))
+				Collections.singletonList(
+						node("set",
+								node("--task",
+										node(new LongCompleter(),
+												node("--recurring"),
+												node("--project"),
+												node("--feature")
+										)
+								)
+						)
+				)
 		);
 	}
 }

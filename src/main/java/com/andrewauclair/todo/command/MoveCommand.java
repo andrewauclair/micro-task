@@ -16,11 +16,11 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class MoveCommand extends Command {
 	private final Tasks tasks;
-	
+
 	MoveCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	@Override
 	public void execute(PrintStream output, String command) {
 		String[] s = command.split(" ");
@@ -52,25 +52,31 @@ public class MoveCommand extends Command {
 			output.println();
 		}
 	}
-	
+
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Arrays.asList(
 				node("move",
-						node(new LongCompleter(),
-								node(new ListCompleter(tasks, false)
+						node("--task",
+								node(new LongCompleter(),
+										node(new ListCompleter(tasks, false)
+										)
 								)
 						)
 				),
 				node("move",
-						node(new ListCompleter(tasks, true),
-								node(new GroupCompleter(tasks, false)
+						node("--list",
+								node(new ListCompleter(tasks, true),
+										node(new GroupCompleter(tasks, false)
+										)
 								)
 						)
 				),
 				node("move",
-						node(new GroupCompleter(tasks, true),
-								node(new GroupCompleter(tasks, false)
+						node("--list",
+								node(new GroupCompleter(tasks, true),
+										node(new GroupCompleter(tasks, false)
+										)
 								)
 						)
 				)
