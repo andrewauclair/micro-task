@@ -17,7 +17,6 @@ public class MockOSInterface implements OSInterface {
 
 	@Override
 	public void setCommands(Commands commands) {
-
 	}
 
 	@Override
@@ -61,7 +60,6 @@ public class MockOSInterface implements OSInterface {
 
 	@Override
 	public void removeFile(String fileName) {
-
 	}
 	
 	@Override
@@ -71,7 +69,6 @@ public class MockOSInterface implements OSInterface {
 	
 	@Override
 	public void clearScreen() {
-
 	}
 
 	@Override
@@ -82,7 +79,10 @@ public class MockOSInterface implements OSInterface {
 
 	@Override
 	public void exit() {
+	}
 
+	@Override
+	public void createFolder(String folder) {
 	}
 
 	@Override

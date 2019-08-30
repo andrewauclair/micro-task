@@ -340,7 +340,9 @@ public class Tasks {
 		TaskList newList = new TaskList(absoluteList, osInterface, writer);
 		
 		group.addChild(newList);
-		
+
+		osInterface.createFolder("git-data/tasks" + newList.getFullPath());
+
 		return true;
 	}
 	
