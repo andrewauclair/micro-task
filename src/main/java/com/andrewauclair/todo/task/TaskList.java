@@ -152,7 +152,11 @@ public final class TaskList implements TaskContainer {
 	
 	Task moveTask(long id, TaskList list) {
 		Task task = getTask(id);
-		
+
+		if (list.equals(this)) {
+			throw new RuntimeException("Task " + id + " is already on list '" + getFullPath() + "'.");
+		}
+
 		removeTask(task);
 		list.addTask(task);
 		

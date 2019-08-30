@@ -229,4 +229,13 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(1, "one"));
 		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
 	}
+
+	@Test
+	void task_already_on_list() {
+		tasks.addTask("Test");
+
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(1, "/default"));
+
+		assertEquals("Task 1 is already on list '/default'.", runtimeException.getMessage());
+	}
 }
