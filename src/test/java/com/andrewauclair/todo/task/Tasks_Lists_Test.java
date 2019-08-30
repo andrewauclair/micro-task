@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.task;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +63,14 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 				new Task(4, "test List Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(4000)))
 		);
 	}
-	
+
+	@Test
+	void adding_new_list_creates_empty_folder() {
+		tasks.addList("one");
+
+		Mockito.verify(osInterface, Mockito.times(1)).createFolder("git-data/tasks/one");
+	}
+
 	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
 		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.setActiveList("/one"));

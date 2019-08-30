@@ -31,6 +31,8 @@ public interface OSInterface {
 
 	void exit();
 
+	void createFolder(String folder);
+
 	void moveFolder(String src, String dest) throws IOException;
 
 	class TaskFileInfo {

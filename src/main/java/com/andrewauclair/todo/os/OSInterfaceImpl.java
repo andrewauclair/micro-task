@@ -139,6 +139,12 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	@Override
+	public void createFolder(String folder) {
+		//noinspection ResultOfMethodCallIgnored
+		new File(folder).mkdirs();
+	}
+
+	@Override
 	public void moveFolder(String src, String dest) throws IOException {
 		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
