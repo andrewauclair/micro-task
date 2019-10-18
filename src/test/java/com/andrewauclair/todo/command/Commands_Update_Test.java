@@ -13,7 +13,7 @@ import java.util.Arrays;
 class Commands_Update_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_update_command() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenReturn(true);
+		Mockito.when(gitLabReleases.updateToRelease("version-1", true)).thenReturn(true);
 		
 		commands.execute(printStream, "update version-1");
 		
@@ -25,7 +25,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void update_prints_not_found_when_version_is_unknown() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenReturn(false);
+		Mockito.when(gitLabReleases.updateToRelease("version-1", true)).thenReturn(false);
 		
 		commands.execute(printStream, "update version-1");
 		
@@ -37,7 +37,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void update_prints_failure_if_updateToRelease_throws_exception() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenThrow(IOException.class);
+		Mockito.when(gitLabReleases.updateToRelease("version-1", true)).thenThrow(IOException.class);
 		
 		commands.execute(printStream, "update version-1");
 		
@@ -109,10 +109,37 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	@ValueSource(strings = {"-l", "--latest"})
 	void update_to_latest_release(String command) throws IOException {
 		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
-		Mockito.when(gitLabReleases.updateToRelease("version-3")).thenReturn(true);
+		Mockito.when(gitLabReleases.updateToRelease("version-3", true)).thenReturn(true);
 		
 		commands.execute(printStream, "update " + command);
 		
+		assertOutput(
+				"Updated to version 'version-3'",
+				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-u", "--unsecure"})
+	void update_unsecurely(String command) throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
+		Mockito.when(gitLabReleases.updateToRelease("version-3", false)).thenReturn(true);
+
+		commands.execute(printStream, "update -l " + command);
+
+		assertOutput(
+				"Updated to version 'version-3'",
+				""
+		);
+	}
+
+	@Test
+	void calling_with_2_parameters_one_not_being_unsecure() throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
+		Mockito.when(gitLabReleases.updateToRelease("version-3", true)).thenReturn(true);
+
+		commands.execute(printStream, "update -l --junk");
+
 		assertOutput(
 				"Updated to version 'version-3'",
 				""
