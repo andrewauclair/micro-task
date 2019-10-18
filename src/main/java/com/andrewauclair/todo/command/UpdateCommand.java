@@ -35,7 +35,13 @@ public class UpdateCommand extends Command {
 		String[] s = command.split(" ");
 		
 		String arg = s[1];
-		
+
+		boolean secure = true;
+
+		if (s.length > 2 && (s[2].equals("-u") || s[2].equals("--unsecure"))) {
+			secure = false;
+		}
+
 		List<String> versions;
 		try {
 			versions = gitLabReleases.getVersions();
@@ -73,7 +79,7 @@ public class UpdateCommand extends Command {
 			break;
 		case "-l":
 		case "--latest":
-			updateToVersion(output, versions.get(versions.size() - 1));
+			updateToVersion(output, versions.get(versions.size() - 1), secure);
 			break;
 		case "--tasks":
 			List<Task> taskList = new ArrayList<>(tasks.getAllTasks());
@@ -91,15 +97,15 @@ public class UpdateCommand extends Command {
 			output.println("Updated all tasks.");
 			break;
 		default:
-			updateToVersion(output, arg);
+			updateToVersion(output, arg, secure);
 			break;
 		}
 		output.println();
 	}
-	
-	private void updateToVersion(PrintStream output, String version) {
+
+	private void updateToVersion(PrintStream output, String version, boolean secure) {
 		try {
-			boolean updated = gitLabReleases.updateToRelease(version);
+			boolean updated = gitLabReleases.updateToRelease(version, secure);
 			
 			if (updated) {
 				output.println("Updated to version '" + version + "'");

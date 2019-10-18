@@ -52,7 +52,7 @@ public class GitLabReleases {
 		return new JSONArray(jsonStr);
 	}
 
-	public boolean updateToRelease(String release) throws IOException {
+	public boolean updateToRelease(String release, boolean secure) throws IOException {
 		JSONArray array = getReleasesJSON();
 
 		for (int i = 0; i < array.length() - 1; i++) {
@@ -63,7 +63,7 @@ public class GitLabReleases {
 
 			String uploads = description.substring(description.indexOf("(/uploads/") + 1);
 
-			String jar = "https://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
+			String jar = (secure ? "https" : "http") + "://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
 
 			if (release.isEmpty() || releaseName.equals(release)) {
 				// download the jar file and rename it to todo-app.jar
