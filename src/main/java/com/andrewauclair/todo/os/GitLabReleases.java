@@ -30,8 +30,8 @@ public class GitLabReleases {
 	private JSONArray getReleasesJSON() throws IOException {
 		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "http://localhost:3000/api/v4/projects/24/releases"
 
-		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/releases");
-		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection();
+		URL gitlabURL = new URL("http://gitlab.com/api/v4/projects/12882469/releases");
+		HttpURLConnection connection = (HttpURLConnection) gitlabURL.openConnection();
 
 		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
 
