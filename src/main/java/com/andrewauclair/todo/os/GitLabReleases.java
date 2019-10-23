@@ -4,7 +4,7 @@ package com.andrewauclair.todo.os;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.HttpURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
