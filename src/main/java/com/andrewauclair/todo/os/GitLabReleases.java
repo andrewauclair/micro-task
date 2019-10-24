@@ -4,8 +4,8 @@ package com.andrewauclair.todo.os;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +51,8 @@ public class GitLabReleases {
 
 		return new JSONArray(jsonStr);
 	}
-
-	public boolean updateToRelease(String release, boolean secure) throws IOException {
+	
+	public boolean updateToRelease(String release) throws IOException {
 		JSONArray array = getReleasesJSON();
 
 		for (int i = 0; i < array.length() - 1; i++) {
@@ -62,8 +62,8 @@ public class GitLabReleases {
 			String description = obj.getString("description");
 
 			String uploads = description.substring(description.indexOf("(/uploads/") + 1);
-
-			String jar = (secure ? "https" : "http") + "://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
+			
+			String jar = "https://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
 
 			if (release.isEmpty() || releaseName.equals(release)) {
 				// download the jar file and rename it to todo-app.jar
