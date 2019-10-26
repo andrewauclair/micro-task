@@ -34,7 +34,6 @@ public class Commands {
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
 		commands.put("update", new UpdateCommand(gitLabReleases, tasks, osInterface));
-		commands.put("clear", new ClearCommand(osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set", new SetCommand(tasks));
