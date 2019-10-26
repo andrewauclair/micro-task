@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.stream.IntStream;
 
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
@@ -23,6 +24,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
 		);
 	}
@@ -46,6 +49,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"",
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
 		);
 	}
@@ -58,15 +63,15 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
-				"  1 - 'Test 1'",
-				"  2 - 'Test 2'",
-				"  3 - 'Test 3'",
-				"  4 - 'Test 4'",
-				"  5 - 'Test 5'",
-				"  6 - 'Test 6'",
-				"  7 - 'Test 7'",
-				"  8 - 'Test 8'",
-				"  9 - 'Test 9'",
+				"   1 - 'Test 1'",
+				"   2 - 'Test 2'",
+				"   3 - 'Test 3'",
+				"   4 - 'Test 4'",
+				"   5 - 'Test 5'",
+				"   6 - 'Test 6'",
+				"   7 - 'Test 7'",
+				"   8 - 'Test 8'",
+				"   9 - 'Test 9'",
 				"  10 - 'Test 10'",
 				"  11 - 'Test 11'",
 				"  12 - 'Test 12'",
@@ -79,6 +84,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"  19 - 'Test 19'",
 				"  20 - 'Test 20'",
 				"(19 more tasks.)",
+				"",
+				ANSI_BOLD + "Total Tasks: 39" + ANSI_RESET,
 				""
 		);
 	}
@@ -87,20 +94,22 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	void list_command_shows_all_tasks_when_all_parameter_is_passed() {
 		IntStream.range(1, 23)
 				.forEach(num -> tasks.addTask("Test " + num));
-		
+
+		tasks.startTask(2, false);
+
 		// TODO This should also accept "list -ta"
 		commands.execute(printStream, "list --tasks --all");
 		
 		assertOutput(
-				"  1 - 'Test 1'",
-				"  2 - 'Test 2'",
-				"  3 - 'Test 3'",
-				"  4 - 'Test 4'",
-				"  5 - 'Test 5'",
-				"  6 - 'Test 6'",
-				"  7 - 'Test 7'",
-				"  8 - 'Test 8'",
-				"  9 - 'Test 9'",
+				"   1 - 'Test 1'",
+				"*  " + ANSI_FG_GREEN + "2 - 'Test 2'" + ANSI_RESET,
+				"   3 - 'Test 3'",
+				"   4 - 'Test 4'",
+				"   5 - 'Test 5'",
+				"   6 - 'Test 6'",
+				"   7 - 'Test 7'",
+				"   8 - 'Test 8'",
+				"   9 - 'Test 9'",
 				"  10 - 'Test 10'",
 				"  11 - 'Test 11'",
 				"  12 - 'Test 12'",
@@ -114,6 +123,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"  20 - 'Test 20'",
 				"  21 - 'Test 21'",
 				"  22 - 'Test 22'",
+				"",
+				ANSI_BOLD + "Total Tasks: 22" + ANSI_RESET,
 				""
 		);
 	}
@@ -138,6 +149,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
 		);
 	}
@@ -197,14 +210,32 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks --group");
 		
 		assertOutput(
+				ANSI_BOLD + "/test/default" + ANSI_RESET,
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"",
+				ANSI_BOLD + "/test/one" + ANSI_RESET,
 				"  4 - 'Task 4'",
 				"  5 - 'Task 5'",
 				"  6 - 'Task 6'",
+				"",
+				ANSI_BOLD + "/test/two" + ANSI_RESET,
 				"  7 - 'Task 7'",
 				"  8 - 'Task 8'",
 				"  9 - 'Task 9'",
+				"",
+				"",
+				ANSI_BOLD + "Total Tasks: 8" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
+	void printing_tasks_in_group_when_there_are_no_tasks() {
+		commands.execute(printStream, "list --tasks --group");
+
+		assertOutput(
+				"No tasks.",
 				""
 		);
 	}

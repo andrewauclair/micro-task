@@ -2,6 +2,7 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.command.Commands;
+import com.andrewauclair.todo.command.TimesCommand;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
@@ -15,13 +16,15 @@ import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Completers;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.AttributedString;
+import org.jline.utils.Status;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
@@ -72,14 +75,19 @@ public class Main {
 				.completer(treeCompleter)
 				.variable(LineReader.BELL_STYLE, "none")
 				.build();
+
+		Status status = Status.getStatus(terminal);
+		status.setBorder(true);
 		
+		updateStatus(tasks, status, terminal, osInterface);
+
 		bindCtrlBackspace(lineReader);
 
 		if (!exception) {
-			osInterface.clearScreen();
+			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 
-//		System.out.println(terminal.getSize());
+		Size terminalSize = terminal.getSize();
 
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
 			// set active list to the list of the active task
@@ -88,18 +96,67 @@ public class Main {
 			// set active group to the group of the active task
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
-
+		
+		Timer timer = new Timer();
+		
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				updateStatus(tasks, status, terminal, osInterface);
+			}
+		}, 0, 5000);
+		
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
 
 				commands.execute(System.out, command);
+				
+				updateStatus(tasks, status, terminal, osInterface);
 			}
 			catch (UserInterruptException ignored) {
 			}
 			catch (EndOfFileException e) {
 				return;
 			}
+		}
+	}
+	
+	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
+		synchronized (tasks) {
+			List<AttributedString> statusLines = new ArrayList<>();
+			
+			int width = terminal.getSize().getColumns();
+			
+			if (tasks.hasActiveTask()) {
+				String description = tasks.getActiveTask().description();
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
+				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+				
+				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
+				description += time;
+				
+				statusLines.add(new AttributedString(description));
+				statusLines.add(new AttributedString("Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "		Active Task List: " + tasks.getActiveTaskList()));
+				statusLines.add(new AttributedString("Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList()));
+			}
+			else {
+				statusLines.add(new AttributedString("No active task"));
+				statusLines.add(new AttributedString(""));
+				statusLines.add(new AttributedString("Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList()));
+			}
+			
+			List<AttributedString> finalLines = new ArrayList<>();
+			
+			// fill lines with white space to overwrite anything already in the terminal
+			for (AttributedString statusLine : statusLines) {
+				int length = statusLine.length();
+				
+				finalLines.add(new AttributedString(statusLine.toString() + String.join("", Collections.nCopies(width - length, " "))));
+			}
+			
+			status.update(finalLines);
 		}
 	}
 	

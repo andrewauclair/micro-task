@@ -37,8 +37,8 @@ public class TimesCommand extends Command {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-
-	private static void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
+	
+	public static void printTotalTime(PrintStream output, long totalTime, boolean printExtraSpace) {
 		long hours = totalTime / (60 * 60);
 		long minutes = (totalTime - (hours * 60 * 60)) / 60;
 		long seconds = (totalTime - (hours * 60 * 60) - (minutes * 60));

@@ -58,14 +58,18 @@ class EndOfDayCommand extends Command {
 			totalTime += result.getTotal();
 		}
 
-		output.print("End of Day is ");
+		output.print("End of Day is in ");
+
 
 		int hours = Integer.parseInt(argsMap.get("hours").getValue());
 		long eod = epochSecond + ((hours * 3600) - totalTime);
 
+		TimesCommand.printTotalTime(output, eod - epochSecond, false);
+
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
 		String eodStr = Instant.ofEpochSecond(eod).atZone(zoneId).format(dateTimeFormatter);
 
+		output.print(" at ");
 		output.println(eodStr);
 		output.println();
 	}
