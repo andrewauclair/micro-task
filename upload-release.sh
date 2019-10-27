@@ -3,7 +3,7 @@
 echo $CI_COMMIT_TAG
 echo ""
 
-curl_upload_result=$(curl -v --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --form "file=@target/todo-app-${CI_COMMIT_TAG}.one-jar.jar" https://gitlab.com/api/v4/projects/12882469/uploads)
+curl_upload_result=$(curl -v --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --form "file=@build/libs/todo-app.jar" https://gitlab.com/api/v4/projects/12882469/uploads)
 
 echo $curl_upload_result
 echo ""
@@ -20,3 +20,11 @@ curl_release_result=$(curl -v --request POST --header "PRIVATE-TOKEN: ${PRIVATE_
 
 echo $curl_release_result
 echo ""
+
+# if the results contain error then we failed to upload the file
+
+if [[ $curl_release_result == *"error"* ]]; then
+    exit 1
+fi
+
+exit 0

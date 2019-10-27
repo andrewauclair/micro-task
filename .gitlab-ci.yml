@@ -8,25 +8,23 @@ build:
   stage: build
   script:
     - ./create-version.sh
-    - mvn package
+    - ./gradlew jar
   artifacts:
     paths:
-      - run/
-      - target/
-      - updater/target/
+      - build/
     expire_in: 1 week
    
 test:
   stage: test
   script:
-    - mvn test
+    - ./gradlew test
     - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
   artifacts:
     name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
     when: on_failure
     expire_in: 4 days
     paths:
-      - app/build/reports/tests/
+      - build/reports/
 
 deploy:
   stage: deploy
@@ -35,5 +33,5 @@ deploy:
 
   script:
     - ./create-version.sh
-    - mvn package
+    - ./gradlew jar
     - ./upload-release.sh
