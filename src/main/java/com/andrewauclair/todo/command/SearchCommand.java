@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
@@ -25,13 +26,21 @@ public class SearchCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		String searchText = command.substring(8, command.lastIndexOf("\""));
-
+		
 		String[] s = command.split(" ");
-
+		
 		List<String> parameters = Arrays.asList(s);
-
-		List<Task> searchResults = tasks.getTasks().stream()
-				.filter(task -> task.task.contains(searchText))
+		
+		Stream<Task> stream;
+		
+		if (parameters.contains("--group")) {
+			stream = tasks.getActiveGroup().getTasks().stream();
+		}
+		else {
+			stream = tasks.getTasks().stream();
+		}
+		
+		List<Task> searchResults = stream.filter(task -> task.task.contains(searchText))
 				.filter(task -> (parameters.contains("--finished") || parameters.contains("-f")) == (task.state == TaskState.Finished))
 				.collect(Collectors.toList());
 		
