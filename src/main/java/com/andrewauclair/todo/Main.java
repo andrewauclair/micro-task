@@ -99,18 +99,39 @@ public class Main {
 		
 		Timer timer = new Timer();
 		
-		timer.schedule(new TimerTask() {
+		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
 				updateStatus(tasks, status, terminal, osInterface);
 			}
-		}, 0, 5000);
+		};
+		
+		boolean hasActiveTask = tasks.hasActiveTask();
+		
+		if (hasActiveTask) {
+			timer.schedule(timerTask, 0, 30000);
+		}
 		
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
 
 				commands.execute(System.out, command);
+				
+				if (tasks.hasActiveTask()) {
+					timerTask.cancel();
+					timerTask = new TimerTask() {
+						@Override
+						public void run() {
+							updateStatus(tasks, status, terminal, osInterface);
+						}
+					};
+					timer.schedule(timerTask, 0, 30000);
+				}
+				else {
+					timerTask.cancel();
+				}
+				hasActiveTask = tasks.hasActiveTask();
 				
 				updateStatus(tasks, status, terminal, osInterface);
 			}
@@ -134,6 +155,12 @@ public class Main {
 				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
 				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
 				
+				if (width < description.length() + time.length()) {
+					int length = width - time.length() - 3;
+					
+					description = description.substring(0, length - 3);
+					description += "...'";
+				}
 				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
 				description += time;
 				
