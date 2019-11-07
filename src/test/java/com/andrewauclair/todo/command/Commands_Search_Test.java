@@ -106,4 +106,62 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void search_for_tasks_in_a_group_displays_all_tasks_recursively() {
+		tasks.addList("/test/one");
+		tasks.addList("/test/two");
+		tasks.addList("/three");
+		
+		tasks.setActiveList("/test/one");
+		tasks.addTask("do this task on monday");
+		tasks.addTask("do this task on tuesday");
+		
+		tasks.setActiveList("/test/two");
+		tasks.addTask("monday is the worst");
+		tasks.addTask("tuesday's gone with the wind");
+		
+		tasks.setActiveList("/three");
+		tasks.addTask("mondays are the longest days");
+		tasks.addTask("wednesday isn't that great either");
+		
+		tasks.switchGroup("/");
+		
+		commands.execute(printStream, "search \"monday\" --group");
+		
+		assertOutput(
+				"Search Results (3):",
+				"",
+				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"3 - '\u001B[1m\u001B[7mmonday\u001B[0m is the worst'",
+				"5 - '\u001B[1m\u001B[7mmonday\u001B[0ms are the longest days'",
+				""
+		);
+	}
+	
+	@Test
+	void search_uses_the_active_list_when_active_group_is_different() {
+		tasks.addTask("do this task on monday");
+		tasks.addTask("tuesdays are ignored");
+		tasks.addTask("finish this task by monday");
+		tasks.addTask("wednesdays too");
+		tasks.addTask("monday is a holiday, don't forget");
+		tasks.addTask("The Beatles?");
+		tasks.addTask("some days are long, mondays are the longest days");
+		
+		tasks.createGroup("/test/");
+		tasks.switchGroup("/test/");
+		
+		commands.execute(printStream, "search \"monday\"");
+		
+		assertOutput(
+				"Search Results (4):",
+				"",
+				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"3 - 'finish this task by \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"5 - '\u001B[1m\u001B[7mmonday\u001B[0m is a holiday, don't forget'",
+				"7 - 'some days are long, \u001B[1m\u001B[7mmonday\u001B[0ms are the longest days'",
+				""
+		);
+	}
 }

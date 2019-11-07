@@ -225,7 +225,7 @@ public class Tasks {
 	}
 	
 	public List<Task> getTasks() {
-		return activeGroup.getListAbsolute(activeList).getTasks();
+		return getList(activeList).getTasks();
 	}
 	
 	public TaskGroup getGroupForList(String name) {
