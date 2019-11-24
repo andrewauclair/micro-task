@@ -8,15 +8,19 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class SearchCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("text", 't', Collections.singletonList("Text")),
+			new CommandOption("finished", 'f'),
+			new CommandOption("group", 'g')
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
 	public SearchCommand(Tasks tasks) {
@@ -25,15 +29,18 @@ public class SearchCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String searchText = command.substring(8, command.lastIndexOf("\""));
+		List<CommandArgument> args = parser.parse(command);
+		Map<String, CommandArgument> argsMap = new HashMap<>();
 		
-		String[] s = command.split(" ");
+		for (CommandArgument arg : args) {
+			argsMap.put(arg.getName(), arg);
+		}
 		
-		List<String> parameters = Arrays.asList(s);
+		String searchText = argsMap.get("text").getValue();
 		
 		Stream<Task> stream;
 		
-		if (parameters.contains("--group")) {
+		if (argsMap.containsKey("group")) {
 			stream = tasks.getActiveGroup().getTasks().stream();
 		}
 		else {
@@ -41,7 +48,7 @@ public class SearchCommand extends Command {
 		}
 		
 		List<Task> searchResults = stream.filter(task -> task.task.contains(searchText))
-				.filter(task -> (parameters.contains("--finished") || parameters.contains("-f")) == (task.state == TaskState.Finished))
+				.filter(task -> argsMap.containsKey("finished") == (task.state == TaskState.Finished))
 				.collect(Collectors.toList());
 		
 		output.println("Search Results (" + searchResults.size() + "):");

@@ -19,6 +19,7 @@ public final class CommandParser {
 		}
 	}
 	
+	// TODO I turn this into a map everywhere, so why not just return a map here?
 	public List<CommandArgument> parse(String args) {
 		List<CommandArgument> argsOut = new ArrayList<>();
 		

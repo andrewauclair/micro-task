@@ -15,8 +15,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("monday is a holiday, don't forget");
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
-
-		commands.execute(printStream, "search \"monday\"");
+		
+		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
 				"Search Results (4):",
@@ -41,8 +41,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 		tasks.finishTask(1);
 		tasks.finishTask(5);
-
-		commands.execute(printStream, "search \"monday\"");
+		
+		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
 				"Search Results (2):",
@@ -66,8 +66,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 		tasks.finishTask(1);
 		tasks.finishTask(5);
-
-		commands.execute(printStream, "search \"monday\" " + finished);
+		
+		commands.execute(printStream, "search -t \"monday\" " + finished);
 
 		assertOutput(
 				"Search Results (2):",
@@ -77,7 +77,31 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
+	@Test
+	void finished_can_be_before_the_text_to_search() {
+		tasks.addTask("do this task on monday");
+		tasks.addTask("tuesdays are ignored");
+		tasks.addTask("finish this task by monday");
+		tasks.addTask("wednesdays too");
+		tasks.addTask("monday is a holiday, don't forget");
+		tasks.addTask("The Beatles?");
+		tasks.addTask("some days are long, mondays are the longest days");
+		
+		tasks.finishTask(1);
+		tasks.finishTask(5);
+		
+		commands.execute(printStream, "search --finished --text \"monday\"");
+		
+		assertOutput(
+				"Search Results (2):",
+				"",
+				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"5 - '\u001B[1m\u001B[7mmonday\u001B[0m is a holiday, don't forget'",
+				""
+		);
+	}
+	
 	@Test
 	void search_on_nested_list() {
 		tasks.addList("/test/one");
@@ -93,8 +117,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("monday is a holiday, don't forget");
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
-
-		commands.execute(printStream, "search \"monday\"");
+		
+		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
 				"Search Results (4):",
@@ -127,7 +151,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		
 		tasks.switchGroup("/");
 		
-		commands.execute(printStream, "search \"monday\" --group");
+		commands.execute(printStream, "search -t \"monday\" --group");
 		
 		assertOutput(
 				"Search Results (3):",
@@ -152,7 +176,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.createGroup("/test/");
 		tasks.switchGroup("/test/");
 		
-		commands.execute(printStream, "search \"monday\"");
+		commands.execute(printStream, "search -t \"monday\"");
 		
 		assertOutput(
 				"Search Results (4):",
