@@ -476,7 +476,7 @@ public class Tasks {
 		return activeGroup;
 	}
 	
-	TaskGroup getRootGroup() {
+	public TaskGroup getRootGroup() {
 		return rootGroup;
 	}
 }

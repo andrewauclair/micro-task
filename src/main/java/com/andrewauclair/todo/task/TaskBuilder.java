@@ -4,7 +4,7 @@ package com.andrewauclair.todo.task;
 import java.util.ArrayList;
 import java.util.List;
 
-class TaskBuilder {
+public class TaskBuilder {
 	private final long id;
 	private String task;
 	private TaskState state;
@@ -12,8 +12,8 @@ class TaskBuilder {
 	private boolean recurring;
 	private String project;
 	private String feature;
-
-	TaskBuilder(Task task) {
+	
+	public TaskBuilder(Task task) {
 		id = task.id;
 		this.task = task.task;
 		state = task.state;
@@ -58,7 +58,7 @@ class TaskBuilder {
 		return build();
 	}
 	
-	Task rename(String name) {
+	public Task rename(String name) {
 		task = name;
 		return build();
 	}

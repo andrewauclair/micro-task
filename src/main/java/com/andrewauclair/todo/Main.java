@@ -7,10 +7,7 @@ import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.os.OSInterfaceImpl;
-import com.andrewauclair.todo.task.TaskLoader;
-import com.andrewauclair.todo.task.TaskReader;
-import com.andrewauclair.todo.task.TaskWriter;
-import com.andrewauclair.todo.task.Tasks;
+import com.andrewauclair.todo.task.*;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Completers;
@@ -49,9 +46,9 @@ public class Main {
 			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"");
 			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
 		}
-
+		
 		boolean exception = false;
-
+		
 		try {
 			TaskLoader loader = new TaskLoader(tasks, new TaskReader(osInterface), osInterface);
 			loader.load();
@@ -59,15 +56,15 @@ public class Main {
 		catch (Exception e) {
 			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
 			e.printStackTrace();
-
+			
 			exception = true;
 		}
-
+		
 		Terminal terminal = TerminalBuilder.builder()
 				.jna(true)
 				.nativeSignals(true)
 				.build();
-
+		
 		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(commands.getAutoCompleteNodes());
 		
 		LineReader lineReader = LineReaderBuilder.builder()
@@ -75,24 +72,24 @@ public class Main {
 				.completer(treeCompleter)
 				.variable(LineReader.BELL_STYLE, "none")
 				.build();
-
+		
 		Status status = Status.getStatus(terminal);
 		status.setBorder(true);
 		
 		updateStatus(tasks, status, terminal, osInterface);
-
+		
 		bindCtrlBackspace(lineReader);
-
+		
 		if (!exception) {
 			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
-
+		
 		Size terminalSize = terminal.getSize();
-
+		
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
 			// set active list to the list of the active task
 			tasks.setActiveList(tasks.getActiveTaskList());
-
+			
 			// set active group to the group of the active task
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
@@ -115,8 +112,13 @@ public class Main {
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
-
-				commands.execute(System.out, command);
+				
+				if (command.equals("export")) {
+					exportData(tasks, osInterface);
+				}
+				else {
+					commands.execute(System.out, command);
+				}
 				
 				if (tasks.hasActiveTask()) {
 					timerTask.cancel();
@@ -212,5 +214,38 @@ public class Main {
 		catch (IOException ignored) {
 		}
 		return 1;
+	}
+	
+	// Export data with generic names, this will remove any possible proprietary data
+	// Tasks will be exported as X - 'Task X'
+	// Groups will be exported as 'group-x'
+	// Lists will be exported as 'list-x'
+	private static void exportData(Tasks tasks, OSInterface osInterface) {
+		exportGroup(tasks.getRootGroup(), "/", 1, 1, osInterface);
+	}
+	
+	private static void exportGroup(TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
+		for (TaskContainer child : group.getChildren()) {
+			if (child instanceof TaskGroup) {
+				String name = "group-" + groupNum;
+				groupNum++;
+				exportGroup((TaskGroup) child, path + name + "/", groupNum, listNum, osInterface);
+			}
+			else if (child instanceof TaskList) {
+				String name = "list-" + listNum;
+				listNum++;
+				
+				exportList((TaskList) child, path + name, osInterface);
+			}
+		}
+	}
+	
+	private static void exportList(TaskList list, String path, OSInterface osInterface) {
+		TaskWriter writer = new TaskWriter(osInterface);
+		for (Task task : list.getTasks()) {
+			Task strippedTask = new TaskBuilder(task).rename("Task " + task.id);
+			
+			writer.writeTask(strippedTask, "git-data-export/tasks" + path + "/" + task.id + ".txt");
+		}
 	}
 }
