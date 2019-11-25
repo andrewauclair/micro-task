@@ -16,10 +16,11 @@ public class Commands {
 	private final Tasks tasks;
 	
 	private final Map<String, Command> commands = new HashMap<>();
+	private final Map<String, String> aliases = new HashMap<>();
 	
 	public Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
 		this.tasks = tasks;
-
+		
 		commands.put("mklist", new ListCreateCommand(tasks));
 		commands.put("chlist", new ListSwitchCommand(tasks));
 		commands.put("finish", new FinishCommand(tasks, osInterface));
@@ -40,6 +41,7 @@ public class Commands {
 		commands.put("mkgrp", new GroupCreateCommand(tasks));
 		commands.put("chgrp", new GroupSwitchCommand(tasks));
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
+		commands.put("alias", new AliasCommand(this, osInterface));
 	}
 	
 	public void execute(PrintStream output, String command) {
@@ -48,12 +50,15 @@ public class Commands {
 					.filter(command::startsWith)
 					.findFirst()
 					.ifPresentOrElse(name -> commands.get(name).execute(output, command),
-							() -> unknownCommand(output));
+							() -> aliases.keySet().stream()
+									.filter(command::equals)
+									.findFirst()
+									.ifPresentOrElse(name -> execute(output, aliases.get(name)), () -> unknownCommand(output)));
 		}
 		catch (RuntimeException e) {
 			output.println(e.getMessage());
 			output.println();
-
+			
 			if (output != System.out) {
 				System.out.println(e.getMessage());
 				System.out.println();
@@ -94,5 +99,13 @@ public class Commands {
 	
 	public DebugCommand getDebugCommand() {
 		return (DebugCommand) commands.get("debug");
+	}
+	
+	public Map<String, Command> getCommands() {
+		return commands;
+	}
+	
+	void addAlias(String name, String command) {
+		aliases.put(name, command);
 	}
 }
