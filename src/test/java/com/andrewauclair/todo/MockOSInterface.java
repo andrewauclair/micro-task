@@ -20,7 +20,7 @@ public class MockOSInterface implements OSInterface {
 	}
 
 	@Override
-	public boolean runGitCommand(String command) {
+	public boolean runGitCommand(String command, boolean print) {
 		return false;
 	}
 

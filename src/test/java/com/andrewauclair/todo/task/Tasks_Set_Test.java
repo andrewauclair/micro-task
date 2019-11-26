@@ -52,9 +52,9 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		Mockito.reset(osInterface);
 
 		Task task = tasks.setRecurring(1, false);
-
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Set recurring for task 1 to false\"");
+		
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Set recurring for task 1 to false\"", false);
 
 		assertFalse(task.isRecurring());
 	}
@@ -68,8 +68,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		tasks.setProject(1, "Issue");
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Set project for task 1 to 'Issue'\"");
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Set project for task 1 to 'Issue'\"", false);
 	}
 
 	@Test
@@ -80,8 +80,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		Mockito.reset(osInterface);
 
 		tasks.setFeature(1, "Feature");
-
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for task 1 to 'Feature'\"");
+		
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for task 1 to 'Feature'\"", false);
 	}
 }

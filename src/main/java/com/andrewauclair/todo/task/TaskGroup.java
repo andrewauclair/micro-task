@@ -171,8 +171,8 @@ public final class TaskGroup implements TaskContainer {
 			throw new RuntimeException("Failed to move list folder.");
 		}
 		
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"");
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"", false);
 		
 		return newList;
 	}
@@ -193,8 +193,8 @@ public final class TaskGroup implements TaskContainer {
 			throw new RuntimeException("Failed to move group folder.");
 		}
 		
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"");
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"", false);
 		
 		return newGroup;
 	}
