@@ -20,8 +20,8 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/group.txt");
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/group.txt");
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/three/group.txt");
-		Mockito.verify(osInterface).runGitCommand("git add .");
-		Mockito.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"");
+		Mockito.verify(osInterface).runGitCommand("git add .", false);
+		Mockito.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"", false);
 
 		assertOutput(
 				"Created group '/test/one/two/three/'",

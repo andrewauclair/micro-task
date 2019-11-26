@@ -33,15 +33,15 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	@Override
-	public boolean runGitCommand(String command) {
+	public boolean runGitCommand(String command, boolean print) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(new File("git-data"));
 		builder.command(command.split(" "));
-
-		if (commands.getDebugCommand().isDebugEnabled()) {
+		
+		if (commands.getDebugCommand().isDebugEnabled() || print) {
 			System.out.println("run: " + command);
 			builder.inheritIO();
 		}

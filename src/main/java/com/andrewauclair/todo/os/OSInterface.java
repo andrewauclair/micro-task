@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface OSInterface {
 	void setCommands(Commands commands);
-
-	boolean runGitCommand(String command);
+	
+	boolean runGitCommand(String command, boolean print);
 
 	long currentSeconds();
 

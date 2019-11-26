@@ -41,6 +41,7 @@ public class Commands {
 		commands.put("mkgrp", new GroupCreateCommand(tasks));
 		commands.put("chgrp", new GroupSwitchCommand(tasks));
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
+		commands.put("git", new GitCommand(osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 	}
 	

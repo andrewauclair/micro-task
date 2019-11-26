@@ -64,9 +64,9 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		tasks.renameTask(1, "Renaming task");
-
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"");
+		
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"", false);
 	}
 
 	@Test
@@ -150,8 +150,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		order.verify(osInterface).moveFolder("/one", "/test");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
+		order.verify(osInterface).runGitCommand("git add .", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"", false);
 
 		Mockito.verifyNoMoreInteractions(osInterface);
 		Mockito.verifyZeroInteractions(writer);
@@ -196,9 +196,9 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		tasks.renameList("one", "test");
 
 		InOrder order = Mockito.inOrder(osInterface);
-
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
+		
+		order.verify(osInterface).runGitCommand("git add .", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"", false);
 	}
 
 	@Test

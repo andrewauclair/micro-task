@@ -57,10 +57,10 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		tasks.moveTask(1, "one");
-
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved task 1 - 'Test 1' to list '/one'\"");
+		
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved task 1 - 'Test 1' to list '/one'\"", false);
 	}
 
 	@Test
@@ -112,8 +112,8 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.moveList("/test/one", "/");
 
 		order.verify(osInterface).moveFolder("/test/one", "/one");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved list '/test/one' to group '/'\"");
+		order.verify(osInterface).runGitCommand("git add .", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved list '/test/one' to group '/'\"", false);
 	}
 
 	@Test
@@ -128,8 +128,8 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.moveGroup("/one/", "/two/");
 		
 		order.verify(osInterface).moveFolder("/one/", "/two/one/");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one/' to group '/two/'\"");
+		order.verify(osInterface).runGitCommand("git add .", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one/' to group '/two/'\"", false);
 	}
 
 	@Test

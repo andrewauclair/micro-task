@@ -42,9 +42,9 @@ public class Main {
 			
 			System.out.println(mkdir);
 			
-			osInterface.runGitCommand("git init");
-			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"");
-			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"");
+			osInterface.runGitCommand("git init", false);
+			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"", false);
+			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"", false);
 		}
 		
 		boolean exception = false;

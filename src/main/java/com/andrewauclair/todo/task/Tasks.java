@@ -61,7 +61,7 @@ public class Tasks {
 		catch (IOException e) {
 			e.printStackTrace(output);
 		}
-		osInterface.runGitCommand("git add next-id.txt");
+		osInterface.runGitCommand("git add next-id.txt", false);
 		
 		return nextID;
 	}
@@ -288,8 +288,8 @@ public class Tasks {
 			return;
 		}
 		
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"");
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"", false);
 	}
 	
 	public void addTask(Task task) {
@@ -371,8 +371,8 @@ public class Tasks {
 			}
 		}
 		
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"");
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
 		
 		return newGroup;
 	}
@@ -403,8 +403,8 @@ public class Tasks {
 		
 		writeTask(task, list);
 		
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"");
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
+		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"", false);
 		
 		return task;
 	}
@@ -431,8 +431,8 @@ public class Tasks {
 		
 		writeTask(task, list);
 		
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set project for task " + task.id + " to '" + project + "'\"");
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
+		osInterface.runGitCommand("git commit -m \"Set project for task " + task.id + " to '" + project + "'\"", false);
 		
 		return task;
 	}
@@ -453,8 +453,8 @@ public class Tasks {
 		
 		writeTask(task, list);
 		
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set feature for task " + task.id + " to '" + feature + "'\"");
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
+		osInterface.runGitCommand("git commit -m \"Set feature for task " + task.id + " to '" + feature + "'\"", false);
 		
 		return task;
 	}
