@@ -23,6 +23,7 @@ public class TimesCommand extends Command {
 			new CommandOption("tasks", CommandOption.NO_SHORTNAME, Collections.emptyList()),
 			new CommandOption("summary", CommandOption.NO_SHORTNAME, Collections.emptyList()),
 			new CommandOption("today", CommandOption.NO_SHORTNAME, Collections.emptyList()),
+			new CommandOption("proj-feat", CommandOption.NO_SHORTNAME, Collections.emptyList()),
 			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
 			new CommandOption("task", CommandOption.NO_SHORTNAME, Collections.singletonList("Task")),
 			new CommandOption("day", 'd', Collections.singletonList("Day")),
@@ -131,8 +132,7 @@ public class TimesCommand extends Command {
 			long taskID = Long.parseLong(s[2]);
 
 			if (tasks.hasTaskWithID(taskID)) {
-				Task firstTask = tasks.getTask(taskID);
-				Task task = firstTask;
+				Task task = tasks.getTask(taskID);
 
 				if (task.getStartStopTimes().size() == 0) {
 					output.println("No times for task " + task.description());
@@ -182,25 +182,64 @@ public class TimesCommand extends Command {
 			Instant epochInstant = Instant.ofEpochSecond(epochSecond);
 
 			ZoneId zoneId = osInterface.getZoneId();
-
-			int day = Integer.parseInt(argsMap.get("day").getValue());
-			int month = argsMap.get("month") != null ? Integer.parseInt(argsMap.get("month").getValue()) : epochInstant.atZone(zoneId).getMonthValue();
-			int year = argsMap.get("year") != null ? Integer.parseInt(argsMap.get("year").getValue()) : epochInstant.atZone(zoneId).getYear();
-
-			LocalDate of = LocalDate.of(year, month, day);
-
-
-			Instant instant = of.atStartOfDay(zoneId).toInstant();
-
-			TaskFilter filter = new TaskFilter(tasks);
-
-			if (argsMap.containsKey("list")) {
-				filter.filterForList(argsMap.get("list").getValue());
+			
+			// if there's only times --tasks then print all time numbers
+			if (parameters.size() == 2) {
+				output.println("Times");
+				output.println();
+				printTasks(output, new TaskFilter(tasks));
 			}
-
-			filter.filterForDay(month, day, year);
-
-			displayTimesForDay(output, instant, filter);
+			else {
+				int day = Integer.parseInt(argsMap.get("day").getValue());
+				int month = argsMap.get("month") != null ? Integer.parseInt(argsMap.get("month").getValue()) : epochInstant.atZone(zoneId).getMonthValue();
+				int year = argsMap.get("year") != null ? Integer.parseInt(argsMap.get("year").getValue()) : epochInstant.atZone(zoneId).getYear();
+				
+				LocalDate of = LocalDate.of(year, month, day);
+				
+				
+				Instant instant = of.atStartOfDay(zoneId).toInstant();
+				
+				TaskFilter filter = new TaskFilter(tasks);
+				
+				if (argsMap.containsKey("list")) {
+					filter.filterForList(argsMap.get("list").getValue());
+				}
+				
+				filter.filterForDay(month, day, year);
+				
+				displayTimesForDay(output, instant, filter);
+			}
+		}
+		else if (s[1].equals("--proj-feat")) {
+			TaskFilter filter = new TaskFilter(tasks);
+			
+			Map<String, Long> totals = new HashMap<>();
+			
+			for (Task task : filter.getTasks()) {
+				String project = tasks.getProjectForTask(task.id);
+				String feature = tasks.getFeatureForTask(task.id);
+				
+				if (project.isEmpty()) {
+					project = "None";
+				}
+				if (feature.isEmpty()) {
+					feature = "None";
+				}
+				String projfeat = project + " / " + feature;
+				
+				totals.put(projfeat, totals.getOrDefault(projfeat, 0L) + task.getElapsedTime(osInterface));
+			}
+			
+			List<String> str = new ArrayList<>(totals.keySet());
+			str.sort(String::compareTo);
+			
+			for (String s1 : str) {
+				output.print(s1);
+				output.print(" ");
+				printTotalTime(output, totals.get(s1), true);
+				output.println();
+			}
+			output.println();
 		}
 		else {
 			output.println("Invalid command.");
@@ -224,12 +263,22 @@ public class TimesCommand extends Command {
 		List<TaskFilter.TaskFilterResult> data = filter.getData();
 
 		data.sort(Comparator.comparingLong(TaskFilter.TaskFilterResult::getTotal).reversed());
-
+		
+		totalTime = printResults(output, totalTime, data);
+		
+		output.println();
+		output.print("Total time: ");
+		printTotalTime(output, totalTime, false);
+		output.println();
+		output.println();
+	}
+	
+	private long printResults(PrintStream output, long totalTime, List<TaskFilter.TaskFilterResult> data) {
 		for (TaskFilter.TaskFilterResult result : data) {
 			printTotalTime(output, result.getTotal(), true);
-
+			
 			Task task = result.getTask();
-
+			
 			if (tasks.getActiveTaskID() == task.id) {
 				output.print(" * ");
 				ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
@@ -246,17 +295,28 @@ public class TimesCommand extends Command {
 				output.print("   ");
 				output.println(task.description());
 			}
-
+			
 			totalTime += result.getTotal();
 		}
-
+		return totalTime;
+	}
+	
+	private void printTasks(PrintStream output, TaskFilter filter) {
+		long totalTime = 0;
+		
+		List<TaskFilter.TaskFilterResult> data = filter.getData();
+		
+		data.sort(Comparator.comparingLong(TaskFilter.TaskFilterResult::getTotal).reversed());
+		
+		totalTime = printResults(output, totalTime, data);
+		
 		output.println();
 		output.print("Total time: ");
 		printTotalTime(output, totalTime, false);
 		output.println();
 		output.println();
 	}
-
+	
 	@Override
 	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
 		return Arrays.asList(

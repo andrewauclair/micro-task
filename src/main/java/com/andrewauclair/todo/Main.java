@@ -113,6 +113,10 @@ public class Main {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
 				
+				if (command.equals("proj-feat-assign")) {
+					manualProjectFeatureAssign(tasks, osInterface);
+				}
+
 				if (command.equals("export")) {
 					exportData(tasks, osInterface);
 				}
@@ -214,6 +218,28 @@ public class Main {
 		catch (IOException ignored) {
 		}
 		return 1;
+	}
+	
+	// temporary function that we will use to assign a project and feature to all existing task times at work
+	// I'll remove this once I can verify that everything is working well for projects and features
+	private static void manualProjectFeatureAssign(Tasks tasks, OSInterface osInterface) {
+		TaskWriter writer = new TaskWriter(osInterface);
+		
+		for (Task task : tasks.getAllTasks()) {
+			List<TaskTimes> oldTimes = task.getStartStopTimes();
+			List<TaskTimes> newTimes = new ArrayList<>();
+			
+			newTimes.add(task.getTimes().get(0));
+			
+			for (TaskTimes time : oldTimes) {
+				newTimes.add(new TaskTimes(time.start, time.stop, tasks.getProjectForTask(task.id), tasks.getFeatureForTask(task.id)));
+			}
+			
+			Task newTask = new Task(task.id, task.task, task.state, newTimes, task.isRecurring());
+			
+			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(task.id).getFullPath() + "/" + task.id + ".txt");
+		}
+		System.exit(0);
 	}
 	
 	// Export data with generic names, this will remove any possible proprietary data

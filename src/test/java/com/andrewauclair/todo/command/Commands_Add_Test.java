@@ -43,7 +43,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, "")
+				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true)
 		);
 	}
 
@@ -78,7 +78,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "add --charge \"Issues\" -n \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), false, "Issues")
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), false)
 		);
 		
 		assertOutput(

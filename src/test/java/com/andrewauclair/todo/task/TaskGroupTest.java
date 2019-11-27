@@ -10,8 +10,8 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void task_group_can_contain_other_task_groups() {
 		TaskGroup group = new TaskGroup("/test");
-
-		TaskGroup child = new TaskGroup("two", "/test");
+		
+		TaskGroup child = new TaskGroup("two", group, "", "");
 		group.addChild(child);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -22,8 +22,8 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void task_group_can_contain_task_lists() {
 		TaskGroup group = new TaskGroup("test");
-
-		TaskList list = new TaskList("test", osInterface, writer);
+		
+		TaskList list = new TaskList("test", osInterface, writer, "", "");
 		group.addChild(list);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -41,25 +41,30 @@ class TaskGroupTest extends TaskBaseTestCase {
 
 	@Test
 	void create_task_group() {
-		TaskGroup group = new TaskGroup("one", "/two/three/");
+		TaskGroup parent = new TaskGroup("/two/three/");
+		TaskGroup group = new TaskGroup("one", parent, "Project", "Feature");
 
 		assertEquals("one", group.getName());
 		assertEquals("/two/three/one/", group.getFullPath());
+		assertEquals("Project", group.getProject());
+		assertEquals("Feature", group.getFeature());
 	}
 
 	@Test
 	void to_string() {
-		TaskGroup group = new TaskGroup("test", "/");
+		TaskGroup parent = new TaskGroup("/");
+		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature");
 		
-		assertEquals("TaskGroup{name='test', fullPath='/test/', parent=/, children=[]}", group.toString());
+		assertEquals("TaskGroup{name='test', fullPath='/test/', parent=/, children=[], project='Project', feature='Feature'}", group.toString());
 	}
 	
 	@Test
 	void rename() {
-		TaskGroup group = new TaskGroup("test", "/");
+		TaskGroup parent = new TaskGroup("/");
+		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature");
 		
 		TaskGroup renamed = group.rename("one");
 		
-		assertEquals("TaskGroup{name='one', fullPath='/one/', parent=/, children=[]}", renamed.toString());
+		assertEquals("TaskGroup{name='one', fullPath='/one/', parent=/, children=[], project='Project', feature='Feature'}", renamed.toString());
 	}
 }

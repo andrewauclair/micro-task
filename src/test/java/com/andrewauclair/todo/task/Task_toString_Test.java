@@ -20,12 +20,10 @@ class Task_toString_Test {
 				Arrays.asList(
 						new TaskTimes(1234, 2345),
 						new TaskTimes(3456, 5555),
-						new TaskTimes(8473)
+						new TaskTimes(8473, "Project", "Feature")
 				),
-				true,
-				"Issues",
-				"Feature"
+				true
 		);
-		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, 3456 - 5555, 8473], recurring=true, project='Issues', feature='Feature'}", task.toString());
+		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, project='', feature='', 3456 - 5555, project='', feature='', 8473, project='Project', feature='Feature'], recurring=true}", task.toString());
 	}
 }

@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Tasks;
@@ -57,11 +58,16 @@ public class Commands {
 									.ifPresentOrElse(name -> execute(output, aliases.get(name)), () -> unknownCommand(output)));
 		}
 		catch (RuntimeException e) {
-			output.println(e.getMessage());
+			if (e instanceof TaskException) {
+				output.println(e.getMessage());
+			}
+			else {
+				e.printStackTrace(output);
+			}
 			output.println();
 			
-			if (output != System.out) {
-				System.out.println(e.getMessage());
+			if (output != System.out && !(e instanceof TaskException)) {
+				e.printStackTrace(System.err);
 				System.out.println();
 			}
 		}

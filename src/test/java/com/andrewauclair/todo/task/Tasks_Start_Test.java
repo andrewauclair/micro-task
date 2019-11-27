@@ -174,4 +174,31 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		assertEquals(new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000))), task);
 	}
+
+	@Test
+	void starting_time_adds_times_with_project_and_feature_of_task() {
+		tasks.addTask("Test");
+		tasks.setProject(tasks.findListForTask(1), "Project");
+		tasks.setFeature(tasks.findListForTask(1), "Feature");
+
+		tasks.startTask(1, false);
+
+		tasks.stopTask();
+		
+		tasks.setProject(tasks.findListForTask(1), "Project 2");
+		tasks.setFeature(tasks.findListForTask(1), "Feature 2");
+
+		tasks.startTask(1, false);
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new Task(1, "Test", TaskState.Active,
+						Arrays.asList(
+								new TaskTimes(1000),
+								new TaskTimes(2000, 3000, "Project", "Feature"),
+								new TaskTimes(4000, "Project 2", "Feature 2")
+						),
+						false
+				)
+		);
+	}
 }

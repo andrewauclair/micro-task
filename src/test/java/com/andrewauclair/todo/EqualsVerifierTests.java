@@ -11,9 +11,10 @@ class EqualsVerifierTests {
 	void task_group_equals() {
 		EqualsVerifier.forClass(TaskGroup.class)
 				.withPrefabValues(TaskGroup.class, new TaskGroup("one"), new TaskGroup("two"))
+				.withIgnoredFields("parent")
 				.verify();
 	}
-	
+
 	@Test
 	void task_list_equals() {
 		EqualsVerifier.forClass(TaskList.class).verify();

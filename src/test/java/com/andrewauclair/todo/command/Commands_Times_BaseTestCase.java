@@ -74,9 +74,6 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 
 		tasks.startTask(1, false);
 		tasks.finishTask(3);
-
-		tasks.setProject(1, "Project 1");
-		tasks.setProject(2, "Project 2");
 	}
 
 	Task addTaskWithTimes(String name, long start, long length) {

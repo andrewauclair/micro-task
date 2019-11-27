@@ -17,7 +17,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class ActiveCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-
+	
 	public ActiveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -30,20 +30,26 @@ public class ActiveCommand extends Command {
 		output.println("Active list is '" + tasks.getActiveList() + "'");
 		output.println();
 		
-		Task task = tasks.getActiveTask();
-		output.println("Active task is " + task.description());
-		output.println();
-		
-		output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
-		output.println();
-		
-		List<TaskTimes> times = task.getTimes();
-		TaskTimes activeTime = times.get(times.size() - 1);
-
-		activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
-		output.print("Current time elapsed: ");
-		output.println(new TaskDuration(activeTime, osInterface));
-		output.println();
+		try {
+			Task task = tasks.getActiveTask();
+			output.println("Active task is " + task.description());
+			output.println();
+			
+			output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
+			output.println();
+			
+			List<TaskTimes> times = task.getTimes();
+			TaskTimes activeTime = times.get(times.size() - 1);
+			
+			activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
+			output.print("Current time elapsed: ");
+			output.println(new TaskDuration(activeTime, osInterface));
+			output.println();
+		}
+		catch (RuntimeException e) {
+			output.println("No active task.");
+			output.println();
+		}
 	}
 	
 	@Override

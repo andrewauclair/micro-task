@@ -9,22 +9,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public final class TaskTimes {
-	public static final long TIME_NOT_SET = Long.MIN_VALUE;
+	static final long TIME_NOT_SET = Long.MIN_VALUE;
 	
 	public final long start;
 	public final long stop;
-	
+	public final String project;
+	public final String feature;
+
 	public TaskTimes(long start) {
 		this(start, TIME_NOT_SET);
 	}
-	
+
+	public TaskTimes(long start, String project, String feature) {
+		this(start, TIME_NOT_SET, project, feature);
+	}
+
 	public TaskTimes(long start, long stop) {
+		this(start, stop, "", "");
+	}
+
+	public TaskTimes(long start, long stop, String project, String feature) {
 		if (stop < start && stop != TIME_NOT_SET) {
 			throw new RuntimeException("Stop time can not come before start time.");
 		}
 
 		this.start = start;
 		this.stop = stop;
+		this.project = project;
+		this.feature = feature;
 	}
 	
 	public long getDuration(OSInterface osInterface) {
@@ -36,7 +48,7 @@ public final class TaskTimes {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(start, stop);
+		return Objects.hash(start, stop, project, feature);
 	}
 
 	@Override
@@ -49,15 +61,17 @@ public final class TaskTimes {
 		}
 		TaskTimes times = (TaskTimes) o;
 		return start == times.start &&
-				stop == times.stop;
+				stop == times.stop &&
+				Objects.equals(project, times.project) &&
+				Objects.equals(feature, times.feature);
 	}
 
 	@Override
 	public String toString() {
 		if (stop == TIME_NOT_SET) {
-			return String.valueOf(start);
+			return start + ", project='" + project + "', feature='" + feature + "'";
 		}
-		return start + " - " + stop;
+		return start + " - " + stop + ", project='" + project + "', feature='" + feature + "'";
 	}
 	
 	public String description(ZoneId zone) {

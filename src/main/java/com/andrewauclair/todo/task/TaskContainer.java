@@ -12,4 +12,8 @@ public interface TaskContainer {
 	List<Task> getTasks();
 	
 	Optional<TaskList> findListForTask(long id);
+	
+	String getProject();
+	
+	String getFeature();
 }

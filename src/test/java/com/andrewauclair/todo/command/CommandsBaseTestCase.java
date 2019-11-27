@@ -67,4 +67,8 @@ class CommandsBaseTestCase {
 
 		assertThat(outputStream.toString()).isEqualTo(output.toString());
 	}
+
+//	protected void assertExceptionOutput(Class<?> e, String message) {
+//		assertThat(outputStream.toString()).startsWith(e.getName() + ": " + message);
+//	}
 }

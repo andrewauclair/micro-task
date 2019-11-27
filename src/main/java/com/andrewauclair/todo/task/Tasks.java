@@ -1,8 +1,11 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -18,7 +21,7 @@ public class Tasks {
 	private final PrintStream output;
 	private final TaskWriter writer;
 	
-	private final TaskGroup rootGroup = new TaskGroup("/");
+	private TaskGroup rootGroup = new TaskGroup("/");
 	
 	private TaskGroup activeGroup = rootGroup;
 	private long activeTaskID = NO_ACTIVE_TASK;
@@ -32,7 +35,7 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 		
-		activeGroup.addChild(new TaskList(activeList, osInterface, writer));
+		activeGroup.addChild(new TaskList(activeList, osInterface, writer, "", ""));
 	}
 	
 	public TaskWriter getWriter() {
@@ -105,15 +108,28 @@ public class Tasks {
 		return getListForTask(id).renameTask(id, task);
 	}
 	
-	private TaskGroup getGroup(String name) {
-		if (!name.startsWith("/")) {
-			name = activeGroup.getFullPath() + name;
+	// TODO Should this stuff go in the TaskGroup class?
+	public boolean addList(String name) {
+		TaskGroup group;
+		
+		String absoluteList = getAbsoluteListName(name);
+		String groupName = getGroupNameForList(absoluteList);
+		
+		// create any groups in the path that don't exist
+		createGroup(groupName);
+		
+		group = getGroup(groupName);
+		
+		if (group.containsListAbsolute(absoluteList)) {
+			return false;
 		}
-		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
-		if (!optionalGroup.isPresent()) {
-			throw new RuntimeException("Group '" + name + "' does not exist.");
-		}
-		return optionalGroup.get();
+		TaskList newList = new TaskList(absoluteList, osInterface, writer, "", "");
+		
+		group.addChild(newList);
+		
+		osInterface.createFolder("git-data/tasks" + newList.getFullPath());
+		
+		return true;
 	}
 	
 	private void writeTask(Task task, String list) {
@@ -134,6 +150,10 @@ public class Tasks {
 	
 	public List<Task> getTasksForList(String listName) {
 		return getList(listName).getTasks();
+	}
+	
+	public TaskList getListByName(String name) {
+		return getList(name);
 	}
 	
 	private TaskList getList(String name) {
@@ -196,7 +216,7 @@ public class Tasks {
 		
 		setActiveList(getActiveTaskList());
 		
-		return getList(getActiveTaskList()).startTask(activeTaskID);
+		return getList(getActiveTaskList()).startTask(activeTaskID, this);
 	}
 	
 	public Task stopTask() {
@@ -322,28 +342,15 @@ public class Tasks {
 		return getGroupForList(absoluteList).containsListAbsolute(absoluteList);
 	}
 	
-	// TODO Should this stuff go in the TaskGroup class?
-	public boolean addList(String name) {
-		TaskGroup group;
-		
-		String absoluteList = getAbsoluteListName(name);
-		String groupName = getGroupNameForList(absoluteList);
-		
-		// create any groups in the path that don't exist
-		createGroup(groupName);
-		
-		group = getGroup(groupName);
-		
-		if (group.containsListAbsolute(absoluteList)) {
-			return false;
+	public TaskGroup getGroup(String name) {
+		if (!name.startsWith("/")) {
+			name = activeGroup.getFullPath() + name;
 		}
-		TaskList newList = new TaskList(absoluteList, osInterface, writer);
-		
-		group.addChild(newList);
-
-		osInterface.createFolder("git-data/tasks" + newList.getFullPath());
-
-		return true;
+		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
+		if (!optionalGroup.isPresent()) {
+			throw new TaskException("Group '" + name + "' does not exist.");
+		}
+		return optionalGroup.get();
 	}
 	
 	public TaskGroup createGroup(String groupName) {
@@ -357,7 +364,7 @@ public class Tasks {
 				continue;
 			}
 			TaskGroup parentGroup = getGroup(currentParent);
-			newGroup = new TaskGroup(group, currentParent);
+			newGroup = new TaskGroup(group, parentGroup, "", "");
 			currentParent += group + "/";
 			
 			if (!parentGroup.containsGroup(newGroup)) {
@@ -419,44 +426,140 @@ public class Tasks {
 		return optionalTask.get();
 	}
 	
-	public Task setProject(long id, String project) {
-		Task optionalTask = getTask(id);
+	public void setProject(TaskList list, String project) {
+		String listName = list.getFullPath();
 		
-		Task task = new TaskBuilder(optionalTask)
-				.withProject(project)
-				.build();
+		TaskGroup group = getGroupForList(listName);
 		
-		String list = findListForTask(task.id).getFullPath();
-		replaceTask(list, optionalTask, task);
+		group.removeChild(list);
 		
-		writeTask(task, list);
+		TaskList newList = list.changeProject(project);
+		group.addChild(newList);
 		
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"Set project for task " + task.id + " to '" + project + "'\"", false);
+		writeListInfoFile(newList);
 		
-		return task;
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"", false);
+	}
+	
+	private void writeListInfoFile(TaskList list) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + list.getFullPath() + "/list.txt")) {
+			outputStream.write(list.getProject().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(list.getFeature().getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			// TODO test the error here
+		}
+	}
+	
+	public void setProject(TaskGroup group, String project) {
+		if (group == rootGroup) {
+			rootGroup = group.changeProject(project);
+			writeGroupInfoFile(rootGroup);
+		}
+		else {
+			TaskGroup parent = getGroup(group.getParent());
+			
+			parent.removeChild(group);
+			
+			TaskGroup newGroup = group.changeProject(project);
+			parent.addChild(newGroup);
+			writeGroupInfoFile(newGroup);
+		}
+		
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
+	}
+	
+	private void writeGroupInfoFile(TaskGroup group) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + group.getFullPath() + "group.txt")) {
+			outputStream.write(group.getProject().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(group.getFeature().getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			// TODO test the error here
+		}
+	}
+	
+	public void setFeature(TaskList list, String feature) {
+		String listName = list.getFullPath();
+		
+		TaskGroup group = getGroupForList(listName);
+		
+		group.removeChild(list);
+		
+		TaskList newList = list.changeFeature(feature);
+		group.addChild(newList);
+		
+		writeListInfoFile(newList);
+		
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"", false);
+	}
+	
+	public void setFeature(TaskGroup group, String feature) {
+		TaskGroup newGroup;
+		if (group == rootGroup) {
+			rootGroup = group.changeFeature(feature);
+			newGroup = rootGroup;
+		}
+		else {
+			TaskGroup parent = getGroup(group.getParent());
+			
+			parent.removeChild(group);
+			
+			newGroup = group.changeFeature(feature);
+			parent.addChild(newGroup);
+		}
+		
+		writeGroupInfoFile(newGroup);
+		
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
+	}
+	
+	public String getProjectForTask(long taskID) {
+		TaskList listForTask = findListForTask(taskID);
+		
+		String project = listForTask.getProject();
+		
+		TaskGroup group = getGroupForList(listForTask.getFullPath());
+		
+		while (project.isEmpty()) {
+			project = group.getProject();
+			
+			if (group.getFullPath().equals("/")) {
+				break;
+			}
+			group = getGroup(group.getParent());
+		}
+		return project;
+	}
+	
+	public String getFeatureForTask(long taskID) {
+		TaskList listForTask = findListForTask(taskID);
+		
+		String feature = listForTask.getFeature();
+		
+		TaskGroup group = getGroupForList(listForTask.getFullPath());
+		
+		while (feature.isEmpty()) {
+			feature = group.getFeature();
+			
+			if (group.getFullPath().equals("/")) {
+				break;
+			}
+			group = getGroup(group.getParent());
+		}
+		return feature;
 	}
 	
 	String getGroupPath() {
 		return activeGroup.getFullPath();
-	}
-	
-	public Task setFeature(long id, String feature) {
-		Task optionalTask = getTask(id);
-		
-		Task task = new TaskBuilder(optionalTask)
-				.withFeature(feature)
-				.build();
-		
-		String list = findListForTask(task.id).getFullPath();
-		replaceTask(list, optionalTask, task);
-		
-		writeTask(task, list);
-		
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"Set feature for task " + task.id + " to '" + feature + "'\"", false);
-		
-		return task;
 	}
 	
 	public boolean hasGroupPath(String groupName) {

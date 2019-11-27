@@ -1,6 +1,8 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +69,7 @@ public final class CommandParser {
 		CommandOption commandOption = options.get(option);
 		
 		if (commandOption == null) {
-			throw new RuntimeException("Unknown option '" + option + "'");
+			throw new TaskException("Unknown option '" + option + "'");
 		}
 		
 		if (commandOption.getArgumentCount() > 0) {

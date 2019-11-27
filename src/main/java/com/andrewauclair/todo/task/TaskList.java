@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.util.*;
@@ -10,14 +11,21 @@ public final class TaskList implements TaskContainer {
 	private final String fullPath;
 	private final OSInterface osInterface;
 	private final TaskWriter writer;
-
+	
+	private final String project;
+	private final String feature;
+	
 	private final List<Task> tasks = new ArrayList<>();
-
-	TaskList(String name, OSInterface osInterface, TaskWriter writer) {
+	
+	TaskList(String name, OSInterface osInterface, TaskWriter writer, String project, String feature) {
+		Objects.requireNonNull(project);
+		
 		fullPath = name;
 		this.name = name.substring(name.lastIndexOf('/') + 1);
 		this.osInterface = osInterface;
 		this.writer = writer;
+		this.project = project;
+		this.feature = feature;
 	}
 
 	public String getName() {
@@ -30,15 +38,29 @@ public final class TaskList implements TaskContainer {
 	}
 
 	public TaskList rename(String name) {
-		TaskList list = new TaskList(name, osInterface, writer);
+		TaskList list = new TaskList(name, osInterface, writer, project, feature);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
+	
+	TaskList changeProject(String project) {
+		TaskList list = new TaskList(fullPath, osInterface, writer, project, feature);
+		list.tasks.addAll(tasks);
 
+		return list;
+	}
+	
+	TaskList changeFeature(String feature) {
+		TaskList list = new TaskList(fullPath, osInterface, writer, project, feature);
+		list.tasks.addAll(tasks);
+		
+		return list;
+	}
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, tasks, osInterface, writer);
+		return Objects.hash(name, fullPath, tasks, osInterface, writer, project, feature);
 	}
 
 	@Override
@@ -54,7 +76,9 @@ public final class TaskList implements TaskContainer {
 				Objects.equals(fullPath, taskList.fullPath) &&
 				Objects.equals(tasks, taskList.tasks) &&
 				Objects.equals(osInterface, taskList.osInterface) &&
-				Objects.equals(writer, taskList.writer);
+				Objects.equals(writer, taskList.writer) &&
+				Objects.equals(project, taskList.project) &&
+				Objects.equals(feature, taskList.feature);
 	}
 
 	public void addTask(Task task) {
@@ -71,11 +95,12 @@ public final class TaskList implements TaskContainer {
 
 		return task;
 	}
-
-	public Task startTask(long id) {
+	
+	public Task startTask(long id, Tasks tasks) {
 		Task currentTask = getTask(id);
 
-		Task newActiveTask = new TaskBuilder(currentTask).start(osInterface.currentSeconds());
+		Task newActiveTask = new TaskBuilder(currentTask)
+				.start(osInterface.currentSeconds(), tasks);
 
 		replaceTask(currentTask, newActiveTask);
 
@@ -102,7 +127,7 @@ public final class TaskList implements TaskContainer {
 		Task currentTask = getTask(id);
 
 		if (currentTask.isRecurring()) {
-			throw new RuntimeException("Recurring tasks cannot be finished.");
+			throw new TaskException("Recurring tasks cannot be finished.");
 		}
 		Task finishedTask = new TaskBuilder(currentTask).finish(osInterface.currentSeconds());
 
@@ -143,6 +168,22 @@ public final class TaskList implements TaskContainer {
 			return Optional.of(this);
 		}
 		return Optional.empty();
+	}
+	
+	@Override
+	public String toString() {
+		return "TaskList{" +
+				"name='" + name + '\'' +
+				", fullPath='" + fullPath + '\'' +
+				", tasks=" + tasks +
+				", project='" + project + '\'' +
+				", feature='" + feature + '\'' +
+				'}';
+	}
+	
+	@Override
+	public String getProject() {
+		return project;
 	}
 	
 	@Override
@@ -196,11 +237,7 @@ public final class TaskList implements TaskContainer {
 	}
 	
 	@Override
-	public String toString() {
-		return "TaskList{" +
-				"name='" + name + '\'' +
-				", fullPath='" + fullPath + '\'' +
-				", tasks=" + tasks +
-				'}';
+	public String getFeature() {
+		return feature;
 	}
 }
