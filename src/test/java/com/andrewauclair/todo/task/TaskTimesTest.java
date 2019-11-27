@@ -27,6 +27,26 @@ class TaskTimesTest {
 	}
 
 	@Test
+	void create_active_times_with_project_and_feature() {
+		TaskTimes times = new TaskTimes(1234, "Test/Project", "Feature");
+
+		assertEquals(1234, times.start);
+		assertEquals(Long.MIN_VALUE, times.stop);
+		assertEquals("Test/Project", times.project);
+		assertEquals("Feature", times.feature);
+	}
+
+	@Test
+	void create_finished_times_with_project_and_feature() {
+		TaskTimes times = new TaskTimes(1234, 4567, "Test/Project", "Feature");
+
+		assertEquals(1234, times.start);
+		assertEquals(4567, times.stop);
+		assertEquals("Test/Project", times.project);
+		assertEquals("Feature", times.feature);
+	}
+
+	@Test
 	void task_times_equals() {
 		EqualsVerifier.forClass(TaskTimes.class).verify();
 	}
@@ -49,9 +69,9 @@ class TaskTimesTest {
 
 	@Test
 	void times_toString() {
-		TaskTimes times = new TaskTimes(1561078202, 1561080022);
+		TaskTimes times = new TaskTimes(1561078202, 1561080022, "Project", "Feature");
 
-		assertEquals("1561078202 - 1561080022", times.toString());
+		assertEquals("1561078202 - 1561080022, project='Project', feature='Feature'", times.toString());
 	}
 
 	@Test

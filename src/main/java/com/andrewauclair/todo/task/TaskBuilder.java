@@ -10,8 +10,6 @@ public class TaskBuilder {
 	private TaskState state;
 	private final List<TaskTimes> taskTimes;
 	private boolean recurring;
-	private String project;
-	private String feature;
 	
 	public TaskBuilder(Task task) {
 		id = task.id;
@@ -19,27 +17,15 @@ public class TaskBuilder {
 		state = task.state;
 		taskTimes = new ArrayList<>(task.getTimes());
 		recurring = task.isRecurring();
-		project = task.getProject();
-		feature = task.getFeature();
 	}
 
 	TaskBuilder withRecurring(boolean recurring) {
 		this.recurring = recurring;
 		return this;
 	}
-
-	TaskBuilder withProject(String project) {
-		this.project = project;
-		return this;
-	}
-
-	TaskBuilder withFeature(String feature) {
-		this.feature = feature;
-		return this;
-	}
-
-	Task start(long start) {
-		taskTimes.add(new TaskTimes(start));
+	
+	Task start(long start, Tasks tasks) {
+		taskTimes.add(new TaskTimes(start, tasks.getProjectForTask(id), tasks.getFeatureForTask(id)));
 		state = TaskState.Active;
 		return build();
 	}
@@ -65,12 +51,12 @@ public class TaskBuilder {
 	
 	private void addStopTime(long stop) {
 		TaskTimes lastTime = taskTimes.remove(taskTimes.size() - 1);
-		
-		TaskTimes stopTime = new TaskTimes(lastTime.start, stop);
+
+		TaskTimes stopTime = new TaskTimes(lastTime.start, stop, lastTime.project, lastTime.feature);
 		taskTimes.add(stopTime);
 	}
 
 	Task build() {
-		return new Task(id, task, state, taskTimes, recurring, project, feature);
+		return new Task(id, task, state, taskTimes, recurring);
 	}
 }

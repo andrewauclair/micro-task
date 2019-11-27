@@ -3,6 +3,7 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 
 repositories {
     mavenLocal()
@@ -37,5 +38,11 @@ jar {
 
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
     }
 }

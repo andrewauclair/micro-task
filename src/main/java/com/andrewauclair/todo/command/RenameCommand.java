@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.task.Task;
@@ -40,11 +41,11 @@ public class RenameCommand extends Command {
 			String list = argsMap.get("list").getValue();
 			
 			if (newName.contains("/")) {
-				throw new RuntimeException("Lists must be renamed with name, not paths.");
+				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
 			
 			if (list.contains("/")) {
-				throw new RuntimeException("Lists must be renamed with name, not paths.");
+				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
 			
 			tasks.renameList(list, newName);

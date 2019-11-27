@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
@@ -40,7 +41,7 @@ public class AddCommand extends Command {
 			taskTitle = argsMap.get("name").getValue();
 		}
 		else {
-			throw new RuntimeException("Missing name argument.");
+			throw new TaskException("Missing name argument.");
 		}
 
 		String list = tasks.getActiveList();
@@ -53,10 +54,6 @@ public class AddCommand extends Command {
 
 		if (argsMap.containsKey("recurring")) {
 			task = tasks.setRecurring(task.id, true);
-		}
-		
-		if (argsMap.containsKey("charge")) {
-			task = tasks.setProject(task.id, argsMap.get("charge").getValue());
 		}
 		
 		output.println("Added task " + task.description());

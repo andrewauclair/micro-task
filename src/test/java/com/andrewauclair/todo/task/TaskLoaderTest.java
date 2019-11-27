@@ -75,8 +75,9 @@ class TaskLoaderTest extends TaskBaseTestCase {
 						new OSInterface.TaskFileInfo("4.txt", "git-data/tasks/one/two/4.txt", false)
 				)
 		);
-		
-		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", "/"));
+
+		TaskGroup parent = new TaskGroup("/");
+		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", parent, "", ""));
 		
 		loader.load();
 		

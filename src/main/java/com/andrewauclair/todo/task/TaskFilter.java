@@ -13,43 +13,58 @@ public class TaskFilter {
 	private final Tasks tasks;
 	private List<Task> allTasks = new ArrayList<>();
 	private List<TaskFilterResult> results = new ArrayList<>();
-
+	
 	public TaskFilter(Tasks tasks) {
 		osInterface = tasks.osInterface;
 		this.tasks = tasks;
 		this.allTasks.addAll(tasks.getAllTasks());
-	}
-	
-	public TaskFilter filterForList(String list) {
-		allTasks = tasks.getTasksForList(list);
-		return this;
-	}
-	
-	public TaskFilter filterForDay(int month, int day, int year) {
-		LocalDate of = LocalDate.of(year, month, day);
-
-		ZoneId zoneId = osInterface.getZoneId();
-		Instant instant = of.atStartOfDay(zoneId).toInstant();
-
-		LocalDate today = LocalDate.ofInstant(instant, zoneId);
-		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(1);
-
-		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
-		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
-
+		
 		List<Task> newTasks = new ArrayList<>();
 		List<TaskFilterResult> newResults = new ArrayList<>();
 		
 		for (Task task : allTasks) {
 			long totalTime = 0;
+			
+			for (TaskTimes time : task.getStartStopTimes()) {
+				totalTime += time.getDuration(osInterface);
+			}
 
+			newTasks.add(task);
+			newResults.add(new TaskFilterResult(totalTime, task));
+		}
+		allTasks = newTasks;
+		results = newResults;
+	}
+	
+	public void filterForList(String list) {
+		allTasks = tasks.getTasksForList(list);
+	}
+	
+	public TaskFilter filterForDay(int month, int day, int year) {
+		LocalDate of = LocalDate.of(year, month, day);
+		
+		ZoneId zoneId = osInterface.getZoneId();
+		Instant instant = of.atStartOfDay(zoneId).toInstant();
+		
+		LocalDate today = LocalDate.ofInstant(instant, zoneId);
+		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(1);
+		
+		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
+		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
+		
+		List<Task> newTasks = new ArrayList<>();
+		List<TaskFilterResult> newResults = new ArrayList<>();
+		
+		for (Task task : allTasks) {
+			long totalTime = 0;
+			
 			for (TaskTimes time : task.getStartStopTimes()) {
 				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 					totalTime += time.getDuration(osInterface);
 				}
 			}
-
+			
 			if (totalTime > 0) {
 				newTasks.add(task);
 				newResults.add(new TaskFilterResult(totalTime, task));
@@ -57,7 +72,7 @@ public class TaskFilter {
 		}
 		allTasks = newTasks;
 		results = newResults;
-
+		
 		return this;
 	}
 	
@@ -68,25 +83,25 @@ public class TaskFilter {
 	public List<TaskFilterResult> getData() {
 		return results;
 	}
-
+	
 	public static final class TaskFilterResult {
 		private final long total;
 		private final Task task;
-
+		
 		TaskFilterResult(long total, Task task) {
-
+			
 			this.total = total;
 			this.task = task;
 		}
-
+		
 		public long getTotal() {
 			return total;
 		}
-
+		
 		public Task getTask() {
 			return task;
 		}
-
+		
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) {
@@ -99,12 +114,12 @@ public class TaskFilter {
 			return total == that.total &&
 					Objects.equals(task, that.task);
 		}
-
+		
 		@Override
 		public int hashCode() {
 			return Objects.hash(total, task);
 		}
-
+		
 		@Override
 		public String toString() {
 			return "TaskFilterResult{" +

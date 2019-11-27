@@ -28,11 +28,12 @@ public class TaskReader {
 		state = TaskState.valueOf(scanner.nextLine());
 
 		boolean recurring = Boolean.parseBoolean(scanner.nextLine());
-		String project = scanner.nextLine();
-		String feature = scanner.nextLine();
 		
 		long start = 0;
 		long stop = TaskTimes.TIME_NOT_SET;
+		String timeProject = "";
+		String timeFeature = "";
+		
 		List<TaskTimes> timesList = new ArrayList<>();
 
 		boolean readTimes = false;
@@ -44,24 +45,31 @@ public class TaskReader {
 
 				readTimes = true;
 			}
-			if (line.startsWith("stop")) {
+			else if (line.startsWith("stop")) {
 				stop = Integer.parseInt(line.substring(5));
-
-				timesList.add(new TaskTimes(start, stop));
+				
+				timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
+				
+				timeProject = "";
+				timeFeature = "";
 			}
-			if (line.startsWith("add")) {
+			else if (line.startsWith("add")) {
 				long add = Integer.parseInt(line.substring(4));
 
 				timesList.add(new TaskTimes(add));
 			}
+			else if (!line.isEmpty()) {
+				timeProject = line;
+				timeFeature = scanner.nextLine();
+			}
 		}
 
 		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
-			timesList.add(new TaskTimes(start, stop));
+			timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
 		}
 
 		scanner.close();
-
-		return new Task(id, task, state, timesList, recurring, project, feature);
+		
+		return new Task(id, task, state, timesList, recurring);
 	}
 }

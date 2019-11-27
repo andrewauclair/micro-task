@@ -23,10 +23,6 @@ public class TaskWriter {
 			outputStream.write(task.state.toString().getBytes());
 			writeNL(outputStream);
 			outputStream.write(String.valueOf(task.isRecurring()).getBytes());
-			writeNL(outputStream);
-			outputStream.write(task.getProject().getBytes());
-			writeNL(outputStream);
-			outputStream.write(task.getFeature().getBytes());
 
 			List<TaskTimes> times = task.getTimes();
 
@@ -42,6 +38,13 @@ public class TaskWriter {
 						writeNL(outputStream);
 						outputStream.write("start ".getBytes());
 						outputStream.write(String.valueOf(time.start).getBytes());
+
+						if (!time.project.isEmpty() || !time.feature.isEmpty()) {
+							writeNL(outputStream);
+							outputStream.write(time.project.getBytes());
+							writeNL(outputStream);
+							outputStream.write(time.feature.getBytes());
+						}
 
 						if (time.stop != TaskTimes.TIME_NOT_SET) {
 							writeNL(outputStream);

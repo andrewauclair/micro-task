@@ -69,9 +69,11 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		assertEquals("test", group.getName());
 		assertEquals("/", group.getParent());
 
+		TaskGroup parent = new TaskGroup("/");
+
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("/default", osInterface, writer),
-				new TaskGroup("test", "/")
+				new TaskList("/default", osInterface, writer, "", ""),
+				new TaskGroup("test", parent, "", "")
 		);
 	}
 
@@ -81,13 +83,19 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		tasks.createGroup("/test/one/");
 		tasks.createGroup("/test/one/two/");
 
-		TaskGroup expected = new TaskGroup("test", "/");
-		TaskGroup one = new TaskGroup("one", "/test/");
+		TaskGroup parent = new TaskGroup("/");
+		parent.addChild(new TaskList("/default", osInterface, writer, "", ""));
+
+		TaskGroup expected = new TaskGroup("test", parent, "", "");
+		parent.addChild(expected);
+
+		TaskGroup one = new TaskGroup("one", expected, "", "");
 		expected.addChild(one);
-		one.addChild(new TaskGroup("two", "/test/one/"));
+
+		one.addChild(new TaskGroup("two", one, "", ""));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("/default", osInterface, writer),
+				new TaskList("/default", osInterface, writer, "", ""),
 				expected
 		);
 	}
@@ -127,5 +135,21 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		TaskGroup groupForList = tasks.getGroupForList("/default");
 		
 		assertEquals(tasks.getRootGroup(), groupForList);
+	}
+
+	@Test
+	void group_gets_project_from_parent_if_project_is_an_empty_string() {
+		TaskGroup parent = new TaskGroup("root", null, "Project", "");
+		TaskGroup child = new TaskGroup("child", parent, "", "");
+
+		assertEquals("Project", child.getProject());
+	}
+
+	@Test
+	void group_gets_feature_from_parent_if_feature_is_an_empty_string() {
+		TaskGroup parent = new TaskGroup("root", null, "", "Feature");
+		TaskGroup child = new TaskGroup("child", parent, "", "");
+
+		assertEquals("Feature", child.getFeature());
 	}
 }

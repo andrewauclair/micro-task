@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.IOException;
@@ -10,29 +11,51 @@ import java.util.*;
 public final class TaskGroup implements TaskContainer {
 	private final String name;
 	private final String fullPath;
-	private final String parent;
+	private final TaskGroup parent;
+	private final String parentPath;
+
+	private final String project;
+	private final String feature;
 	
 	private final List<TaskContainer> children = new ArrayList<>();
-	
+
 	public TaskGroup(String name) {
 		this.name = name;
 		fullPath = name;
+		project = "";
+		feature = "";
 		parent = null;
+		parentPath = null;
 	}
 
 	// name is relative and the parent is the absolute path of the parent
-	TaskGroup(String name, String parent) {
+	TaskGroup(String name, TaskGroup parent, String project, String feature) {
 		this.name = name;
 		this.parent = parent;
 		
-		if (parent.equals("/")) {
-			fullPath = "/" + name + "/";
+		this.project = project;
+		this.feature = feature;
+
+		if (parent != null) {
+			parentPath = parent.getFullPath();
 		}
 		else {
-			fullPath = parent + name + "/";
+			parentPath = "";
+		}
+
+		if (parent != null) {
+			if (parent.getFullPath().equals("/")) {
+				fullPath = "/" + name + "/";
+			}
+			else {
+				fullPath = parent.getFullPath() + name + "/";
+			}
+		}
+		else {
+			fullPath = "/";
 		}
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -52,7 +75,7 @@ public final class TaskGroup implements TaskContainer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parent, children);
+		return Objects.hash(name, fullPath, parentPath, children, project, feature);
 	}
 
 	@Override
@@ -62,18 +85,26 @@ public final class TaskGroup implements TaskContainer {
 		TaskGroup taskGroup = (TaskGroup) o;
 		return Objects.equals(name, taskGroup.name) &&
 				Objects.equals(fullPath, taskGroup.fullPath) &&
-				Objects.equals(parent, taskGroup.parent) &&
-				Objects.equals(children, taskGroup.children);
+				Objects.equals(parentPath, taskGroup.parentPath) &&
+				Objects.equals(children, taskGroup.children) &&
+				Objects.equals(project, taskGroup.project) &&
+				Objects.equals(feature, taskGroup.feature);
 	}
-
-	public TaskGroup rename(String newName) {
-		TaskGroup group = new TaskGroup(newName, parent);
-		group.children.addAll(children);
-		return group;
+	
+	@Override
+	public String toString() {
+		return "TaskGroup{" +
+				"name='" + name + '\'' +
+				", fullPath='" + fullPath + '\'' +
+				", parent=" + (parent == null ? "" : parent.getFullPath()) +
+				", children=" + children +
+				", project='" + project + '\'' +
+				", feature='" + feature + '\'' +
+				'}';
 	}
 
 	public String getParent() {
-		return parent;
+		return parent.getFullPath();
 	}
 	
 	void addChild(TaskContainer child) {
@@ -100,7 +131,7 @@ public final class TaskGroup implements TaskContainer {
 				.findFirst();
 		
 		if (!optionalList.isPresent()) {
-			throw new RuntimeException("List '" + path + "' does not exist.");
+			throw new TaskException("List '" + path + "' does not exist.");
 		}
 		return optionalList.get();
 	}
@@ -126,15 +157,11 @@ public final class TaskGroup implements TaskContainer {
 	public List<TaskContainer> getChildren() {
 		return Collections.unmodifiableList(children);
 	}
-
-	@Override
-	public String toString() {
-		return "TaskGroup{" +
-				"name='" + name + '\'' +
-				", fullPath='" + fullPath + '\'' +
-				", parent=" + (parent == null ? "" : parent) +
-				", children=" + children +
-				'}';
+	
+	public TaskGroup rename(String newName) {
+		TaskGroup group = new TaskGroup(newName, parent, project, feature);
+		group.children.addAll(children);
+		return group;
 	}
 	
 	boolean containsGroup(TaskGroup newGroup) {
@@ -154,6 +181,28 @@ public final class TaskGroup implements TaskContainer {
 			}
 		}
 		return Optional.empty();
+	}
+	
+	TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
+		removeChild(group);
+		
+		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.getProject(), group.getFeature());
+		group.getChildren().forEach(newGroup::addChild);
+		
+		destGroup.addChild(newGroup);
+		
+		try {
+			osInterface.moveFolder(group.getFullPath(), newGroup.getFullPath());
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+			throw new RuntimeException("Failed to move group folder.");
+		}
+		
+		osInterface.runGitCommand("git add .", false);
+		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"", false);
+		
+		return newGroup;
 	}
 	
 	TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
@@ -177,25 +226,33 @@ public final class TaskGroup implements TaskContainer {
 		return newList;
 	}
 	
-	TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
-		removeChild(group);
+	TaskGroup changeProject(String project) {
+		TaskGroup group = new TaskGroup(name, parent, project, feature);
+		getChildren().forEach(group::addChild);
 		
-		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup.getFullPath());
-		group.getChildren().forEach(newGroup::addChild);
+		return group;
+	}
+	
+	TaskGroup changeFeature(String feature) {
+		TaskGroup group = new TaskGroup(name, parent, project, feature);
+		getChildren().forEach(group::addChild);
 		
-		destGroup.addChild(newGroup);
-		
-		try {
-			osInterface.moveFolder(group.getFullPath(), newGroup.getFullPath());
+		return group;
+	}
+	
+	@Override
+	public String getProject() {
+		if (parent != null && project.isEmpty()) {
+			return parent.getProject();
 		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-			throw new RuntimeException("Failed to move group folder.");
+		return project;
+	}
+
+	@Override
+	public String getFeature() {
+		if (parent != null && feature.isEmpty()) {
+			return parent.getFeature();
 		}
-		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"", false);
-		
-		return newGroup;
+		return feature;
 	}
 }
