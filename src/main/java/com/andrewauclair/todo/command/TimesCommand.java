@@ -214,6 +214,7 @@ public class TimesCommand extends Command {
 			TaskFilter filter = new TaskFilter(tasks);
 			
 			Map<String, Long> totals = new HashMap<>();
+			long totalTime = 0;
 			
 			for (Task task : filter.getTasks()) {
 				String project = tasks.getProjectForTask(task.id);
@@ -228,6 +229,7 @@ public class TimesCommand extends Command {
 				String projfeat = project + " / " + feature;
 				
 				totals.put(projfeat, totals.getOrDefault(projfeat, 0L) + task.getElapsedTime(osInterface));
+				totalTime += task.getElapsedTime(osInterface);
 			}
 			
 			List<String> str = new ArrayList<>(totals.keySet());
@@ -239,6 +241,10 @@ public class TimesCommand extends Command {
 				printTotalTime(output, totals.get(s1), true);
 				output.println();
 			}
+			output.println();
+			output.print("Total ");
+			printTotalTime(output, totalTime, true);
+			output.println();
 			output.println();
 		}
 		else {
