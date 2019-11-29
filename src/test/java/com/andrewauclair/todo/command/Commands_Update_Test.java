@@ -75,6 +75,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"19.1.6",
 				"19.1.7"
 		));
+		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 		
 		commands.execute(printStream, "update -r");
 		
@@ -85,7 +86,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"19.1.3",
 				"19.1.4",
-				"19.1.5",
+				"19.1.5 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
 				"19.1.6",
 				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
 				""
@@ -115,6 +116,95 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		
 		assertOutput(
 				"Updated to version 'version-3'",
+				""
+		);
+	}
+	
+	@Test
+	void highlights_current_release() throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList(
+				"19.1.1",
+				"19.1.2",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				"19.1.7"
+		));
+		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
+		
+		commands.execute(printStream, "update -r");
+		
+		assertOutput(
+				"Releases found on GitLab",
+				"",
+				"2 older releases",
+				"",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
+				"19.1.6",
+				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void highlights_current_release_if_current_release_is_not_one_of_newest_5_releases() throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList(
+				"19.1.1",
+				"19.1.2",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				"19.1.7"
+		));
+		Mockito.when(osInterface.getVersion()).thenReturn("19.1.1");
+		
+		commands.execute(printStream, "update -r");
+		
+		assertOutput(
+				"Releases found on GitLab",
+				"",
+				"2 older releases",
+				"",
+				"19.1.1 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void ignores_exception_for_getting_version() throws IOException {
+		Mockito.when(osInterface.getVersion()).thenThrow(IOException.class);
+		
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList(
+				"19.1.1",
+				"19.1.2",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				"19.1.7"
+		));
+		
+		commands.execute(printStream, "update -r");
+		
+		assertOutput(
+				"Releases found on GitLab",
+				"",
+				"2 older releases",
+				"",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
