@@ -35,7 +35,7 @@ public class UpdateCommand extends Command {
 		String[] s = command.split(" ");
 		
 		String arg = s[1];
-
+		
 		List<String> versions;
 		try {
 			versions = gitLabReleases.getVersions();
@@ -55,9 +55,25 @@ public class UpdateCommand extends Command {
 			
 			int toDisplay = Math.min(versions.size(), MAX_DISPLAYED_VERSIONS);
 			
+			String currentVersion = "";
+			
+			try {
+				currentVersion = osInterface.getVersion();
+			}
+			catch (IOException ignored) {
+			}
+			
 			if (versions.size() > 5) {
 				output.println((versions.size() - 5) + " older releases");
 				output.println();
+				
+				if (!versions.subList(versions.size() - 5, versions.size()).contains(currentVersion) && !currentVersion.isEmpty()) {
+					output.print(currentVersion);
+					output.print(" ");
+					output.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
+					output.print("-- current");
+					output.println(ConsoleColors.ANSI_RESET);
+				}
 			}
 			
 			for (int i = versions.size() - toDisplay; i < versions.size(); i++) {
@@ -66,6 +82,13 @@ public class UpdateCommand extends Command {
 				}
 				output.print(versions.get(i));
 				if (i + 1 == versions.size()) {
+					output.print(ConsoleColors.ANSI_RESET);
+				}
+				
+				if (versions.get(i).equals(currentVersion)) {
+					output.print(" ");
+					output.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
+					output.print("-- current");
 					output.print(ConsoleColors.ANSI_RESET);
 				}
 				output.println();
