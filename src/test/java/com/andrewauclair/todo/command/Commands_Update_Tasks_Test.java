@@ -23,15 +23,11 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		Mockito.verify(writer).writeTask(task1, "git-data/tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
 		Mockito.verify(writer).writeTask(task2, "git-data/tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt", false);
 		Mockito.verify(writer).writeTask(task3, "git-data/tasks/one/3.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/3.txt", false);
 		Mockito.verify(writer).writeTask(task4, "git-data/tasks/one/4.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/4.txt", false);
 		Mockito.verify(writer).writeTask(task5, "git-data/tasks/one/5.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/5.txt", false);
+		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updating task files.\"", false);
 
 		assertOutput(

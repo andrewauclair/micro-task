@@ -132,10 +132,6 @@ public class Tasks {
 		return true;
 	}
 	
-	private void writeTask(Task task, String list) {
-		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-	}
-	
 	public boolean hasActiveTask() {
 		return activeTaskID != NO_ACTIVE_TASK;
 	}
@@ -204,6 +200,7 @@ public class Tasks {
 		if (activeTaskID == currentTask.id) {
 			throw new RuntimeException("Task is already active.");
 		}
+		
 		if (activeTaskID != NO_ACTIVE_TASK) {
 			if (finishActive) {
 				finishTask();
@@ -408,7 +405,7 @@ public class Tasks {
 		String list = findListForTask(task.id).getFullPath();
 		replaceTask(list, optionalTask, task);
 		
-		writeTask(task, list);
+		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 		
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"", false);

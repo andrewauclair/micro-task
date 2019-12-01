@@ -106,9 +106,9 @@ public class UpdateCommand extends Command {
 			for (Task task : taskList) {
 				String list = tasks.findListForTask(task.id).getFullPath();
 				tasks.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-				osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
 			}
 			
+			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Updating task files.\"", false);
 			
 			output.println("Updated all tasks.");
