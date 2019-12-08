@@ -1,9 +1,11 @@
+image: openjdk:11-jdk
+
 stages:
   - build
   - test
   - quality_assurance
   - deploy
-  
+
 build:
   stage: build
   script:
@@ -13,7 +15,7 @@ build:
     paths:
       - build/
     expire_in: 1 week
-   
+
 test:
   stage: test
   script:
