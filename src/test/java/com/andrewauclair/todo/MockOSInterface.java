@@ -54,7 +54,8 @@ public class MockOSInterface implements OSInterface {
 	}
 
 	@Override
-	public InputStream createInputStream(String fileName) {
+	public InputStream createInputStream(String fileName) throws IOException {
+		// throws IOException for tests even though it's not used
 		return null;
 	}
 

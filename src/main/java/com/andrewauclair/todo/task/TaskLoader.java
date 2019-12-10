@@ -4,6 +4,8 @@ package com.andrewauclair.todo.task;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
 
 public class TaskLoader {
 	private final Tasks tasks;
@@ -30,10 +32,30 @@ public class TaskLoader {
 				if (isGroup) {
 					tasks.createGroup(name + "/");
 					tasks.switchGroup(name + "/");
+					
+					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
+						Scanner scanner = new Scanner(inputStream);
+						
+						if (scanner.hasNextLine()) {
+							tasks.setProject(tasks.getGroup("/" + name + "/"), scanner.nextLine());
+							tasks.setFeature(tasks.getGroup("/" + name + "/"), scanner.nextLine());
+						}
+					}
+					catch (IOException ignored) {
+					}
 				}
 				else {
 					tasks.addList(name);
 					tasks.setActiveList(name);
+					
+					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
+						Scanner scanner = new Scanner(inputStream);
+						
+						tasks.setProject(tasks.getListByName("/" + name), scanner.nextLine());
+						tasks.setFeature(tasks.getListByName("/" + name), scanner.nextLine());
+					}
+					catch (IOException ignored) {
+					}
 				}
 				loadTasks(fileInfo.getPath());
 				
@@ -41,7 +63,8 @@ public class TaskLoader {
 					tasks.switchGroup(tasks.getActiveGroup().getParent());
 				}
 			}
-			else if (!fileInfo.getFileName().equals("group.txt")) {
+			else if (!fileInfo.getFileName().equals("group.txt") &&
+					!fileInfo.getFileName().equals("list.txt")) {
 				String fileName = fileInfo.getFileName();
 				long id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
 				
