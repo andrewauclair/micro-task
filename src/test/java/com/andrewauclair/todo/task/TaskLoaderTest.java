@@ -7,9 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static com.andrewauclair.todo.Utils.NL;
 
 class TaskLoaderTest extends TaskBaseTestCase {
 	Tasks tasks = Mockito.mock(Tasks.class);
@@ -30,9 +33,14 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.listFiles("git-data/tasks/test")).thenReturn(
-				Collections.singletonList(
+				Arrays.asList(
+						new OSInterface.TaskFileInfo("list.txt", "git-data/tasks/test/list.txt", false),
 						new OSInterface.TaskFileInfo("1.txt", "git-data/tasks/test/1.txt", false)
 				)
+		);
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
+				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
 		);
 		
 		loader.load();
@@ -57,6 +65,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		
 		Mockito.when(osInterface.listFiles("git-data/tasks/test")).thenReturn(
 				Arrays.asList(
+						new OSInterface.TaskFileInfo("list.txt", "git-data/tasks/test/list.txt", false),
 						new OSInterface.TaskFileInfo("1.txt", "git-data/tasks/test/1.txt", false),
 						new OSInterface.TaskFileInfo("2.txt", "git-data/tasks/test/2.txt", false)
 				)
@@ -71,13 +80,26 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		
 		Mockito.when(osInterface.listFiles("git-data/tasks/one/two")).thenReturn(
 				Arrays.asList(
+						new OSInterface.TaskFileInfo("list.txt", "git-data/tasks/one/two/list.txt", false),
 						new OSInterface.TaskFileInfo("3.txt", "git-data/tasks/one/two/3.txt", false),
 						new OSInterface.TaskFileInfo("4.txt", "git-data/tasks/one/two/4.txt", false)
 				)
 		);
-
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
+				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+		);
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/two/list.txt")).thenReturn(
+				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+		);
+		
 		TaskGroup parent = new TaskGroup("/");
 		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", parent, "", ""));
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
+				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+		);
 		
 		loader.load();
 		
