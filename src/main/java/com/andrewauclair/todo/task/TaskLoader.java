@@ -33,12 +33,12 @@ public class TaskLoader {
 					TaskGroup group = tasks.createGroup(name + "/");
 					tasks.switchGroup(name + "/");
 					
-					try (InputStream inputStream = osInterface.createInputStream(folder + group.getFullPath() + "/group.txt")) {
+					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
 						if (scanner.hasNextLine()) {
-							tasks.setProject(group, scanner.nextLine());
-							tasks.setFeature(group, scanner.nextLine());
+							tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine());
+							tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine());
 						}
 					}
 					catch (IOException ignored) {
@@ -48,7 +48,7 @@ public class TaskLoader {
 					tasks.addList(name);
 					tasks.setActiveList(name);
 					
-					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + tasks.getActiveList() + "/list.txt")) {
+					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
 						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
