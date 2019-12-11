@@ -30,15 +30,15 @@ public class TaskLoader {
 				
 				boolean isGroup = isGroupFolder(fileInfo.getPath());
 				if (isGroup) {
-					tasks.createGroup(name + "/");
+					TaskGroup group = tasks.createGroup(name + "/");
 					tasks.switchGroup(name + "/");
 					
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
 						if (scanner.hasNextLine()) {
-							tasks.setProject(tasks.getGroup(name + "/"), scanner.nextLine());
-							tasks.setFeature(tasks.getGroup(name + "/"), scanner.nextLine());
+							tasks.setProject(group, scanner.nextLine());
+							tasks.setFeature(group, scanner.nextLine());
 						}
 					}
 					catch (IOException ignored) {
@@ -51,8 +51,8 @@ public class TaskLoader {
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
-						tasks.setProject(tasks.getListByName(name), scanner.nextLine());
-						tasks.setFeature(tasks.getListByName(name), scanner.nextLine());
+						tasks.setProject(tasks.getActiveList(), scanner.nextLine());
+						tasks.setFeature(tasks.getActiveList(), scanner.nextLine());
 					}
 					catch (IOException ignored) {
 					}
