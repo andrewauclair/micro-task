@@ -44,6 +44,7 @@ public class Commands {
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
 		commands.put("git", new GitCommand(osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
+		commands.put("next", new NextCommand(tasks));
 	}
 	
 	public void execute(PrintStream output, String command) {
