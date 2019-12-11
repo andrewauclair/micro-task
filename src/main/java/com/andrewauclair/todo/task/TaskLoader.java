@@ -51,8 +51,8 @@ public class TaskLoader {
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
-						tasks.setProject(tasks.getActiveList(), scanner.nextLine());
-						tasks.setFeature(tasks.getActiveList(), scanner.nextLine());
+						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
+						tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
 					}
 					catch (IOException ignored) {
 					}
