@@ -37,8 +37,8 @@ public class TaskLoader {
 						Scanner scanner = new Scanner(inputStream);
 						
 						if (scanner.hasNextLine()) {
-							tasks.setProject(tasks.getGroup("/" + name + "/"), scanner.nextLine());
-							tasks.setFeature(tasks.getGroup("/" + name + "/"), scanner.nextLine());
+							tasks.setProject(tasks.getGroup(name + "/"), scanner.nextLine());
+							tasks.setFeature(tasks.getGroup(name + "/"), scanner.nextLine());
 						}
 					}
 					catch (IOException ignored) {
@@ -51,8 +51,8 @@ public class TaskLoader {
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
-						tasks.setProject(tasks.getListByName("/" + name), scanner.nextLine());
-						tasks.setFeature(tasks.getListByName("/" + name), scanner.nextLine());
+						tasks.setProject(tasks.getListByName(name), scanner.nextLine());
+						tasks.setFeature(tasks.getListByName(name), scanner.nextLine());
 					}
 					catch (IOException ignored) {
 					}
