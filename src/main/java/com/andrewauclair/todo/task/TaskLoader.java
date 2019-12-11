@@ -33,7 +33,7 @@ public class TaskLoader {
 					TaskGroup group = tasks.createGroup(name + "/");
 					tasks.switchGroup(name + "/");
 					
-					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
+					try (InputStream inputStream = osInterface.createInputStream(folder + group.getFullPath() + "/group.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
 						if (scanner.hasNextLine()) {
@@ -48,7 +48,7 @@ public class TaskLoader {
 					tasks.addList(name);
 					tasks.setActiveList(name);
 					
-					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
+					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + tasks.getActiveList() + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
 						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
