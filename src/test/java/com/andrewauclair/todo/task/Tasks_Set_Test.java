@@ -99,6 +99,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		TestUtils.assertOutput(listStream,
 				"Issue",
+				"",
 				""
 		);
 		
@@ -122,6 +123,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		TestUtils.assertOutput(groupStream,
 				"Issue",
+				"",
 				""
 		);
 		
@@ -146,7 +148,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		TestUtils.assertOutput(listStream,
 				"",
-				"Feature"
+				"Feature",
+				""
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
@@ -169,7 +172,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		TestUtils.assertOutput(groupStream,
 				"",
-				"Feature"
+				"Feature",
+				""
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");

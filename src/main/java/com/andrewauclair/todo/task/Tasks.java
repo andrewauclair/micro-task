@@ -444,6 +444,7 @@ public class Tasks {
 			outputStream.write(list.getProject().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(list.getFeature().getBytes());
+			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -475,6 +476,7 @@ public class Tasks {
 			outputStream.write(group.getProject().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(group.getFeature().getBytes());
+			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
