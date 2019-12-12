@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class TaskReader {
 	private final OSInterface osInterface;
-	
+
 	public TaskReader(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
@@ -28,12 +29,12 @@ public class TaskReader {
 		state = TaskState.valueOf(scanner.nextLine());
 
 		boolean recurring = Boolean.parseBoolean(scanner.nextLine());
-		
+
 		long start = 0;
 		long stop = TaskTimes.TIME_NOT_SET;
 		String timeProject = "";
 		String timeFeature = "";
-		
+
 		List<TaskTimes> timesList = new ArrayList<>();
 
 		boolean readTimes = false;
@@ -47,9 +48,9 @@ public class TaskReader {
 			}
 			else if (line.startsWith("stop")) {
 				stop = Integer.parseInt(line.substring(5));
-				
+
 				timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
-				
+
 				timeProject = "";
 				timeFeature = "";
 			}
@@ -58,7 +59,7 @@ public class TaskReader {
 
 				timesList.add(new TaskTimes(add));
 			}
-			else {
+			else if (timesList.size() > 0) {
 				timeProject = line;
 				timeFeature = scanner.nextLine();
 			}
@@ -69,7 +70,7 @@ public class TaskReader {
 		}
 
 		scanner.close();
-		
+
 		return new Task(id, task, state, timesList, recurring);
 	}
 }
