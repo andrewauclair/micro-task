@@ -235,14 +235,19 @@ public class TimesCommand extends Command {
 			List<String> str = new ArrayList<>(totals.keySet());
 			str.sort(String::compareTo);
 			
+			Optional<String> longest = str.stream()
+					.max(Comparator.comparingInt(String::length));
+			
 			for (String s1 : str) {
 				output.print(s1);
+				output.print(String.join("", Collections.nCopies(longest.get().length() - s1.length(), " ")));
 				output.print(" ");
 				printTotalTime(output, totals.get(s1), true);
 				output.println();
 			}
 			output.println();
 			output.print("Total ");
+			output.print(String.join("", Collections.nCopies(longest.get().length() - "Total".length(), " ")));
 			printTotalTime(output, totalTime, true);
 			output.println();
 			output.println();

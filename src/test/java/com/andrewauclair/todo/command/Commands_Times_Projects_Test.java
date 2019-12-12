@@ -28,7 +28,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 				"Project 1 / Feature 1     16m 40s",
 				"Project 2 / Feature 2     20m 00s",
 				"",
-				"Total     36m 40s",
+				"Total                     36m 40s",
 				""
 		);
 	}
@@ -45,7 +45,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"None / None     16m 40s",
 				"",
-				"Total     16m 40s",
+				"Total           16m 40s",
 				""
 		);
 	}
@@ -63,7 +63,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"None / Feature 1     16m 40s",
 				"",
-				"Total     16m 40s",
+				"Total                16m 40s",
 				""
 		);
 	}
@@ -81,7 +81,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Project 1 / None     16m 40s",
 				"",
-				"Total     16m 40s",
+				"Total                16m 40s",
 				""
 		);
 	}
