@@ -17,6 +17,7 @@ public class Commands {
 	private final Tasks tasks;
 	
 	private final Map<String, Command> commands = new HashMap<>();
+	
 	private final Map<String, String> aliases = new HashMap<>();
 	
 	public Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
@@ -113,7 +114,11 @@ public class Commands {
 		return commands;
 	}
 	
-	void addAlias(String name, String command) {
+	public void addAlias(String name, String command) {
 		aliases.put(name, command);
+	}
+	
+	public Map<String, String> getAliases() {
+		return aliases;
 	}
 }
