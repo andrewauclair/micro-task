@@ -58,7 +58,7 @@ public class TaskReader {
 
 				timesList.add(new TaskTimes(add));
 			}
-			else if (!line.isEmpty()) {
+			else {
 				timeProject = line;
 				timeFeature = scanner.nextLine();
 			}
