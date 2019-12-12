@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import static com.andrewauclair.todo.Utils.NL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Commands_Alias_Test extends CommandsBaseTestCase {
@@ -33,7 +34,25 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"ttt=\"times --tasks --today\""
+				"ttt=\"times --tasks --today\"" + NL
+		);
+	}
+	
+	@Test
+	void write_multiple_aliases_to_a_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
+		
+		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		
+		outputStream.reset();
+		
+		commands.execute(printStream, "alias --name lt --command \"list --tasks\"");
+		
+		assertThat(outputStream.toString()).isEqualTo(
+				"ttt=\"times --tasks --today\"" + NL +
+						"lt=\"list --tasks\"" + NL
 		);
 	}
 	

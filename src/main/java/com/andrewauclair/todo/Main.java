@@ -60,6 +60,8 @@ public class Main {
 			exception = true;
 		}
 		
+		reloadAliases(osInterface, commands);
+		
 		Terminal terminal = TerminalBuilder.builder()
 				.jna(true)
 				.nativeSignals(true)
@@ -218,6 +220,29 @@ public class Main {
 		catch (IOException ignored) {
 		}
 		return 1;
+	}
+	
+	// TODO Add this somewhere that's tested
+	private static void reloadAliases(OSInterface osInterface, Commands commands) {
+		try {
+			Scanner scanner = new Scanner(osInterface.createInputStream("git-data/aliases.txt"));
+			
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				
+				String[] split = line.split("=");
+				
+				String name = split[0];
+				String command = split[1].substring(1, split[1].length() - 1);
+				
+				commands.addAlias(name, command);
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	// temporary function that we will use to assign a project and feature to all existing task times at work

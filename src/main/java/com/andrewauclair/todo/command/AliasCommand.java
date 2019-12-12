@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
 
@@ -42,10 +43,17 @@ public class AliasCommand extends Command {
 		try {
 			DataOutputStream outputStream = osInterface.createOutputStream("git-data/aliases.txt");
 			
-			outputStream.write(argsMap.get("name").getValue().getBytes());
-			outputStream.write("=\"".getBytes());
-			outputStream.write(argsMap.get("command").getValue().getBytes());
-			outputStream.write("\"".getBytes());
+			Map<String, String> aliases = commands.getAliases();
+			
+			for (String name : aliases.keySet()) {
+				String aliasCommand = aliases.get(name);
+				
+				outputStream.write(name.getBytes());
+				outputStream.write("=\"".getBytes());
+				outputStream.write(aliasCommand.getBytes());
+				outputStream.write("\"".getBytes());
+				outputStream.write(Utils.NL.getBytes());
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
