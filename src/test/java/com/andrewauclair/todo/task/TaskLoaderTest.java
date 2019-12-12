@@ -100,7 +100,9 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
 				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
 		);
-		
+
+		Mockito.when(tasks.createGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", ""));
+
 		loader.load();
 		
 		InOrder order = Mockito.inOrder(tasks);

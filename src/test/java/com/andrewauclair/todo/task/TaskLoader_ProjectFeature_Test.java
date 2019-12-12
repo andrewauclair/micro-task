@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.todo.Utils.NL;
@@ -38,6 +39,41 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		
 		assertEquals("Project X", tasks.getGroup("/one/").getProject());
 		assertEquals("Feature Y", tasks.getGroup("/one/").getFeature());
+	}
+	
+	@Test
+	void load_projects_and_features_for_nested_group() throws IOException {
+		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
+				)
+		);
+		
+		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
+				Arrays.asList(
+						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false),
+						new OSInterface.TaskFileInfo("two", "git-data/tasks/one/two", true)
+				)
+		);
+		
+		Mockito.when(osInterface.listFiles("git-data/tasks/one/two")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/two/group.txt", false)
+				)
+		);
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
+				new ByteArrayInputStream(("" + NL + "" + NL).getBytes())
+		);
+		
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/two/group.txt")).thenReturn(
+				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+		);
+		
+		loader.load();
+		
+		assertEquals("Project X", tasks.getGroup("/one/two/").getProject());
+		assertEquals("Feature Y", tasks.getGroup("/one/two/").getFeature());
 	}
 	
 	@Test
