@@ -153,4 +153,13 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 		assertEquals("Feature", child.getFeature());
 	}
+	
+	@Test
+	void add_group_without_creating_folder_or_adding_to_git__used_for_reloading_groups() {
+		tasks.addGroup("/one/two/");
+		
+		assertTrue(tasks.hasGroupPath("/one/two/"));
+		
+		Mockito.verifyZeroInteractions(osInterface);
+	}
 }
