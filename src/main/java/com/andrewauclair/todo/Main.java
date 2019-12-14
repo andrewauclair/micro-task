@@ -57,6 +57,9 @@ public class Main {
 			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
 			e.printStackTrace();
 			
+			System.out.println();
+			System.out.println("Last file: " + osInterface.getLastInputFile());
+			
 			exception = true;
 		}
 		
