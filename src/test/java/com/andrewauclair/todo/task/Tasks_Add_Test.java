@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -230,18 +231,18 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void add_to_specific_list_throws_exception_if_list_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask("Test", "one"));
-
-		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "one"));
+		
+		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists() {
 		tasks.addTask(new Task(1, "Test throw", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 		
-		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
+		
+		assertEquals("Task with ID 1 already exists.", taskException.getMessage());
 	}
 
 	@Test
@@ -249,15 +250,15 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Test");
 		tasks.addList("one");
 		tasks.setActiveList("one");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
+		
+		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
 	
 	@Test
 	void add_throws_exception_if_group_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.addTask("Test", "/one/two"));
+		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "/one/two"));
 		
 		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
 	}

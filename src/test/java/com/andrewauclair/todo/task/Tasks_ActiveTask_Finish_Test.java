@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -51,19 +52,19 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	void finishing_a_task_resets_the_active_task() {
 		Task oldTask = tasks.startTask(1, false);
 		Task finishedTask = tasks.finishTask();
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTask);
-
-		assertEquals("No active task.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, tasks::getActiveTask);
+		
+		assertEquals("No active task.", taskException.getMessage());
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(finishedTask);
 	}
 
 	@Test
 	void finish_with_no_active_task_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::finishTask);
-
-		assertEquals("No active task.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
+		
+		assertEquals("No active task.", taskException.getMessage());
 	}
 
 	@Test

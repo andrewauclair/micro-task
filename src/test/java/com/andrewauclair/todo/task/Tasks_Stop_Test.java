@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -202,8 +203,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		assertEquals("/default", tasks.getActiveTaskList());
 
 		tasks.stopTask();
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTaskList);
-		assertEquals("No active task.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, tasks::getActiveTaskList);
+		assertEquals("No active task.", taskException.getMessage());
 	}
 }

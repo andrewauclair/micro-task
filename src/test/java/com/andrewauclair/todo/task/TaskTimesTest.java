@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
@@ -76,9 +77,9 @@ class TaskTimesTest {
 
 	@Test
 	void start_time_can_not_be_before_stop_time() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskTimes(2000, 1000));
-
-		assertEquals("Stop time can not come before start time.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> new TaskTimes(2000, 1000));
+		
+		assertEquals("Stop time can not come before start time.", taskException.getMessage());
 	}
 
 	@Test

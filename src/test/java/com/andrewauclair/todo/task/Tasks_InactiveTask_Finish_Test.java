@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -82,8 +83,8 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.finishTask(3));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.finishTask(3));
 		
-		assertEquals("Task 3 does not exist.", runtimeException.getMessage());
+		assertEquals("Task 3 does not exist.", taskException.getMessage());
 	}
 }

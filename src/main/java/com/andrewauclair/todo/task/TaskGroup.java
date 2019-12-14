@@ -196,7 +196,7 @@ public final class TaskGroup implements TaskContainer {
 		}
 		catch (IOException e) {
 			e.printStackTrace(output);
-			throw new RuntimeException("Failed to move group folder.");
+			throw new TaskException("Failed to move group folder.");
 		}
 		
 		osInterface.runGitCommand("git add .", false);
@@ -217,7 +217,7 @@ public final class TaskGroup implements TaskContainer {
 		}
 		catch (IOException e) {
 			e.printStackTrace(output);
-			throw new RuntimeException("Failed to move list folder.");
+			throw new TaskException("Failed to move list folder.");
 		}
 		
 		osInterface.runGitCommand("git add .", false);

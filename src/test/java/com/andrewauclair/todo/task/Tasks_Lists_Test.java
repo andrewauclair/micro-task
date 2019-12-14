@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -73,23 +74,23 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.setActiveList("/one"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one"));
 		
-		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
+		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 	
 	@Test
 	void setCurrentList_throws_exception_when_group_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.setActiveList("/one/two"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one/two"));
 		
-		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
+		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
 	}
 	
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
 		TaskList list = new TaskList("one", osInterface, writer, "", "");
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> list.finishTask(3));
+		TaskException taskException = assertThrows(TaskException.class, () -> list.finishTask(3));
 		
-		assertEquals("Task 3 does not exist.", runtimeException.getMessage());
+		assertEquals("Task 3 does not exist.", taskException.getMessage());
 	}
 }

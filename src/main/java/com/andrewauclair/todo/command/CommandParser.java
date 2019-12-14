@@ -40,7 +40,7 @@ public final class CommandParser {
 					CommandOption commandOption = options.get(String.valueOf(c));
 					
 					if (commandOption == null) {
-						throw new RuntimeException("Unknown option '" + c + "'");
+						throw new TaskException("Unknown option '" + c + "'");
 					}
 					
 					if (commandOption.getArgumentCount() > 0) {

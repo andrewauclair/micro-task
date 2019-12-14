@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.command.CommandsBaseTestCase;
 import org.junit.jupiter.api.Assertions;
@@ -30,9 +31,9 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void group_paths_need_to_start_with_root() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.hasGroupPath("test"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.hasGroupPath("test"));
 		
-		assertEquals("Group path must start with root (/).", runtimeException.getMessage());
+		assertEquals("Group path must start with root (/).", taskException.getMessage());
 	}
 	
 	@Test
@@ -113,9 +114,9 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void switch_group_fails_if_group_path_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.switchGroup("/test/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.switchGroup("/test/"));
 		
-		assertEquals("Group '/test/' does not exist.", runtimeException.getMessage());
+		assertEquals("Group '/test/' does not exist.", taskException.getMessage());
 		
 		// path should not have changed
 		assertEquals("/", tasks.getGroupPath());

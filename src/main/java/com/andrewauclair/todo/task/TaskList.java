@@ -195,7 +195,7 @@ public final class TaskList implements TaskContainer {
 		Task task = getTask(id);
 
 		if (list.equals(this)) {
-			throw new RuntimeException("Task " + id + " is already on list '" + getFullPath() + "'.");
+			throw new TaskException("Task " + id + " is already on list '" + getFullPath() + "'.");
 		}
 
 		removeTask(task);
@@ -233,7 +233,7 @@ public final class TaskList implements TaskContainer {
 		if (optionalTask.isPresent()) {
 			return optionalTask.get();
 		}
-		throw new RuntimeException("Task " + id + " does not exist.");
+		throw new TaskException("Task " + id + " does not exist.");
 	}
 	
 	@Override
