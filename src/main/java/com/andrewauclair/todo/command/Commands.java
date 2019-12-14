@@ -118,6 +118,10 @@ public class Commands {
 		aliases.put(name, command);
 	}
 	
+	public void removeAlias(String name) {
+		aliases.remove(name);
+	}
+	
 	public Map<String, String> getAliases() {
 		return aliases;
 	}
