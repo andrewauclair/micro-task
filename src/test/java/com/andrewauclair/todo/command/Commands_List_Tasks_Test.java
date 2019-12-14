@@ -229,7 +229,23 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
+	@Test
+	void list_tasks_with_recurring_task() {
+		tasks.addTask("Test");
+		
+		tasks.setRecurring(1, true);
+		
+		commands.execute(printStream, "list --tasks");
+		
+		assertOutput(
+				"R 1 - 'Test'",
+				"",
+				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				""
+		);
+	}
+	
 	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
 		commands.execute(printStream, "list --tasks --group");

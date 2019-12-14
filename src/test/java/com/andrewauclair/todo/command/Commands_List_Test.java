@@ -27,7 +27,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
 	@Test
 	void list_groups_and_lists_for_nested_group() {
 		tasks.addList("none");

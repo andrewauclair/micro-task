@@ -162,14 +162,21 @@ public class ListCommand extends Command {
 	}
 
 	private void printTask(PrintStream output, Task task, int maxLength) {
+		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
+		
 		if (task.id == tasks.getActiveTaskID()) {
 			output.print("* ");
-			output.print(String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " ")));
+			output.print(printID);
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+		}
+		else if (task.isRecurring()) {
+			output.print("R ");
+			output.print(printID);
+			output.println(task.description());
 		}
 		else {
 			output.print("  ");
-			output.print(String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " ")));
+			output.print(printID);
 			output.println(task.description());
 		}
 	}
