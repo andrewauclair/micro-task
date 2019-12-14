@@ -27,7 +27,8 @@ class ListCommandTest extends CommandsBaseTestCase {
 										),
 										node("--all"),
 										node("--group",
-												node("--all")
+												node("--all"),
+												node("--recursive")
 										)
 								)
 						),

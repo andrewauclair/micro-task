@@ -33,7 +33,8 @@ public class ListCommand extends Command {
 		boolean showTasks = parameters.contains("--tasks");
 		boolean showLists = parameters.contains("--lists");
 		boolean useGroup = parameters.contains("--group");
-
+		boolean recursive = parameters.contains("--recursive");
+		
 		String list = tasks.getActiveList();
 
 		if (parameters.contains("--list")) {
@@ -61,23 +62,7 @@ public class ListCommand extends Command {
 			int totalTasks = 0;
 
 			if (useGroup) {
-				for (TaskContainer child : tasks.getActiveGroup().getChildren()) {
-					if (child instanceof TaskList) {
-						TaskList listChild = (TaskList) child;
-
-						List<Task> tasksList = listChild.getTasks().stream()
-								.filter(task -> task.state != TaskState.Finished)
-								.collect(Collectors.toList());
-
-						totalTasks += tasksList.size();
-
-						if (tasksList.size() > 0) {
-							output.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
-							printTasks(output, tasksList, Integer.MAX_VALUE);
-							output.println();
-						}
-					}
-				}
+				totalTasks = printTasks(output, tasks.getActiveGroup(), totalTasks, recursive);
 			}
 			else {
 				List<Task> tasksList = tasks.getTasksForList(list).stream()
@@ -127,7 +112,28 @@ public class ListCommand extends Command {
 			output.println();
 		}
 	}
-
+	
+	@Override
+	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
+		return Arrays.asList(
+				node("list",
+						node("--tasks",
+								node("--list",
+										node(new ListCompleter(tasks, true), node("--all"))
+								),
+								node("--all"),
+								node("--group",
+										node("--all"),
+										node("--recursive")
+								)
+						)
+				),
+				node("list",
+						node("--lists")
+				)
+		);
+	}
+	
 	private void printTasks(PrintStream output, List<Task> tasksList, int limit) {
 		Optional<Task> max = tasksList.stream()
 				.limit(limit)
@@ -180,24 +186,28 @@ public class ListCommand extends Command {
 			output.println(task.description());
 		}
 	}
-
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Arrays.asList(
-				node("list",
-						node("--tasks",
-								node("--list",
-										node(new ListCompleter(tasks, true), node("--all"))
-								),
-								node("--all"),
-								node("--group",
-										node("--all")
-								)
-						)
-				),
-				node("list",
-						node("--lists")
-				)
-		);
+	
+	private int printTasks(PrintStream output, TaskGroup group, int totalTasks, boolean recursive) {
+		for (TaskContainer child : group.getChildren()) {
+			if (child instanceof TaskList) {
+				TaskList listChild = (TaskList) child;
+				
+				List<Task> tasksList = listChild.getTasks().stream()
+						.filter(task -> task.state != TaskState.Finished)
+						.collect(Collectors.toList());
+				
+				totalTasks += tasksList.size();
+				
+				if (tasksList.size() > 0) {
+					output.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
+					printTasks(output, tasksList, Integer.MAX_VALUE);
+					output.println();
+				}
+			}
+			else if (recursive) {
+				totalTasks += printTasks(output, (TaskGroup) child, totalTasks, recursive);
+			}
+		}
+		return totalTasks;
 	}
 }
