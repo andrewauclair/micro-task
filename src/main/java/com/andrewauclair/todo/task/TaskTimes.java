@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.time.Instant;
@@ -30,7 +31,7 @@ public final class TaskTimes {
 
 	public TaskTimes(long start, long stop, String project, String feature) {
 		if (stop < start && stop != TIME_NOT_SET) {
-			throw new RuntimeException("Stop time can not come before start time.");
+			throw new TaskException("Stop time can not come before start time.");
 		}
 
 		this.start = start;

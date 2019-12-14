@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -71,14 +72,14 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void throws_exception_if_task_was_not_found() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameTask(5, "Throws exception"));
-		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameTask(5, "Throws exception"));
+		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 	
 	@Test
 	void getTask_throws_exception_if_task_was_not_found() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.getTask(5));
-		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getTask(5));
+		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 	
 	@Test
@@ -229,15 +230,15 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void list_rename_throws_exception_if_old_list_is_not_found() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("old", "new"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("old", "new"));
 		
-		assertEquals("List '/old' does not exist.", runtimeException.getMessage());
+		assertEquals("List '/old' does not exist.", taskException.getMessage());
 	}
 	
 	@Test
 	void list_rename_throws_exception_if_old_group_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.renameList("/one/two", "/one/three"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("/one/two", "/one/three"));
 		
-		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
+		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
 	}
 }

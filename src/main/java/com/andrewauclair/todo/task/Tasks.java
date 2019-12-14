@@ -52,7 +52,7 @@ public class Tasks {
 	}
 	
 	private void throwTaskNotFound(long id) {
-		throw new RuntimeException("Task " + id + " does not exist.");
+		throw new TaskException("Task " + id + " does not exist.");
 	}
 	
 	private long incrementID() {
@@ -198,7 +198,7 @@ public class Tasks {
 		Task currentTask = getListForTask(id).getTask(id);
 		
 		if (activeTaskID == currentTask.id) {
-			throw new RuntimeException("Task is already active.");
+			throw new TaskException("Task is already active.");
 		}
 		
 		if (activeTaskID != NO_ACTIVE_TASK) {
@@ -251,13 +251,11 @@ public class Tasks {
 		return getGroup(groupName);
 	}
 	
-	public Task getActiveTask() {
+	public String getActiveTaskList() {
 		if (activeTaskID == NO_ACTIVE_TASK) {
-			throw new RuntimeException("No active task.");
+			throw new TaskException("No active task.");
 		}
-		TaskList list = findListForTask(activeTaskID);
-		
-		return list.getTask(activeTaskID);
+		return getListForTask(activeTaskID).getFullPath();
 	}
 	
 	public Task finishTask(long id) {
@@ -279,6 +277,15 @@ public class Tasks {
 		return groupName;
 	}
 	
+	public Task getActiveTask() {
+		if (activeTaskID == NO_ACTIVE_TASK) {
+			throw new TaskException("No active task.");
+		}
+		TaskList list = findListForTask(activeTaskID);
+		
+		return list.getTask(activeTaskID);
+	}
+	
 	public void renameList(String oldName, String newName) {
 		String absoluteOldList = getAbsoluteListName(oldName);
 		String absoluteNewList = getAbsoluteListName(newName);
@@ -286,7 +293,7 @@ public class Tasks {
 		TaskGroup group = getGroupForList(absoluteOldList);
 		
 		if (!group.containsListAbsolute(absoluteOldList)) {
-			throw new RuntimeException("List '" + absoluteOldList + "' does not exist.");
+			throw new TaskException("List '" + absoluteOldList + "' does not exist.");
 		}
 		
 		if (activeList.equals(absoluteOldList)) {
@@ -311,7 +318,7 @@ public class Tasks {
 	
 	public void addTask(Task task) {
 		if (hasTaskWithID(task.id)) {
-			throw new RuntimeException("Task with ID " + task.id + " already exists.");
+			throw new TaskException("Task with ID " + task.id + " already exists.");
 		}
 		
 		getList(activeList).addTask(task);
@@ -320,13 +327,6 @@ public class Tasks {
 		if (task.state == TaskState.Active) {
 			activeTaskID = task.id;
 		}
-	}
-	
-	public String getActiveTaskList() {
-		if (activeTaskID == NO_ACTIVE_TASK) {
-			throw new RuntimeException("No active task.");
-		}
-		return getListForTask(activeTaskID).getFullPath();
 	}
 	
 	public String getActiveList() {
@@ -563,7 +563,7 @@ public class Tasks {
 	
 	public boolean hasGroupPath(String groupName) {
 		if (!groupName.startsWith("/")) {
-			throw new RuntimeException("Group path must start with root (/).");
+			throw new TaskException("Group path must start with root (/).");
 		}
 		return rootGroup.getGroupAbsolute(groupName).isPresent();
 	}

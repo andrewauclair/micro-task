@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -40,8 +41,8 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 	@Test
 	void no_active_task_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::getActiveTask);
-
-		assertEquals("No active task.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, tasks::getActiveTask);
+		
+		assertEquals("No active task.", taskException.getMessage());
 	}
 }

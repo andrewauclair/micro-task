@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
@@ -95,9 +96,9 @@ class CommandParserTest {
 		
 		CommandParser parser = new CommandParser(options);
 		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> parser.parse("test --charlie"));
+		TaskException taskException = assertThrows(TaskException.class, () -> parser.parse("test --charlie"));
 		
-		assertEquals("Unknown option 'charlie'", runtimeException.getMessage());
+		assertEquals("Unknown option 'charlie'", taskException.getMessage());
 	}
 	
 	@Test
@@ -109,9 +110,9 @@ class CommandParserTest {
 		
 		CommandParser parser = new CommandParser(options);
 		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> parser.parse("test -abc"));
+		TaskException taskException = assertThrows(TaskException.class, () -> parser.parse("test -abc"));
 		
-		assertEquals("Unknown option 'c'", runtimeException.getMessage());
+		assertEquals("Unknown option 'c'", taskException.getMessage());
 	}
 	
 	@Test

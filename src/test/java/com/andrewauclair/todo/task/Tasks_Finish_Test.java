@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -73,9 +74,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.setRecurring(1, true);
 
 		tasks.startTask(1, false);
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, tasks::finishTask);
-
-		assertEquals("Recurring tasks cannot be finished.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
+		
+		assertEquals("Recurring tasks cannot be finished.", taskException.getMessage());
 	}
 }

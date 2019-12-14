@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -156,36 +157,36 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void throws_exception_trying_to_move_list_that_does_not_exist() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/one", "/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/one", "/"));
 		
-		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
+		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_when_destination_group_does_not_exist() {
 		tasks.addList("one");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/one", "/test"));
-
-		assertEquals("Group '/test' does not exist.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/one", "/test"));
+		
+		assertEquals("Group '/test' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_trying_to_move_group_that_does_not_exist() {
 		tasks.createGroup("/two");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one", "/two"));
-
-		assertEquals("Group '/one' does not exist.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/one", "/two"));
+		
+		assertEquals("Group '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_trying_to_move_to_group_that_does_not_exist() {
 		tasks.createGroup("/one/");
 		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/one/", "/two/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/one/", "/two/"));
 		
-		assertEquals("Group '/two/' does not exist.", runtimeException.getMessage());
+		assertEquals("Group '/two/' does not exist.", taskException.getMessage());
 	}
 
 	@Test
@@ -195,9 +196,9 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addList("/test/one");
 		tasks.setActiveList("/test/one");
 		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveList("/test/one", "/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/test/one", "/"));
 		
-		assertEquals("Failed to move list folder.", runtimeException.getMessage());
+		assertEquals("Failed to move list folder.", taskException.getMessage());
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
@@ -209,33 +210,33 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.createGroup("/test/one/");
 		tasks.switchGroup("/test/one/");
 		
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveGroup("/test/one/", "/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/test/one/", "/"));
 		
-		assertEquals("Failed to move group folder.", runtimeException.getMessage());
+		assertEquals("Failed to move group folder.", taskException.getMessage());
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
 	
 	@Test
 	void throws_exception_if_task_was_not_found() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(5, "one"));
-		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(5, "one"));
+		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void moving_task_throws_exception_if_move_to_list_is_not_found() {
 		tasks.addTask("Test 1");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(1, "one"));
-		assertEquals("List '/one' does not exist.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "one"));
+		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void task_already_on_list() {
 		tasks.addTask("Test");
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.moveTask(1, "/default"));
-
-		assertEquals("Task 1 is already on list '/default'.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/default"));
+		
+		assertEquals("Task 1 is already on list '/default'.", taskException.getMessage());
 	}
 }

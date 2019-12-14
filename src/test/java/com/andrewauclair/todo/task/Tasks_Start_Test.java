@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -33,9 +34,9 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_non_existent_id_throws_exception_with_message() {
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(5, false));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(5, false));
 		
-		assertEquals("Task 5 does not exist.", runtimeException.getMessage());
+		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 
 	@Test
@@ -122,10 +123,10 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 
 		tasks.startTask(1, false);
-
-		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> tasks.startTask(1, false));
-
-		assertEquals("Task is already active.", runtimeException.getMessage());
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(1, false));
+		
+		assertEquals("Task is already active.", taskException.getMessage());
 	}
 
 	@Test
