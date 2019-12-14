@@ -61,6 +61,8 @@ public class AliasCommand extends Command {
 			// TODO Test exception
 		}
 		
+		osInterface.runGitCommand("git add aliases.txt", false);
+		osInterface.runGitCommand("git commit -m \"Added alias '" + argsMap.get("name").getValue() + "' for command '" + argsMap.get("command").getValue() + "'\"", false);
 	}
 	
 	@Override
