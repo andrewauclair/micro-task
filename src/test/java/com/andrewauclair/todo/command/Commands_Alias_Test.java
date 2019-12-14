@@ -4,6 +4,7 @@ package com.andrewauclair.todo.command;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
@@ -71,5 +72,15 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 				"Total time: 00s",
 				""
 		);
+	}
+	
+	@Test
+	void adding_an_alias_commits_the_file_to_git() {
+		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+		
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		order.verify(osInterface).runGitCommand("git add aliases.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'ttt' for command 'times --tasks --today'\"", false);
 	}
 }
