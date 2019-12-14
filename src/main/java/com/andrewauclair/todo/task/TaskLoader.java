@@ -30,7 +30,7 @@ public class TaskLoader {
 				
 				boolean isGroup = isGroupFolder(fileInfo.getPath());
 				if (isGroup) {
-					TaskGroup group = tasks.createGroup(name + "/");
+					TaskGroup group = tasks.addGroup(name + "/");
 					tasks.switchGroup(name + "/");
 					
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {

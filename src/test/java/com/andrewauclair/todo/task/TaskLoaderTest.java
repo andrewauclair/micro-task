@@ -100,8 +100,8 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
 				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
 		);
-
-		Mockito.when(tasks.createGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", ""));
+		
+		Mockito.when(tasks.addGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", ""));
 
 		loader.load();
 		
@@ -112,7 +112,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.verify(reader).readTask(3, "git-data/tasks/one/two/3.txt");
 		Mockito.verify(reader).readTask(4, "git-data/tasks/one/two/4.txt");
 		
-		order.verify(tasks).createGroup("one/");
+		order.verify(tasks).addGroup("one/");
 		order.verify(tasks).switchGroup("one/");
 		order.verify(tasks).addList("two");
 		order.verify(tasks).setActiveList("two");

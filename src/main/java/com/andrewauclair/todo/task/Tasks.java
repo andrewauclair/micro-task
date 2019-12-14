@@ -350,7 +350,11 @@ public class Tasks {
 		return optionalGroup.get();
 	}
 	
-	public TaskGroup createGroup(String groupName) {
+	public TaskGroup addGroup(String groupName) {
+		return createGroup(groupName, false);
+	}
+	
+	private TaskGroup createGroup(String groupName, boolean createFiles) {
 		if (!groupName.startsWith("/")) {
 			groupName = activeGroup.getFullPath() + groupName;
 		}
@@ -365,20 +369,28 @@ public class Tasks {
 			currentParent += group + "/";
 			
 			if (!parentGroup.containsGroup(newGroup)) {
-				try {
-					osInterface.createOutputStream("git-data/tasks" + newGroup.getFullPath() + "group.txt");
-				}
-				catch (IOException e) {
-					e.printStackTrace(output);
+				if (createFiles) {
+					try {
+						osInterface.createOutputStream("git-data/tasks" + newGroup.getFullPath() + "group.txt");
+					}
+					catch (IOException e) {
+						e.printStackTrace(output);
+					}
 				}
 				parentGroup.addChild(newGroup);
 			}
 		}
 		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
+		if (createFiles) {
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
+		}
 		
 		return newGroup;
+	}
+	
+	public TaskGroup createGroup(String groupName) {
+		return createGroup(groupName, true);
 	}
 	
 	// TODO This could be a method on the TaskContainer interface
