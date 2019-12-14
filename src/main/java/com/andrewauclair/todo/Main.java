@@ -43,8 +43,8 @@ public class Main {
 			System.out.println(mkdir);
 			
 			osInterface.runGitCommand("git init", false);
-			osInterface.runGitCommand("git config user.email \"mightymalakai33@gmail.com\"", false);
-			osInterface.runGitCommand("git config user.name \"Andrew Auclair\"", false);
+			osInterface.runGitCommand("git config user.email \"git@todo.app\"", false);
+			osInterface.runGitCommand("git config user.name \"TODO App\"", false);
 		}
 		
 		boolean exception = false;
@@ -227,6 +227,10 @@ public class Main {
 	
 	// TODO Add this somewhere that's tested
 	private static void reloadAliases(OSInterface osInterface, Commands commands) {
+		if (!new File("git-data/aliases.txt").exists()) {
+			return;
+		}
+		
 		try {
 			Scanner scanner = new Scanner(osInterface.createInputStream("git-data/aliases.txt"));
 			
@@ -244,8 +248,6 @@ public class Main {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	// temporary function that we will use to assign a project and feature to all existing task times at work
