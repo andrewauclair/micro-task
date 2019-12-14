@@ -164,4 +164,14 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void invalid_command() {
+		commands.execute(printStream, "alias");
+		
+		assertOutput(
+				"Invalid command.",
+				""
+		);
+	}
 }

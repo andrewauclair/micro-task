@@ -79,6 +79,10 @@ public class AliasCommand extends Command {
 			}
 			output.println();
 		}
+		else {
+			output.println("Invalid command.");
+			output.println();
+		}
 	}
 	
 	private void writeAliasesFile() {
