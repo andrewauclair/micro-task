@@ -16,7 +16,9 @@ import java.util.Properties;
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
 	private Commands commands;
-
+	
+	private String lastInputFile = "";
+	
 	private static boolean isJUnitTest() {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		for (StackTraceElement element : stackTrace) {
@@ -83,7 +85,9 @@ public class OSInterfaceImpl implements OSInterface {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use createInputStream in tests.");
 		}
-		return new FileInputStream(new File(fileName));
+		File file = new File(fileName);
+		lastInputFile = file.getAbsolutePath();
+		return new FileInputStream(file);
 	}
 
 	@Override
@@ -147,5 +151,9 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public void moveFolder(String src, String dest) throws IOException {
 		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
+	}
+	
+	public String getLastInputFile() {
+		return lastInputFile;
 	}
 }
