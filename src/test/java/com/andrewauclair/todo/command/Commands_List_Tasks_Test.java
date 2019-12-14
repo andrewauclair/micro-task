@@ -168,6 +168,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void list_all_tasks_in_the_active_group() {
 		tasks.createGroup("/test/");
+		tasks.createGroup("/test/junk");
 		tasks.switchGroup("/test/");
 
 		tasks.addList("/test/default");
@@ -226,6 +227,29 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"",
 				"",
 				ANSI_BOLD + "Total Tasks: 8" + ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+		// TODO I would like the list command to support the short forms of parameters
+//	@ParameterizedTest
+//	@ValueSource(strings = {"--recursive", "-r"})
+	void print_tasks_in_group_recursively() {
+		tasks.addList("/one/two/three");
+		tasks.setActiveList("/one/two/three");
+		tasks.addTask("Test");
+		
+		tasks.switchGroup("/one/");
+		
+		commands.execute(printStream, "list --tasks --group --recursive");
+		
+		assertOutput(
+				ANSI_BOLD + "/one/two/three" + ANSI_RESET,
+				"  1 - 'Test'",
+				"",
+				"",
+				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""
 		);
 	}
