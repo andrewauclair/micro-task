@@ -7,21 +7,17 @@ public final class CommandArgument {
 	private final String name;
 	private final String value;
 	
-	public CommandArgument(String name) {
+	CommandArgument(String name) {
 		this.name = name;
 		this.value = "";
 	}
 	
-	public CommandArgument(String name, String value) {
+	CommandArgument(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}
 	
-	public String getName() {
-		return name;
-	}
-	
-	public String getValue() {
+	String getValue() {
 		return value;
 	}
 	

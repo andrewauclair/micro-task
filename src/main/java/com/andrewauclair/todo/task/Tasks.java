@@ -69,9 +69,12 @@ public class Tasks {
 		return nextID;
 	}
 	
-	// TODO This should throw an exception if the list wasn't found. If it wasn't found then I'm guessing the task doesn't exist.
 	public TaskList findListForTask(long id) {
-		return rootGroup.findListForTask(id).get();
+		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
+		if (!listForTask.isPresent()) {
+			throw new TaskException("List for task " + id + " was not found.");
+		}
+		return listForTask.get();
 	}
 	
 	public void moveList(String list, String group) {

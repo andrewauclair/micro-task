@@ -121,9 +121,12 @@ public class Main {
 				if (command.equals("proj-feat-assign")) {
 					manualProjectFeatureAssign(tasks, osInterface);
 				}
-
+				
 				if (command.equals("export")) {
 					exportData(tasks, osInterface);
+				}
+				else if (command.equals("test-data")) {
+					generateTestData(tasks);
 				}
 				else {
 					commands.execute(System.out, command);
@@ -270,6 +273,27 @@ public class Main {
 			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(task.id).getFullPath() + "/" + task.id + ".txt");
 		}
 		System.exit(0);
+	}
+	
+	private static void generateTestData(Tasks tasks) {
+		// create 100 groups with 10000 tasks spread randomly between them
+		
+		// just testing load times for now
+		
+		// next we'll randomly generate times for the 10000 tasks
+		
+		for (int i = 0; i < 100; i++) {
+			tasks.createGroup("group-" + (i + 1));
+			tasks.addList("group-" + (i + 1) + "/list-" + (i + 1));
+		}
+		
+		Random random = new Random();
+		
+		for (int i = 0; i < 10000; i++) {
+			int group = random.nextInt(100);
+			
+			tasks.addTask("Test " + (i + 1), "group-" + (group + 1) + "/list-" + (group + 1));
+		}
 	}
 	
 	// Export data with generic names, this will remove any possible proprietary data

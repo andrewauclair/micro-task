@@ -9,9 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CommandParserTest {
 	@Test
@@ -24,13 +22,11 @@ class CommandParserTest {
 				)
 		);
 		
-		List<CommandArgument> args = parser.parse("test --arg1 --arg2 -g");
+		CommandParser.CommandParseResult result = parser.parse("test --arg1 --arg2 -g");
 		
-		assertThat(args).containsOnly(
-				new CommandArgument("arg1"),
-				new CommandArgument("arg2"),
-				new CommandArgument("g")
-		);
+		assertTrue(result.hasArgument("arg1"));
+		assertTrue(result.hasArgument("arg2"));
+		assertTrue(result.hasArgument("g"));
 	}
 	
 	@Test
@@ -38,16 +34,15 @@ class CommandParserTest {
 		CommandParser parser = new CommandParser(
 				Arrays.asList(
 						new CommandOption("arg1", CommandOption.NO_SHORTNAME),
-						new CommandOption("arg2", CommandOption.NO_SHORTNAME, Collections.singletonList("String"))//, Collections.singletonList(new CommandArgument("String")))
+						new CommandOption("arg2", CommandOption.NO_SHORTNAME, Collections.singletonList("String"))
 				)
 		);
 		
-		List<CommandArgument> args = parser.parse("test --arg1 --arg2 \"Test String Here\"");
+		CommandParser.CommandParseResult result = parser.parse("test --arg1 --arg2 \"Test String Here\"");
 		
-		assertThat(args).containsOnly(
-				new CommandArgument("arg1"),
-				new CommandArgument("arg2", "Test String Here")
-		);
+		assertTrue(result.hasArgument("arg1"));
+		assertTrue(result.hasArgument("arg2"));
+		assertEquals("Test String Here", result.getStrArgument("arg2"));
 	}
 	
 	@Test
@@ -60,12 +55,11 @@ class CommandParserTest {
 		
 		CommandParser parser = new CommandParser(options);
 		
-		List<CommandArgument> args = parser.parse("test --arg1 -g \"Test\"");
+		CommandParser.CommandParseResult result = parser.parse("test --arg1 -g \"Test\"");
 		
-		assertThat(args).containsOnly(
-				new CommandArgument("arg1"),
-				new CommandArgument("great", "Test")
-		);
+		assertTrue(result.hasArgument("arg1"));
+		assertTrue(result.hasArgument("great"));
+		assertEquals("Test", result.getStrArgument("great"));
 	}
 	
 	@Test
@@ -78,13 +72,11 @@ class CommandParserTest {
 		
 		CommandParser parser = new CommandParser(options);
 		
-		List<CommandArgument> args = parser.parse("test -abc");
+		CommandParser.CommandParseResult args = parser.parse("test -abc");
 		
-		assertThat(args).containsOnly(
-				new CommandArgument("alpha"),
-				new CommandArgument("bravo"),
-				new CommandArgument("charlie")
-		);
+		assertTrue(args.hasArgument("alpha"));
+		assertTrue(args.hasArgument("bravo"));
+		assertTrue(args.hasArgument("charlie"));
 	}
 	
 	@Test

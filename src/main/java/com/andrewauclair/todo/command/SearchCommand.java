@@ -8,7 +8,9 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,24 +25,19 @@ public class SearchCommand extends Command {
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
-	public SearchCommand(Tasks tasks) {
+	SearchCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
-		
-		String searchText = argsMap.get("text").getValue();
+		String searchText = result.getStrArgument("text");
 		
 		Stream<Task> stream;
 		
-		if (argsMap.containsKey("group")) {
+		if (result.hasArgument("group")) {
 			stream = tasks.getActiveGroup().getTasks().stream();
 		}
 		else {
@@ -48,7 +45,7 @@ public class SearchCommand extends Command {
 		}
 		
 		List<Task> searchResults = stream.filter(task -> task.task.contains(searchText))
-				.filter(task -> argsMap.containsKey("finished") == (task.state == TaskState.Finished))
+				.filter(task -> result.hasArgument("finished") == (task.state == TaskState.Finished))
 				.collect(Collectors.toList());
 		
 		output.println("Search Results (" + searchResults.size() + "):");

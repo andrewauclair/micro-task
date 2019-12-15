@@ -3,7 +3,6 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.TaskException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,8 @@ public final class CommandParser {
 		}
 	}
 	
-	// TODO I turn this into a map everywhere, so why not just return a map here?
-	public List<CommandArgument> parse(String args) {
-		List<CommandArgument> argsOut = new ArrayList<>();
+	CommandParseResult parse(String args) {
+		CommandParseResult result = new CommandParseResult();
 		
 		String[] s = args.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 		for (int i = 1; i < s.length; i++) {
@@ -49,23 +47,23 @@ public final class CommandParser {
 						if (arg1.startsWith("\"")) {
 							arg1 = arg1.substring(1, arg1.length() - 1);
 						}
-						argsOut.add(new CommandArgument(commandOption.getName(), arg1));
+						result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName(), arg1));
 						i++;
 					}
 					else {
-						argsOut.add(new CommandArgument(commandOption.getName()));
+						result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName()));
 					}
 				}
 			}
 			else if (option.startsWith("--")) {
-				i = parseOption(argsOut, s, i, option.substring(2));
+				i = parseOption(result, s, i, option.substring(2));
 			}
 		}
 		
-		return argsOut;
+		return result;
 	}
 	
-	private int parseOption(List<CommandArgument> argsOut, String[] s, int i, String option) {
+	private int parseOption(CommandParseResult result, String[] s, int i, String option) {
 		CommandOption commandOption = options.get(option);
 		
 		if (commandOption == null) {
@@ -78,12 +76,40 @@ public final class CommandParser {
 			if (arg1.startsWith("\"")) {
 				arg1 = arg1.substring(1, arg1.length() - 1);
 			}
-			argsOut.add(new CommandArgument(commandOption.getName(), arg1));
+			result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName(), arg1));
 			i++;
 		}
 		else {
-			argsOut.add(new CommandArgument(commandOption.getName()));
+			result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName()));
 		}
 		return i;
+	}
+	
+	static class CommandParseResult {
+		private final Map<String, CommandArgument> args = new HashMap<>();
+		
+		int getArgCount() {
+			return args.keySet().size();
+		}
+		
+		boolean hasArgument(String name) {
+			return args.containsKey(name);
+		}
+		
+		boolean getBoolArgument(String name) {
+			return Boolean.parseBoolean(getStrArgument(name));
+		}
+		
+		String getStrArgument(String name) {
+			return args.get(name).getValue();
+		}
+		
+		int getIntArgument(String name) {
+			return Integer.parseInt(getStrArgument(name));
+		}
+		
+		long getLongArgument(String name) {
+			return Long.parseLong(getStrArgument(name));
+		}
 	}
 }

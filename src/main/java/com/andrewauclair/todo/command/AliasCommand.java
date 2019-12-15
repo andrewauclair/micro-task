@@ -8,7 +8,10 @@ import org.jline.builtins.Completers;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AliasCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
@@ -31,28 +34,23 @@ public class AliasCommand extends Command {
 	public void execute(PrintStream output, String command) {
 		// TODO Make sure that the command doesn't already exist
 		// TODO Can aliases be updated by setting them again or do they need to be removed first?
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
-		
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
 		// TODO Command should fail if command and remove are both present
-		String nameArg = argsMap.containsKey("name") ? argsMap.get("name").getValue() : "";
+		String nameArg = result.hasArgument("name") ? result.getStrArgument("name") : "";
 		
-		if (argsMap.containsKey("command")) {
-			output.println("Created alias '" + nameArg + "' for command '" + argsMap.get("command").getValue() + "'");
+		if (result.hasArgument("command")) {
+			output.println("Created alias '" + nameArg + "' for command '" + result.getStrArgument("command") + "'");
 			output.println();
 			
-			commands.addAlias(nameArg, argsMap.get("command").getValue());
+			commands.addAlias(nameArg, result.getStrArgument("command"));
 			
 			writeAliasesFile();
 			
 			osInterface.runGitCommand("git add aliases.txt", false);
-			osInterface.runGitCommand("git commit -m \"Added alias '" + nameArg + "' for command '" + argsMap.get("command").getValue() + "'\"", false);
+			osInterface.runGitCommand("git commit -m \"Added alias '" + nameArg + "' for command '" + result.getStrArgument("command") + "'\"", false);
 		}
-		else if (argsMap.containsKey("remove")) {
+		else if (result.hasArgument("remove")) {
 			String aliasCommand = commands.getAliases().get(nameArg);
 			
 			if (aliasCommand != null) {
@@ -71,7 +69,7 @@ public class AliasCommand extends Command {
 				output.println();
 			}
 		}
-		else if (argsMap.containsKey("list")) {
+		else if (result.hasArgument("list")) {
 			Map<String, String> aliases = commands.getAliases();
 			
 			for (String name : aliases.keySet()) {

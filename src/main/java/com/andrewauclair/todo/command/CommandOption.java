@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public final class CommandOption {
-	public static final char NO_SHORTNAME = Character.MIN_VALUE;
+	static final char NO_SHORTNAME = Character.MIN_VALUE;
 	
 	private final String name;
 	private final char shortName;
@@ -28,11 +28,11 @@ public final class CommandOption {
 		return name;
 	}
 	
-	public char getShortName() {
+	char getShortName() {
 		return shortName;
 	}
 	
-	public int getArgumentCount() {
+	int getArgumentCount() {
 		return arguments.size();
 	}
 	

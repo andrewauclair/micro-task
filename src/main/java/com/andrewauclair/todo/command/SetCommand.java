@@ -8,7 +8,9 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
@@ -25,49 +27,44 @@ public class SetCommand extends Command {
 	
 	private final Tasks tasks;
 	
-	public SetCommand(Tasks tasks) {
+	SetCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
-		
-		if (argsMap.containsKey("task")) {
-			long taskID = Long.parseLong(argsMap.get("task").getValue());
+		if (result.hasArgument("task")) {
+			long taskID = result.getLongArgument("task");
 			
-			boolean recurring = Boolean.parseBoolean(argsMap.get("recurring").getValue());
+			boolean recurring = result.getBoolArgument("recurring");
 			
 			tasks.setRecurring(taskID, recurring);
 		}
-		else if (argsMap.containsKey("list")) {
-			String list = argsMap.get("list").getValue();
+		else if (result.hasArgument("list")) {
+			String list = result.getStrArgument("list");
 			TaskList listByName = tasks.getListByName(list);
 			
-			if (argsMap.containsKey("project")) {
-				String project = argsMap.get("project").getValue();
+			if (result.hasArgument("project")) {
+				String project = result.getStrArgument("project");
 				tasks.setProject(listByName, project);
 			}
-			else if (argsMap.containsKey("feature")) {
-				String feature = argsMap.get("feature").getValue();
+			else if (result.hasArgument("feature")) {
+				String feature = result.getStrArgument("feature");
 				tasks.setFeature(listByName, feature);
 			}
 		}
-		else if (argsMap.containsKey("group")) {
-			String group = argsMap.get("group").getValue();
+		else if (result.hasArgument("group")) {
+			String group = result.getStrArgument("group");
 			TaskGroup groupByName = tasks.getGroup(group);
 			
-			if (argsMap.containsKey("project")) {
-				String project = argsMap.get("project").getValue();
+			if (result.hasArgument("project")) {
+				String project = result.getStrArgument("project");
 				tasks.setProject(groupByName, project);
 			}
-			else if (argsMap.containsKey("feature")) {
-				String feature = argsMap.get("feature").getValue();
+			else if (result.hasArgument("feature")) {
+				String feature = result.getStrArgument("feature");
 				tasks.setFeature(groupByName, feature);
 			}
 		}
