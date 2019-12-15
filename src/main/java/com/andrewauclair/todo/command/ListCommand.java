@@ -16,7 +16,16 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class ListCommand extends Command {
 	private static final int MAX_DISPLAYED_TASKS = 20;
-
+	
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("tasks", CommandOption.NO_SHORTNAME),
+			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
+			new CommandOption("lists", CommandOption.NO_SHORTNAME),
+			new CommandOption("group", CommandOption.NO_SHORTNAME),
+			new CommandOption("recursive", CommandOption.NO_SHORTNAME),
+			new CommandOption("all", CommandOption.NO_SHORTNAME)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 
 	ListCommand(Tasks tasks) {
@@ -25,20 +34,18 @@ public class ListCommand extends Command {
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-
-		List<String> parameters = Arrays.asList(s);
-
-		boolean all = parameters.contains("--all");
-		boolean showTasks = parameters.contains("--tasks");
-		boolean showLists = parameters.contains("--lists");
-		boolean useGroup = parameters.contains("--group");
-		boolean recursive = parameters.contains("--recursive");
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		boolean all = result.hasArgument("all");
+		boolean showTasks = result.hasArgument("tasks");
+		boolean showLists = result.hasArgument("lists");
+		boolean useGroup = result.hasArgument("group");
+		boolean recursive = result.hasArgument("recursive");
 		
 		String list = tasks.getActiveList();
-
-		if (parameters.contains("--list")) {
-			list = parameters.get(parameters.indexOf("--list") + 1);
+		
+		if (result.hasArgument("list")) {
+			list = result.getStrArgument("list");
 		}
 
 		if (!list.startsWith("/")) {

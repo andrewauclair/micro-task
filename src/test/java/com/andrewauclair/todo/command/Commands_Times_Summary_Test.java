@@ -33,4 +33,14 @@ class Commands_Times_Summary_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void times_summary_alone_is_invalid() {
+		commands.execute(printStream, "times --summary");
+		
+		assertOutput(
+				"Invalid command.",
+				""
+		);
+	}
 }

@@ -93,4 +93,11 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());
 	}
+	
+	@Test
+	void findListForTask_throws_exception_if_list_is_not_found() {
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.findListForTask(1));
+		
+		assertEquals("List for task 1 was not found.", taskException.getMessage());
+	}
 }

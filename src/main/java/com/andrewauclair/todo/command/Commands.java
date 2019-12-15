@@ -110,19 +110,15 @@ public class Commands {
 		return (DebugCommand) commands.get("debug");
 	}
 	
-	public Map<String, Command> getCommands() {
-		return commands;
-	}
-	
 	public void addAlias(String name, String command) {
 		aliases.put(name, command);
 	}
 	
-	public void removeAlias(String name) {
+	void removeAlias(String name) {
 		aliases.remove(name);
 	}
 	
-	public Map<String, String> getAliases() {
+	Map<String, String> getAliases() {
 		return aliases;
 	}
 }

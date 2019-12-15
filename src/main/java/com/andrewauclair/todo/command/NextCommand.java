@@ -7,7 +7,9 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
@@ -25,14 +27,9 @@ public class NextCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
-		
-		int max = Integer.parseInt(argsMap.get("count").getValue());
+		int max = result.getIntArgument("count");
 		
 		List<Task> tasks = this.tasks.getAllTasks().stream()
 				.sorted(Comparator.comparingLong(o -> o.id))

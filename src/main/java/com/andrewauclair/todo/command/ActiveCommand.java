@@ -18,7 +18,7 @@ public class ActiveCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 	
-	public ActiveCommand(Tasks tasks, OSInterface osInterface) {
+	ActiveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}

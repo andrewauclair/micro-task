@@ -11,10 +11,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 class EndOfDayCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
+	private final List<CommandOption> options = Collections.singletonList(
 			new CommandOption("hours", 'h', Collections.singletonList("Hours"))
 	);
 	private final CommandParser parser = new CommandParser(options);
@@ -28,14 +29,9 @@ class EndOfDayCommand extends Command {
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
-
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
-
-		if (!argsMap.containsKey("hours")) {
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		if (!result.hasArgument("hours")) {
 			output.println("Missing hours argument.");
 			output.println();
 			return;
@@ -53,15 +49,14 @@ class EndOfDayCommand extends Command {
 
 		// total the task times and determine how much time is left, then add that to the current seconds
 		long totalTime = 0;
-
-		for (TaskFilter.TaskFilterResult result : data) {
-			totalTime += result.getTotal();
+		
+		for (TaskFilter.TaskFilterResult filterResult : data) {
+			totalTime += filterResult.getTotal();
 		}
 
 		output.print("End of Day is in ");
-
-
-		int hours = Integer.parseInt(argsMap.get("hours").getValue());
+		
+		int hours = result.getIntArgument("hours");
 		long eod = epochSecond + ((hours * 3600) - totalTime);
 
 		TimesCommand.printTotalTime(output, eod - epochSecond, false);

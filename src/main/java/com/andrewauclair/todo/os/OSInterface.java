@@ -36,9 +36,9 @@ public interface OSInterface {
 	void moveFolder(String src, String dest) throws IOException;
 
 	class TaskFileInfo {
-		String name;
-		String path;
-		boolean isDirectory;
+		final String name;
+		final String path;
+		final boolean isDirectory;
 		
 		public TaskFileInfo(String name, String path, boolean isDirectory) {
 			this.name = name;

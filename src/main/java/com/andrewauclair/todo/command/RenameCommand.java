@@ -9,7 +9,9 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
@@ -22,23 +24,18 @@ public class RenameCommand extends Command {
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
-	public RenameCommand(Tasks tasks) {
+	RenameCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 
 	// TODO Although it isn't really possible, we shouldn't allow list and task at the same time. it'll just run like a list rename, as it always has, but it should throw an error, this should be part of the CommandParser options
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
-
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
-
-		if (argsMap.containsKey("list")) {
-			String newName = argsMap.get("name").getValue();
-			String list = argsMap.get("list").getValue();
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		if (result.hasArgument("list")) {
+			String newName = result.getStrArgument("name");
+			String list = result.getStrArgument("list");
 			
 			if (newName.contains("/")) {
 				throw new TaskException("Lists must be renamed with name, not paths.");
@@ -53,15 +50,15 @@ public class RenameCommand extends Command {
 			output.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
 			output.println();
 		}
-		else if (argsMap.containsKey("task")) {
-			if (!argsMap.containsKey("name")) {
+		else if (result.hasArgument("task")) {
+			if (!result.hasArgument("name")) {
 				output.println("Missing name parameter.");
 				output.println();
 				return;
 			}
-
-			String newName = argsMap.get("name").getValue();
-			long taskID = Long.parseLong(argsMap.get("task").getValue());
+			
+			String newName = result.getStrArgument("name");
+			long taskID = result.getLongArgument("task");
 
 			Task task = tasks.renameTask(taskID, newName);
 

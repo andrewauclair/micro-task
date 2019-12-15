@@ -8,7 +8,9 @@ import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
@@ -21,38 +23,33 @@ public class AddCommand extends Command {
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
-
-	public AddCommand(Tasks tasks) {
+	
+	AddCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		List<CommandArgument> args = parser.parse(command);
-		Map<String, CommandArgument> argsMap = new HashMap<>();
-
-		for (CommandArgument arg : args) {
-			argsMap.put(arg.getName(), arg);
-		}
+		CommandParser.CommandParseResult result = parser.parse(command);
 
 		String taskTitle;
-
-		if (argsMap.containsKey("name")) {
-			taskTitle = argsMap.get("name").getValue();
+		
+		if (result.hasArgument("name")) {
+			taskTitle = result.getStrArgument("name");
 		}
 		else {
 			throw new TaskException("Missing name argument.");
 		}
 
 		String list = tasks.getActiveList();
-
-		if (argsMap.containsKey("list")) {
-			list = argsMap.get("list").getValue();
+		
+		if (result.hasArgument("list")) {
+			list = result.getStrArgument("list");
 		}
 
 		Task task = tasks.addTask(taskTitle, list);
-
-		if (argsMap.containsKey("recurring")) {
+		
+		if (result.hasArgument("recurring")) {
 			task = tasks.setRecurring(task.id, true);
 		}
 		

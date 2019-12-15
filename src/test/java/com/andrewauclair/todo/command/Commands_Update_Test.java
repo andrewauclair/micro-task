@@ -15,7 +15,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void execute_update_command() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenReturn(true);
 		
-		commands.execute(printStream, "update version-1");
+		commands.execute(printStream, "update --release version-1");
 		
 		assertOutput(
 				"Updated to version 'version-1'",
@@ -27,7 +27,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_prints_not_found_when_version_is_unknown() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenReturn(false);
 		
-		commands.execute(printStream, "update version-1");
+		commands.execute(printStream, "update --release version-1");
 		
 		assertOutput(
 				"Version 'version-1' not found on GitLab",
@@ -39,7 +39,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_prints_failure_if_updateToRelease_throws_exception() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1")).thenThrow(IOException.class);
 		
-		commands.execute(printStream, "update version-1");
+		commands.execute(printStream, "update --release version-1");
 		
 		assertOutput(
 				"Failed to update to version 'version-1'",
@@ -205,6 +205,16 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"19.1.5",
 				"19.1.6",
 				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void invalid_command() {
+		commands.execute(printStream, "update");
+		
+		assertOutput(
+				"Invalid command.",
 				""
 		);
 	}

@@ -10,16 +10,20 @@ import org.jline.builtins.Completers;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class UpdateCommand extends Command {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("tasks", CommandOption.NO_SHORTNAME),
+			new CommandOption("releases", 'r'),
+			new CommandOption("latest", 'l'),
+			new CommandOption("release", CommandOption.NO_SHORTNAME, Collections.singletonList("Release"))
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -32,10 +36,8 @@ public class UpdateCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-		
-		String arg = s[1];
-		
+		CommandParser.CommandParseResult result = parser.parse(command);
+
 		List<String> versions;
 		try {
 			versions = gitLabReleases.getVersions();
@@ -47,9 +49,7 @@ public class UpdateCommand extends Command {
 			return;
 		}
 		
-		switch (arg) {
-		case "-r":
-		case "--releases":
+		if (result.hasArgument("releases")) {
 			output.println("Releases found on GitLab");
 			output.println();
 			
@@ -93,12 +93,11 @@ public class UpdateCommand extends Command {
 				}
 				output.println();
 			}
-			break;
-		case "-l":
-		case "--latest":
+		}
+		else if (result.hasArgument("latest")) {
 			updateToVersion(output, versions.get(versions.size() - 1));
-			break;
-		case "--tasks":
+		}
+		else if (result.hasArgument("tasks")) {
 			List<Task> taskList = new ArrayList<>(tasks.getAllTasks());
 			
 			taskList.sort(Comparator.comparingLong(o -> o.id));
@@ -112,10 +111,12 @@ public class UpdateCommand extends Command {
 			osInterface.runGitCommand("git commit -m \"Updating task files.\"", false);
 			
 			output.println("Updated all tasks.");
-			break;
-		default:
-			updateToVersion(output, arg);
-			break;
+		}
+		else if (result.hasArgument("release")) {
+			updateToVersion(output, result.getStrArgument("release"));
+		}
+		else {
+			output.println("Invalid command.");
 		}
 		output.println();
 	}
