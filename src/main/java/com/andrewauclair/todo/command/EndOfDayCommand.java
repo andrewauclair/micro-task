@@ -30,12 +30,6 @@ class EndOfDayCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		if (!result.hasArgument("hours")) {
-			output.println("Missing hours argument.");
-			output.println();
-			return;
-		}
 
 		long epochSecond = osInterface.currentSeconds();
 
@@ -56,7 +50,7 @@ class EndOfDayCommand extends Command {
 
 		output.print("End of Day is in ");
 		
-		int hours = result.getIntArgument("hours");
+		int hours = result.hasArgument("hours") ? result.getIntArgument("hours") : 8;
 		long eod = epochSecond + ((hours * 3600) - totalTime);
 
 		TimesCommand.printTotalTime(output, eod - epochSecond, false);
