@@ -3,6 +3,9 @@ package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
 
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
+
 class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 	@Test
 	void basic_times_command_for_projects_and_features() {
@@ -43,7 +46,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --proj-feat");
 		
 		assertOutput(
-				"None / None     16m 40s",
+				ANSI_REVERSED + "None" + ANSI_RESET + " / " + ANSI_REVERSED + "None" + ANSI_RESET + "     16m 40s",
 				"",
 				"Total           16m 40s",
 				""
@@ -61,7 +64,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --proj-feat");
 		
 		assertOutput(
-				"None / Feature 1     16m 40s",
+				ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1     16m 40s",
 				"",
 				"Total                16m 40s",
 				""
@@ -79,7 +82,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --proj-feat");
 		
 		assertOutput(
-				"Project 1 / None     16m 40s",
+				"Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET + "     16m 40s",
 				"",
 				"Total                16m 40s",
 				""

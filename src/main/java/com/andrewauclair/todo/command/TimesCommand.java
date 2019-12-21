@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class TimesCommand extends Command {
@@ -207,9 +209,14 @@ public class TimesCommand extends Command {
 					.max(Comparator.comparingInt(String::length));
 			
 			for (String s1 : str) {
-				output.print(s1);
+				String projFeat = s1;
+				if (projFeat.contains("None")) {
+					projFeat = projFeat.replaceAll("None", ANSI_REVERSED + "None" + ANSI_RESET);
+				}
+				output.print(projFeat);
 				output.print(String.join("", Collections.nCopies(longest.get().length() - s1.length(), " ")));
 				output.print(" ");
+				
 				printTotalTime(output, totals.get(s1), true);
 				output.println();
 			}
