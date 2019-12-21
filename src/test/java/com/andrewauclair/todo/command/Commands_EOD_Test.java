@@ -42,11 +42,11 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void hours_parameter_is_required() {
+	void eod_command_defaults_to_8_hours_without_hours_parameter() {
 		commands.execute(printStream, "eod");
-
+		
 		assertOutput(
-				"Missing hours argument.",
+				"End of Day is in 02h 58m 08s at 06:17:15 PM",
 				""
 		);
 	}
