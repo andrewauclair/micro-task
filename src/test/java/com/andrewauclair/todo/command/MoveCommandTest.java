@@ -39,7 +39,7 @@ class MoveCommandTest extends CommandsBaseTestCase {
 								)
 						),
 						node("move",
-								node("--list",
+								node("--group",
 										node(new GroupCompleter(tasks, true),
 												node(new GroupCompleter(tasks, false)
 												)

@@ -10,6 +10,10 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class DebugCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("debug flag", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private boolean debugEnabled = false;
 	
 	public boolean isDebugEnabled() {
@@ -18,16 +22,16 @@ public class DebugCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		if (s[1].equals("enable")) {
+		if (result.getStrArgument("debug flag").equals("enable")) {
 			debugEnabled = true;
 		}
-		else if (s[1].equals("disable")) {
+		else if (result.getStrArgument("debug flag").equals("disable")) {
 			debugEnabled = false;
 		}
 		else {
-			output.println("Invalid command.");
+			output.println("Missing argument 'debug flag'.");
 			output.println();
 		}
 	}

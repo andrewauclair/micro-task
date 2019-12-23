@@ -173,13 +173,12 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		assertEquals("/", tasks.getActiveGroup().getFullPath());
 	}
 
-	// TODO I think these style tests can be parameterized
 	@Test
 	void switch_list_without_a_task_number_prints_invalid_command() {
 		commands.execute(printStream, "chlist");
 
 		assertOutput(
-				"Invalid command.",
+				"Missing 'list' argument.",
 				""
 		);
 	}
@@ -189,17 +188,17 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "chlist test two");
 
 		assertOutput(
-				"Invalid command.",
+				"Unknown value 'two'.",
 				""
 		);
 	}
 
 	@Test
-	void create_list_without_a_task_number_prints_invalid_command() {
+	void create_list_without_a_list_name_prints_invalid_command() {
 		commands.execute(printStream, "mklist");
 
 		assertOutput(
-				"Invalid command.",
+				"Missing 'list' argument.",
 				""
 		);
 	}
@@ -209,7 +208,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mklist test two");
 
 		assertOutput(
-				"Invalid command.",
+				"Unknown value 'two'.",
 				""
 		);
 	}

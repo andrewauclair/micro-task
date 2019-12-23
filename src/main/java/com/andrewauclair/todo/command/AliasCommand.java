@@ -17,8 +17,8 @@ public class AliasCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("name", 'n', Collections.singletonList("Name")),
 			new CommandOption("command", 'c', Collections.singletonList("Command")),
-			new CommandOption("remove", 'r'),
-			new CommandOption("list", 'l')
+			new CommandOption("remove", 'r', true),
+			new CommandOption("list", 'l', true)
 	);
 	private final CommandParser parser = new CommandParser(options);
 	

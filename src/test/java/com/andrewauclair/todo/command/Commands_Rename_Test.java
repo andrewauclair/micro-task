@@ -77,7 +77,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename --task 2 \"Test\"");
 
 		assertOutput(
-				"Missing name parameter.",
+				"Unknown value '\"Test\"'.",
 				""
 		);
 	}

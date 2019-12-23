@@ -18,9 +18,9 @@ public class UpdateCommand extends Command {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	
 	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("tasks", CommandOption.NO_SHORTNAME),
-			new CommandOption("releases", 'r'),
-			new CommandOption("latest", 'l'),
+			new CommandOption("tasks", CommandOption.NO_SHORTNAME, true),
+			new CommandOption("releases", 'r', true),
+			new CommandOption("latest", 'l', true),
 			new CommandOption("release", CommandOption.NO_SHORTNAME, Collections.singletonList("Release"))
 	);
 	private final CommandParser parser = new CommandParser(options);

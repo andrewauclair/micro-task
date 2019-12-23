@@ -17,7 +17,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class AddCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("name", 'n', Collections.singletonList("Name")),
-			new CommandOption("recurring", 'r'),
+			new CommandOption("recurring", 'r', true),
 			new CommandOption("charge", 'c', Collections.singletonList("Charge")),
 			new CommandOption("list", 'l', Collections.singletonList("List"))
 	);

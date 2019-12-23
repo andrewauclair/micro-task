@@ -3,9 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.TaskException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class CommandParser {
 	private final Map<String, CommandOption> options = new HashMap<>();
@@ -40,23 +38,41 @@ public final class CommandParser {
 					if (commandOption == null) {
 						throw new TaskException("Unknown option '" + c + "'");
 					}
-					
+
+//					i = parseOption(result, s, i, option);
 					if (commandOption.getArgumentCount() > 0) {
 						String arg1 = s[i + 1];
 						
 						if (arg1.startsWith("\"")) {
 							arg1 = arg1.substring(1, arg1.length() - 1);
 						}
-						result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName(), arg1));
+						result.args.put(commandOption.getName(), Collections.singletonList(new CommandArgument(commandOption.getName(), arg1)));
 						i++;
 					}
 					else {
-						result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName()));
+						result.args.put(commandOption.getName(), Collections.singletonList(new CommandArgument(commandOption.getName())));
 					}
 				}
 			}
 			else if (option.startsWith("--")) {
 				i = parseOption(result, s, i, option.substring(2));
+			}
+			else {
+				boolean found = false;
+				
+				// TODO This isn't the greatest setup, these are called positional arguments and we should be able to define their position
+				// probably the first argument, if it doesn't use the name
+				for (CommandOption commandOption : options.values()) {
+					if (!commandOption.usesName() && !result.args.keySet().contains(commandOption.getName())) {
+						result.args.put(commandOption.getName(), Collections.singletonList(new CommandArgument(commandOption.getName(), option)));
+						found = true;
+						break;
+					}
+				}
+				
+				if (!found) {
+					throw new TaskException("Unknown value '" + option + "'.");
+				}
 			}
 		}
 		
@@ -70,23 +86,36 @@ public final class CommandParser {
 			throw new TaskException("Unknown option '" + option + "'");
 		}
 		
-		if (commandOption.getArgumentCount() > 0) {
+		int argCount = commandOption.getArgumentCount();
+		
+		List<CommandArgument> arguments = new ArrayList<>();
+		
+		while (argCount > 0) {
 			String arg1 = s[i + 1];
 			
 			if (arg1.startsWith("\"")) {
 				arg1 = arg1.substring(1, arg1.length() - 1);
 			}
-			result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName(), arg1));
+			
+			arguments.add(new CommandArgument(commandOption.getName(), arg1));
+//			result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName(), arg1));
 			i++;
+			
+			argCount--;
+		}
+		
+		if (commandOption.getArgumentCount() == 0) {
+			result.args.put(commandOption.getName(), Collections.singletonList(new CommandArgument(commandOption.getName())));
 		}
 		else {
-			result.args.put(commandOption.getName(), new CommandArgument(commandOption.getName()));
+			result.args.put(commandOption.getName(), arguments);
 		}
+		
 		return i;
 	}
 	
 	static class CommandParseResult {
-		private final Map<String, CommandArgument> args = new HashMap<>();
+		private final Map<String, List<CommandArgument>> args = new HashMap<>();
 		
 		int getArgCount() {
 			return args.keySet().size();
@@ -101,7 +130,11 @@ public final class CommandParser {
 		}
 		
 		String getStrArgument(String name) {
-			return args.get(name).getValue();
+			return args.get(name).get(0).getValue();
+		}
+		
+		long getLongArgument(String name, int position) {
+			return Long.parseLong(getStrArgument(name, position));
 		}
 		
 		int getIntArgument(String name) {
@@ -110,6 +143,10 @@ public final class CommandParser {
 		
 		long getLongArgument(String name) {
 			return Long.parseLong(getStrArgument(name));
+		}
+		
+		String getStrArgument(String name, int position) {
+			return args.get(name).get(position).getValue();
 		}
 	}
 }

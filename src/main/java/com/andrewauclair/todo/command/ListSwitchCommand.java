@@ -12,33 +12,37 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class ListSwitchCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("list", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
-	public ListSwitchCommand(Tasks tasks) {
+	ListSwitchCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		if (s.length != 2) {
-			output.println("Invalid command.");
+		if (!result.hasArgument("list")) {
+			output.println("Missing 'list' argument.");
 			output.println();
 			return;
 		}
 		
-		String listParameter = s[1].toLowerCase();
+		String list = result.getStrArgument("list").toLowerCase();
 		
-		tasks.setActiveList(listParameter);
+		tasks.setActiveList(list);
 		
-		String list = tasks.getAbsoluteListName(listParameter);
+		String actualList = tasks.getAbsoluteListName(list);
 		
-		String group = tasks.getGroupForList(list).getFullPath();
+		String group = tasks.getGroupForList(actualList).getFullPath();
 		
 		tasks.switchGroup(group);
 		
-		output.println("Switched to list '" + list + "'");
+		output.println("Switched to list '" + actualList + "'");
 		output.println();
 	}
 	

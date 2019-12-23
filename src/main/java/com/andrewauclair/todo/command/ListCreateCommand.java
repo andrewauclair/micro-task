@@ -11,6 +11,10 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class ListCreateCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("list", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	
 	ListCreateCommand(Tasks tasks) {
@@ -19,15 +23,15 @@ public class ListCreateCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
-		if (s.length != 2) {
-			output.println("Invalid command.");
+		if (!result.hasArgument("list")) {
+			output.println("Missing 'list' argument.");
 			output.println();
 			return;
 		}
 		
-		String list = s[1].toLowerCase();
+		String list = result.getStrArgument("list").toLowerCase();
 		
 		boolean added = tasks.addList(list);
 

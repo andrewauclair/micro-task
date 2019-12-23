@@ -18,12 +18,12 @@ public class ListCommand extends Command {
 	private static final int MAX_DISPLAYED_TASKS = 20;
 	
 	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("tasks", CommandOption.NO_SHORTNAME),
+			new CommandOption("tasks", CommandOption.NO_SHORTNAME, true),
 			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
-			new CommandOption("lists", CommandOption.NO_SHORTNAME),
-			new CommandOption("group", CommandOption.NO_SHORTNAME),
-			new CommandOption("recursive", CommandOption.NO_SHORTNAME),
-			new CommandOption("all", CommandOption.NO_SHORTNAME)
+			new CommandOption("lists", CommandOption.NO_SHORTNAME, true),
+			new CommandOption("group", CommandOption.NO_SHORTNAME, true),
+			new CommandOption("recursive", CommandOption.NO_SHORTNAME, true),
+			new CommandOption("all", CommandOption.NO_SHORTNAME, true)
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
