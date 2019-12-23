@@ -92,7 +92,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "add \"Test\"");
 		
 		assertOutput(
-				"Missing name argument.",
+				"Unknown value '\"Test\"'.",
 				""
 		);
 	}

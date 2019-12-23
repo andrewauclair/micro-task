@@ -10,11 +10,13 @@ public final class CommandOption {
 	
 	private final String name;
 	private final char shortName;
+	private final boolean usesName;
 	private final List<String> arguments;
 	
-	public CommandOption(String name, char shortName) {
+	public CommandOption(String name, char shortName, boolean usesName) {
 		this.name = name;
 		this.shortName = shortName;
+		this.usesName = usesName;
 		arguments = Collections.emptyList();
 	}
 	
@@ -22,6 +24,7 @@ public final class CommandOption {
 		this.name = name;
 		this.shortName = shortName;
 		this.arguments = arguments;
+		this.usesName = true;
 	}
 	
 	public String getName() {
@@ -32,13 +35,17 @@ public final class CommandOption {
 		return shortName;
 	}
 	
+	boolean usesName() {
+		return usesName;
+	}
+	
 	int getArgumentCount() {
 		return arguments.size();
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, arguments, shortName);
+		return Objects.hash(name, arguments, shortName, usesName);
 	}
 	
 	@Override
@@ -52,7 +59,8 @@ public final class CommandOption {
 		CommandOption that = (CommandOption) o;
 		return Objects.equals(name, that.name) &&
 				Objects.equals(arguments, that.arguments) &&
-				shortName == that.shortName;
+				shortName == that.shortName &&
+				usesName == that.usesName;
 	}
 	
 	@Override
@@ -61,6 +69,7 @@ public final class CommandOption {
 				"name='" + name + '\'' +
 				", shortName=" + shortName +
 				", arguments=" + arguments +
+				", usesName=" + usesName +
 				'}';
 	}
 }

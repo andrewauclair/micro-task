@@ -14,6 +14,10 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class FinishCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("task", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 	
@@ -24,12 +28,12 @@ public class FinishCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
+		CommandParser.CommandParseResult result = parser.parse(command);
 		
 		Task task;
 		
-		if (s.length == 2) {
-			task = tasks.finishTask(Long.parseLong(s[1]));
+		if (result.hasArgument("task")) {
+			task = tasks.finishTask(result.getLongArgument("task"));
 		}
 		else {
 			task = tasks.finishTask();

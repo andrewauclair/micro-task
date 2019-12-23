@@ -19,8 +19,8 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class SearchCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("text", 't', Collections.singletonList("Text")),
-			new CommandOption("finished", 'f'),
-			new CommandOption("group", 'g')
+			new CommandOption("finished", 'f', true),
+			new CommandOption("group", 'g', true)
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;

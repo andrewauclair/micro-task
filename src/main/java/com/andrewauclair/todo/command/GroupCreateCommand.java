@@ -12,6 +12,10 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class GroupCreateCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("group", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 
 	GroupCreateCommand(Tasks tasks) {
@@ -20,9 +24,9 @@ public class GroupCreateCommand extends Command {
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-
-		String group = s[1].toLowerCase();
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		String group = result.getStrArgument("group").toLowerCase();
 
 		TaskGroup group1 = tasks.createGroup(group);
 

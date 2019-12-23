@@ -13,6 +13,10 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class GroupSwitchCommand extends Command {
+	private final List<CommandOption> options = Collections.singletonList(
+			new CommandOption("group", CommandOption.NO_SHORTNAME, false)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 
 	GroupSwitchCommand(Tasks tasks) {
@@ -21,10 +25,12 @@ public class GroupSwitchCommand extends Command {
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-
-		String group = s[1].toLowerCase();
-
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		// TODO This doesn't show a nice error if the argument is missing
+		
+		String group = result.getStrArgument("group");
+		
 		if (group.equals("..")) {
 			if (tasks.getActiveGroup().getFullPath().equals("/")) {
 				return;

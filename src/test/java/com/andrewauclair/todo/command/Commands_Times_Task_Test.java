@@ -118,7 +118,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times 1 2");
 
 		assertOutput(
-				"Invalid command.",
+				"Unknown value '1'.",
 				""
 		);
 	}

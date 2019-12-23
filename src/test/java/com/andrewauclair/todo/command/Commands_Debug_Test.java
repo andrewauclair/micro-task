@@ -26,7 +26,7 @@ class Commands_Debug_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "debug junk");
 
 		assertOutput(
-				"Invalid command.",
+				"Missing argument 'debug flag'.",
 				""
 		);
 	}

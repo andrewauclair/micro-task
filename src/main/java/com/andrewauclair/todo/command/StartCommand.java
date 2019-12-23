@@ -16,6 +16,11 @@ import java.util.Optional;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class StartCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("task", CommandOption.NO_SHORTNAME, false),
+			new CommandOption("finish", 'f', true)
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 	
@@ -26,21 +31,19 @@ public class StartCommand extends Command {
 	
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-
-		List<String> parameters = Arrays.asList(s);
-
-		int taskID = Integer.parseInt(s[1]);
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		int taskID = result.getIntArgument("task");
 
 		Optional<Task> activeTask = Optional.empty();
 		if (tasks.hasActiveTask()) {
 			activeTask = Optional.of(tasks.getActiveTask());
 		}
-
-		Task task = tasks.startTask(taskID, parameters.contains("--finish") || parameters.contains("-f"));
+		
+		Task task = tasks.startTask(taskID, result.hasArgument("finish"));
 
 		if (activeTask.isPresent()) {
-			if (parameters.contains("--finish") || parameters.contains("-f")) {
+			if (result.hasArgument("finish")) {
 				output.println("Finished task " + activeTask.get().description());
 			}
 			else {

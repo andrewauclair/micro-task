@@ -15,6 +15,12 @@ import java.util.List;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class MoveCommand extends Command {
+	private final List<CommandOption> options = Arrays.asList(
+			new CommandOption("task", 't', Arrays.asList("Task ID", "List")),
+			new CommandOption("list", 'l', Arrays.asList("List", "Group")),
+			new CommandOption("group", 'g', Arrays.asList("Source Group", "Destination Group"))
+	);
+	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 
 	MoveCommand(Tasks tasks) {
@@ -23,28 +29,27 @@ public class MoveCommand extends Command {
 
 	@Override
 	public void execute(PrintStream output, String command) {
-		String[] s = command.split(" ");
-
-		String type = s[1];
-
-		if (type.equals("--task")) {
-			Task task = tasks.moveTask(Long.parseLong(s[2]), s[3]);
-
-			output.println("Moved task " + task.id + " to list '" + s[3] + "'");
+		CommandParser.CommandParseResult result = parser.parse(command);
+		
+		if (result.hasArgument("task")) {
+			String list = result.getStrArgument("task", 1);
+			Task task = tasks.moveTask(result.getLongArgument("task", 0), list);
+			
+			output.println("Moved task " + task.id + " to list '" + list + "'");
 			output.println();
 		}
-		else if (type.equals("--list")) {
-			String list = s[2];
-			String group = s[3];
+		else if (result.hasArgument("list")) {
+			String list = result.getStrArgument("list", 0);
+			String group = result.getStrArgument("list", 1);
 
 			tasks.moveList(list, group);
 
 			output.println("Moved list " + list + " to group '" + group + "'");
 			output.println();
 		}
-		else {
-			String srcGroup = s[2];
-			String destGroup = s[3];
+		else if (result.hasArgument("group")) {
+			String srcGroup = result.getStrArgument("group", 0);
+			String destGroup = result.getStrArgument("group", 1);
 
 			tasks.moveGroup(srcGroup, destGroup);
 
@@ -73,7 +78,7 @@ public class MoveCommand extends Command {
 						)
 				),
 				node("move",
-						node("--list",
+						node("--group",
 								node(new GroupCompleter(tasks, true),
 										node(new GroupCompleter(tasks, false)
 										)

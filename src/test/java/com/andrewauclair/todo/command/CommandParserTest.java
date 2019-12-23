@@ -16,9 +16,9 @@ class CommandParserTest {
 	void parse_basic_arguments() {
 		CommandParser parser = new CommandParser(
 				Arrays.asList(
-						new CommandOption("arg1", CommandOption.NO_SHORTNAME),
-						new CommandOption("arg2", CommandOption.NO_SHORTNAME),
-						new CommandOption("g", CommandOption.NO_SHORTNAME)
+						new CommandOption("arg1", CommandOption.NO_SHORTNAME, true),
+						new CommandOption("arg2", CommandOption.NO_SHORTNAME, true),
+						new CommandOption("g", CommandOption.NO_SHORTNAME, true)
 				)
 		);
 		
@@ -33,7 +33,7 @@ class CommandParserTest {
 	void parse_strings_in_arguments() {
 		CommandParser parser = new CommandParser(
 				Arrays.asList(
-						new CommandOption("arg1", CommandOption.NO_SHORTNAME),
+						new CommandOption("arg1", CommandOption.NO_SHORTNAME, true),
 						new CommandOption("arg2", CommandOption.NO_SHORTNAME, Collections.singletonList("String"))
 				)
 		);
@@ -65,9 +65,9 @@ class CommandParserTest {
 	@Test
 	void parse_multiple_flag_values() {
 		List<CommandOption> options = Arrays.asList(
-				new CommandOption("alpha", 'a'),
-				new CommandOption("bravo", 'b'),
-				new CommandOption("charlie", 'c')
+				new CommandOption("alpha", 'a', true),
+				new CommandOption("bravo", 'b', true),
+				new CommandOption("charlie", 'c', true)
 		);
 		
 		CommandParser parser = new CommandParser(options);
@@ -82,8 +82,8 @@ class CommandParserTest {
 	@Test
 	void parser_throws_exception_if_option_is_unknown_full_name() {
 		List<CommandOption> options = Arrays.asList(
-				new CommandOption("alpha", 'a'),
-				new CommandOption("bravo", 'b')
+				new CommandOption("alpha", 'a', true),
+				new CommandOption("bravo", 'b', true)
 		);
 		
 		CommandParser parser = new CommandParser(options);
@@ -96,8 +96,8 @@ class CommandParserTest {
 	@Test
 	void parser_throws_exception_if_option_is_unknown_short_name() {
 		List<CommandOption> options = Arrays.asList(
-				new CommandOption("alpha", 'a'),
-				new CommandOption("bravo", 'b')
+				new CommandOption("alpha", 'a', true),
+				new CommandOption("bravo", 'b', true)
 		);
 		
 		CommandParser parser = new CommandParser(options);
@@ -119,7 +119,7 @@ class CommandParserTest {
 	
 	@Test
 	void command_option_toString() {
-		assertEquals("CommandOption{name='test', shortName=t, arguments=[1, 2]}", new CommandOption("test", 't', Arrays.asList("1", "2")).toString());
+		assertEquals("CommandOption{name='test', shortName=t, arguments=[1, 2], usesName=true}", new CommandOption("test", 't', Arrays.asList("1", "2")).toString());
 	}
 	
 	@Test
