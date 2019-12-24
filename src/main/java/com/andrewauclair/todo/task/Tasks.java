@@ -204,19 +204,28 @@ public class Tasks {
 			throw new TaskException("Task is already active.");
 		}
 		
+		Optional<Task> lastTask = Optional.empty();
+		
 		if (activeTaskID != NO_ACTIVE_TASK) {
 			if (finishActive) {
-				finishTask();
+				lastTask = Optional.of(finishTask());
 			}
 			else {
-				stopTask();
+				lastTask = Optional.of(stopTask());
 			}
 		}
 		activeTaskID = currentTask.id;
 		
 		setActiveList(getActiveTaskList());
 		
-		return getList(getActiveTaskList()).startTask(activeTaskID, this);
+		long startTime = osInterface.currentSeconds();
+		
+		if (lastTask.isPresent()) {
+			int size = lastTask.get().getStartStopTimes().size();
+			startTime = lastTask.get().getStartStopTimes().get(size - 1).stop;
+		}
+		
+		return getList(getActiveTaskList()).startTask(activeTaskID, startTime, this);
 	}
 	
 	public Task stopTask() {
