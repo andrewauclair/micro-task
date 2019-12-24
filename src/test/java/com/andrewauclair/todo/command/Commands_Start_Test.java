@@ -72,8 +72,9 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1, false);
-
-		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+		
+		long time = 1561078202L;
+		Mockito.when(osInterface.currentSeconds()).thenReturn(time, time + 1000);
 
 		commands.execute(printStream, "start 2");
 

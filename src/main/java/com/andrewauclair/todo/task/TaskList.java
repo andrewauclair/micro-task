@@ -96,11 +96,11 @@ public final class TaskList implements TaskContainer {
 		return task;
 	}
 	
-	public Task startTask(long id, Tasks tasks) {
+	public Task startTask(long id, long startTime, Tasks tasks) {
 		Task currentTask = getTask(id);
 
 		Task newActiveTask = new TaskBuilder(currentTask)
-				.start(osInterface.currentSeconds(), tasks);
+				.start(startTime, tasks);
 
 		replaceTask(currentTask, newActiveTask);
 
