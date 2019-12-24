@@ -59,7 +59,8 @@ public class ListCommand extends Command {
 			output.println();
 		}
 		else if (showTasks) {
-			if (!list.equals(tasks.getActiveList())) {
+//			if (!list.equals(tasks.getActiveList())) {
+			if (!useGroup) {
 				output.println("Tasks on list '" + list + "'");
 				output.println();
 			}

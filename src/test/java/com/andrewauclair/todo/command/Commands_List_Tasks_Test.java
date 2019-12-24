@@ -22,6 +22,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
 				"",
@@ -63,6 +65,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"   1 - 'Test 1'",
 				"   2 - 'Test 2'",
 				"   3 - 'Test 3'",
@@ -94,13 +98,15 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	void list_command_shows_all_tasks_when_all_parameter_is_passed() {
 		IntStream.range(1, 23)
 				.forEach(num -> tasks.addTask("Test " + num));
-
+		
 		tasks.startTask(2, false);
-
+		
 		// TODO This should also accept "list -ta"
 		commands.execute(printStream, "list --tasks --all");
 		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"   1 - 'Test 1'",
 				"*  " + ANSI_FG_GREEN + "2 - 'Test 2'" + ANSI_RESET,
 				"   3 - 'Test 3'",
@@ -128,25 +134,27 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
 	@Test
 	void list_tasks_on_a_nested_list() {
 		commands.execute(printStream, "create-list /test/one");
 		commands.execute(printStream, "switch-group /test");
 		commands.execute(printStream, "switch-list one");
-
+		
 		outputStream.reset();
-
+		
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		tasks.addTask("Task 3");
 		tasks.startTask(2, false);
 		tasks.finishTask();
 		tasks.startTask(3, false);
-
+		
 		commands.execute(printStream, "list --tasks");
-
+		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
 				"",
@@ -154,12 +162,14 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
 	@Test
 	void list_command_does_not_throw_the_no_active_task_exception() {
 		commands.execute(printStream, "list --tasks");
-
+		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"No tasks.",
 				""
 		);
@@ -170,10 +180,10 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.createGroup("/test/");
 		tasks.createGroup("/test/junk");
 		tasks.switchGroup("/test/");
-
+		
 		tasks.addList("/test/default");
 		tasks.setActiveList("/test/default");
-
+		
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		tasks.addTask("Task 3");
@@ -193,21 +203,21 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 7");
 		tasks.addTask("Task 8");
 		tasks.addTask("Task 9");
-
+		
 		// add extra tasks that shouldn't be shown
 		tasks.setActiveList("/default");
 		tasks.addTask("Hidden 1");
 		tasks.addTask("Hidden 2");
-
+		
 		tasks.addList("/hide");
 		tasks.setActiveList("/hide");
-
+		
 		tasks.addTask("Hidden 3");
-
+		
 		commands.execute(printStream, "chlist /test/two");
-
+		
 		outputStream.reset();
-
+		
 		commands.execute(printStream, "list --tasks --group");
 		
 		assertOutput(
@@ -232,9 +242,6 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-		// TODO I would like the list command to support the short forms of parameters
-//	@ParameterizedTest
-//	@ValueSource(strings = {"--recursive", "-r"})
 	void print_tasks_in_group_recursively() {
 		tasks.addList("/one/two/three");
 		tasks.setActiveList("/one/two/three");
@@ -263,6 +270,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
+				"Tasks on list '/default'",
+				"",
 				"R 1 - 'Test'",
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
@@ -273,7 +282,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
 		commands.execute(printStream, "list --tasks --group");
-
+		
 		assertOutput(
 				"No tasks.",
 				""
