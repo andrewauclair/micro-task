@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.TestUtils;
@@ -13,7 +13,6 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskWriterTest {

@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
 import java.util.List;
