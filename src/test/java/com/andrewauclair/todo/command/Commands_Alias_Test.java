@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -66,6 +67,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Created alias 'ttt' for command 'times --tasks --today'",
 				"",
+				ConsoleColors.ANSI_BOLD + "times --tasks --today" + ConsoleColors.ANSI_RESET,
 				"Times for day 12/31/1969",
 				"",
 				"",
