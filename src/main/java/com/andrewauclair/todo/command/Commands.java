@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.TaskException;
+import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Tasks;
@@ -57,7 +58,13 @@ public class Commands {
 							() -> aliases.keySet().stream()
 									.filter(command::equals)
 									.findFirst()
-									.ifPresentOrElse(name -> execute(output, aliases.get(name)), () -> unknownCommand(output)));
+									.ifPresentOrElse(name -> {
+										output.print(ConsoleColors.ANSI_BOLD);
+										output.print(aliases.get(name));
+										output.print(ConsoleColors.ANSI_RESET);
+										output.println();
+										execute(output, aliases.get(name));
+									}, () -> unknownCommand(output)));
 		}
 		catch (RuntimeException e) {
 			if (e instanceof TaskException) {
