@@ -50,4 +50,14 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void eod_command_prints_day_complete_when_past_end_of_day() {
+		commands.execute(printStream, "eod -h 1");
+		
+		assertOutput(
+				"Day complete.",
+				""
+		);
+	}
 }

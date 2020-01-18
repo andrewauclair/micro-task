@@ -47,19 +47,25 @@ class EndOfDayCommand extends Command {
 		for (TaskFilter.TaskFilterResult filterResult : data) {
 			totalTime += filterResult.getTotal();
 		}
-
-		output.print("End of Day is in ");
 		
 		int hours = result.hasArgument("hours") ? result.getIntArgument("hours") : 8;
 		long eod = epochSecond + ((hours * 3600) - totalTime);
-
-		TimesCommand.printTotalTime(output, eod - epochSecond, false);
-
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
-		String eodStr = Instant.ofEpochSecond(eod).atZone(zoneId).format(dateTimeFormatter);
-
-		output.print(" at ");
-		output.println(eodStr);
+		
+		if (eod - epochSecond < 0) {
+			output.println("Day complete.");
+		}
+		else {
+			output.print("End of Day is in ");
+			
+			TimesCommand.printTotalTime(output, eod - epochSecond, false);
+			
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+			String eodStr = Instant.ofEpochSecond(eod).atZone(zoneId).format(dateTimeFormatter);
+			
+			output.print(" at ");
+			output.println(eodStr);
+		}
+		
 		output.println();
 	}
 
