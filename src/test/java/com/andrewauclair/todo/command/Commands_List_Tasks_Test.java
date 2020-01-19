@@ -58,6 +58,61 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
+	void display_finished_tasks() {
+		tasks.addTask("Task 1");
+		tasks.addTask("Task 2");
+		tasks.addTask("Task 3");
+		
+		tasks.finishTask(1);
+		tasks.finishTask(3);
+		
+		commands.execute(printStream, "list --tasks --finished");
+		
+		assertOutput(
+				"Finished tasks on list '/default'",
+				"",
+				"  1 - 'Task 1'",
+				"  3 - 'Task 3'",
+				"",
+				ANSI_BOLD + "Total Finished Tasks: 2" + ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void display_finished_tasks_in_group() {
+		tasks.createGroup("/test/");
+		tasks.addList("/test/one");
+		tasks.addList("/test/three");
+		tasks.addTask("Test 1", "/test/one");
+		tasks.addTask("Test 2", "/test/one");
+		tasks.addTask("Test 3", "/test/one");
+		
+		tasks.addTask("Test 4", "/test/three");
+		tasks.addTask("Test 5", "/test/three");
+		tasks.addTask("Test 6", "/test/three");
+		
+		tasks.finishTask(2);
+		tasks.finishTask(5);
+		
+		tasks.switchGroup("/test/");
+		
+		commands.execute(printStream, "list --tasks --group --finished");
+		
+		assertOutput(
+				ANSI_BOLD + "/test/one" + ANSI_RESET,
+				"  2 - 'Test 2'",
+				"",
+				ANSI_BOLD + "/test/three" + ANSI_RESET,
+				"  5 - 'Test 5'",
+				"",
+				"",
+				ANSI_BOLD + "Total Finished Tasks: 2" + ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
 	void list_command_caps_at_20_tasks_and_displays_a_count_of_how_many_are_left() {
 		IntStream.range(1, 40)
 				.forEach(num -> tasks.addTask("Test " + num));
