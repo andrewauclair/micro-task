@@ -23,6 +23,7 @@ public class ListCommand extends Command {
 			new CommandOption("lists", CommandOption.NO_SHORTNAME, true),
 			new CommandOption("group", CommandOption.NO_SHORTNAME, true),
 			new CommandOption("recursive", CommandOption.NO_SHORTNAME, true),
+			new CommandOption("finished", CommandOption.NO_SHORTNAME, true),
 			new CommandOption("all", CommandOption.NO_SHORTNAME, true)
 	);
 	private final CommandParser parser = new CommandParser(options);
@@ -41,6 +42,7 @@ public class ListCommand extends Command {
 		boolean showLists = result.hasArgument("lists");
 		boolean useGroup = result.hasArgument("group");
 		boolean recursive = result.hasArgument("recursive");
+		boolean finished = result.hasArgument("finished");
 		
 		String list = tasks.getActiveList();
 		
@@ -59,9 +61,13 @@ public class ListCommand extends Command {
 			output.println();
 		}
 		else if (showTasks) {
-//			if (!list.equals(tasks.getActiveList())) {
 			if (!useGroup) {
-				output.println("Tasks on list '" + list + "'");
+				if (finished) {
+					output.println("Finished tasks on list '" + list + "'");
+				}
+				else {
+					output.println("Tasks on list '" + list + "'");
+				}
 				output.println();
 			}
 
@@ -70,11 +76,11 @@ public class ListCommand extends Command {
 			int totalTasks = 0;
 
 			if (useGroup) {
-				totalTasks = printTasks(output, tasks.getActiveGroup(), totalTasks, recursive);
+				totalTasks = printTasks(output, tasks.getActiveGroup(), totalTasks, finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasks.getTasksForList(list).stream()
-						.filter(task -> task.state != TaskState.Finished)
+						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList());
 
 				totalTasks += tasksList.size();
@@ -92,7 +98,12 @@ public class ListCommand extends Command {
 			if (totalTasks > 0) {
 				output.println();
 				output.print(ANSI_BOLD);
-				output.print("Total Tasks: " + totalTasks);
+				if (finished) {
+					output.print("Total Finished Tasks: " + totalTasks);
+				}
+				else {
+					output.print("Total Tasks: " + totalTasks);
+				}
 				output.print(ANSI_RESET);
 				output.println();
 			}
@@ -195,13 +206,14 @@ public class ListCommand extends Command {
 		}
 	}
 	
-	private int printTasks(PrintStream output, TaskGroup group, int totalTasks, boolean recursive) {
+	private int printTasks(PrintStream output, TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskList) {
 				TaskList listChild = (TaskList) child;
 				
 				List<Task> tasksList = listChild.getTasks().stream()
-						.filter(task -> task.state != TaskState.Finished)
+						.filter(task -> finished == (task.state == TaskState.Finished))
+//						.filter(task -> task.state != TaskState.Finished)
 						.collect(Collectors.toList());
 				
 				totalTasks += tasksList.size();
@@ -213,7 +225,7 @@ public class ListCommand extends Command {
 				}
 			}
 			else if (recursive) {
-				totalTasks += printTasks(output, (TaskGroup) child, totalTasks, recursive);
+				totalTasks += printTasks(output, (TaskGroup) child, totalTasks, finished, recursive);
 			}
 		}
 		return totalTasks;
