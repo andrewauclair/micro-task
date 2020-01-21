@@ -3,6 +3,7 @@ package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Main;
 import com.andrewauclair.todo.command.Commands;
+import org.jline.utils.ExecHelper;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -28,46 +29,47 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public void setCommands(Commands commands) {
 		this.commands = commands;
 	}
-
+	
 	@Override
 	public boolean runGitCommand(String command, boolean print) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
-		ProcessBuilder builder = new ProcessBuilder();
-		builder.directory(new File("git-data"));
-		builder.command(command.split(" "));
 		
-		if (commands.getDebugCommand().isDebugEnabled() || print) {
-			System.out.println("run: " + command);
-			builder.inheritIO();
-		}
-
 		try {
-			Process process = builder.start();
-			process.waitFor();
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.directory(new File("git-data"));
+			pb.command(command.split(" "));
+			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+			
+			Process p = pb.start();
+			String result = ExecHelper.waitAndCapture(p);
+			
+			System.out.println(result);
 		}
-		catch (IOException | InterruptedException e) {
+		catch (InterruptedException | IOException e) {
+			e.printStackTrace();
 			return false;
 		}
+		
 		return true;
 	}
-
+	
 	@Override
 	public long currentSeconds() {
 		return Instant.now().getEpochSecond();
 	}
-
+	
 	@Override
 	public ZoneId getZoneId() {
 		return ZoneId.systemDefault();
 	}
-
+	
 	@Override
 	public DataOutputStream createOutputStream(String fileName) throws IOException {
 		if (isJUnitTest()) {
@@ -79,7 +81,7 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 		return new DataOutputStream(new FileOutputStream(file));
 	}
-
+	
 	@Override
 	public InputStream createInputStream(String fileName) throws IOException {
 		if (isJUnitTest()) {
@@ -89,11 +91,11 @@ public class OSInterfaceImpl implements OSInterface {
 		lastInputFile = file.getAbsolutePath();
 		return new FileInputStream(file);
 	}
-
+	
 	@Override
 	public void removeFile(String fileName) {
 		boolean delete = new File(fileName).delete();
-
+		
 		if (!delete) {
 			throw new RuntimeException("Failed to delete " + fileName);
 		}
@@ -125,7 +127,7 @@ public class OSInterfaceImpl implements OSInterface {
 		catch (IOException | InterruptedException ignored) {
 		}
 	}
-
+	
 	@Override
 	public String getVersion() throws IOException {
 		InputStream resourceAsStream = Main.class.getClassLoader().getResourceAsStream("version.properties");
@@ -133,21 +135,21 @@ public class OSInterfaceImpl implements OSInterface {
 		if (resourceAsStream != null) {
 			props.load(resourceAsStream);
 		}
-
+		
 		return (String) props.get("version");
 	}
-
+	
 	@Override
 	public void exit() {
 		System.exit(0);
 	}
-
+	
 	@Override
 	public void createFolder(String folder) {
 		//noinspection ResultOfMethodCallIgnored
 		new File(folder).mkdirs();
 	}
-
+	
 	@Override
 	public void moveFolder(String src, String dest) throws IOException {
 		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
