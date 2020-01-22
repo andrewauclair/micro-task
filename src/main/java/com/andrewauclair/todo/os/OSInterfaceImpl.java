@@ -41,20 +41,40 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 		
-		try {
-			ProcessBuilder pb = new ProcessBuilder();
-			pb.directory(new File("git-data"));
-			pb.command(command.split(" "));
-			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
-			
-			Process p = pb.start();
-			String result = ExecHelper.waitAndCapture(p);
-			
-			System.out.println(result);
+		if (print) {
+		    try {
+    			ProcessBuilder pb = new ProcessBuilder();
+    			pb.directory(new File("git-data"));
+    			pb.command(command.split(" "));
+    			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+    			
+    			Process p = pb.start();
+    			String result = ExecHelper.waitAndCapture(p);
+    			
+    			System.out.println(result);
+    		}
+    		catch (InterruptedException | IOException e) {
+    			e.printStackTrace();
+    			return false;
+    		}
 		}
-		catch (InterruptedException | IOException e) {
-			e.printStackTrace();
-			return false;
+		else {
+    		ProcessBuilder builder = new ProcessBuilder();
+    		builder.directory(new File("git-data"));
+    		builder.command(command.split(" "));
+    		
+    		if (commands.getDebugCommand().isDebugEnabled() || print) {
+    			System.out.println("run: " + command);
+    			builder.inheritIO();
+    		}
+    
+    		try {
+    			Process process = builder.start();
+    			process.waitFor();
+    		}
+    		catch (IOException | InterruptedException e) {
+    			return false;
+    		}
 		}
 		
 		return true;
