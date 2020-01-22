@@ -10,6 +10,8 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
+
 class Commands_Update_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_update_command() throws IOException {
@@ -59,7 +61,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"version-1",
 				"version-2",
-				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "version-3" + ConsoleColors.ANSI_RESET,
+				ANSI_FG_GREEN + "version-3 -- latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
@@ -86,9 +88,9 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"19.1.3",
 				"19.1.4",
-				"19.1.5 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
+				"19.1.5 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
 				"19.1.6",
-				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
@@ -142,9 +144,38 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"19.1.3",
 				"19.1.4",
-				"19.1.5 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
+				"19.1.5 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
 				"19.1.6",
-				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
+				""
+		);
+	}
+	
+	@Test
+	void current_and_latest_are_same_release() throws IOException {
+		Mockito.when(gitLabReleases.getVersions()).thenReturn(Arrays.asList(
+				"19.1.1",
+				"19.1.2",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				"19.1.7"
+		));
+		Mockito.when(osInterface.getVersion()).thenReturn("19.1.7");
+		
+		commands.execute(printStream, "update -r");
+		
+		assertOutput(
+				"Releases found on GitLab",
+				"",
+				"2 older releases",
+				"",
+				"19.1.3",
+				"19.1.4",
+				"19.1.5",
+				"19.1.6",
+				ANSI_FG_GREEN + "19.1.7 " + ANSI_FG_GREEN + "-- current & latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
@@ -169,12 +200,12 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"2 older releases",
 				"",
-				"19.1.1 " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
+				"19.1.1 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
 				"19.1.3",
 				"19.1.4",
 				"19.1.5",
 				"19.1.6",
-				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
@@ -204,7 +235,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"19.1.4",
 				"19.1.5",
 				"19.1.6",
-				ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "19.1.7" + ConsoleColors.ANSI_RESET,
+				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
 	}
