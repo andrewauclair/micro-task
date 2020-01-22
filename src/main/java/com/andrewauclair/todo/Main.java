@@ -66,9 +66,13 @@ public class Main {
 		reloadAliases(osInterface, commands);
 		
 		Terminal terminal = TerminalBuilder.builder()
+				.system(true)
 				.jna(true)
 				.nativeSignals(true)
 				.build();
+		
+		System.setIn(terminal.input());
+		System.setOut(new PrintStream(terminal.output()));
 		
 		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(commands.getAutoCompleteNodes());
 		
