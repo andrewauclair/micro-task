@@ -28,7 +28,7 @@ public class UpdateCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 	
-	public UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, OSInterface osInterface) {
+	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -37,7 +37,7 @@ public class UpdateCommand extends Command {
 	@Override
 	public void execute(PrintStream output, String command) {
 		CommandParser.CommandParseResult result = parser.parse(command);
-
+		
 		List<String> versions;
 		try {
 			versions = gitLabReleases.getVersions();
@@ -81,16 +81,22 @@ public class UpdateCommand extends Command {
 					output.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
 				}
 				output.print(versions.get(i));
-				if (i + 1 == versions.size()) {
-					output.print(ConsoleColors.ANSI_RESET);
-				}
 				
 				if (versions.get(i).equals(currentVersion)) {
 					output.print(" ");
 					output.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
 					output.print("-- current");
+					
+					if (i + 1 == versions.size()) {
+						output.print(" & latest");
+					}
 					output.print(ConsoleColors.ANSI_RESET);
 				}
+				else if (i + 1 == versions.size()) {
+					output.print(" -- latest");
+					output.print(ConsoleColors.ANSI_RESET);
+				}
+				
 				output.println();
 			}
 		}
