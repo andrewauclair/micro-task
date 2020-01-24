@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apt-get install jq
+
 mkdir src/main/resources
 
 git_describe=$(git describe --tags)
