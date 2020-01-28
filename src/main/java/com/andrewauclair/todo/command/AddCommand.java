@@ -19,13 +19,16 @@ public class AddCommand extends Command {
 			new CommandOption("name", 'n', Collections.singletonList("Name")),
 			new CommandOption("recurring", 'r', true),
 			new CommandOption("charge", 'c', Collections.singletonList("Charge")),
-			new CommandOption("list", 'l', Collections.singletonList("List"))
+			new CommandOption("list", 'l', Collections.singletonList("List")),
+			new CommandOption("start", 's', Collections.emptyList())
 	);
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
+	private final Commands commands;
 	
-	AddCommand(Tasks tasks) {
+	AddCommand(Tasks tasks, Commands commands) {
 		this.tasks = tasks;
+		this.commands = commands;
 	}
 
 	@Override
@@ -55,6 +58,10 @@ public class AddCommand extends Command {
 		
 		output.println("Added task " + task.description());
 		output.println();
+		
+		if (result.hasArgument("start")) {
+			commands.execute(output, "start " + task.id);
+		}
 	}
 	
 	@Override

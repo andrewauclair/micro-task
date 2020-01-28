@@ -103,19 +103,21 @@ public class Main {
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
 		
+		Thread thread = Thread.currentThread();
+		
 		Timer timer = new Timer();
 		
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-				updateStatus(tasks, status, terminal, osInterface);
+//				updateStatus(tasks, status, terminal, osInterface);
 			}
 		};
 		
 		boolean hasActiveTask = tasks.hasActiveTask();
 		
 		if (hasActiveTask) {
-			timer.schedule(timerTask, 0, 30000);
+			timer.schedule(timerTask, 1000, 30000);
 		}
 		
 		while (true) {
@@ -144,7 +146,7 @@ public class Main {
 							updateStatus(tasks, status, terminal, osInterface);
 						}
 					};
-					timer.schedule(timerTask, 0, 30000);
+					timer.schedule(timerTask, 1000, 30000);
 				}
 				else {
 					timerTask.cancel();
@@ -163,13 +165,20 @@ public class Main {
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
 		synchronized (tasks) {
-			List<AttributedString> statusLines = new ArrayList<>();
-			
 			int width = terminal.getSize().getColumns();
+			
+			List<AttributedString> as = new ArrayList<>();
+			
 			
 			if (tasks.hasActiveTask()) {
 				String description = tasks.getActiveTask().description();
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				
+				
+				List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
+				TaskTimes currentTime = times.get(times.size() - 1);
+				
+				
 				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
 				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
 				
@@ -182,27 +191,23 @@ public class Main {
 				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
 				description += time;
 				
-				statusLines.add(new AttributedString(description));
-				statusLines.add(new AttributedString("Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "		Active Task List: " + tasks.getActiveTaskList()));
-				statusLines.add(new AttributedString("Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList()));
+				as.add(new AttributedString(padString(terminal, description)));
+				as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
+				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
 			}
 			else {
-				statusLines.add(new AttributedString("No active task"));
-				statusLines.add(new AttributedString(""));
-				statusLines.add(new AttributedString("Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList()));
+				as.add(new AttributedString(padString(terminal, "No active task")));
+				as.add(new AttributedString(padString(terminal, "")));
+				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
 			}
 			
-			List<AttributedString> finalLines = new ArrayList<>();
-			
-			// fill lines with white space to overwrite anything already in the terminal
-			for (AttributedString statusLine : statusLines) {
-				int length = statusLine.length();
-				
-				finalLines.add(new AttributedString(statusLine.toString() + String.join("", Collections.nCopies(width - length, " "))));
-			}
-			
-			status.update(finalLines);
+			status.update(as);
 		}
+	}
+	
+	private static String padString(Terminal terminal, String str) {
+		int width = terminal.getSize().getColumns();
+		return str + String.join("", Collections.nCopies(width - str.length(), " "));
 	}
 	
 	private static void bindCtrlBackspace(LineReader lineReader) {

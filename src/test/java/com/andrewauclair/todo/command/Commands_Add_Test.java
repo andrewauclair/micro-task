@@ -7,10 +7,12 @@ import com.andrewauclair.todo.task.TaskTimes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class Commands_Add_Test extends CommandsBaseTestCase {
@@ -111,6 +113,24 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Added task 1 - 'Test 1'",
+				""
+		);
+	}
+	
+	@Test
+	void start_task_when_adding_it() {
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+		
+		commands.execute(printStream, "add -s -n \"Test\"");
+		
+		assertEquals(TaskState.Active, tasks.getTask(1).state);
+		
+		assertOutput(
+				"Added task 1 - 'Test'",
+				"",
+				"Started task 1 - 'Test'",
+				"",
+				"06/20/2019 07:50:02 PM -",
 				""
 		);
 	}
