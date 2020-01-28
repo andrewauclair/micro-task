@@ -29,7 +29,7 @@ public class Commands {
 		commands.put("finish", new FinishCommand(tasks, osInterface));
 		commands.put("start", new StartCommand(tasks, osInterface));
 		commands.put("stop", new StopCommand(tasks, osInterface));
-		commands.put("add", new AddCommand(tasks));
+		commands.put("add", new AddCommand(tasks, this));
 		commands.put("active", new ActiveCommand(tasks, osInterface));
 		commands.put("list", new ListCommand(tasks));
 		commands.put("times", new TimesCommand(tasks, osInterface));
