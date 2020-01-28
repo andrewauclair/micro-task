@@ -13,7 +13,6 @@ import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Completers;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
-import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
@@ -85,15 +84,11 @@ public class Main {
 		Status status = Status.getStatus(terminal);
 		status.setBorder(true);
 		
-		updateStatus(tasks, status, terminal, osInterface);
-		
 		bindCtrlBackspace(lineReader);
 		
 		if (!exception) {
 			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
-		
-		Size terminalSize = terminal.getSize();
 		
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
 			// set active list to the list of the active task
@@ -103,14 +98,14 @@ public class Main {
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
 		
-		Thread thread = Thread.currentThread();
+		updateStatus(tasks, status, terminal, osInterface);
 		
 		Timer timer = new Timer();
 		
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-//				updateStatus(tasks, status, terminal, osInterface);
+				updateStatus(tasks, status, terminal, osInterface);
 			}
 		};
 		
