@@ -4,13 +4,60 @@ package com.andrewauclair.todo.os;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GitLabReleases {
+	public GitLabReleases() throws Exception {
+		TrustManagerFactory tmf = TrustManagerFactory
+				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+// Using null here initialises the TMF with the default trust store.
+		tmf.init((KeyStore) null);
+
+// Get hold of the default trust manager
+		X509TrustManager x509Tm = null;
+		for (TrustManager tm : tmf.getTrustManagers()) {
+			if (tm instanceof X509TrustManager) {
+				x509Tm = (X509TrustManager) tm;
+				break;
+			}
+		}
+
+// Wrap it in your own class.
+		final X509TrustManager finalTm = x509Tm;
+		X509TrustManager customTm = new X509TrustManager() {
+			@Override
+			public void checkClientTrusted(X509Certificate[] chain,
+										   String authType) throws CertificateException {
+				finalTm.checkClientTrusted(chain, authType);
+			}
+			
+			@Override
+			public void checkServerTrusted(X509Certificate[] chain,
+										   String authType) throws CertificateException {
+				finalTm.checkServerTrusted(chain, authType);
+			}
+			
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				return finalTm.getAcceptedIssuers();
+			}
+		};
+		
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[]{customTm}, null);
+
+// You don't have to set this as the default context,
+// it depends on the library you're using.
+		SSLContext.setDefault(sslContext);
+	}
+	
 	public List<String> getVersions() throws IOException {
 		JSONArray array = getReleasesJSON();
 

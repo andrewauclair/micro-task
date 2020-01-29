@@ -19,6 +19,7 @@ public class RenameCommand extends Command {
 	private final List<CommandOption> options = Arrays.asList(
 			new CommandOption("list", 'l', Collections.singletonList("List")),
 			new CommandOption("task", 't', Collections.singletonList("Task")),
+			new CommandOption("group", 'g', Collections.singletonList("Group")),
 			new CommandOption("name", 'n', Collections.singletonList("Name"))
 	);
 	private final CommandParser parser = new CommandParser(options);
@@ -50,6 +51,16 @@ public class RenameCommand extends Command {
 			output.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
 			output.println();
 		}
+		else if (result.hasArgument("group")) {
+			String newName = result.getStrArgument("name");
+			String group = result.getStrArgument("group");
+			
+			String oldGroupPath = tasks.getGroup(group).getFullPath();
+			
+			tasks.renameGroup(group, newName);
+			
+			output.println("Renamed group '" + oldGroupPath + "' to '" + tasks.getGroup(newName).getFullPath() + "'");
+		}
 		else if (result.hasArgument("task")) {
 			if (!result.hasArgument("name")) {
 				output.println("Missing name parameter.");
@@ -59,9 +70,9 @@ public class RenameCommand extends Command {
 			
 			String newName = result.getStrArgument("name");
 			long taskID = result.getLongArgument("task");
-
+			
 			Task task = tasks.renameTask(taskID, newName);
-
+			
 			output.println("Renamed task " + task.description());
 			output.println();
 		}
