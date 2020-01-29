@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,7 +76,9 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
+	@Disabled
 	void rename_a_group() {
+		
 		tasks.addGroup("/one/");
 		
 		assertTrue(tasks.hasGroupPath("/one/"));

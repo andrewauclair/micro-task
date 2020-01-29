@@ -328,6 +328,18 @@ public class Tasks {
 		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"", false);
 	}
 	
+	public void renameGroup(String oldName, String newName) {
+		TaskGroup group = getGroup(oldName);
+		
+		TaskGroup parent = getGroup(group.getParent());
+		
+		try {
+			osInterface.moveFolder(group.getFullPath(), newName);
+		}
+		catch (IOException e) {
+		
+		}
+	}
 	public void addTask(Task task) {
 		if (hasTaskWithID(task.id)) {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
