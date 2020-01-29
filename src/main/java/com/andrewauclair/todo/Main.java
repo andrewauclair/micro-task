@@ -24,6 +24,7 @@ import java.util.*;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
+	public static LineReader lineReader;
 	
 	public static void main(String[] args) throws Exception {
 		OSInterfaceImpl osInterface = new OSInterfaceImpl();
@@ -75,7 +76,7 @@ public class Main {
 		
 		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(commands.getAutoCompleteNodes());
 		
-		LineReader lineReader = LineReaderBuilder.builder()
+		lineReader = LineReaderBuilder.builder()
 				.terminal(terminal)
 				.completer(treeCompleter)
 				.variable(LineReader.BELL_STYLE, "none")

@@ -4,6 +4,8 @@ package com.andrewauclair.todo.command;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
@@ -71,7 +73,24 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
+	@Test
+	void rename_a_group() {
+		tasks.addGroup("/one/");
+		
+		assertTrue(tasks.hasGroupPath("/one/"));
+		
+		commands.execute(printStream, "rename --group /one/ -n \"/two\"");
+		
+		assertFalse(tasks.hasGroupPath("/one/"));
+		assertTrue(tasks.hasGroupPath("/two/"));
+		
+		assertOutput(
+				"Renamed group '/one/' to '/two/'",
+				""
+		);
+	}
+	
 	@Test
 	void rename_requires_name_parameter() {
 		commands.execute(printStream, "rename --task 2 \"Test\"");
