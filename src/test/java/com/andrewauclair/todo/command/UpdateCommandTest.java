@@ -13,7 +13,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 class UpdateCommandTest extends CommandsBaseTestCase {
 	@Test
-	void verify_auto_complete_nodes() {
+	void verify_auto_complete_nodes() throws Exception {
 		UpdateCommand command = new UpdateCommand(new GitLabReleases(), tasks, osInterface);
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();

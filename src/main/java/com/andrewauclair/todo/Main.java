@@ -25,7 +25,7 @@ import java.util.*;
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		OSInterfaceImpl osInterface = new OSInterfaceImpl();
 		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(osInterface), System.out, osInterface);
 		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
