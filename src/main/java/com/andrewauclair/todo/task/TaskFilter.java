@@ -12,7 +12,7 @@ public class TaskFilter {
 	private final OSInterface osInterface;
 	private final Tasks tasks;
 	private List<Task> allTasks = new ArrayList<>();
-	private List<TaskFilterResult> results = new ArrayList<>();
+	private List<TaskFilterResult> results;
 	
 	public TaskFilter(Tasks tasks) {
 		osInterface = tasks.osInterface;
@@ -88,7 +88,7 @@ public class TaskFilter {
 		private final long total;
 		private final Task task;
 		
-		TaskFilterResult(long total, Task task) {
+		public TaskFilterResult(long total, Task task) {
 			
 			this.total = total;
 			this.task = task;

@@ -35,10 +35,16 @@ public class TimesCommand extends Command {
 	private final CommandParser parser = new CommandParser(options);
 	private final Tasks tasks;
 	private final OSInterface osInterface;
+	private TaskFilterBuilder taskFilterBuilder;
 	
-	TimesCommand(Tasks tasks, OSInterface osInterface) {
+	TimesCommand(Tasks tasks, OSInterface osInterface, TaskFilterBuilder taskFilterBuilder) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
+		this.taskFilterBuilder = taskFilterBuilder;
+	}
+	
+	public void replaceTaskFilterBuilder(TaskFilterBuilder taskFilterBuilder) {
+		this.taskFilterBuilder = taskFilterBuilder;
 	}
 	
 	@Override
@@ -136,7 +142,7 @@ public class TimesCommand extends Command {
 			
 			Instant instant = Instant.ofEpochSecond(epochSecond);
 			
-			TaskFilter filter = new TaskFilter(tasks);
+			TaskFilter filter = taskFilterBuilder.createFilter(tasks);
 			
 			if (result.hasArgument("list")) {
 				filter.filterForList(result.getStrArgument("list"));
@@ -169,7 +175,7 @@ public class TimesCommand extends Command {
 				
 				Instant instant = of.atStartOfDay(zoneId).toInstant();
 				
-				TaskFilter filter = new TaskFilter(tasks);
+				TaskFilter filter = taskFilterBuilder.createFilter(tasks);
 				
 				if (result.hasArgument("list")) {
 					filter.filterForList(result.getStrArgument("list"));

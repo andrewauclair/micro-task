@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
+import com.andrewauclair.todo.task.TaskFilterBuilder;
 import org.jline.builtins.Completers;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 class TimesCommandTest extends CommandsBaseTestCase {
 	@Test
 	void verify_auto_complete_nodes() {
-		TimesCommand command = new TimesCommand(tasks, osInterface);
+		TimesCommand command = new TimesCommand(tasks, osInterface, new TaskFilterBuilder());
 		
 		List<Completers.TreeCompleter.Node> autoCompleteNodes = command.getAutoCompleteNodes();
 		
