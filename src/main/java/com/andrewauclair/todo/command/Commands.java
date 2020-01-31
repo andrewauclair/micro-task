@@ -5,6 +5,7 @@ import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.task.TaskFilterBuilder;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers.TreeCompleter.Node;
 
@@ -32,7 +33,7 @@ public class Commands {
 		commands.put("add", new AddCommand(tasks, this));
 		commands.put("active", new ActiveCommand(tasks, osInterface));
 		commands.put("list", new ListCommand(tasks));
-		commands.put("times", new TimesCommand(tasks, osInterface));
+		commands.put("times", new TimesCommand(tasks, osInterface, new TaskFilterBuilder()));
 		commands.put("debug", new DebugCommand());
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
@@ -127,5 +128,9 @@ public class Commands {
 	
 	Map<String, String> getAliases() {
 		return aliases;
+	}
+	
+	TimesCommand getTimesCommand() {
+		return (TimesCommand) commands.get("times");
 	}
 }
