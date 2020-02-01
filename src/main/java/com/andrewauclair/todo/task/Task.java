@@ -6,6 +6,7 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Task {
 	public final long id;
@@ -29,13 +30,29 @@ public final class Task {
 		taskTimes = Collections.unmodifiableList(times);
 		this.recurring = recurring;
 	}
-
-	public List<TaskTimes> getTimes() {
+	
+	public List<TaskTimes> getAllTimes() {
 		return taskTimes;
 	}
-
+	
+	public TaskTimes getAddTime() {
+		return taskTimes.get(0);
+	}
+	
 	public List<TaskTimes> getStartStopTimes() {
+		// exclude add and finish when finished
+		if (state == TaskState.Finished) {
+			return taskTimes.subList(1, taskTimes.size() - 1);
+		}
+		// exclude add
 		return taskTimes.subList(1, taskTimes.size());
+	}
+	
+	public Optional<TaskTimes> getFinishTime() {
+		if (state == TaskState.Finished) {
+			return Optional.ofNullable(taskTimes.get(taskTimes.size() - 1));
+		}
+		return Optional.empty();
 	}
 	
 	public long getElapsedTime(OSInterface osInterface) {

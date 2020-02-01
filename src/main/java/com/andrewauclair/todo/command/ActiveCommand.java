@@ -38,7 +38,7 @@ public class ActiveCommand extends Command {
 			output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
 			output.println();
 			
-			List<TaskTimes> times = task.getTimes();
+			List<TaskTimes> times = task.getAllTimes();
 			TaskTimes activeTime = times.get(times.size() - 1);
 			
 			activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());

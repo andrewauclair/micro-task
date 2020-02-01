@@ -266,7 +266,7 @@ public class Main {
 			List<TaskTimes> oldTimes = task.getStartStopTimes();
 			List<TaskTimes> newTimes = new ArrayList<>();
 			
-			newTimes.add(task.getTimes().get(0));
+			newTimes.add(task.getAllTimes().get(0));
 			
 			for (TaskTimes time : oldTimes) {
 				newTimes.add(new TaskTimes(time.start, time.stop, tasks.getProjectForTask(task.id), tasks.getFeatureForTask(task.id)));

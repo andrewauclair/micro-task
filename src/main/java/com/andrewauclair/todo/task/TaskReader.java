@@ -58,6 +58,11 @@ public class TaskReader {
 
 				timesList.add(new TaskTimes(add));
 			}
+			else if (line.startsWith("finish")) {
+				long finish = Integer.parseInt(line.substring(7));
+				
+				timesList.add(new TaskTimes(finish));
+			}
 			else if (timesList.size() > 0) {
 				timeProject = line;
 				timeFeature = scanner.nextLine();

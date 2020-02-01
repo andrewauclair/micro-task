@@ -84,8 +84,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task task = tasks.stopTask();
-
-		assertThat(task.getTimes()).containsOnly(
+		
+		assertThat(task.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(1234, 4567)
 		);
@@ -110,13 +110,13 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task stop2 = tasks.stopTask();
-
-		assertThat(stop1.getTimes()).containsOnly(
+		
+		assertThat(stop1.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(1234, 2345)
 		);
-
-		assertThat(stop2.getTimes()).containsOnly(
+		
+		assertThat(stop2.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(1234, 2345),
 				new TaskTimes(3456, 4567)

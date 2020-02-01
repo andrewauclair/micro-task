@@ -205,7 +205,8 @@ class TaskWriterTest {
 		Task task = new Task(1, "Test", TaskState.Finished,
 				Arrays.asList(
 						new TaskTimes(123),
-						new TaskTimes(1234, 4567)
+						new TaskTimes(1234, 4567),
+						new TaskTimes(5678)
 				)
 		);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
@@ -218,7 +219,7 @@ class TaskWriterTest {
 				"add 123",
 				"start 1234",
 				"stop 4567",
-				"finish 4567"
+				"finish 5678"
 		);
 		assertTrue(writeTask);
 	}
