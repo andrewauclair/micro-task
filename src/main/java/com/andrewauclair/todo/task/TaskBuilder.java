@@ -35,6 +35,12 @@ public class TaskBuilder {
 			addStopTime(stop);
 		}
 		state = TaskState.Finished;
+		
+		// work around to force a finish time to write to the task file
+		if (taskTimes.size() == 1) {
+			taskTimes.add(new TaskTimes(stop, stop));
+		}
+		
 		return build();
 	}
 	
