@@ -15,7 +15,7 @@ public class TaskBuilder {
 		id = task.id;
 		this.task = task.task;
 		state = task.state;
-		taskTimes = new ArrayList<>(task.getTimes());
+		taskTimes = new ArrayList<>(task.getAllTimes());
 		recurring = task.isRecurring();
 	}
 
@@ -36,10 +36,8 @@ public class TaskBuilder {
 		}
 		state = TaskState.Finished;
 		
-		// work around to force a finish time to write to the task file
-		if (taskTimes.size() == 1) {
-			taskTimes.add(new TaskTimes(stop, stop));
-		}
+		// finish time
+		taskTimes.add(new TaskTimes(stop));
 		
 		return build();
 	}

@@ -42,8 +42,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		tasks.startTask(1, false);
 		Task stopTask = tasks.stopTask();
-
-		assertThat(stopTask.getTimes()).containsOnly(
+		
+		assertThat(stopTask.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(2000, 3000)
 		);
@@ -109,7 +109,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start 2 " + finish);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L))),
+				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L), new TaskTimes(1561078202L))),
 				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(1561078202L)))
 		);
 

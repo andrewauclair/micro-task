@@ -16,8 +16,8 @@ class TaskBuilderTest {
 		
 		Task finish = builder.finish(1234);
 		
-		assertThat(finish.getStartStopTimes()).containsOnly(
-				new TaskTimes(1234, 1234)
-		);
+		assertThat(finish.getAllTimes().get(0)).isEqualTo(new TaskTimes(0));
+		assertThat(finish.getStartStopTimes()).isEmpty();
+		assertThat(finish.getAllTimes().get(1)).isEqualTo(new TaskTimes(1234));
 	}
 }

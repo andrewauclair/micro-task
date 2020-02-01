@@ -262,4 +262,31 @@ class TaskReaderTest {
 		
 		assertEquals(expectedTask, task);
 	}
+	
+	@Test
+	void read_task_with_finish() throws IOException {
+		String contents = "Test" + Utils.NL +
+				"Finished" + Utils.NL +
+				"false" + Utils.NL +
+				"" + Utils.NL +
+				"" + Utils.NL +
+				"add 1234" + Utils.NL +
+				"start 2345" + Utils.NL +
+				"stop 3456" + Utils.NL +
+				"finish 3456" + Utils.NL;
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask(1, "git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Finished,
+				Arrays.asList(new TaskTimes(1234), new TaskTimes(2345, 3456), new TaskTimes(3456))
+		);
+		
+		assertEquals(expectedTask, task);
+	}
 }

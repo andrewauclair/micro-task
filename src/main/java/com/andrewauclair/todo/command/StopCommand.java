@@ -30,7 +30,7 @@ public class StopCommand extends Command {
 		output.println("Stopped task " + task.description());
 		output.println();
 		
-		List<TaskTimes> times = task.getTimes();
+		List<TaskTimes> times = task.getAllTimes();
 		TaskTimes stopTime = times.get(times.size() - 1);
 
 		output.println(stopTime.description(osInterface.getZoneId()));

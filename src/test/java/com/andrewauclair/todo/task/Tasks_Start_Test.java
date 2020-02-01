@@ -73,8 +73,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
 		Task task = tasks.startTask(1, false);
-
-		assertThat(task.getTimes()).containsOnly(
+		
+		assertThat(task.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(1234, Long.MIN_VALUE)
 		);
@@ -156,7 +156,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(2, true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(3000, 1561078202L))),
+				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(3000, 1561078202L), new TaskTimes(1561078202L))),
 				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1561078202L)))
 		);
 	}
