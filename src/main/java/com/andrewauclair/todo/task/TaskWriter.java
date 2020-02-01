@@ -7,6 +7,7 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 
 public class TaskWriter {
@@ -30,26 +31,33 @@ public class TaskWriter {
 				writeNL(outputStream);
 
 				writeNL(outputStream);
-				outputStream.write("add ".getBytes());
-				outputStream.write(String.valueOf(times.get(0).start).getBytes());
-
+				writeTime(outputStream, "add", times.get(0).start);
+				
 				if (times.size() > 1) {
-					for (TaskTimes time : times.subList(1, times.size())) {
+					List<TaskTimes> taskTimes = times.subList(1, times.size());
+					Iterator<TaskTimes> iterator = taskTimes.iterator();
+					
+					while (iterator.hasNext()) {
+						TaskTimes time = iterator.next();
+						
 						writeNL(outputStream);
-						outputStream.write("start ".getBytes());
-						outputStream.write(String.valueOf(time.start).getBytes());
-
+						writeTime(outputStream, "start", time.start);
+						
 						if (!time.project.isEmpty() || !time.feature.isEmpty()) {
 							writeNL(outputStream);
 							outputStream.write(time.project.getBytes());
 							writeNL(outputStream);
 							outputStream.write(time.feature.getBytes());
 						}
-
+						
 						if (time.stop != TaskTimes.TIME_NOT_SET) {
 							writeNL(outputStream);
-							outputStream.write("stop ".getBytes());
-							outputStream.write(String.valueOf(time.stop).getBytes());
+							writeTime(outputStream, "stop", time.stop);
+						}
+						
+						if (!iterator.hasNext() && task.state == TaskState.Finished) {
+							writeNL(outputStream);
+							writeTime(outputStream, "finish", time.stop);
 						}
 					}
 				}
@@ -61,7 +69,13 @@ public class TaskWriter {
 		}
 		return true;
 	}
-
+	
+	private void writeTime(DataOutputStream outputStream, String name, long time) throws IOException {
+		outputStream.write(name.getBytes());
+		outputStream.write(" ".getBytes());
+		outputStream.write(String.valueOf(time).getBytes());
+	}
+	
 	private void writeNL(OutputStream outputStream) throws IOException {
 		outputStream.write(Utils.NL.getBytes());
 	}

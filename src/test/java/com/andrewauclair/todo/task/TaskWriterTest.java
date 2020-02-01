@@ -89,25 +89,18 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_and_stop_times() {
-		Task task = new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(123), new TaskTimes(1234, 4567)));
+		Task task = new Task(1, "Test", TaskState.Inactive, Arrays.asList(new TaskTimes(123), new TaskTimes(1234, 4567)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
 				"Test",
-				"Finished",
+				"Inactive",
 				"false",
 				"",
 				"add 123",
 				"start 1234",
 				"stop 4567"
 		);
-		assertEquals("Test" + Utils.NL +
-				"Finished" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"add 123" + Utils.NL +
-				"start 1234" + Utils.NL +
-				"stop 4567", outputStream.toString());
 		assertTrue(writeTask);
 	}
 
@@ -206,7 +199,30 @@ class TaskWriterTest {
 		);
 		assertTrue(writeTask);
 	}
-
+	
+	@Test
+	void write_task_with_finish_time() {
+		Task task = new Task(1, "Test", TaskState.Finished,
+				Arrays.asList(
+						new TaskTimes(123),
+						new TaskTimes(1234, 4567)
+				)
+		);
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+		
+		assertOutput(
+				"Test",
+				"Finished",
+				"false",
+				"",
+				"add 123",
+				"start 1234",
+				"stop 4567",
+				"finish 4567"
+		);
+		assertTrue(writeTask);
+	}
+	
 	@Test
 	void thrown_exception_makes_writeTask_return_false() throws IOException {
 		OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
