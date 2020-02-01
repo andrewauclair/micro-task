@@ -168,6 +168,79 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
+	void alias_already_exists() {
+		commands.addAlias("ttt", "times --tasks --today");
+		
+		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+		
+		assertOutput(
+				"Alias 'ttt' already exists.",
+				""
+		);
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"--update", "-u"})
+	void update_alias_command(String parameter) {
+		commands.addAlias("end", "eod -h 8");
+		
+		commands.execute(printStream, "alias -n end " + parameter + " \"eod -h 9\"");
+		commands.execute(printStream, "alias --list");
+		
+		assertOutput(
+				"Updated alias 'end' to command 'eod -h 9'",
+				"",
+				"'end' = 'eod -h 9'",
+				""
+		);
+	}
+	
+	@Test
+	void cannot_update_alias_that_does_not_exist() {
+		commands.execute(printStream, "alias -n end -u \"eod -h 9\"");
+		
+		assertOutput(
+				"Alias 'end' does not exist.",
+				""
+		);
+	}
+	
+	@Test
+	void updating_alias_writes_new_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
+		
+		commands.execute(printStream, "alias -n end -c \"eod -h 8\"");
+		
+		assertThat(outputStream.toString()).isEqualTo(
+				"end=\"eod -h 8\"" + NL
+		);
+		
+		outputStream.reset();
+		
+		commands.execute(printStream, "alias -n end --update \"eod -h 9\"");
+		
+		assertThat(outputStream.toString()).isEqualTo(
+				"end=\"eod -h 9\"" + NL
+		);
+	}
+	
+	@Test
+	void updating_alias_commits_new_file() {
+		commands.addAlias("end", "eod -h 8");
+		
+		assertThat(commands.getAliases()).containsEntry("end", "eod -h 8");
+		
+		commands.execute(printStream, "alias --name end --update \"eod -h 9\"");
+		
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		order.verify(osInterface).runGitCommand("git add aliases.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"", false);
+	}
+	
+	@Test
 	void invalid_command() {
 		commands.execute(printStream, "alias");
 		

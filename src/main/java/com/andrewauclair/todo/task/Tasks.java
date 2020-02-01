@@ -100,7 +100,7 @@ public class Tasks {
 		return getListForTask(id).moveTask(id, getList(list));
 	}
 	
-	private TaskList getListForTask(long id) {
+	public TaskList getListForTask(long id) {
 		if (!hasTaskWithID(id)) {
 			throwTaskNotFound(id);
 		}
@@ -442,6 +442,7 @@ public class Tasks {
 		Optional<Task> optionalTask = getAllTasks().stream()
 				.filter(task -> task.id == id)
 				.findFirst();
+		
 		if (!optionalTask.isPresent()) {
 			throwTaskNotFound(id);
 		}

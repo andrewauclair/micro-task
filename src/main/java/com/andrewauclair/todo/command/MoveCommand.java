@@ -4,7 +4,7 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.LongCompleter;
-import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskList;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
 
@@ -33,9 +33,12 @@ public class MoveCommand extends Command {
 		
 		if (result.hasArgument("task")) {
 			String list = result.getStrArgument("task", 1);
-			Task task = tasks.moveTask(result.getLongArgument("task", 0), list);
+			long taskID = result.getLongArgument("task", 0);
 			
-			output.println("Moved task " + task.id + " to list '" + list + "'");
+			TaskList taskList = tasks.getListForTask(taskID);
+			taskList.moveTask(taskID, tasks.getListByName(list));
+			
+			output.println("Moved task " + taskID + " to list '" + list + "'");
 			output.println();
 		}
 		else if (result.hasArgument("list")) {
