@@ -41,8 +41,6 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 		
-		System.out.println("Run git command \"" + command + "\"");
-		
 		if (print) {
 		    try {
     			ProcessBuilder pb = new ProcessBuilder();
