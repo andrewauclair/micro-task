@@ -191,7 +191,7 @@ public final class TaskList implements TaskContainer {
 		return Collections.unmodifiableList(tasks);
 	}
 	
-	Task moveTask(long id, TaskList list) {
+	public Task moveTask(long id, TaskList list) {
 		Task task = getTask(id);
 
 		if (list.equals(this)) {

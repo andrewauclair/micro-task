@@ -50,5 +50,4 @@ class Commands_List_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	// TODO What does "list" print if we've switched to a group? Do we maintain an active group all the time? which would be the lists parent.
 }
