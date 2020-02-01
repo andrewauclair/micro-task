@@ -9,10 +9,10 @@ import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANS
 class Commands_List_Test extends CommandsBaseTestCase {
 	@Test
 	void list_command_lists_groups_and_lists_in_the_current_group() {
-		tasks.addList("charlie");
-		tasks.addList("bravo");
-		tasks.addList("alpha");
-		tasks.addList("/test/one/two");
+		tasks.addList("charlie", true);
+		tasks.addList("bravo", true);
+		tasks.addList("alpha", true);
+		tasks.addList("/test/one/two", true);
 
 		commands.execute(printStream, "list");
 
@@ -30,14 +30,14 @@ class Commands_List_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void list_groups_and_lists_for_nested_group() {
-		tasks.addList("none");
+		tasks.addList("none", true);
 		
 		tasks.createGroup("/one/two/");
 		tasks.createGroup("/one/three/");
 		tasks.switchGroup("/one/two/");
-		tasks.addList("charlie");
-		tasks.addList("bravo");
-		tasks.addList("alpha");
+		tasks.addList("charlie", true);
+		tasks.addList("bravo", true);
+		tasks.addList("alpha", true);
 
 		commands.execute(printStream, "list");
 

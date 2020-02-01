@@ -24,7 +24,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void contains_list_after_creating_it() {
-		tasks.addList("test");
+		tasks.addList("test", true);
 		assertTrue(tasks.hasListWithName("/test"));
 	}
 
@@ -37,7 +37,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void returns_a_set_of_the_list_names() {
-		tasks.addList("test");
+		tasks.addList("test", true);
 		assertThat(tasks.getListNames()).containsOnly("/default", "/test");
 	}
 
@@ -45,8 +45,8 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	void returns_a_list_of_tasks_for_the_specified_list() {
 		tasks.addTask("default List Task 1");
 		tasks.addTask("default List Task 2");
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("test List Task 1");
@@ -67,7 +67,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_new_list_creates_empty_folder() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		Mockito.verify(osInterface, Mockito.times(1)).createFolder("git-data/tasks/one");
 	}

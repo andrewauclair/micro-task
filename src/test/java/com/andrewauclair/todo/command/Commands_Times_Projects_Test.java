@@ -10,15 +10,15 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 	@Test
 	void basic_times_command_for_projects_and_features() {
 		tasks.setActiveList("/default");
-		tasks.setProject(tasks.getGroup("/"), "Project 1");
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1");
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 		
 		tasks.addTask("Test");
 		addTaskTimes(1, 1561080202, 1561081202);
 		
-		tasks.addList("one");
-		tasks.setProject(tasks.getListByName("/one"), "Project 2");
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2");
+		tasks.addList("one", true);
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 		
 		tasks.setActiveList("/one");
 		tasks.addTask("Test");
@@ -56,7 +56,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 	@Test
 	void task_with_no_project_says_none() {
 		tasks.setActiveList("/default");
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1");
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 		
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
@@ -74,7 +74,7 @@ class Commands_Times_Projects_Test extends CommandsBaseTestCase {
 	@Test
 	void task_with_no_feature_says_none() {
 		tasks.setActiveList("/default");
-		tasks.setProject(tasks.getGroup("/"), "Project 1");
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);

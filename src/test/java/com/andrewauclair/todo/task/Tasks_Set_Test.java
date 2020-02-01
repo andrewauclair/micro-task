@@ -28,42 +28,42 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 	@Test
 	void set_list_project() {
-		tasks.addList("/test");
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
-
-		tasks.setProject(tasks.findListForTask(1), "Project");
+		
+		tasks.setProject(tasks.findListForTask(1), "Project", true);
 
 		assertEquals("Project", tasks.findListForTask(1).getProject());
 	}
 	
 	@Test
 	void set_group_project() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
-		tasks.setProject(tasks.getGroupForList("/test/one"), "Project");
+		tasks.setProject(tasks.getGroupForList("/test/one"), "Project", true);
 		
 		assertEquals("Project", tasks.getGroupForList("/test/one").getProject());
 	}
 	
 	@Test
 	void set_list_feature() {
-		tasks.addList("/test");
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
-
-		tasks.setFeature(tasks.findListForTask(1), "Feature");
+		
+		tasks.setFeature(tasks.findListForTask(1), "Feature", true);
 
 		assertEquals("Feature", tasks.findListForTask(1).getFeature());
 	}
 	
 	@Test
 	void set_group_feature() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
-		tasks.setFeature(tasks.getGroupForList("/test/one"), "Feature");
+		tasks.setFeature(tasks.getGroupForList("/test/one"), "Feature", true);
 		
 		assertEquals("Feature", tasks.getGroupForList("/test/one").getFeature());
 	}
@@ -90,12 +90,12 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
 
 		InOrder order = Mockito.inOrder(osInterface);
-
-		tasks.addList("/test");
+		
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
-
-		tasks.setProject(tasks.findListForTask(1), "Issue");
+		
+		tasks.setProject(tasks.findListForTask(1), "Issue", true);
 		
 		TestUtils.assertOutput(listStream,
 				"Issue",
@@ -116,10 +116,10 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
-		tasks.setProject(tasks.getGroupForList("/test/one"), "Issue");
+		tasks.setProject(tasks.getGroupForList("/test/one"), "Issue", true);
 		
 		TestUtils.assertOutput(groupStream,
 				"Issue",
@@ -139,12 +139,12 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
 		
 		InOrder order = Mockito.inOrder(osInterface);
-
-		tasks.addList("/test");
+		
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
-
-		tasks.setFeature(tasks.findListForTask(1), "Feature");
+		
+		tasks.setFeature(tasks.findListForTask(1), "Feature", true);
 		
 		TestUtils.assertOutput(listStream,
 				"",
@@ -165,10 +165,10 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
-		tasks.setFeature(tasks.getGroupForList("/test/one"), "Feature");
+		tasks.setFeature(tasks.getGroupForList("/test/one"), "Feature", true);
 		
 		TestUtils.assertOutput(groupStream,
 				"",

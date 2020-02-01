@@ -9,10 +9,10 @@ import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANS
 class Commands_List_Lists_Test extends CommandsBaseTestCase {
 	@Test
 	void list_lists_lists_all_available_lists() {
-		tasks.addList("todo-app-tasks");
-		tasks.addList("test");
-		tasks.addList("abcd");
-		tasks.addList("/test/one/two");
+		tasks.addList("todo-app-tasks", true);
+		tasks.addList("test", true);
+		tasks.addList("abcd", true);
+		tasks.addList("/test/one/two", true);
 
 		commands.execute(printStream, "list --lists");
 

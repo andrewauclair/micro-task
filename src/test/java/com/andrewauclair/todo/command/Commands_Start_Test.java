@@ -126,8 +126,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	@Test
 	void start_new_task_when_active_task_is_on_nested_list() {
 		tasks.addTask("Test 1");
-
-		tasks.addList("/one/two");
+		
+		tasks.addList("/one/two", true);
 		tasks.setActiveList("/one/two");
 
 		tasks.addTask("Test 2");

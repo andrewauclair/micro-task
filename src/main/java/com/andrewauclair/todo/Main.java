@@ -87,7 +87,7 @@ public class Main {
 		bindCtrlBackspace(lineReader);
 		
 		if (!exception) {
-			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 		
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
@@ -288,7 +288,7 @@ public class Main {
 		
 		for (int i = 0; i < 100; i++) {
 			tasks.createGroup("group-" + (i + 1));
-			tasks.addList("group-" + (i + 1) + "/list-" + (i + 1));
+			tasks.addList("group-" + (i + 1) + "/list-" + (i + 1), true);
 		}
 		
 		Random random = new Random();

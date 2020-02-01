@@ -41,7 +41,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask();
 		tasks.startTask(3, false);
 		
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 		
 		commands.execute(printStream, "list --tasks --list default");
@@ -82,8 +82,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void display_finished_tasks_in_group() {
 		tasks.createGroup("/test/");
-		tasks.addList("/test/one");
-		tasks.addList("/test/three");
+		tasks.addList("/test/one", true);
+		tasks.addList("/test/three", true);
 		tasks.addTask("Test 1", "/test/one");
 		tasks.addTask("Test 2", "/test/one");
 		tasks.addTask("Test 3", "/test/one");
@@ -236,7 +236,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.createGroup("/test/junk");
 		tasks.switchGroup("/test/");
 		
-		tasks.addList("/test/default");
+		tasks.addList("/test/default", true);
 		tasks.setActiveList("/test/default");
 		
 		tasks.addTask("Task 1");
@@ -246,8 +246,8 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask();
 		tasks.startTask(3, false);
 		
-		tasks.addList("one");
-		tasks.addList("two");
+		tasks.addList("one", true);
+		tasks.addList("two", true);
 		
 		tasks.setActiveList("one");
 		tasks.addTask("Task 4");
@@ -264,7 +264,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Hidden 1");
 		tasks.addTask("Hidden 2");
 		
-		tasks.addList("/hide");
+		tasks.addList("/hide", true);
 		tasks.setActiveList("/hide");
 		
 		tasks.addTask("Hidden 3");
@@ -298,7 +298,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void print_tasks_in_group_recursively() {
-		tasks.addList("/one/two/three");
+		tasks.addList("/one/two/three", true);
 		tasks.setActiveList("/one/two/three");
 		tasks.addTask("Test");
 		

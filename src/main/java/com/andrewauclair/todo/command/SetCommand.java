@@ -48,11 +48,11 @@ public class SetCommand extends Command {
 			
 			if (result.hasArgument("project")) {
 				String project = result.getStrArgument("project");
-				tasks.setProject(listByName, project);
+				tasks.setProject(listByName, project, true);
 			}
 			else if (result.hasArgument("feature")) {
 				String feature = result.getStrArgument("feature");
-				tasks.setFeature(listByName, feature);
+				tasks.setFeature(listByName, feature, true);
 			}
 		}
 		else if (result.hasArgument("group")) {
@@ -61,11 +61,11 @@ public class SetCommand extends Command {
 			
 			if (result.hasArgument("project")) {
 				String project = result.getStrArgument("project");
-				tasks.setProject(groupByName, project);
+				tasks.setProject(groupByName, project, true);
 			}
 			else if (result.hasArgument("feature")) {
 				String feature = result.getStrArgument("feature");
-				tasks.setFeature(groupByName, feature);
+				tasks.setFeature(groupByName, feature, true);
 			}
 		}
 	}

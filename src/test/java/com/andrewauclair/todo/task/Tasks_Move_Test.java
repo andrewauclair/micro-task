@@ -18,7 +18,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_moves_it_to_the_new_list() {
 		Task task = tasks.addTask("Task to move");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.moveTask(1, "one");
 
@@ -32,7 +32,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_deletes_the_current_task_files_in_the_folder() {
 		tasks.addTask("Test 1");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.moveTask(1, "one");
 
@@ -43,7 +43,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_writes_new_task_files_into_new_folder() {
 		tasks.addTask("Test 1");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		Task task = tasks.moveTask(1, "one");
 
@@ -53,7 +53,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_tells_git_control_to_add_new_task_file_and_commit() {
 		tasks.addTask("Test 1");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -67,7 +67,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void can_move_task_on_different_list() {
 		Task task = tasks.addTask("Task to move");
-		tasks.addList("one");
+		tasks.addList("one", true);
 		tasks.setActiveList("one");
 
 		tasks.moveTask(1, "one");
@@ -82,7 +82,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_the_active_task_changes_active_list() {
 		tasks.addTask("Test 1");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.startTask(1, false);
 		
@@ -95,7 +95,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void moving_inactive_task_does_not_change_active_task_list() {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.startTask(2, false);
 		
@@ -106,7 +106,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void moving_list_moves_folder_of_files() throws IOException {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -135,7 +135,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void moving_active_list_changes_active_list_name() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 
 		tasks.moveList("/test/one", "/");
@@ -164,7 +164,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void throws_exception_when_destination_group_does_not_exist() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 		
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/one", "/test"));
 		
@@ -192,8 +192,8 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void catch_moveFolder_io_exception_in_moveList() throws IOException {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
-
-		tasks.addList("/test/one");
+		
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/test/one", "/"));

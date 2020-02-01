@@ -52,7 +52,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"--list", "-l"})
 	void add_task_to_specific_list(String option) {
-		tasks.addList("one");
+		tasks.addList("one", true);
 		commands.execute(printStream, "add " + option + " one -n \"Test\"");
 
 		assertOutput(
@@ -104,8 +104,8 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "create-group /test");
 
 		outputStream.reset();
-
-		tasks.addList("/test/one");
+		
+		tasks.addList("/test/one", true);
 
 		tasks.setActiveList("/test/one");
 

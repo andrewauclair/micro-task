@@ -41,8 +41,8 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void prints_times_for_task_on_different_list() {
 		addTaskWithTimes("Test 1", 1561078202, 1561079202);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Test 1");

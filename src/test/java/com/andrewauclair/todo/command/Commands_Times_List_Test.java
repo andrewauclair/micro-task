@@ -13,7 +13,7 @@ class Commands_Times_List_Test extends CommandsBaseTestCase {
 		addTaskWithTimes("Task 2", 2000, 2800);
 		addTaskTimes(2, 3500, 4600);
 		
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 		
 		addTaskWithTimes("Task 3", 1000, 3000);
