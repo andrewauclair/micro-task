@@ -217,6 +217,7 @@ public class Tasks {
 		activeTaskID = currentTask.id;
 		
 		setActiveList(getActiveTaskList());
+		switchGroup(getGroupNameForList(getActiveTaskList()));
 		
 		long startTime = osInterface.currentSeconds();
 		
@@ -396,9 +397,6 @@ public class Tasks {
 		if (createFiles) {
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
-			
-			RuntimeException e = new RuntimeException("group: " + groupName);
-			e.printStackTrace();
 		}
 		
 		return newGroup;

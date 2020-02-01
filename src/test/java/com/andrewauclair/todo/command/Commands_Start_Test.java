@@ -149,6 +149,20 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void starting_task_on_different_group_switches_active_group() {
+		tasks.addTask("Test 1");
+		tasks.addList("/one/two", true);
+		
+		tasks.setActiveList("/one/two");
+		tasks.addTask("Test 2");
+		
+		tasks.switchGroup("/");
+		tasks.startTask(2, false);
+		
+		assertEquals("/one/", tasks.getActiveGroup().getFullPath());
+	}
 
 	@Test
 	void recurring_tasks_cannot_be_finished() {

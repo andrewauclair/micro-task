@@ -40,7 +40,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "active");
 		
 		assertOutput(
-				"Active group is '/test/one/'",
+				"Active group is '/test/one/two/'",
 				"",
 				"Active list is '/test/one/two/three'",
 				"",
