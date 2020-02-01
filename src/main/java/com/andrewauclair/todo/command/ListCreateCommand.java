@@ -33,7 +33,7 @@ public class ListCreateCommand extends Command {
 		
 		String list = result.getStrArgument("list").toLowerCase();
 		
-		boolean added = tasks.addList(list);
+		boolean added = tasks.addList(list, true);
 
 		String actualList = tasks.getAbsoluteListName(list);
 

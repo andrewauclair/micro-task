@@ -37,22 +37,22 @@ public class TaskLoader {
 						Scanner scanner = new Scanner(inputStream);
 						
 						if (scanner.hasNextLine()) {
-							tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine());
-							tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine());
+							tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
+							tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
 						}
 					}
 					catch (IOException ignored) {
 					}
 				}
 				else {
-					tasks.addList(name);
+					tasks.addList(name, false);
 					tasks.setActiveList(name);
 					
 					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 						Scanner scanner = new Scanner(inputStream);
 						
-						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
-						tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine());
+						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
+						tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
 					}
 					catch (IOException ignored) {
 					}

@@ -78,7 +78,7 @@ class TaskFilterTest extends TaskBaseTestCase {
 		tasks.createGroup("/one");
 		tasks.switchGroup("/one");
 		
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 		
 		tasks.addTask(new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false));
@@ -94,7 +94,7 @@ class TaskFilterTest extends TaskBaseTestCase {
 		tasks.createGroup("/two/three");
 		tasks.switchGroup("/two/three");
 		
-		tasks.addList("stuff");
+		tasks.addList("stuff", true);
 		tasks.setActiveList("stuff");
 		
 		tasks.addTask(new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false));
@@ -302,13 +302,13 @@ class TaskFilterTest extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 		
-		tasks.addList("/test/two");
+		tasks.addList("/test/two", true);
 		tasks.setActiveList("/test/two");
 		
 		tasks.addTask("Test 5");

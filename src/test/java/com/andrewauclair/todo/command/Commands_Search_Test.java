@@ -104,7 +104,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void search_on_nested_list() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 
 		commands.execute(printStream, "chlist /test/one");
 
@@ -133,9 +133,9 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void search_for_tasks_in_a_group_displays_all_tasks_recursively() {
-		tasks.addList("/test/one");
-		tasks.addList("/test/two");
-		tasks.addList("/three");
+		tasks.addList("/test/one", true);
+		tasks.addList("/test/two", true);
+		tasks.addList("/three", true);
 		
 		tasks.setActiveList("/test/one");
 		tasks.addTask("do this task on monday");

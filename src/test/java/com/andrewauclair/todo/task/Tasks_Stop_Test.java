@@ -128,8 +128,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Task 1");
 
 		Task task = tasks.startTask(1, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");
@@ -145,8 +145,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		Mockito.reset(writer);
@@ -162,8 +162,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.startTask(2, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		Mockito.reset(osInterface);
@@ -181,8 +181,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Task 1");
 
 		tasks.startTask(1, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");

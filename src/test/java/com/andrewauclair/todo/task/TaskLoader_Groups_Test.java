@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.os.OSInterface;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -12,6 +13,13 @@ import java.util.Collections;
 class TaskLoader_Groups_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
 	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	
+	@BeforeEach
+	void setup() throws IOException {
+		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
+		Mockito.when(osInterface.runGitCommand(Mockito.anyString(), Mockito.anyBoolean())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
+	}
 	
 	@Test
 	void task_loader_does_not_create_groups() throws IOException {

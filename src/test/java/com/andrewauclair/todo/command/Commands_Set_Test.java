@@ -31,7 +31,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 	@Test
 	void execute_set_project_command_for_list() {
-		tasks.addList("/test");
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
 		
@@ -42,7 +42,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void execute_set_project_command_for_group() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		tasks.addTask("Test 1");
 		
@@ -53,7 +53,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void execute_set_feature_command_for_list() {
-		tasks.addList("/test");
+		tasks.addList("/test", true);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
 		
@@ -64,7 +64,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void execute_set_feature_command_for_group() {
-		tasks.addList("/test/one");
+		tasks.addList("/test/one", true);
 		tasks.setActiveList("/test/one");
 		tasks.addTask("Test 1");
 		

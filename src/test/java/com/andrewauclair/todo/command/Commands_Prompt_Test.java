@@ -29,8 +29,8 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void changing_to_group_other_than_the_active_lists_group_changes_prompt() {
-		tasks.addList("/test/one/two");
-		tasks.addList("/test/three");
+		tasks.addList("/test/one/two", true);
+		tasks.addList("/test/three", true);
 		tasks.setActiveList("/test/three");
 		
 		tasks.switchGroup("/test/one/");

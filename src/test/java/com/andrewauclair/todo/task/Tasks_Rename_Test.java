@@ -85,7 +85,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	@Test
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");
-		tasks.addList("testing-rename");
+		tasks.addList("testing-rename", true);
 		tasks.setActiveList("testing-rename");
 		
 		Task renameTask = tasks.renameTask(1, "Renamed this task");
@@ -101,7 +101,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	@Test
 	@Disabled
 	void renaming_list_deletes_the_current_task_files_in_the_folder() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -120,7 +120,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	@Test
 	@Disabled
 	void renaming_list_writes_new_task_files_into_new_folder() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -137,7 +137,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -160,7 +160,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void catch_IOException_from_moveFolder_for_renameList() throws IOException {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -185,7 +185,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -204,7 +204,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_current_list_changes_the_name_of_current_list() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 
@@ -215,7 +215,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_active_list_changes_the_name_of_active_list() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		tasks.setActiveList("one");
 

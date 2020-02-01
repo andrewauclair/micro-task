@@ -51,7 +51,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		Task task = tasks.addTask("Testing task");
@@ -79,8 +79,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_task_tells_git_control_to_add_file_to_current_list_directory() {
 		InOrder order = Mockito.inOrder(osInterface);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Testing task add command 1");
@@ -115,8 +115,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Task 1");
 
 		Task task = tasks.startTask(1, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");
@@ -131,8 +131,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Task 1");
 
 		tasks.startTask(1, false);
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		tasks.addTask("Task 2");
@@ -146,7 +146,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_task_that_is_active_sets_it_as_the_active_task() {
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
@@ -165,7 +165,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_task_to_a_specific_list() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 		tasks.addTask("Test", "one");
 
 		assertThat(tasks.getTasksForList("one")).containsOnly(
@@ -175,7 +175,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_task_to_specific_list_tells_task_writer_to_write_file() {
-		tasks.addList("one");
+		tasks.addList("one", true);
 
 		Task task1 = tasks.addTask("Testing task add command 1", "one");
 		Task task2 = tasks.addTask("Testing task add command 2", "one");
@@ -189,8 +189,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(outputStream));
-
-		tasks.addList("one");
+		
+		tasks.addList("one", true);
 		tasks.addTask("Test", "one");
 
 		assertEquals("2", outputStream.toString());
@@ -198,7 +198,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_task_to_specific_list_tells_git_control_to_add_file_and_commit() {
-		tasks.addList("test");
+		tasks.addList("test", true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -219,7 +219,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_task_to_nested_list() {
 		tasks.createGroup("/test/one/");
 		tasks.switchGroup("/test/one/");
-		tasks.addList("two");
+		tasks.addList("two", true);
 		tasks.setActiveList("two");
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
@@ -248,7 +248,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
 		tasks.addTask("Test");
-		tasks.addList("one");
+		tasks.addList("one", true);
 		tasks.setActiveList("one");
 		
 		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));

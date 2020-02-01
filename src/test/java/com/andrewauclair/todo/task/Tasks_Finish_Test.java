@@ -15,7 +15,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_writes_file_on_correct_list() {
 		tasks.addTask("Test");
-		tasks.addList("one");
+		tasks.addList("one", true);
 		
 		tasks.startTask(1, false);
 		
@@ -33,7 +33,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_tells_git_control_to_add_correct_files() {
 		tasks.addTask("Test");
-		tasks.addList("one");
+		tasks.addList("one", true);
 		
 		tasks.startTask(1, false);
 		
@@ -57,7 +57,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		tasks.startTask(1, false);
 		
-		tasks.addList("test");
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 		
 		Task task = tasks.finishTask(1);

@@ -16,8 +16,8 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_move_command() {
 		tasks.addTask("Test 1");
-
-		tasks.addList("one");
+		
+		tasks.addList("one", true);
 
 		commands.execute(printStream, "move --task 1 one");
 
@@ -33,8 +33,8 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void move_task_between_lists_in_different_groups() {
-		tasks.addList("/one/two/three");
-		tasks.addList("/one/test/five");
+		tasks.addList("/one/two/three", true);
+		tasks.addList("/one/test/five", true);
 		tasks.setActiveList("/one/two/three");
 		
 		tasks.addTask("Test 1");
@@ -53,8 +53,8 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_from_one_group_to_another() {
-		tasks.addList("/one/two/three");
-		tasks.addList("/one/test/five");
+		tasks.addList("/one/two/three", true);
+		tasks.addList("/one/test/five", true);
 		tasks.setActiveList("/one/two/three");
 
 		tasks.addTask("Test 1");
@@ -72,8 +72,8 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_to_root_group() {
-		tasks.addList("/one/two/three");
-		tasks.addList("/one/test/five");
+		tasks.addList("/one/two/three", true);
+		tasks.addList("/one/test/five", true);
 		tasks.setActiveList("/one/two/three");
 
 		tasks.addTask("Test 1");

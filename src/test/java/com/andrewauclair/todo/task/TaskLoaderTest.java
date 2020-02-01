@@ -22,6 +22,8 @@ class TaskLoaderTest extends TaskBaseTestCase {
 	@BeforeEach
 	void setup() throws IOException {
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
+		Mockito.when(osInterface.runGitCommand(Mockito.anyString(), Mockito.anyBoolean())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
 	}
 	
 	@Test
@@ -49,7 +51,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		
 		Mockito.verify(reader).readTask(1, "git-data/tasks/test/1.txt");
 		
-		order.verify(tasks).addList("test");
+		order.verify(tasks).addList("test", false);
 		order.verify(tasks).setActiveList("test");
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 	}
@@ -114,12 +116,12 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		
 		order.verify(tasks).addGroup("one/");
 		order.verify(tasks).switchGroup("one/");
-		order.verify(tasks).addList("two");
+		order.verify(tasks).addList("two", false);
 		order.verify(tasks).setActiveList("two");
 		order.verify(tasks).addTask(new Task(3, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).addTask(new Task(4, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).switchGroup("/");
-		order.verify(tasks).addList("test");
+		order.verify(tasks).addList("test", false);
 		order.verify(tasks).setActiveList("test");
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).addTask(new Task(2, "Test", TaskState.Inactive, Collections.emptyList()));

@@ -227,7 +227,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 
 	@Test
 	void create_list_already_exists_is_always_lower_case() {
-		tasks.addList("random");
+		tasks.addList("random", true);
 
 		commands.execute(printStream, "mklist RaNDOm");
 
@@ -241,7 +241,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switch_list_is_always_lower_case() {
-		tasks.addList("random");
+		tasks.addList("random", true);
 
 		commands.execute(printStream, "chlist ranDOM");
 

@@ -87,8 +87,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void starting_a_task_on_a_different_list_automatically_switches_to_that_list() {
 		tasks.addTask("Test 1");
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		assertEquals("/test", tasks.getActiveList());
@@ -103,8 +103,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void when_auto_switching_to_new_list_the_new_active_list_changes() {
 		tasks.addTask("Test 1");
-
-		tasks.addList("test");
+		
+		tasks.addList("test", true);
 		tasks.setActiveList("test");
 
 		assertEquals("/test", tasks.getActiveList());
@@ -163,7 +163,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_task_from_different_group() {
-		tasks.addList("/one/two/three/test");
+		tasks.addList("/one/two/three/test", true);
 		
 		tasks.switchGroup("/one/two/three/");
 
@@ -179,15 +179,15 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void starting_time_adds_times_with_project_and_feature_of_task() {
 		tasks.addTask("Test");
-		tasks.setProject(tasks.findListForTask(1), "Project");
-		tasks.setFeature(tasks.findListForTask(1), "Feature");
+		tasks.setProject(tasks.findListForTask(1), "Project", true);
+		tasks.setFeature(tasks.findListForTask(1), "Feature", true);
 
 		tasks.startTask(1, false);
 
 		tasks.stopTask();
 		
-		tasks.setProject(tasks.findListForTask(1), "Project 2");
-		tasks.setFeature(tasks.findListForTask(1), "Feature 2");
+		tasks.setProject(tasks.findListForTask(1), "Project 2", true);
+		tasks.setFeature(tasks.findListForTask(1), "Feature 2", true);
 
 		tasks.startTask(1, false);
 

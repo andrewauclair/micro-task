@@ -112,14 +112,14 @@ public class Tasks {
 	}
 	
 	// TODO Should this stuff go in the TaskGroup class?
-	public boolean addList(String name) {
+	public boolean addList(String name, boolean createFiles) {
 		TaskGroup group;
 		
 		String absoluteList = getAbsoluteListName(name);
 		String groupName = getGroupNameForList(absoluteList);
 		
 		// create any groups in the path that don't exist
-		createGroup(groupName);
+		createGroup(groupName, createFiles);
 		
 		group = getGroup(groupName);
 		
@@ -396,6 +396,9 @@ public class Tasks {
 		if (createFiles) {
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
+			
+			RuntimeException e = new RuntimeException("group: " + groupName);
+			e.printStackTrace();
 		}
 		
 		return newGroup;
@@ -447,7 +450,7 @@ public class Tasks {
 		return optionalTask.get();
 	}
 	
-	public void setProject(TaskList list, String project) {
+	public void setProject(TaskList list, String project, boolean createFiles) {
 		String listName = list.getFullPath();
 		
 		TaskGroup group = getGroupForList(listName);
@@ -457,10 +460,12 @@ public class Tasks {
 		TaskList newList = list.changeProject(project);
 		group.addChild(newList);
 		
-		writeListInfoFile(newList);
-		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"", false);
+		if (createFiles) {
+			writeListInfoFile(newList);
+			
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"", false);
+		}
 	}
 	
 	private void writeListInfoFile(TaskList list) {
@@ -476,23 +481,27 @@ public class Tasks {
 		}
 	}
 	
-	public void setProject(TaskGroup group, String project) {
+	public void setProject(TaskGroup group, String project, boolean createFiles) {
+		TaskGroup newGroup;
 		if (group == rootGroup) {
 			rootGroup = group.changeProject(project);
-			writeGroupInfoFile(rootGroup);
+			newGroup = rootGroup;
 		}
 		else {
 			TaskGroup parent = getGroup(group.getParent());
 			
 			parent.removeChild(group);
 			
-			TaskGroup newGroup = group.changeProject(project);
+			newGroup = group.changeProject(project);
 			parent.addChild(newGroup);
-			writeGroupInfoFile(newGroup);
 		}
 		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
+		if (createFiles) {
+			writeGroupInfoFile(newGroup);
+			
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
+		}
 	}
 	
 	private void writeGroupInfoFile(TaskGroup group) {
@@ -508,7 +517,7 @@ public class Tasks {
 		}
 	}
 	
-	public void setFeature(TaskList list, String feature) {
+	public void setFeature(TaskList list, String feature, boolean createFiles) {
 		String listName = list.getFullPath();
 		
 		TaskGroup group = getGroupForList(listName);
@@ -518,13 +527,15 @@ public class Tasks {
 		TaskList newList = list.changeFeature(feature);
 		group.addChild(newList);
 		
-		writeListInfoFile(newList);
-		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"", false);
+		if (createFiles) {
+			writeListInfoFile(newList);
+			
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"", false);
+		}
 	}
 	
-	public void setFeature(TaskGroup group, String feature) {
+	public void setFeature(TaskGroup group, String feature, boolean createFiles) {
 		TaskGroup newGroup;
 		if (group == rootGroup) {
 			rootGroup = group.changeFeature(feature);
@@ -539,10 +550,12 @@ public class Tasks {
 			parent.addChild(newGroup);
 		}
 		
-		writeGroupInfoFile(newGroup);
-		
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
+		if (createFiles) {
+			writeGroupInfoFile(newGroup);
+			
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
+		}
 	}
 	
 	public String getProjectForTask(long taskID) {
