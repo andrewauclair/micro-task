@@ -10,6 +10,7 @@ public final class CommandOption {
 	
 	private final String name;
 	private final char shortName;
+	private final String description;
 	private final boolean usesName;
 	private final List<String> arguments;
 	
@@ -18,15 +19,33 @@ public final class CommandOption {
 		this.shortName = shortName;
 		this.usesName = usesName;
 		arguments = Collections.emptyList();
+		this.description = "";
 	}
-	
+
+	public CommandOption(String name, char shortName, String description, boolean usesName) {
+		this.name = name;
+		this.shortName = shortName;
+		this.usesName = usesName;
+		arguments = Collections.emptyList();
+		this.description = description;
+	}
+
 	public CommandOption(String name, char shortName, List<String> arguments) {
 		this.name = name;
 		this.shortName = shortName;
 		this.arguments = arguments;
 		this.usesName = true;
+		this.description = "";
 	}
-	
+
+	public CommandOption(String name, char shortName, String description, List<String> arguments) {
+		this.name = name;
+		this.shortName = shortName;
+		this.arguments = arguments;
+		this.usesName = true;
+		this.description = description;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -34,7 +53,11 @@ public final class CommandOption {
 	char getShortName() {
 		return shortName;
 	}
-	
+
+	String getDescription() {
+		return description;
+	}
+
 	boolean usesName() {
 		return usesName;
 	}
@@ -42,10 +65,14 @@ public final class CommandOption {
 	int getArgumentCount() {
 		return arguments.size();
 	}
-	
+
+	String getArgument(int i) {
+		return arguments.get(i);
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, arguments, shortName, usesName);
+		return Objects.hash(name, arguments, shortName, description, usesName);
 	}
 	
 	@Override
@@ -58,6 +85,7 @@ public final class CommandOption {
 		}
 		CommandOption that = (CommandOption) o;
 		return Objects.equals(name, that.name) &&
+				Objects.equals(description, that.description) &&
 				Objects.equals(arguments, that.arguments) &&
 				shortName == that.shortName &&
 				usesName == that.usesName;
@@ -68,6 +96,7 @@ public final class CommandOption {
 		return "CommandOption{" +
 				"name='" + name + '\'' +
 				", shortName=" + shortName +
+				", description='" + description + '\'' +
 				", arguments=" + arguments +
 				", usesName=" + usesName +
 				'}';

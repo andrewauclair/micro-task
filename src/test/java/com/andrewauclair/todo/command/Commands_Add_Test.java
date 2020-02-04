@@ -76,8 +76,8 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-	void add_command_sets_time_charge() {
-		commands.execute(printStream, "add --charge \"Issues\" -n \"Test 1\"");
+	void add_command_sets_time() {
+		commands.execute(printStream, "add -n \"Test 1\"");
 		
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), false)
@@ -131,6 +131,30 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				"Started task 1 - 'Test'",
 				"",
 				"06/20/2019 07:50:02 PM -",
+				""
+		);
+	}
+
+	@Test
+	void add_command_help() {
+		commands.execute(printStream, "add --help");
+
+		assertOutput(
+				"",
+				"Add",
+				"",
+				"Usage:",
+				"    add --name \"Task Name\"",
+				"    add -s -n \"Task Name\"",
+				"    add -l /default -n \"Task Name\"",
+				"    add --list /default --recurring true -n \"Task Name\"",
+				"",
+				"Options:",
+				"    -h --help           Show this screen.",
+				"    -l --list <list>    List to add the task to.",
+				"    -n --name <name>    Name of the task.",
+				"    -r --recurring      Whether or not the task is recurring.",
+				"    -s --start          Start the task immediately.",
 				""
 		);
 	}

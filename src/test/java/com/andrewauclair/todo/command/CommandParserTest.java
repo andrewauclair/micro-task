@@ -119,7 +119,7 @@ class CommandParserTest {
 	
 	@Test
 	void command_option_toString() {
-		assertEquals("CommandOption{name='test', shortName=t, arguments=[1, 2], usesName=true}", new CommandOption("test", 't', Arrays.asList("1", "2")).toString());
+		assertEquals("CommandOption{name='test', shortName=t, description='Used to test this', arguments=[1, 2], usesName=true}", new CommandOption("test", 't', "Used to test this", Arrays.asList("1", "2")).toString());
 	}
 	
 	@Test
