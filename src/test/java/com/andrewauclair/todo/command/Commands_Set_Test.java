@@ -2,7 +2,15 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskState;
+import com.andrewauclair.todo.task.TaskTimes;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,5 +79,49 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set --group /test/ --feature \"Feature\"");
 		
 		assertEquals("Feature", tasks.getFeatureForTask(1));
+	}
+
+	@Test
+	void execute_set_task_to_inactive() {
+		tasks.addTask("Test");
+		tasks.finishTask(1);
+
+		assertEquals(TaskState.Finished, tasks.getTask(1).state);
+
+		commands.execute(printStream, "set --task 1 --inactive");
+
+		assertEquals(TaskState.Inactive, tasks.getTask(1).state);
+
+		assertOutput(
+				"Set state of task 1 - 'Test' to Inactive",
+				""
+		);
+	}
+
+	@Test
+	void write_task_when_setting_inactive() {
+		tasks.addTask("Test");
+		tasks.finishTask(1);
+
+		Mockito.reset(writer);
+
+		commands.execute(printStream, "set --task 1 --inactive");
+
+		Mockito.verify(writer).writeTask(new Task(1, "Test", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000))), "git-data/tasks/default/1.txt");
+	}
+
+	@Test
+	void write_git_commit_when_setting_inactive() {
+		tasks.addTask("Test");
+		tasks.finishTask(1);
+
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "set --task 1 --inactive");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Set state for task 1 to Inactive\"", false);
 	}
 }

@@ -2,9 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.LongCompleter;
-import com.andrewauclair.todo.task.TaskGroup;
-import com.andrewauclair.todo.task.TaskList;
-import com.andrewauclair.todo.task.Tasks;
+import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
 
 import java.io.PrintStream;
@@ -21,7 +19,8 @@ public class SetCommand extends Command {
 			new CommandOption("group", CommandOption.NO_SHORTNAME, Collections.singletonList("Group")),
 			new CommandOption("recurring", CommandOption.NO_SHORTNAME, Collections.singletonList("Recurring")),
 			new CommandOption("project", CommandOption.NO_SHORTNAME, Collections.singletonList("Project")),
-			new CommandOption("feature", CommandOption.NO_SHORTNAME, Collections.singletonList("Feature"))
+			new CommandOption("feature", CommandOption.NO_SHORTNAME, Collections.singletonList("Feature")),
+			new CommandOption("inactive", CommandOption.NO_SHORTNAME, Collections.emptyList())
 	);
 	private final CommandParser parser = new CommandParser(options);
 	
@@ -37,10 +36,18 @@ public class SetCommand extends Command {
 		
 		if (result.hasArgument("task")) {
 			long taskID = result.getLongArgument("task");
-			
-			boolean recurring = result.getBoolArgument("recurring");
-			
-			tasks.setRecurring(taskID, recurring);
+
+			if (result.hasArgument("recurring")) {
+				boolean recurring = result.getBoolArgument("recurring");
+
+				tasks.setRecurring(taskID, recurring);
+			}
+			else {
+				Task task = tasks.setTaskState(taskID, TaskState.Inactive);
+
+				output.println("Set state of task " + task.description() + " to Inactive");
+				output.println();
+			}
 		}
 		else if (result.hasArgument("list")) {
 			String list = result.getStrArgument("list");

@@ -429,15 +429,33 @@ public class Tasks {
 		
 		String list = findListForTask(task.id).getFullPath();
 		replaceTask(list, optionalTask, task);
-		
+
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-		
+
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"", false);
 		
 		return task;
 	}
-	
+
+	public Task setTaskState(long id, TaskState state) {
+		Task optionalTask = getTask(id);
+
+		Task task = new TaskBuilder(optionalTask)
+				.withState(state)
+				.build();
+
+		String list = findListForTask(task.id).getFullPath();
+		replaceTask(list, optionalTask, task);
+
+		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
+
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
+		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"", false);
+
+		return task;
+	}
+
 	public Task getTask(long id) {
 		Optional<Task> optionalTask = getAllTasks().stream()
 				.filter(task -> task.id == id)
