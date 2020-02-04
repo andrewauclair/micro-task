@@ -19,6 +19,11 @@ public class TaskBuilder {
 		recurring = task.isRecurring();
 	}
 
+	TaskBuilder withState(TaskState state) {
+		this.state = state;
+		return this;
+	}
+
 	TaskBuilder withRecurring(boolean recurring) {
 		this.recurring = recurring;
 		return this;
