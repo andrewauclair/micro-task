@@ -264,6 +264,54 @@ class TaskReaderTest {
 	}
 	
 	@Test
+	void task_reader_reads_version_3_file_with_finished_task_and_only_add_time() throws IOException {
+		String contents = "Test" + Utils.NL +
+				"Finished" + Utils.NL +
+				"" + Utils.NL +
+				"" + Utils.NL +
+				"add 1234" + Utils.NL;
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask(1, "git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Finished,
+				Arrays.asList(new TaskTimes(1234), new TaskTimes(1234))
+		);
+		
+		assertEquals(expectedTask, task);
+	}
+	
+	@Test
+	void task_reader_reads_version_3_file_with_finished_task_and_start_stop_times() throws IOException {
+		String contents = "Test" + Utils.NL +
+				"Finished" + Utils.NL +
+				"" + Utils.NL +
+				"" + Utils.NL +
+				"add 1234" + Utils.NL +
+				"start 2345" + Utils.NL +
+				"stop 4567" + Utils.NL;
+		
+		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+		
+		TaskReader reader = new TaskReader(osInterface);
+		
+		Task task = reader.readTask(1, "git-data/1.txt");
+		
+		Task expectedTask = new Task(1, "Test", TaskState.Finished,
+				Arrays.asList(new TaskTimes(1234), new TaskTimes(2345, 4567), new TaskTimes(4567))
+		);
+		
+		assertEquals(expectedTask, task);
+	}
+	
+	@Test
 	void read_task_with_finish() throws IOException {
 		String contents = "Test" + Utils.NL +
 				"Finished" + Utils.NL +
