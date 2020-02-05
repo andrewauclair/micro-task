@@ -116,7 +116,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Finished task 1 - 'Test 1'",
 				"",
-				"Task finished in: 433632h 29m 28s",
+				"Task finished in: 10840w 04d 00h 29m 28s",
 				"",
 				"Started task 2 - 'Test 2'",
 				"",
