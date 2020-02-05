@@ -28,7 +28,24 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
+	@Test
+	void search_is_case_insensitive() {
+		tasks.addTask("do this task on monday");
+		tasks.addTask("tuesdays are ignored");
+		tasks.addTask("case insensitive task on Monday");
+		
+		commands.execute(printStream, "search -t \"monday\"");
+		
+		assertOutput(
+				"Search Results (2):",
+				"",
+				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"3 - 'case insensitive task on \u001B[1m\u001B[7mMonday\u001B[0m'",
+				""
+		);
+	}
+	
 	@Test
 	void search_hides_finished_tasks() {
 		tasks.addTask("do this task on monday");

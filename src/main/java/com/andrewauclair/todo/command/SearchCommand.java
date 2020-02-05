@@ -44,7 +44,7 @@ public class SearchCommand extends Command {
 			stream = tasks.getTasks().stream();
 		}
 		
-		List<Task> searchResults = stream.filter(task -> task.task.contains(searchText))
+		List<Task> searchResults = stream.filter(task -> task.task.toLowerCase().contains(searchText.toLowerCase()))
 				.filter(task -> result.hasArgument("finished") == (task.state == TaskState.Finished))
 				.collect(Collectors.toList());
 		
@@ -52,7 +52,20 @@ public class SearchCommand extends Command {
 		output.println();
 		
 		for (Task task : searchResults) {
-			output.println(task.description().replace(searchText, ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED + searchText + ConsoleColors.ANSI_RESET));
+			boolean highlight = false;
+			for (String str : task.description().split("((?<=(?i)" + searchText + ")|(?=(?i)" + searchText + "))")) {
+				if (highlight) {
+					output.print(ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED);
+				}
+				output.print(str);
+				if (highlight) {
+					output.print(ConsoleColors.ANSI_RESET);
+				}
+				highlight = !highlight;
+			}
+			output.println();
+//			"a;b;c;d".split())
+//			output.println(task.description().replaceAll("(?i)" + searchText, ConsoleColors.ANSI_BOLD + ConsoleColors.ANSI_REVERSED + searchText + ConsoleColors.ANSI_RESET));
 		}
 		output.println();
 	}
