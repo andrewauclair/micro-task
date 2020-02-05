@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
@@ -45,6 +46,9 @@ public class StartCommand extends Command {
 		if (activeTask.isPresent()) {
 			if (result.hasArgument("finish")) {
 				output.println("Finished task " + activeTask.get().description());
+				output.println();
+				output.print("Task finished in: ");
+				output.println(new TaskDuration(activeTask.get(), osInterface));
 			}
 			else {
 				output.println("Stopped task " + activeTask.get().description());
