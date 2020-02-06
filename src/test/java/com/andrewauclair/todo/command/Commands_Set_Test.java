@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -106,8 +104,8 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		Mockito.reset(writer);
 
 		commands.execute(printStream, "set --task 1 --inactive");
-
-		Mockito.verify(writer).writeTask(new Task(1, "Test", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000))), "git-data/tasks/default/1.txt");
+		
+		Mockito.verify(writer).writeTask(new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))), "git-data/tasks/default/1.txt");
 	}
 
 	@Test

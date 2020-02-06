@@ -20,6 +20,9 @@ public class TaskBuilder {
 	}
 
 	TaskBuilder withState(TaskState state) {
+		if (this.state == TaskState.Finished && state != TaskState.Finished) {
+			taskTimes.remove(taskTimes.size() - 1);
+		}
 		this.state = state;
 		return this;
 	}

@@ -20,4 +20,26 @@ class TaskBuilderTest {
 		assertThat(finish.getStartStopTimes()).isEmpty();
 		assertThat(finish.getAllTimes().get(1)).isEqualTo(new TaskTimes(1234));
 	}
+	
+	@Test
+	void does_not_remove_last_time_when_not_finished() {
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		
+		Task finalTask = new TaskBuilder(task)
+				.withState(TaskState.Finished)
+				.build();
+		
+		assertThat(finalTask.getAllTimes()).containsOnly(new TaskTimes(0));
+	}
+	
+	@Test
+	void does_not_remove_last_time_when_state_does_not_change() {
+		Task task = new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(0)));
+		
+		Task finalTask = new TaskBuilder(task)
+				.withState(TaskState.Finished)
+				.build();
+		
+		assertThat(finalTask.getAllTimes()).containsOnly(new TaskTimes(0));
+	}
 }

@@ -44,7 +44,7 @@ public class SetCommand extends Command {
 			}
 			else {
 				Task task = tasks.setTaskState(taskID, TaskState.Inactive);
-
+				
 				output.println("Set state of task " + task.description() + " to Inactive");
 				output.println();
 			}
