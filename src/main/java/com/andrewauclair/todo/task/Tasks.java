@@ -200,6 +200,10 @@ public class Tasks {
 	public Task startTask(long id, boolean finishActive) {
 		Task currentTask = getListForTask(id).getTask(id);
 		
+		if (currentTask.state == TaskState.Finished) {
+			throw new TaskException("Task has already been finished.");
+		}
+		
 		if (activeTaskID == currentTask.id) {
 			throw new TaskException("Task is already active.");
 		}

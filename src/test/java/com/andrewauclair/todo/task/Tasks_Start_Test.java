@@ -202,4 +202,13 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 				)
 		);
 	}
+	
+	@Test
+	void finished_tasks_cannot_be_started() {
+		tasks.addTask(new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345))));
+		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(1, false));
+		
+		assertEquals("Task has already been finished.", taskException.getMessage());
+	}
 }
