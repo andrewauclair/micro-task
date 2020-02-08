@@ -88,7 +88,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		TaskList list = new TaskList("one", osInterface, writer, "", "");
+		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress);
 		TaskException taskException = assertThrows(TaskException.class, () -> list.finishTask(3));
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());

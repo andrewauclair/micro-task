@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.TaskTimes;
@@ -13,6 +14,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class Commands_Add_Test extends CommandsBaseTestCase {
@@ -155,6 +157,16 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				"    -n --name <name>    Name of the task.",
 				"    -r --recurring      Whether or not the task is recurring.",
 				"    -s --start          Start the task immediately.",
+				""
+		);
+	}
+
+	@Test
+	void add_command_requires_name_parameter() {
+		commands.execute(printStream, "add");
+
+		assertOutput(
+				"Missing name argument.",
 				""
 		);
 	}

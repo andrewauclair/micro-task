@@ -35,7 +35,7 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 		
-		activeGroup.addChild(new TaskList(activeList, osInterface, writer, "", ""));
+		activeGroup.addChild(new TaskList("default", rootGroup, osInterface, writer, "", "", TaskContainerState.InProgress));
 	}
 	
 	public TaskWriter getWriter() {
@@ -126,7 +126,7 @@ public class Tasks {
 		if (group.containsListAbsolute(absoluteList)) {
 			return false;
 		}
-		TaskList newList = new TaskList(absoluteList, osInterface, writer, "", "");
+		TaskList newList = new TaskList(absoluteList.substring(absoluteList.lastIndexOf('/') + 1), group, osInterface, writer, "", "", TaskContainerState.InProgress);
 		
 		group.addChild(newList);
 		
@@ -319,7 +319,7 @@ public class Tasks {
 		
 		TaskList oldList = group.getListAbsolute(absoluteOldList);
 		group.removeChild(oldList);
-		group.addChild(oldList.rename(absoluteNewList));
+		group.addChild(oldList.rename(newName));
 		
 		try {
 			osInterface.moveFolder(absoluteOldList, absoluteNewList);
@@ -382,7 +382,7 @@ public class Tasks {
 				continue;
 			}
 			TaskGroup parentGroup = getGroup(currentParent);
-			newGroup = new TaskGroup(group, parentGroup, "", "");
+			newGroup = new TaskGroup(group, parentGroup, "", "", TaskContainerState.InProgress);
 			currentParent += group + "/";
 			
 			if (!parentGroup.containsGroup(newGroup)) {
@@ -495,6 +495,8 @@ public class Tasks {
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(list.getFeature().getBytes());
 			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(list.getState().toString().getBytes());
+			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -530,6 +532,8 @@ public class Tasks {
 			outputStream.write(group.getProject().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(group.getFeature().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(group.getState().toString().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
@@ -578,7 +582,27 @@ public class Tasks {
 			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
 		}
 	}
-	
+
+	public void setGroupState(TaskGroup group, TaskContainerState state, boolean createFiles) {
+		TaskGroup parent = getGroup(group.getParent());
+
+		parent.removeChild(group);
+
+		TaskGroup taskGroup = group.changeState(state);
+
+		parent.addChild(taskGroup);
+	}
+
+	public void setListState(TaskList list, TaskContainerState state, boolean createFiles) {
+		TaskGroup parent = getGroupForList(list.getFullPath());
+
+		parent.removeChild(list);
+
+		TaskList newList = list.changeState(state);
+
+		parent.addChild(newList);
+	}
+
 	public String getProjectForTask(long taskID) {
 		TaskList listForTask = findListForTask(taskID);
 		
@@ -638,5 +662,43 @@ public class Tasks {
 	
 	public TaskGroup getRootGroup() {
 		return rootGroup;
+	}
+	
+	public TaskList finishList(String list) {
+		String absoluteName = getAbsoluteListName(list);
+		
+		TaskList taskList = getList(absoluteName);
+		
+		TaskGroup parent = getGroupForList(taskList.getFullPath());
+		
+		TaskList newList = taskList.changeState(TaskContainerState.Finished);
+
+		parent.removeChild(taskList);
+		parent.addChild(newList);
+		
+		writeListInfoFile(newList);
+		
+		osInterface.runGitCommand("git add tasks" + newList.getFullPath() + "/list.txt", false);
+		osInterface.runGitCommand("git commit -m \"Finished list '" + newList.getFullPath() + "'\"", false);
+		
+		return newList;
+	}
+	
+	public TaskGroup finishGroup(String group) {
+		
+		TaskGroup origGroup = getGroup(group);
+		TaskGroup parent = getGroup(origGroup.getParent());
+
+		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);
+
+		parent.removeChild(origGroup);
+		parent.addChild(taskGroup);
+		
+		writeGroupInfoFile(taskGroup);
+		
+		osInterface.runGitCommand("git add tasks" + taskGroup.getFullPath() + "group.txt", false);
+		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"", false);
+		
+		return taskGroup;
 	}
 }

@@ -11,7 +11,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	void task_group_can_contain_other_task_groups() {
 		TaskGroup group = new TaskGroup("/test");
 		
-		TaskGroup child = new TaskGroup("two", group, "", "");
+		TaskGroup child = new TaskGroup("two", group, "", "", TaskContainerState.InProgress);
 		group.addChild(child);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -23,7 +23,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	void task_group_can_contain_task_lists() {
 		TaskGroup group = new TaskGroup("test");
 		
-		TaskList list = new TaskList("test", osInterface, writer, "", "");
+		TaskList list = new TaskList("test", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress);
 		group.addChild(list);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -42,7 +42,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void create_task_group() {
 		TaskGroup parent = new TaskGroup("/two/three/");
-		TaskGroup group = new TaskGroup("one", parent, "Project", "Feature");
+		TaskGroup group = new TaskGroup("one", parent, "Project", "Feature", TaskContainerState.InProgress);
 
 		assertEquals("one", group.getName());
 		assertEquals("/two/three/one/", group.getFullPath());
@@ -53,7 +53,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void to_string() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature");
+		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature", TaskContainerState.InProgress);
 		
 		assertEquals("TaskGroup{name='test', fullPath='/test/', parent=/, children=[], project='Project', feature='Feature'}", group.toString());
 	}
@@ -61,7 +61,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void rename() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature");
+		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature", TaskContainerState.InProgress);
 		
 		TaskGroup renamed = group.rename("one");
 		

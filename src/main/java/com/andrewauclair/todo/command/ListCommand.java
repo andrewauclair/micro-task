@@ -57,6 +57,7 @@ public class ListCommand extends Command {
 		if (showLists) {
 			tasks.getListNames().stream()
 					.sorted()
+					.filter(listName -> finished == (tasks.getListByName(listName).getState() == TaskContainerState.Finished))
 					.forEach(str -> printList(output, str));
 			output.println();
 		}
@@ -121,9 +122,9 @@ public class ListCommand extends Command {
 
 			for (TaskContainer child : children) {
 				if (child instanceof TaskList) {
-					printListRelative(output, (TaskList) child);
+					printListRelative(output, (TaskList) child, finished);
 				}
-				else {
+				else if (finished == (child.getState() == TaskContainerState.Finished)) {
 					output.print("  ");
 					output.println(child.getName() + "/");
 				}
@@ -174,13 +175,13 @@ public class ListCommand extends Command {
 			output.println(list);
 		}
 	}
-
-	private void printListRelative(PrintStream output, TaskList list) {
+	
+	private void printListRelative(PrintStream output, TaskList list, boolean finished) {
 		if (list.getFullPath().equals(tasks.getActiveList())) {
 			output.print("* ");
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
 		}
-		else {
+		else if (finished == (list.getState() == TaskContainerState.Finished)) {
 			output.print("  ");
 			output.println(list.getName());
 		}

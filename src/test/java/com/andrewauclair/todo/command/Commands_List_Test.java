@@ -50,4 +50,65 @@ class Commands_List_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void list_command_hides_finished_lists() {
+		tasks.addList("/test/one", true);
+		tasks.addList("/test/two", true);
+		
+		tasks.finishList("/test/two");
+		
+		tasks.switchGroup("/test/");
+		
+		commands.execute(printStream, "list");
+		
+		assertOutput(
+				"Current group is '/test/'",
+				"",
+				"  one",
+				""
+		);
+	}
+	
+	@Test
+	void list_command_hides_finished_groups() {
+		tasks.addGroup("/test/one/");
+		tasks.addGroup("/test/two/");
+		
+		tasks.switchGroup("/test/");
+		
+		tasks.finishGroup("/test/two/");
+		
+		commands.execute(printStream, "list");
+		
+		assertOutput(
+				"Current group is '/test/'",
+				"",
+				"  one/",
+				""
+		);
+	}
+	
+	@Test
+	void list_command_with_finished_parameter_displays_finished_lists_and_groups() {
+		tasks.addGroup("/test/one/");
+		tasks.addGroup("/test/two/");
+		tasks.addList("/test/three", true);
+		tasks.addList("/test/four", true);
+		
+		tasks.switchGroup("/test/");
+		
+		tasks.finishGroup("/test/two/");
+		tasks.finishList("/test/four");
+		
+		commands.execute(printStream, "list --finished");
+		
+		assertOutput(
+				"Current group is '/test/'",
+				"",
+				"  four",
+				"  two/",
+				""
+		);
+	}
 }

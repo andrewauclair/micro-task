@@ -100,6 +100,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		TestUtils.assertOutput(listStream,
 				"Issue",
 				"",
+				"InProgress",
 				""
 		);
 		
@@ -124,6 +125,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		TestUtils.assertOutput(groupStream,
 				"Issue",
 				"",
+				"InProgress",
 				""
 		);
 		
@@ -149,6 +151,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		TestUtils.assertOutput(listStream,
 				"",
 				"Feature",
+				"InProgress",
 				""
 		);
 		
@@ -173,6 +176,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		TestUtils.assertOutput(groupStream,
 				"",
 				"Feature",
+				"InProgress",
 				""
 		);
 		
