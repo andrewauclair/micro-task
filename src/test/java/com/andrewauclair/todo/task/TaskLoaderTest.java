@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.UtilsTest;
 import com.andrewauclair.todo.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.todo.Utils.NL;
+import static com.andrewauclair.todo.UtilsTest.byteInStream;
+import static com.andrewauclair.todo.UtilsTest.createFile;
 
 class TaskLoaderTest extends TaskBaseTestCase {
 	Tasks tasks = Mockito.mock(Tasks.class);
@@ -42,7 +45,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+				byteInStream(createFile("Project X", "Feature Y", "InProgress"))
 		);
 		
 		loader.load();
@@ -89,21 +92,21 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+				byteInStream(createFile("Project X", "Feature Y", "Active"))
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/two/list.txt")).thenReturn(
-				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+				byteInStream(createFile("Project X", "Feature Y", "InProgress"))
 		);
 		
 		TaskGroup parent = new TaskGroup("/");
-		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", parent, "", ""));
+		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", parent, "", "", TaskContainerState.InProgress));
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				new ByteArrayInputStream(("Project X" + NL + "Feature Y").getBytes())
+				byteInStream(createFile("Project X", "Feature Y", "Active"))
 		);
 		
-		Mockito.when(tasks.addGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", ""));
+		Mockito.when(tasks.addGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", "", TaskContainerState.InProgress));
 
 		loader.load();
 		

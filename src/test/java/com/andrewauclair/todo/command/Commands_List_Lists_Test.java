@@ -25,4 +25,35 @@ class Commands_List_Lists_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+	
+	@Test
+	void list_lists_ignores_finished_lists() {
+		tasks.addList("/test/one", true);
+		tasks.addList("/test/two", true);
+		
+		tasks.finishList("/test/two");
+		
+		commands.execute(printStream, "list --lists");
+		
+		assertOutput(
+				"* " + ANSI_FG_GREEN + "/default" + ANSI_RESET,
+				"  /test/one",
+				""
+		);
+	}
+	
+	@Test
+	void list_lists_only_finished_lists() {
+		tasks.addList("/test/one", true);
+		tasks.addList("/test/two", true);
+		
+		tasks.finishList("/test/two");
+		
+		commands.execute(printStream, "list --lists --finished");
+		
+		assertOutput(
+				"  /test/two",
+				""
+		);
+	}
 }

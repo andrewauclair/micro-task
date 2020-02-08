@@ -6,11 +6,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.stream.Stream;
 
+import static com.andrewauclair.todo.Utils.NL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class UtilsTest {
+public class UtilsTest {
 	@Test
 	void create_a_utils_instance_to_satisfy_codecov() {
 		new Utils();
@@ -42,5 +45,23 @@ class UtilsTest {
 	@MethodSource("timeFormatSource")
 	void test(String output, long time, Utils.HighestTime highestTime) {
 		assertEquals(output, Utils.formatTime(time, highestTime));
+	}
+
+	public static String createFile(String... lines) {
+		StringBuilder buffer = new StringBuilder();
+
+		for (int i = 0; i < lines.length; i++) {
+			buffer.append(lines[i]);
+//			if (i + 1 < lines.length)
+			{
+				buffer.append(NL);
+			}
+		}
+
+		return buffer.toString();
+	}
+
+	public static ByteArrayInputStream byteInStream(String data) {
+		return new ByteArrayInputStream(data.getBytes());
 	}
 }

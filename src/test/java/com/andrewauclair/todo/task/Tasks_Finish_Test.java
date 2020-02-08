@@ -6,8 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
+import static com.andrewauclair.todo.Utils.NL;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -78,5 +83,59 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
 		
 		assertEquals("Recurring tasks cannot be finished.", taskException.getMessage());
+	}
+	
+	@Test
+	void finish_list_writes_file() throws IOException {
+		tasks.addList("/test/one", true);
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/one/list.txt")).thenReturn(new DataOutputStream(outputStream));
+		
+		tasks.finishList("/test/one");
+		
+		assertThat(outputStream.toString()).isEqualTo(
+				"" + NL + NL + "Finished" + NL
+		);
+	}
+	
+	@Test
+	void finish_list_commits_files_to_git() {
+		tasks.addList("/test/one", true);
+		
+		tasks.finishList("/test/one");
+		
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		order.verify(osInterface).runGitCommand("git add tasks/test/one/list.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Finished list '/test/one'\"", false);
+	}
+	
+	@Test
+	void finish_group_writes_file() throws IOException {
+		tasks.addGroup("/test/");
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/group.txt")).thenReturn(new DataOutputStream(outputStream));
+		
+		tasks.finishGroup("/test/");
+		
+		assertThat(outputStream.toString()).isEqualTo(
+				"" + NL + NL + "Finished" + NL
+		);
+	}
+	
+	@Test
+	void finish_group_commits_files_to_git() {
+		tasks.addGroup("/test/");
+		
+		tasks.finishGroup("/test/");
+		
+		InOrder order = Mockito.inOrder(osInterface);
+		
+		order.verify(osInterface).runGitCommand("git add tasks/test/group.txt", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Finished group '/test/'\"", false);
 	}
 }

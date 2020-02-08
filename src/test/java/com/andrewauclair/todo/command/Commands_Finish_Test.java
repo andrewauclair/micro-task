@@ -2,11 +2,13 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskContainerState;
 import com.andrewauclair.todo.task.TaskState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class Commands_Finish_Test extends CommandsBaseTestCase {
 	@Test
@@ -53,5 +55,36 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		task = tasks.getTask(2);
 		
 		assertEquals(TaskState.Finished, task.state);
+	}
+	
+	@Test
+	void finish_a_list() {
+		tasks.addList("/test", true);
+
+		commands.execute(printStream, "finish --list /test");
+		
+		assertOutput(
+				"Finished list '/test'",
+				""
+		);
+		
+		assertEquals(TaskContainerState.Finished, tasks.getListByName("/test").getState());
+	}
+	
+	@Test
+	void finish_a_group() {
+		tasks.addGroup("/test/");
+		tasks.addList("/test/one", true);
+		tasks.addTask("Test", "/test/one");
+
+		commands.execute(printStream, "finish --group /test/");
+		
+		assertOutput(
+				"Finished group '/test/'",
+				""
+		);
+		
+		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
+		assertNotNull(tasks.getTask(1));
 	}
 }

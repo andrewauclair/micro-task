@@ -17,6 +17,8 @@ public final class TaskGroup implements TaskContainer {
 	private final String project;
 	private final String feature;
 	
+	private final TaskContainerState state;
+	
 	private final List<TaskContainer> children = new ArrayList<>();
 
 	public TaskGroup(String name) {
@@ -26,24 +28,22 @@ public final class TaskGroup implements TaskContainer {
 		feature = "";
 		parent = null;
 		parentPath = null;
+		state = TaskContainerState.InProgress;
 	}
 
 	// name is relative and the parent is the absolute path of the parent
-	TaskGroup(String name, TaskGroup parent, String project, String feature) {
+	TaskGroup(String name, TaskGroup parent, String project, String feature, TaskContainerState state) {
 		this.name = name;
 		this.parent = parent;
 		
 		this.project = project;
 		this.feature = feature;
-
+		
+		this.state = state;
+		
 		if (parent != null) {
 			parentPath = parent.getFullPath();
-		}
-		else {
-			parentPath = "";
-		}
-
-		if (parent != null) {
+			
 			if (parent.getFullPath().equals("/")) {
 				fullPath = "/" + name + "/";
 			}
@@ -52,6 +52,7 @@ public final class TaskGroup implements TaskContainer {
 			}
 		}
 		else {
+			parentPath = "";
 			fullPath = "/";
 		}
 	}
@@ -75,7 +76,7 @@ public final class TaskGroup implements TaskContainer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parentPath, children, project, feature);
+		return Objects.hash(name, fullPath, parentPath, children, project, feature, state);
 	}
 
 	@Override
@@ -88,7 +89,8 @@ public final class TaskGroup implements TaskContainer {
 				Objects.equals(parentPath, taskGroup.parentPath) &&
 				Objects.equals(children, taskGroup.children) &&
 				Objects.equals(project, taskGroup.project) &&
-				Objects.equals(feature, taskGroup.feature);
+				Objects.equals(feature, taskGroup.feature) &&
+				Objects.equals(state, taskGroup.state);
 	}
 	
 	@Override
@@ -159,7 +161,7 @@ public final class TaskGroup implements TaskContainer {
 	}
 	
 	public TaskGroup rename(String newName) {
-		TaskGroup group = new TaskGroup(newName, parent, project, feature);
+		TaskGroup group = new TaskGroup(newName, parent, project, feature, state);
 		group.children.addAll(children);
 		return group;
 	}
@@ -186,7 +188,7 @@ public final class TaskGroup implements TaskContainer {
 	TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
 		removeChild(group);
 		
-		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.getProject(), group.getFeature());
+		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.getProject(), group.getFeature(), group.state);
 		group.getChildren().forEach(newGroup::addChild);
 		
 		destGroup.addChild(newGroup);
@@ -208,7 +210,7 @@ public final class TaskGroup implements TaskContainer {
 	TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
 		removeChild(list);
 		
-		TaskList newList = list.rename(group.getFullPath() + list.getName());
+		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), list.getProject(), list.getFeature(), TaskContainerState.InProgress);
 		
 		group.addChild(newList);
 		
@@ -227,19 +229,26 @@ public final class TaskGroup implements TaskContainer {
 	}
 	
 	TaskGroup changeProject(String project) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature);
+		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
 		getChildren().forEach(group::addChild);
 		
 		return group;
 	}
 	
 	TaskGroup changeFeature(String feature) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature);
+		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
 		getChildren().forEach(group::addChild);
 		
 		return group;
 	}
-	
+
+	TaskGroup changeState(TaskContainerState state) {
+		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+		getChildren().forEach(group::addChild);
+
+		return group;
+	}
+
 	@Override
 	public String getProject() {
 		if (parent != null && project.isEmpty()) {
@@ -254,5 +263,10 @@ public final class TaskGroup implements TaskContainer {
 			return parent.getFeature();
 		}
 		return feature;
+	}
+	
+	@Override
+	public TaskContainerState getState() {
+		return state;
 	}
 }

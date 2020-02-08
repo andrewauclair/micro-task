@@ -16,4 +16,6 @@ public interface TaskContainer {
 	String getProject();
 	
 	String getFeature();
+	
+	TaskContainerState getState();
 }
