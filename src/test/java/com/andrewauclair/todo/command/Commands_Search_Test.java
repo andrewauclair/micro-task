@@ -205,4 +205,18 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void search_command_help(String parameter) {
+		commands.execute(printStream, "search " + parameter);
+
+		assertOutput(
+				"Usage:  search [-fgh] [-t=<text>]",
+				"  -f, --finished",
+				"  -g, --group",
+				"  -h, --help          Show this help message.",
+				"  -t, --text=<text>"
+		);
+	}
 }

@@ -118,7 +118,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times 1 2");
 
 		assertOutput(
-				"Unknown value '1'.",
+				"Unmatched arguments from index 1: '1', '2'",
 				""
 		);
 	}

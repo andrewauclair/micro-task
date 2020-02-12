@@ -249,4 +249,19 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void update_command_help(String parameter) {
+		commands.execute(printStream, "update " + parameter);
+
+		assertOutput(
+				"Usage:  update [-hlr] [--tasks] [--release=<release>]",
+				"  -h, --help                Show this help message.",
+				"  -l, --latest",
+				"  -r, --releases",
+				"      --release=<release>",
+				"      --tasks"
+		);
+	}
 }

@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -10,20 +11,19 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "git")
 public class GitCommand extends Command {
+	@CommandLine.Parameters(index = "0")
+	private String command;
+
 	private final OSInterface osInterface;
 	
 	GitCommand(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
-		osInterface.runGitCommand(command, true);
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("add"));
+	public void run() {
+		osInterface.runGitCommand("git " + command, true);
 	}
 }

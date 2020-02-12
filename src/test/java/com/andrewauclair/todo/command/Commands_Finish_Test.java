@@ -6,6 +6,8 @@ import com.andrewauclair.todo.task.TaskContainerState;
 import com.andrewauclair.todo.task.TaskState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,7 +20,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(2, false);
 		setTime(1561079202);
-		commands.execute(printStream, "finish");
+		commands.execute(printStream, "finish --active");
 
 		assertOutput(
 				"Finished task 2 - 'Task 2'",
@@ -26,9 +28,9 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 				"Task finished in: 16m 40s",
 				""
 		);
-		
+
 		Task task = tasks.getTask(2);
-		
+
 		Assertions.assertEquals(TaskState.Finished, task.state);
 	}
 
@@ -38,8 +40,8 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 2");
 
 		tasks.startTask(1, false);
-		
-		commands.execute(printStream, "finish 2");
+
+		commands.execute(printStream, "finish --task 2");
 
 		assertOutput(
 				"Finished task 2 - 'Task 2'",
@@ -47,30 +49,30 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 				"Task finished in: 00s",
 				""
 		);
-		
+
 		Task task = tasks.getTask(1);
-		
+
 		assertEquals(TaskState.Active, task.state);
-		
+
 		task = tasks.getTask(2);
-		
+
 		assertEquals(TaskState.Finished, task.state);
 	}
-	
+
 	@Test
 	void finish_a_list() {
 		tasks.addList("/test", true);
 
 		commands.execute(printStream, "finish --list /test");
-		
+
 		assertOutput(
 				"Finished list '/test'",
 				""
 		);
-		
+
 		assertEquals(TaskContainerState.Finished, tasks.getListByName("/test").getState());
 	}
-	
+
 	@Test
 	void finish_a_group() {
 		tasks.addGroup("/test/");
@@ -78,13 +80,28 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test", "/test/one");
 
 		commands.execute(printStream, "finish --group /test/");
-		
+
 		assertOutput(
 				"Finished group '/test/'",
 				""
 		);
-		
+
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
 		assertNotNull(tasks.getTask(1));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void finish_command_help(String parameter) {
+		commands.execute(printStream, "finish " + parameter);
+
+		assertOutput(
+				"Usage:  finish [-ah] [-g=<group>] [-l=<list>] [-t=<id>]",
+				"  -a, --active",
+				"  -g, --group=<group>",
+				"  -h, --help            Show this help message.",
+				"  -l, --list=<list>",
+				"  -t, --task=<id>"
+		);
 	}
 }

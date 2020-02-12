@@ -5,6 +5,7 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -14,144 +15,35 @@ import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "list")
 public class ListCommand extends Command {
 	private static final int MAX_DISPLAYED_TASKS = 20;
-	
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("tasks", CommandOption.NO_SHORTNAME, true),
-			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
-			new CommandOption("lists", CommandOption.NO_SHORTNAME, true),
-			new CommandOption("group", CommandOption.NO_SHORTNAME, true),
-			new CommandOption("recursive", CommandOption.NO_SHORTNAME, true),
-			new CommandOption("finished", CommandOption.NO_SHORTNAME, true),
-			new CommandOption("all", CommandOption.NO_SHORTNAME, true)
-	);
-	private final CommandParser parser = new CommandParser(options);
-	private final Tasks tasks;
+
+	@CommandLine.Option(names = {"--tasks"})
+	private boolean tasks;
+
+	@CommandLine.Option(names = {"--list"})
+	private String list;
+
+	@CommandLine.Option(names = {"--lists"})
+	private boolean lists;
+
+	@CommandLine.Option(names = {"--group"})
+	private boolean group;
+
+	@CommandLine.Option(names = {"--recursive"})
+	private boolean recursive;
+
+	@CommandLine.Option(names = {"--finished"})
+	private boolean finished;
+
+	@CommandLine.Option(names = {"--all"})
+	private boolean all;
+
+	private final Tasks tasksData;
 
 	ListCommand(Tasks tasks) {
-		this.tasks = tasks;
-	}
-
-	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		boolean all = result.hasArgument("all");
-		boolean showTasks = result.hasArgument("tasks");
-		boolean showLists = result.hasArgument("lists");
-		boolean useGroup = result.hasArgument("group");
-		boolean recursive = result.hasArgument("recursive");
-		boolean finished = result.hasArgument("finished");
-		
-		String list = tasks.getActiveList();
-		
-		if (result.hasArgument("list")) {
-			list = result.getStrArgument("list");
-		}
-
-		if (!list.startsWith("/")) {
-			list = "/" + list;
-		}
-
-		if (showLists) {
-			tasks.getListNames().stream()
-					.sorted()
-					.filter(listName -> finished == (tasks.getListByName(listName).getState() == TaskContainerState.Finished))
-					.forEach(str -> printList(output, str));
-			output.println();
-		}
-		else if (showTasks) {
-			if (!useGroup) {
-				if (finished) {
-					output.println("Finished tasks on list '" + list + "'");
-				}
-				else {
-					output.println("Tasks on list '" + list + "'");
-				}
-				output.println();
-			}
-
-			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
-
-			int totalTasks = 0;
-
-			if (useGroup) {
-				totalTasks = printTasks(output, tasks.getActiveGroup(), totalTasks, finished, recursive);
-			}
-			else {
-				List<Task> tasksList = tasks.getTasksForList(list).stream()
-						.filter(task -> finished == (task.state == TaskState.Finished))
-						.collect(Collectors.toList());
-
-				totalTasks += tasksList.size();
-
-				printTasks(output, tasksList, limit);
-			}
-
-			if (totalTasks > limit) {
-				output.println("(" + (totalTasks - MAX_DISPLAYED_TASKS) + " more tasks.)");
-			}
-			else if (totalTasks == 0) {
-				output.println("No tasks.");
-			}
-
-			if (totalTasks > 0) {
-				output.println();
-				output.print(ANSI_BOLD);
-				if (finished) {
-					output.print("Total Finished Tasks: " + totalTasks);
-				}
-				else {
-					output.print("Total Tasks: " + totalTasks);
-				}
-				output.print(ANSI_RESET);
-				output.println();
-			}
-			output.println();
-		}
-		else {
-			TaskGroup activeGroup = tasks.getActiveGroup();
-
-			List<TaskContainer> children = activeGroup.getChildren().stream()
-					.sorted(Comparator.comparing(TaskContainer::getName))
-					.collect(Collectors.toList());
-
-			output.println("Current group is '" + activeGroup.getFullPath() + "'");
-			output.println();
-
-			for (TaskContainer child : children) {
-				if (child instanceof TaskList) {
-					printListRelative(output, (TaskList) child, finished);
-				}
-				else if (finished == (child.getState() == TaskContainerState.Finished)) {
-					output.print("  ");
-					output.println(child.getName() + "/");
-				}
-			}
-			output.println();
-		}
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Arrays.asList(
-				node("list",
-						node("--tasks",
-								node("--list",
-										node(new ListCompleter(tasks, true), node("--all"))
-								),
-								node("--all"),
-								node("--group",
-										node("--all"),
-										node("--recursive")
-								)
-						)
-				),
-				node("list",
-						node("--lists")
-				)
-		);
+		this.tasksData = tasks;
 	}
 	
 	private void printTasks(PrintStream output, List<Task> tasksList, int limit) {
@@ -166,7 +58,7 @@ public class ListCommand extends Command {
 	}
 
 	private void printList(PrintStream output, String list) {
-		if (list.equals(tasks.getActiveList())) {
+		if (list.equals(tasksData.getActiveList())) {
 			output.print("* ");
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
 		}
@@ -177,7 +69,7 @@ public class ListCommand extends Command {
 	}
 	
 	private void printListRelative(PrintStream output, TaskList list, boolean finished) {
-		if (list.getFullPath().equals(tasks.getActiveList())) {
+		if (list.getFullPath().equals(tasksData.getActiveList())) {
 			output.print("* ");
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
 		}
@@ -190,7 +82,7 @@ public class ListCommand extends Command {
 	private void printTask(PrintStream output, Task task, int maxLength) {
 		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
 		
-		if (task.id == tasks.getActiveTaskID()) {
+		if (task.id == tasksData.getActiveTaskID()) {
 			output.print("* ");
 			output.print(printID);
 			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
@@ -230,5 +122,103 @@ public class ListCommand extends Command {
 			}
 		}
 		return totalTasks;
+	}
+
+	@Override
+	public void run() {
+		boolean all = this.all;
+		boolean showTasks = this.tasks;
+		boolean showLists = this.lists;
+		boolean useGroup = this.group;
+		boolean recursive = this.recursive;
+		boolean finished = this.finished;
+
+		String list = tasksData.getActiveList();
+
+		if (this.list != null) {
+			list = this.list;
+		}
+
+		if (!list.startsWith("/")) {
+			list = "/" + list;
+		}
+
+		if (showLists) {
+			tasksData.getListNames().stream()
+					.sorted()
+					.filter(listName -> finished == (tasksData.getListByName(listName).getState() == TaskContainerState.Finished))
+					.forEach(str -> printList(System.out, str));
+			System.out.println();
+		}
+		else if (showTasks) {
+			if (!useGroup) {
+				if (finished) {
+					System.out.println("Finished tasks on list '" + list + "'");
+				}
+				else {
+					System.out.println("Tasks on list '" + list + "'");
+				}
+				System.out.println();
+			}
+
+			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
+
+			int totalTasks = 0;
+
+			if (useGroup) {
+				totalTasks = printTasks(System.out, tasksData.getActiveGroup(), totalTasks, finished, recursive);
+			}
+			else {
+				List<Task> tasksList = tasksData.getTasksForList(list).stream()
+						.filter(task -> finished == (task.state == TaskState.Finished))
+						.collect(Collectors.toList());
+
+				totalTasks += tasksList.size();
+
+				printTasks(System.out, tasksList, limit);
+			}
+
+			if (totalTasks > limit) {
+				System.out.println("(" + (totalTasks - MAX_DISPLAYED_TASKS) + " more tasks.)");
+			}
+			else if (totalTasks == 0) {
+				System.out.println("No tasks.");
+			}
+
+			if (totalTasks > 0) {
+				System.out.println();
+				System.out.print(ANSI_BOLD);
+				if (finished) {
+					System.out.print("Total Finished Tasks: " + totalTasks);
+				}
+				else {
+					System.out.print("Total Tasks: " + totalTasks);
+				}
+				System.out.print(ANSI_RESET);
+				System.out.println();
+			}
+			System.out.println();
+		}
+		else {
+			TaskGroup activeGroup = tasksData.getActiveGroup();
+
+			List<TaskContainer> children = activeGroup.getChildren().stream()
+					.sorted(Comparator.comparing(TaskContainer::getName))
+					.collect(Collectors.toList());
+
+			System.out.println("Current group is '" + activeGroup.getFullPath() + "'");
+			System.out.println();
+
+			for (TaskContainer child : children) {
+				if (child instanceof TaskList) {
+					printListRelative(System.out, (TaskList) child, finished);
+				}
+				else if (finished == (child.getState() == TaskContainerState.Finished)) {
+					System.out.print("  ");
+					System.out.println(child.getName() + "/");
+				}
+			}
+			System.out.println();
+		}
 	}
 }

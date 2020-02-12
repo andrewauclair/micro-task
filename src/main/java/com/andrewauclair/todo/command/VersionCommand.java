@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -11,26 +12,22 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "version")
 public class VersionCommand extends Command {
 	private final OSInterface osInterface;
 	
 	public VersionCommand(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
+	public void run() {
 		try {
-			output.println(osInterface.getVersion());
+			System.out.println(osInterface.getVersion());
 		}
 		catch (IOException e) {
-			output.println("Unknown");
+			System.out.println("Unknown");
 		}
-		output.println();
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("version"));
+		System.out.println();
 	}
 }

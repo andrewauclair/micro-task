@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.TaskTimes;
@@ -14,10 +13,18 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class Commands_Add_Test extends CommandsBaseTestCase {
+	private String[] helpText = new String[]{
+			"Usage:  add [-hrs] [-l=<list>] -n=<name>",
+			"  -h, --help          Show this help message.",
+			"  -l, --list=<list>",
+			"  -n, --name=<name>",
+			"  -r, --recurring",
+			"  -s, --start"
+	};
+
 	@Test
 	void execute_add_command() {
 		commands.execute(printStream, "add -n \"Task 1\"");
@@ -76,27 +83,27 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
 	void add_command_sets_time() {
 		commands.execute(printStream, "add -n \"Test 1\"");
-		
+
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), false)
 		);
-		
+
 		assertOutput(
 				"Added task 1 - 'Test 1'",
 				""
 		);
 	}
-	
+
 	@Test
 	void add_with_no_name_argument_outputs_missing_argument() {
 		commands.execute(printStream, "add \"Test\"");
-		
+
 		assertOutput(
-				"Unknown value '\"Test\"'.",
+				"Missing required option '--name=<name>'",
 				""
 		);
 	}
@@ -106,7 +113,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "create-group /test");
 
 		outputStream.reset();
-		
+
 		tasks.addList("/test/one", true);
 
 		tasks.setActiveList("/test/one");
@@ -118,15 +125,15 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
 	void start_task_when_adding_it() {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
-		
+
 		commands.execute(printStream, "add -s -n \"Test\"");
-		
+
 		assertEquals(TaskState.Active, tasks.getTask(1).state);
-		
+
 		assertOutput(
 				"Added task 1 - 'Test'",
 				"",
@@ -137,37 +144,13 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@Test
-	void add_command_help() {
-		commands.execute(printStream, "add --help");
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void add_command_help(String parameter) {
+		commands.execute(printStream, "add " + parameter);
 
 		assertOutput(
-				"",
-				"Add",
-				"",
-				"Usage:",
-				"    add --name \"Task Name\"",
-				"    add -s -n \"Task Name\"",
-				"    add -l /default -n \"Task Name\"",
-				"    add --list /default --recurring true -n \"Task Name\"",
-				"",
-				"Options:",
-				"    -h --help           Show this screen.",
-				"    -l --list <list>    List to add the task to.",
-				"    -n --name <name>    Name of the task.",
-				"    -r --recurring      Whether or not the task is recurring.",
-				"    -s --start          Start the task immediately.",
-				""
-		);
-	}
-
-	@Test
-	void add_command_requires_name_parameter() {
-		commands.execute(printStream, "add");
-
-		assertOutput(
-				"Missing name argument.",
-				""
+				helpText
 		);
 	}
 }

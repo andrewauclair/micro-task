@@ -5,6 +5,7 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -14,46 +15,33 @@ import java.util.stream.Collectors;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "next")
 public class NextCommand extends Command {
-	private final List<CommandOption> options = Collections.singletonList(
-			new CommandOption("count", 'c', Collections.singletonList("Count"))
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Option(names = {"-c", "--count"})
+	private int count;
+
 	private final Tasks tasks;
 	
 	NextCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		int max = result.getIntArgument("count");
-		
+	public void run() {
+		int max = count;
+
 		List<Task> tasks = this.tasks.getAllTasks().stream()
 				.sorted(Comparator.comparingLong(o -> o.id))
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.isRecurring())
 				.limit(max)
 				.collect(Collectors.toList());
-		
-		output.println("Next " + tasks.size() + " Tasks To Complete");
-		output.println();
-		
-		tasks.forEach(task -> output.println(task.description()));
-		
-		output.println();
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
-				node("next",
-						node("--count"
-						),
-						node("-c")
-				)
-		);
+
+		System.out.println("Next " + tasks.size() + " Tasks To Complete");
+		System.out.println();
+
+		tasks.forEach(task -> System.out.println(task.description()));
+
+		System.out.println();
 	}
 }

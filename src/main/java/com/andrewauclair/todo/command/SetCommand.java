@@ -1,94 +1,106 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.*;
-import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+public abstract class SetCommand extends Command {
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
+	static class SetTaskCommand extends SetCommand {
+		@CommandLine.Option(names = {"--task"})
+		private Integer id;
 
-public class SetCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("task", CommandOption.NO_SHORTNAME, Collections.singletonList("ID")),
-			new CommandOption("list", CommandOption.NO_SHORTNAME, Collections.singletonList("List")),
-			new CommandOption("group", CommandOption.NO_SHORTNAME, Collections.singletonList("Group")),
-			new CommandOption("recurring", CommandOption.NO_SHORTNAME, Collections.singletonList("Recurring")),
-			new CommandOption("project", CommandOption.NO_SHORTNAME, Collections.singletonList("Project")),
-			new CommandOption("feature", CommandOption.NO_SHORTNAME, Collections.singletonList("Feature")),
-			new CommandOption("inactive", CommandOption.NO_SHORTNAME, Collections.emptyList())
-	);
-	private final CommandParser parser = new CommandParser(options);
-	
-	private final Tasks tasks;
-	
-	SetCommand(Tasks tasks) {
-		this.tasks = tasks;
-	}
-	
-	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		if (result.hasArgument("task")) {
-			long taskID = result.getLongArgument("task");
+		@CommandLine.Option(names = {"-r", "--recurring"})
+		private Boolean recurring;
 
-			if (result.hasArgument("recurring")) {
-				boolean recurring = result.getBoolArgument("recurring");
+		@CommandLine.Option(names = {"--not-recurring"})
+		private Boolean not_recurring;
 
-				tasks.setRecurring(taskID, recurring);
+		@CommandLine.Option(names = {"--inactive"})
+		private boolean inactive;
+
+		private final Tasks tasks;
+
+		SetTaskCommand(Tasks tasks) {
+			this.tasks = tasks;
+		}
+
+		@Override
+		public void run() {
+			if (recurring != null) {
+				tasks.setRecurring((long) id, true);
+			}
+			else if (not_recurring != null) {
+				tasks.setRecurring((long) id, false);
 			}
 			else {
-				Task task = tasks.setTaskState(taskID, TaskState.Inactive);
-				
-				output.println("Set state of task " + task.description() + " to Inactive");
-				output.println();
-			}
-		}
-		else if (result.hasArgument("list")) {
-			String list = result.getStrArgument("list");
-			TaskList listByName = tasks.getListByName(list);
-			
-			if (result.hasArgument("project")) {
-				String project = result.getStrArgument("project");
-				tasks.setProject(listByName, project, true);
-			}
-			else if (result.hasArgument("feature")) {
-				String feature = result.getStrArgument("feature");
-				tasks.setFeature(listByName, feature, true);
-			}
-		}
-		else if (result.hasArgument("group")) {
-			String group = result.getStrArgument("group");
-			TaskGroup groupByName = tasks.getGroup(group);
-			
-			if (result.hasArgument("project")) {
-				String project = result.getStrArgument("project");
-				tasks.setProject(groupByName, project, true);
-			}
-			else if (result.hasArgument("feature")) {
-				String feature = result.getStrArgument("feature");
-				tasks.setFeature(groupByName, feature, true);
+				Task task = tasks.setTaskState((long) id, TaskState.Inactive);
+
+				System.out.println("Set state of task " + task.description() + " to Inactive");
+				System.out.println();
 			}
 		}
 	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
-				node("set",
-						node("--task",
-								node(new LongCompleter(),
-										node("--recurring"),
-										node("--project"),
-										node("--feature")
-								)
-						)
-				)
-		);
+
+	static class SetListCommand extends SetCommand {
+		@CommandLine.Option(names = {"-l", "--list"})
+		private String list;
+
+		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+		private ProjectFeature projectFeature;
+
+		private final Tasks tasks;
+
+		SetListCommand(Tasks tasks) {
+			this.tasks = tasks;
+		}
+
+		@Override
+		public void run() {
+			if (projectFeature.project != null) {
+				String project = this.projectFeature.project;
+				tasks.setProject(tasks.getListByName(this.list), project, true);
+			}
+
+			if (projectFeature.feature != null) {
+				String feature = this.projectFeature.feature;
+				tasks.setFeature(tasks.getListByName(this.list), feature, true);
+			}
+		}
+	}
+
+	static class SetGroupCommand extends SetCommand {
+		@CommandLine.Option(names = {"-g", "--group"})
+		private String group;
+
+		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+		private ProjectFeature projectFeature;
+
+		private final Tasks tasks;
+
+		SetGroupCommand(Tasks tasks) {
+			this.tasks = tasks;
+		}
+
+		@Override
+		public void run() {
+			if (projectFeature.project != null) {
+				String project = this.projectFeature.project;
+				tasks.setProject(tasks.getGroup(this.group), project, true);
+			}
+
+			if (projectFeature.feature != null) {
+				String feature = this.projectFeature.feature;
+				tasks.setFeature(tasks.getGroup(this.group), feature, true);
+			}
+		}
+	}
+
+	static class ProjectFeature {
+		@CommandLine.Option(names = {"-p", "--project"})
+		private String project;
+
+		@CommandLine.Option(names = {"-f", "--feature"})
+		private String feature;
 	}
 }

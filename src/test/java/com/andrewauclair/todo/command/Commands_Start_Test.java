@@ -181,4 +181,17 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void start_command_help(String parameter) {
+		commands.execute(printStream, "start " + parameter);
+
+		assertOutput(
+				"Usage:  start [-fh] <id>",
+				"      <id>",
+				"  -f, --finish",
+				"  -h, --help     Show this help message."
+		);
+	}
 }

@@ -5,6 +5,8 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -57,5 +59,16 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 		Task task = tasks.getTask(1);
 		
 		assertEquals(TaskState.Inactive, task.state);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void stop_command_help(String parameter) {
+		commands.execute(printStream, "stop " + parameter);
+
+		assertOutput(
+				"Usage:  stop [-h]",
+				"  -h, --help   Show this help message."
+		);
 	}
 }

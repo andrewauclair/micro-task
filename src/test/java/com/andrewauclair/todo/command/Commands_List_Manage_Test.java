@@ -5,6 +5,8 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.TaskTimes;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 
@@ -178,7 +180,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "chlist");
 
 		assertOutput(
-				"Missing 'list' argument.",
+				"Missing required parameter: <list>",
 				""
 		);
 	}
@@ -188,7 +190,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "chlist test two");
 
 		assertOutput(
-				"Unknown value 'two'.",
+				"Unmatched argument at index 2: 'two'",
 				""
 		);
 	}
@@ -198,7 +200,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mklist");
 
 		assertOutput(
-				"Missing 'list' argument.",
+				"Missing required parameter: <list>",
 				""
 		);
 	}
@@ -208,7 +210,7 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mklist test two");
 
 		assertOutput(
-				"Unknown value 'two'.",
+				"Unmatched argument at index 2: 'two'",
 				""
 		);
 	}

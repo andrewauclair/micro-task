@@ -7,6 +7,9 @@ import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -16,12 +19,14 @@ import java.util.Optional;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "start")
 public class StartCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("task", CommandOption.NO_SHORTNAME, false),
-			new CommandOption("finish", 'f', true)
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@Parameters(index = "0")
+	private long id;
+
+	@Option(names = {"-f", "--finish"})
+	private boolean finish;
+
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 	
@@ -29,46 +34,37 @@ public class StartCommand extends Command {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-	
-	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		int taskID = result.getIntArgument("task");
 
+	@Override
+	public void run() {
 		Optional<Task> activeTask = Optional.empty();
 		if (tasks.hasActiveTask()) {
 			activeTask = Optional.of(tasks.getActiveTask());
 		}
-		
-		Task task = tasks.startTask(taskID, result.hasArgument("finish"));
+
+		Task task = tasks.startTask(id, finish);
 
 		if (activeTask.isPresent()) {
-			if (result.hasArgument("finish")) {
-				output.println("Finished task " + activeTask.get().description());
-				output.println();
-				output.print("Task finished in: ");
-				output.println(new TaskDuration(activeTask.get(), osInterface));
+			if (finish) {
+				System.out.println("Finished task " + activeTask.get().description());
+				System.out.println();
+				System.out.print("Task finished in: ");
+				System.out.println(new TaskDuration(activeTask.get(), osInterface));
 			}
 			else {
-				output.println("Stopped task " + activeTask.get().description());
+				System.out.println("Stopped task " + activeTask.get().description());
 			}
 
-			output.println();
+			System.out.println();
 		}
 
-		output.println("Started task " + task.description());
-		output.println();
+		System.out.println("Started task " + task.description());
+		System.out.println();
 
 		List<TaskTimes> times = task.getStartStopTimes();
 		TaskTimes startTime = times.get(times.size() - 1);
 
-		output.println(startTime.description(osInterface.getZoneId()));
-		output.println();
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("start"));
+		System.out.println(startTime.description(osInterface.getZoneId()));
+		System.out.println();
 	}
 }

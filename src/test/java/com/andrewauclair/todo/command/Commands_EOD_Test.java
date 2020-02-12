@@ -3,6 +3,8 @@ package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 
@@ -23,7 +25,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 	@Test
 	void eight_hour_day() {
-		commands.execute(printStream, "eod -h 8");
+		commands.execute(printStream, "eod --hours 8");
 
 		assertOutput(
 				"End of Day is in 02h 58m 08s at 06:17:15 PM",
@@ -53,11 +55,23 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void eod_command_prints_day_complete_when_past_end_of_day() {
-		commands.execute(printStream, "eod -h 1");
+		commands.execute(printStream, "eod --hours 1");
 		
 		assertOutput(
 				"Day complete.",
 				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void eod_command_help(String parameter) {
+		commands.execute(printStream, "eod " + parameter);
+
+		assertOutput(
+				"Usage:  eod [-h] [--hours=<hours>]",
+				"  -h, --help            Show this help message.",
+				"      --hours=<hours>"
 		);
 	}
 }

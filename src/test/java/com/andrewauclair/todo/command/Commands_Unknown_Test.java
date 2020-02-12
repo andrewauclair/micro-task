@@ -9,7 +9,7 @@ class Commands_Unknown_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "junk");
 
 		assertOutput(
-				"Unknown command.",
+				"Unmatched argument at index 0: 'junk'",
 				""
 		);
 	}

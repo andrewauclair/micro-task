@@ -8,13 +8,17 @@ apply plugin: 'jacoco'
 repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile 'net.java.dev.jna:jna:5.3.1'
     compile 'net.java.dev.jna:jna-platform:5.3.1'
-    compile 'org.jline:jline:3.13.0'
+    compile 'org.jline:jline:3.13.3'
+    compile 'org.jline:jline-builtins:3.13.3'
     compile 'org.json:json:20180813'
+    compile 'info.picocli:picocli-shell-jline3:4.1.4'
+    compile 'org.fusesource.jansi:jansi:1.18'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.4.2'
@@ -33,7 +37,9 @@ sourceCompatibility = '10'
 
 jar {
     manifest {
+//        attributes "Main-Class": "picocli.CheckSum"
         attributes "Main-Class": "com.andrewauclair.todo.Main"
+//        attributes "Main-Class": "picocli.shell.jline3.example.Example"
     }
 
     from {

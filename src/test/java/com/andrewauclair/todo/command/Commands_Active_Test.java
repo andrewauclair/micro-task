@@ -2,6 +2,8 @@
 package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Active_Test extends CommandsBaseTestCase {
 	@Test
@@ -80,6 +82,17 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 				"",
 				"No active task.",
 				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void active_command_help(String parameter) {
+		commands.execute(printStream, "active " + parameter);
+
+		assertOutput(
+				"Usage:  active [-h]",
+				"  -h, --help   Show this help message."
 		);
 	}
 }

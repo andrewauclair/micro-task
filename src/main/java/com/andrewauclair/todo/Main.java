@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo;
 
+import com.andrewauclair.todo.command.AddCommand;
 import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.command.TimesCommand;
 import com.andrewauclair.todo.os.ConsoleColors;
@@ -10,26 +11,123 @@ import com.andrewauclair.todo.os.OSInterfaceImpl;
 import com.andrewauclair.todo.task.*;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
+import org.jline.builtins.Builtins;
 import org.jline.builtins.Completers;
+import org.jline.builtins.Widgets;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.Status;
+import picocli.CommandLine;
+import picocli.shell.jline3.PicocliCommands;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+
+import static picocli.CommandLine.*;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
-	
+
+
+	/**
+	 * Top-level command that just prints help.
+	 */
+	@Command(name = "",
+			description = {
+					"Example interactive shell with completion. " +
+							"Hit @|magenta <TAB>|@ to see available commands.",
+					"Type `@|bold,yellow keymap ^[s tailtip-toggle|@`, " +
+							"then hit @|magenta ALT-S|@ to toggle tailtips.",
+					""},
+			footer = {"", "Press Ctl-D to exit."},
+			subcommands = {
+//					AddCommand.class,
+//					Example.MyCommand.class, Example.ClearScreen.class,
+					HelpCommand.class})
+	public static class CliCommands implements Runnable {
+		LineReaderImpl reader;
+		PrintWriter out;
+
+		public CliCommands() {}
+
+		public void setReader(LineReader reader){
+			this.reader = (LineReaderImpl)reader;
+			out = reader.getTerminal().writer();
+		}
+
+		public void run() {
+			out.println(new CommandLine(this).getUsageMessage());
+		}
+	}
+
+	/**
+	 * Provide command descriptions for JLine TailTipWidgets
+	 * to be displayed in the status bar.
+	 */
+	private static class DescriptionGenerator {
+		Builtins builtins;
+		PicocliCommands picocli;
+
+		public DescriptionGenerator(Builtins builtins, PicocliCommands picocli) {
+			this.builtins = builtins;
+			this.picocli = picocli;
+		}
+
+		Widgets.CmdDesc commandDescription(Widgets.CmdLine line) {
+			Widgets.CmdDesc out = null;
+			switch (line.getDescriptionType()) {
+				case COMMAND:
+					String cmd = Parser.getCommand(line.getArgs().get(0));
+					if (builtins.hasCommand(cmd)) {
+						out = builtins.commandDescription(cmd);
+					} else if (picocli.hasCommand(cmd)) {
+						out = picocli.commandDescription(cmd);
+					}
+					break;
+				default:
+					break;
+			}
+			return out;
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
+//		CommandLine.Model.CommandSpec spec = CommandLine.Model.CommandSpec.create();
+//		spec.mixinStandardHelpOptions(true); // usageHelp and versionHelp options
+//		spec.addOption(CommandLine.Model.OptionSpec.builder("-c", "--count")
+//				.paramLabel("COUNT")
+//				.type(int.class)
+//				.description("number of times to execute").build());
+//		spec.addPositional(CommandLine.Model.PositionalParamSpec.builder()
+//				.paramLabel("FILES")
+//				.type(List.class).auxiliaryTypes(File.class) // List<File>
+//				.description("The files to process").build());
+//		CommandLine commandLine = new CommandLine(spec);
 		OSInterfaceImpl osInterface = new OSInterfaceImpl();
 		Tasks tasks = new Tasks(getStartingID(osInterface), new TaskWriter(osInterface), System.out, osInterface);
 		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
+
+		Builtins builtins = new Builtins(Paths.get(""), null, null);
+		builtins.rename(org.jline.builtins.Builtins.Command.TTOP, "top");
+		builtins.alias("zle", "widget");
+		builtins.alias("bindkey", "keymap");
+		Completers.SystemCompleter systemCompleter = builtins.compileCompleters();
+		// set up picocli commands
+		CliCommands cliCommands = new CliCommands();
+		CommandLine cmd = commands.buildCommandLine();
+		PicocliCommands picocliCommands = new PicocliCommands(Paths.get(""), cmd);
+		systemCompleter.add(picocliCommands.compileCompleters());
+		systemCompleter.compile();
 		
+
 		osInterface.setCommands(commands);
 		
 		File git_data = new File("git-data");
@@ -73,21 +171,26 @@ public class Main {
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 		
-		Completers.TreeCompleter treeCompleter = new Completers.TreeCompleter(commands.getAutoCompleteNodes());
-		
 		LineReader lineReader = LineReaderBuilder.builder()
 				.terminal(terminal)
-				.completer(treeCompleter)
+				.completer(systemCompleter)
+				.parser(new DefaultParser())
+				.variable(LineReader.LIST_MAX, 50)
 				.variable(LineReader.BELL_STYLE, "none")
 				.build();
-		
+
+		builtins.setLineReader(lineReader);
+		cliCommands.setReader(lineReader);
+		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
+		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
+
 		Status status = Status.getStatus(terminal);
 		status.setBorder(true);
 		
 		bindCtrlBackspace(lineReader);
 		
 		if (!exception) {
-//			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 		
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
