@@ -2,12 +2,16 @@
 package com.andrewauclair.todo.command;
 
 import org.jline.builtins.Completers.TreeCompleter.Node;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.List;
 
-abstract class Command {
-	public abstract void execute(PrintStream output, String command);
-	
-	public abstract List<Node> getAutoCompleteNodes();
+abstract class Command implements Runnable {
+	@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help = false;
+
+//	public abstract void execute(PrintStream output, String command);
+//
+//	public abstract List<Node> getAutoCompleteNodes();
 }

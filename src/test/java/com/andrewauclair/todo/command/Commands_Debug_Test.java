@@ -9,15 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Commands_Debug_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_debug_enable_command() {
-		commands.execute(printStream, "debug enable");
+		commands.execute(printStream, "debug --enable");
 		
 		assertTrue(commands.getDebugCommand().isDebugEnabled());
 	}
 
 	@Test
 	void execute_debug_disable_command() {
-		commands.execute(printStream, "debug enable");
-		commands.execute(printStream, "debug disable");
+		commands.execute(printStream, "debug --enable");
+		commands.execute(printStream, "debug --disable");
 		assertFalse(commands.getDebugCommand().isDebugEnabled());
 	}
 
@@ -26,7 +26,7 @@ class Commands_Debug_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "debug junk");
 
 		assertOutput(
-				"Missing argument 'debug flag'.",
+				"Unmatched argument at index 1: 'junk'",
 				""
 		);
 	}

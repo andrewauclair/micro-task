@@ -6,14 +6,11 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
-import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
-
+@CommandLine.Command(name = "active")
 public class ActiveCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -22,38 +19,33 @@ public class ActiveCommand extends Command {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
-		output.println("Active group is '" + tasks.getActiveGroup().getFullPath() + "'");
-		output.println();
-		output.println("Active list is '" + tasks.getActiveList() + "'");
-		output.println();
-		
+	public void run() {
+		System.out.println("Active group is '" + tasks.getActiveGroup().getFullPath() + "'");
+		System.out.println();
+		System.out.println("Active list is '" + tasks.getActiveList() + "'");
+		System.out.println();
+
 		try {
 			Task task = tasks.getActiveTask();
-			output.println("Active task is " + task.description());
-			output.println();
-			
-			output.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
-			output.println();
-			
+			System.out.println("Active task is " + task.description());
+			System.out.println();
+
+			System.out.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
+			System.out.println();
+
 			List<TaskTimes> times = task.getAllTimes();
 			TaskTimes activeTime = times.get(times.size() - 1);
-			
+
 			activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
-			output.print("Current time elapsed: ");
-			output.println(new TaskDuration(activeTime, osInterface));
-			output.println();
+			System.out.print("Current time elapsed: ");
+			System.out.println(new TaskDuration(activeTime, osInterface));
+			System.out.println();
 		}
 		catch (RuntimeException e) {
-			output.println("No active task.");
-			output.println();
+			System.out.println("No active task.");
+			System.out.println();
 		}
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("active"));
 	}
 }

@@ -12,10 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,18 +21,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public
 class CommandsBaseTestCase {
 	protected final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	protected final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
+	protected final PrintStream errPrintStream = new PrintStream(errorStream);
 	protected final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
 
-	protected final Commands commands = new Commands(tasks, gitLabReleases, osInterface);
+	protected Commands commands;
 
 	@BeforeEach
 	void setup() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
+
+		System.setOut(printStream);
+		System.setErr(errPrintStream);
+
+		commands = new Commands(tasks, gitLabReleases, osInterface);
 	}
 
 	void setTime(long time) {
@@ -58,6 +62,14 @@ class CommandsBaseTestCase {
 	}
 	
 	protected void assertOutput(String... lines) {
+		assertOutput(outputStream, lines);
+	}
+
+	protected void assertErrOutput(String... lines) {
+		assertOutput(errorStream, lines);
+	}
+
+	private void assertOutput(OutputStream outputStream, String... lines) {
 		StringBuilder output = new StringBuilder();
 
 		for (String line : lines) {

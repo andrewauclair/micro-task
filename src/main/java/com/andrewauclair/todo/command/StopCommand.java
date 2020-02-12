@@ -7,6 +7,7 @@ import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "stop")
 public class StopCommand extends Command {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -22,26 +24,21 @@ public class StopCommand extends Command {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
+	public void run() {
 		Task task = tasks.stopTask();
-		
-		output.println("Stopped task " + task.description());
-		output.println();
-		
+
+		System.out.println("Stopped task " + task.description());
+		System.out.println();
+
 		List<TaskTimes> times = task.getAllTimes();
 		TaskTimes stopTime = times.get(times.size() - 1);
 
-		output.println(stopTime.description(osInterface.getZoneId()));
-		output.println();
-		output.print("Task was active for: ");
-		output.println(new TaskDuration(stopTime, osInterface));
-		output.println();
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("stop"));
+		System.out.println(stopTime.description(osInterface.getZoneId()));
+		System.out.println();
+		System.out.print("Task was active for: ");
+		System.out.println(new TaskDuration(stopTime, osInterface));
+		System.out.println();
 	}
 }

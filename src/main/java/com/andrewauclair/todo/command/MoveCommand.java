@@ -7,6 +7,7 @@ import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.TaskList;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -14,13 +15,23 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "move")
 public class MoveCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("task", 't', Arrays.asList("Task ID", "List")),
-			new CommandOption("list", 'l', Arrays.asList("List", "Group")),
-			new CommandOption("group", 'g', Arrays.asList("Source Group", "Destination Group"))
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Option(names = {"-t", "--task"})
+	private Integer id;
+
+	@CommandLine.Option(names = {"-l", "--list"})
+	private String list;
+
+	@CommandLine.Option(names = {"-g", "--group"})
+	private String group;
+
+	@CommandLine.Option(names = {"--dest-group"})
+	private String dest_group;
+
+	@CommandLine.Option(names = {"--dest-list"})
+	private String dest_list;
+
 	private final Tasks tasks;
 
 	MoveCommand(Tasks tasks) {
@@ -28,66 +39,34 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		if (result.hasArgument("task")) {
-			String list = result.getStrArgument("task", 1);
-			long taskID = result.getLongArgument("task", 0);
-			
+	public void run() {
+		if (id != null) {
+			String list = this.dest_list;
+			long taskID = id;
+
 			TaskList taskList = tasks.getListForTask(taskID);
 			taskList.moveTask(taskID, tasks.getListByName(list));
-			
-			output.println("Moved task " + taskID + " to list '" + list + "'");
-			output.println();
+
+			System.out.println("Moved task " + taskID + " to list '" + list + "'");
+			System.out.println();
 		}
-		else if (result.hasArgument("list")) {
-			String list = result.getStrArgument("list", 0);
-			String group = result.getStrArgument("list", 1);
+		else if (this.list != null) {
+			String list = this.list;
+			String group = this.dest_group;
 
 			tasks.moveList(list, group);
 
-			output.println("Moved list " + list + " to group '" + group + "'");
-			output.println();
+			System.out.println("Moved list " + list + " to group '" + group + "'");
+			System.out.println();
 		}
-		else if (result.hasArgument("group")) {
-			String srcGroup = result.getStrArgument("group", 0);
-			String destGroup = result.getStrArgument("group", 1);
+		else if (this.group != null) {
+			String srcGroup = this.group;
+			String destGroup = this.dest_group;
 
 			tasks.moveGroup(srcGroup, destGroup);
 
-			output.println("Moved group '" + srcGroup + "' to group '" + destGroup + "'");
-			output.println();
+			System.out.println("Moved group '" + srcGroup + "' to group '" + destGroup + "'");
+			System.out.println();
 		}
-	}
-
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Arrays.asList(
-				node("move",
-						node("--task",
-								node(new LongCompleter(),
-										node(new ListCompleter(tasks, false)
-										)
-								)
-						)
-				),
-				node("move",
-						node("--list",
-								node(new ListCompleter(tasks, true),
-										node(new GroupCompleter(tasks, false)
-										)
-								)
-						)
-				),
-				node("move",
-						node("--group",
-								node(new GroupCompleter(tasks, true),
-										node(new GroupCompleter(tasks, false)
-										)
-								)
-						)
-				)
-		);
 	}
 }

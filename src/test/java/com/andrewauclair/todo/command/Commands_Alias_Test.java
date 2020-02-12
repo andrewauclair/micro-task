@@ -1,7 +1,9 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.ConsoleColors;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -37,6 +39,19 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		assertThat(outputStream.toString()).isEqualTo(
 				"ttt=\"times --tasks --today\"" + NL
+		);
+	}
+	
+	@Test
+	void write_failure_prints_exception() throws IOException {
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
+		
+		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		
+		assertOutput(
+				"Created alias 'ttt' for command 'times --tasks --today'",
+				"",
+				"java.io.IOException"
 		);
 	}
 	
@@ -247,6 +262,17 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Invalid command.",
 				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void alias_command_help(String parameter) {
+		commands.execute(printStream, "active " + parameter);
+
+		assertOutput(
+				"Usage:  active [-h]",
+				"  -h, --help   Show this help message."
 		);
 	}
 }

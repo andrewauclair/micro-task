@@ -5,6 +5,7 @@ import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.task.TaskGroup;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -12,11 +13,11 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "chgrp")
 public class GroupSwitchCommand extends Command {
-	private final List<CommandOption> options = Collections.singletonList(
-			new CommandOption("group", CommandOption.NO_SHORTNAME, false)
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Parameters(index = "0")
+	private String group;
+
 	private final Tasks tasks;
 
 	GroupSwitchCommand(Tasks tasks) {
@@ -24,13 +25,9 @@ public class GroupSwitchCommand extends Command {
 	}
 
 	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		// TODO This doesn't show a nice error if the argument is missing
-		
-		String group = result.getStrArgument("group");
-		
+	public void run() {
+		String group = this.group;
+
 		if (group.equals("..")) {
 			if (tasks.getActiveGroup().getFullPath().equals("/")) {
 				return;
@@ -39,12 +36,7 @@ public class GroupSwitchCommand extends Command {
 		}
 		TaskGroup group1 = tasks.switchGroup(group);
 
-		output.println("Switched to group '" + group1.getFullPath() + "'");
-		output.println();
-	}
-
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("chgrp", node(new GroupCompleter(tasks, false))));
+		System.out.println("Switched to group '" + group1.getFullPath() + "'");
+		System.out.println();
 	}
 }

@@ -2,6 +2,8 @@
 package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -93,5 +95,29 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 		assertOutput();
 
 		assertEquals("/", tasks.getActiveGroup().getFullPath());
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void mklist_command_help(String parameter) {
+		commands.execute(printStream, "mklist " + parameter);
+
+		assertOutput(
+				"Usage:  mklist [-h] <list>",
+				"      <list>",
+				"  -h, --help   Show this help message."
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void chlist_command_help(String parameter) {
+		commands.execute(printStream, "chlist " + parameter);
+
+		assertOutput(
+				"Usage:  chlist [-h] <list>",
+				"      <list>",
+				"  -h, --help   Show this help message."
+		);
 	}
 }

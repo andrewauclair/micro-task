@@ -2,6 +2,8 @@
 package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -28,6 +30,17 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Unknown",
 				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void version_command_help(String parameter) {
+		commands.execute(printStream, "version " + parameter);
+
+		assertOutput(
+				"Usage:  version [-h]",
+				"  -h, --help   Show this help message."
 		);
 	}
 }

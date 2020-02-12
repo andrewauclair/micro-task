@@ -7,6 +7,7 @@ import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -15,13 +16,17 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "rename")
 public class RenameCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("list", 'l', Collections.singletonList("List")),
-			new CommandOption("task", 't', Collections.singletonList("Task")),
-			new CommandOption("name", 'n', Collections.singletonList("Name"))
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Option(names = {"-l", "--list"})
+	private String list;
+
+	@CommandLine.Option(names = {"-t", "--task"})
+	private Integer id;
+
+	@CommandLine.Option(names = {"-n", "--name"})
+	private String name;
+
 	private final Tasks tasks;
 	
 	RenameCommand(Tasks tasks) {
@@ -29,60 +34,38 @@ public class RenameCommand extends Command {
 	}
 
 	// TODO Although it isn't really possible, we shouldn't allow list and task at the same time. it'll just run like a list rename, as it always has, but it should throw an error, this should be part of the CommandParser options
+
 	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		if (result.hasArgument("list")) {
-			String newName = result.getStrArgument("name");
-			String list = result.getStrArgument("list");
-			
+	public void run() {
+		if (list != null) {
+			String newName = this.name;
+			String list = this.list;
+
 			if (newName.contains("/")) {
 				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
-			
+
 			if (list.contains("/")) {
 				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
-			
+
 			tasks.renameList(list, newName);
-			
-			output.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
-			output.println();
+
+			System.out.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
+			System.out.println();
 		}
-		else if (result.hasArgument("task")) {
-			if (!result.hasArgument("name")) {
-				output.println("Missing name parameter.");
-				output.println();
-				return;
-			}
-			
-			String newName = result.getStrArgument("name");
-			long taskID = result.getLongArgument("task");
+		else if (id != null) {
+			String newName = this.name;
+			long taskID = id;
 
 			Task task = tasks.renameTask(taskID, newName);
 
-			output.println("Renamed task " + task.description());
-			output.println();
+			System.out.println("Renamed task " + task.description());
+			System.out.println();
 		}
 		else {
-			output.println("Invalid command.");
-			output.println();
+			System.out.println("Invalid command.");
+			System.out.println();
 		}
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(
-				node("rename",
-						node("--task",
-								node(new RenameCompleter(tasks))
-						),
-						node("--list",
-								node(new ListCompleter(tasks, true)
-								)
-						)
-				)
-		);
 	}
 }

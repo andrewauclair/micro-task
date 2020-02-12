@@ -2,6 +2,8 @@
 package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,9 +35,9 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_a_list() {
 		tasks.addList("test", true);
-		
+
 		commands.execute(printStream, "rename --list test -n \"new-name\"");
-		
+
 		assertThat(tasks.getListNames()).containsOnly("/default", "/new-name");
 
 		assertOutput(
@@ -49,17 +51,17 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		tasks.addList("/test/one", true);
 		tasks.addList("/test/new/two", true);
 		tasks.switchGroup("/test/");
-		
+
 		commands.execute(printStream, "rename --list /test/one -n \"two\"");
-		
+
 		commands.execute(printStream, "rename --list one -n \"/test/two\"");
-		
+
 		commands.execute(printStream, "rename --list new/two -n \"three\"");
-		
+
 		commands.execute(printStream, "rename --list two -n \"new/three\"");
-		
+
 		assertThat(tasks.getListNames()).containsOnly("/default", "/test/one", "/test/new/two");
-		
+
 		assertOutput(
 				"Lists must be renamed with name, not paths.",
 				"",
@@ -77,7 +79,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename --task 2 \"Test\"");
 
 		assertOutput(
-				"Unknown value '\"Test\"'.",
+				"Unmatched argument at index 3: 'Test'",
 				""
 		);
 	}
@@ -89,6 +91,20 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Invalid command.",
 				""
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"-h", "--help"})
+	void rename_command_help(String parameter) {
+		commands.execute(printStream, "rename " + parameter);
+
+		assertOutput(
+				"Usage:  rename [-h] [-l=<list>] [-n=<name>] [-t=<id>]",
+				"  -h, --help          Show this help message.",
+				"  -l, --list=<list>",
+				"  -n, --name=<name>",
+				"  -t, --task=<id>"
 		);
 	}
 }

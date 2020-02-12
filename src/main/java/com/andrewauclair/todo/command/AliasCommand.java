@@ -4,6 +4,7 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,15 +14,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@CommandLine.Command(name = "alias")
 public class AliasCommand extends Command {
-	private final List<CommandOption> options = Arrays.asList(
-			new CommandOption("name", 'n', Collections.singletonList("Name")),
-			new CommandOption("command", 'c', Collections.singletonList("Command")),
-			new CommandOption("update", 'u', Collections.singletonList("Command")),
-			new CommandOption("remove", 'r', true),
-			new CommandOption("list", 'l', true)
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Option(names = {"-n", "--name"})
+	private String name;
+
+	@CommandLine.Option(names = {"-c", "--command"})
+	private String command;
+
+	@CommandLine.Option(names = {"-u", "--update"})
+	private String update = null;
+
+	@CommandLine.Option(names = {"-r", "--remove"})
+	private boolean remove;
+
+	@CommandLine.Option(names = {"-l", "--list"})
+	private boolean list;
 	
 	private final Commands commands;
 	private final OSInterface osInterface;
@@ -30,83 +38,7 @@ public class AliasCommand extends Command {
 		this.commands = commands;
 		this.osInterface = osInterface;
 	}
-	
-	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		// TODO Command should fail if command, update and/or remove are all present
-		String nameArg = result.hasArgument("name") ? result.getStrArgument("name") : "";
-		
-		if (result.hasArgument("command")) {
-			if (commands.getAliases().containsKey(nameArg)) {
-				output.println("Alias '" + nameArg + "' already exists.");
-				output.println();
-			}
-			else {
-				output.println("Created alias '" + nameArg + "' for command '" + result.getStrArgument("command") + "'");
-				output.println();
-				
-				commands.addAlias(nameArg, result.getStrArgument("command"));
-				
-				writeAliasesFile();
-				
-				osInterface.runGitCommand("git add aliases.txt", false);
-				osInterface.runGitCommand("git commit -m \"Added alias '" + nameArg + "' for command '" + result.getStrArgument("command") + "'\"", false);
-			}
-		}
-		else if (result.hasArgument("update")) {
-			if (commands.getAliases().containsKey(nameArg)) {
-				commands.removeAlias(nameArg);
-				
-				output.println("Updated alias '" + nameArg + "' to command '" + result.getStrArgument("update") + "'");
-				output.println();
-				
-				commands.addAlias(nameArg, result.getStrArgument("update"));
-				
-				writeAliasesFile();
-				
-				osInterface.runGitCommand("git add aliases.txt", false);
-				osInterface.runGitCommand("git commit -m \"Updated alias '" + nameArg + "' to command '" + result.getStrArgument("update") + "'\"", false);
-			}
-			else {
-				output.println("Alias '" + nameArg + "' does not exist.");
-				output.println();
-			}
-		}
-		else if (result.hasArgument("remove")) {
-			String aliasCommand = commands.getAliases().get(nameArg);
-			
-			if (aliasCommand != null) {
-				output.println("Removed alias '" + nameArg + "' for command '" + aliasCommand + "'");
-				output.println();
-				
-				commands.removeAlias(nameArg);
-				
-				writeAliasesFile();
-				
-				osInterface.runGitCommand("git add aliases.txt", false);
-				osInterface.runGitCommand("git commit -m \"Removed alias '" + nameArg + "' for command '" + aliasCommand + "'\"", false);
-			}
-			else {
-				output.println("Alias '" + nameArg + "' not found.");
-				output.println();
-			}
-		}
-		else if (result.hasArgument("list")) {
-			Map<String, String> aliases = commands.getAliases();
-			
-			for (String name : aliases.keySet()) {
-				output.println("'" + name + "' = '" + aliases.get(name) + "'");
-			}
-			output.println();
-		}
-		else {
-			output.println("Invalid command.");
-			output.println();
-		}
-	}
-	
+
 	private void writeAliasesFile() {
 		try {
 			DataOutputStream outputStream = osInterface.createOutputStream("git-data/aliases.txt");
@@ -124,14 +56,79 @@ public class AliasCommand extends Command {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
-			
-			// TODO Test exception
+			e.printStackTrace(System.out);
 		}
 	}
-	
+
 	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.emptyList();
+	public void run() {
+		// TODO Command should fail if command, update and/or remove are all present
+		if (command != null) {
+			if (commands.getAliases().containsKey(name)) {
+				System.out.println("Alias '" + name + "' already exists.");
+				System.out.println();
+			}
+			else {
+				System.out.println("Created alias '" + name + "' for command '" + command + "'");
+				System.out.println();
+
+				commands.addAlias(name, command);
+
+				writeAliasesFile();
+
+				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + command + "'\"", false);
+			}
+		}
+		else if (update != null) {
+			if (commands.getAliases().containsKey(name)) {
+				commands.removeAlias(name);
+
+				System.out.println("Updated alias '" + name + "' to command '" + update + "'");
+				System.out.println();
+
+				commands.addAlias(name, update);
+
+				writeAliasesFile();
+
+				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + update + "'\"", false);
+			}
+			else {
+				System.out.println("Alias '" + name + "' does not exist.");
+				System.out.println();
+			}
+		}
+		else if (remove) {
+			String aliasCommand = commands.getAliases().get(name);
+
+			if (aliasCommand != null) {
+				System.out.println("Removed alias '" + name + "' for command '" + aliasCommand + "'");
+				System.out.println();
+
+				commands.removeAlias(name);
+
+				writeAliasesFile();
+
+				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git commit -m \"Removed alias '" + name + "' for command '" + aliasCommand + "'\"", false);
+			}
+			else {
+				System.out.println("Alias '" + name + "' not found.");
+				System.out.println();
+			}
+		}
+		else if (list) {
+			Map<String, String> aliases = commands.getAliases();
+
+			for (String name : aliases.keySet()) {
+				System.out.println("'" + name + "' = '" + aliases.get(name) + "'");
+			}
+			System.out.println();
+		}
+		else {
+			System.out.println("Invalid command.");
+			System.out.println();
+		}
 	}
 }

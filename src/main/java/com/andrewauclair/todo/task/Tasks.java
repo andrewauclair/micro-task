@@ -499,8 +499,7 @@ public class Tasks {
 			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
-			e.printStackTrace();
-			// TODO test the error here
+			e.printStackTrace(output);
 		}
 	}
 	
@@ -537,8 +536,7 @@ public class Tasks {
 			outputStream.write(Utils.NL.getBytes());
 		}
 		catch (IOException e) {
-			e.printStackTrace();
-			// TODO test the error here
+			e.printStackTrace(output);
 		}
 	}
 	

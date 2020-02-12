@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.builtins.Completers;
+import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.Collections;
@@ -10,44 +11,31 @@ import java.util.List;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+@CommandLine.Command(name = "mklist")
 public class ListCreateCommand extends Command {
-	private final List<CommandOption> options = Collections.singletonList(
-			new CommandOption("list", CommandOption.NO_SHORTNAME, false)
-	);
-	private final CommandParser parser = new CommandParser(options);
+	@CommandLine.Parameters(index = "0")
+	private String list;
+
 	private final Tasks tasks;
 	
 	ListCreateCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	@Override
-	public void execute(PrintStream output, String command) {
-		CommandParser.CommandParseResult result = parser.parse(command);
-		
-		if (!result.hasArgument("list")) {
-			output.println("Missing 'list' argument.");
-			output.println();
-			return;
-		}
-		
-		String list = result.getStrArgument("list").toLowerCase();
-		
+	public void run() {
+		String list = this.list.toLowerCase();
+
 		boolean added = tasks.addList(list, true);
 
 		String actualList = tasks.getAbsoluteListName(list);
 
 		if (added) {
-			output.println("Created new list '" + actualList + "'");
+			System.out.println("Created new list '" + actualList + "'");
 		}
 		else {
-			output.println("List '" + actualList + "' already exists.");
+			System.out.println("List '" + actualList + "' already exists.");
 		}
-		output.println();
-	}
-	
-	@Override
-	public List<Completers.TreeCompleter.Node> getAutoCompleteNodes() {
-		return Collections.singletonList(node("mklist"));
+		System.out.println();
 	}
 }

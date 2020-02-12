@@ -27,5 +27,7 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 		when(mockTaskFilterBuilder.createFilter(tasks)).thenReturn(mockTaskFilter);
 		
 		commands.getTimesCommand().replaceTaskFilterBuilder(mockTaskFilterBuilder);
+
+		commands.updateTimesCommand();
 	}
 }
