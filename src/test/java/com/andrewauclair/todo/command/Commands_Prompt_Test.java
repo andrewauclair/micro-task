@@ -13,8 +13,8 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switching_to_new_list_switches_the_list_text_on_prompt() {
-		commands.execute(printStream, "mklist test");
-		commands.execute(printStream, "chlist test");
+		commands.execute(printStream, "mk -l test");
+		commands.execute(printStream, "ch -l test");
 
 		assertEquals("/test - none>", commands.getPrompt());
 	}

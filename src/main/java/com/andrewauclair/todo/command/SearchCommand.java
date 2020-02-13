@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
@@ -25,7 +26,7 @@ public class SearchCommand extends Command {
 	@CommandLine.Option(names = {"-f", "--finished"})
 	private boolean finished;
 
-	@CommandLine.Option(names = {"-g", "--group"})
+	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 	private boolean group;
 
 	private final Tasks tasks;

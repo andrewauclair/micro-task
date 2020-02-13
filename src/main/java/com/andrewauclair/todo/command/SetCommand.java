@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
+import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.*;
 import picocli.CommandLine;
 
@@ -43,7 +45,7 @@ public abstract class SetCommand extends Command {
 	}
 
 	static class SetListCommand extends SetCommand {
-		@CommandLine.Option(names = {"-l", "--list"})
+		@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 		private String list;
 
 		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
@@ -70,7 +72,7 @@ public abstract class SetCommand extends Command {
 	}
 
 	static class SetGroupCommand extends SetCommand {
-		@CommandLine.Option(names = {"-g", "--group"})
+		@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 		private String group;
 
 		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")

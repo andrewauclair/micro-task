@@ -1,12 +1,16 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.ListCompleter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import picocli.CommandLine;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class Commands_List_Test extends CommandsBaseTestCase {
 	@Test
@@ -114,6 +118,27 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		);
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "set-list", "times"})
+	void command_list_option_has_list_completer(String command) {
+		CommandLine cmd = commands.buildCommandLine();
+
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
+
+		assertNotNull(spec.optionsMap().get("--list").completionCandidates());
+		assertEquals("/default", spec.optionsMap().get("--list").completionCandidates().iterator().next());
+	}
+	
+	@Test
+	void move_command_dest_list_option_has_list_completer() {
+		CommandLine cmd = commands.buildCommandLine();
+		
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
+		
+		assertNotNull(spec.optionsMap().get("--dest-list").completionCandidates());
+		assertEquals("/default", spec.optionsMap().get("--dest-list").completionCandidates().iterator().next());
+	}
+	
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void list_command_help(String parameter) {

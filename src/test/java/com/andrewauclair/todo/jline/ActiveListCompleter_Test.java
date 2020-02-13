@@ -20,8 +20,8 @@ class ActiveListCompleter_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_id_is_in_candidates_list() {
-		commands.execute(printStream, "mklist test");
-		commands.execute(printStream, "chlist test");
+		commands.execute(printStream, "mk -l test");
+		commands.execute(printStream, "ch -l test");
 
 		Mockito.when(parsedLine.word()).thenReturn("");
 

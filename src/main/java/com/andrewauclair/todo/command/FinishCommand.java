@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
+import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
 import org.jline.builtins.Completers;
@@ -18,10 +20,10 @@ public class FinishCommand extends Command {
 	@CommandLine.Option(names = {"-t", "--task"})
 	private Integer id;
 
-	@CommandLine.Option(names = {"-l", "--list"})
+	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
-	@CommandLine.Option(names = {"-g", "--group"})
+	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 	private String group;
 
 	@CommandLine.Option(names = {"-a", "--active"})

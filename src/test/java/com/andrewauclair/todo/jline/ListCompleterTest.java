@@ -15,54 +15,34 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ListCompleterTest extends CommandsBaseTestCase {
-
-	private final LineReader lineReader = Mockito.mock(LineReader.class);
-	private final ParsedLine parsedLine = Mockito.mock(ParsedLine.class);
-	
 	@Test
 	void candidates_list_contains_all_lists() {
+		commands.execute(printStream, "mk -l alpha");
+		commands.execute(printStream, "mk -l bravo");
+		commands.execute(printStream, "mk -l /charlie");
+
 		final ListCompleter completer = new ListCompleter(tasks, true);
 
-		commands.execute(printStream, "mklist alpha");
-		commands.execute(printStream, "mklist bravo");
-		commands.execute(printStream, "mklist /charlie");
-		
-		List<Candidate> candidates = new ArrayList<>();
-		
-		completer.complete(lineReader, parsedLine, candidates);
-		
-		List<TestCandidate> actual = candidates.stream()
-				.map(TestCandidate::new)
-				.collect(Collectors.toList());
-		
-		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/default")),
-				new TestCandidate(new Candidate("/alpha")),
-				new TestCandidate(new Candidate("/bravo")),
-				new TestCandidate(new Candidate("/charlie"))
+		assertThat(completer).containsOnly(
+				"/default",
+				"/alpha",
+				"/bravo",
+				"/charlie"
 		);
 	}
 
 	@Test
 	void list_completer_supports_mode_that_excludes_the_current_list() {
+		commands.execute(printStream, "mk -l alpha");
+		commands.execute(printStream, "mk -l bravo");
+		commands.execute(printStream, "mk -l charlie");
+
 		final ListCompleter completer = new ListCompleter(tasks, false);
 
-		commands.execute(printStream, "mklist alpha");
-		commands.execute(printStream, "mklist bravo");
-		commands.execute(printStream, "mklist charlie");
-
-		List<Candidate> candidates = new ArrayList<>();
-
-		completer.complete(lineReader, parsedLine, candidates);
-
-		List<TestCandidate> actual = candidates.stream()
-				.map(TestCandidate::new)
-				.collect(Collectors.toList());
-
-		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/alpha")),
-				new TestCandidate(new Candidate("/bravo")),
-				new TestCandidate(new Candidate("/charlie"))
+		assertThat(completer).containsOnly(
+				"/alpha",
+				"/bravo",
+				"/charlie"
 		);
 	}
 }

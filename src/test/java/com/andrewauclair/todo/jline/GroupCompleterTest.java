@@ -15,60 +15,41 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GroupCompleterTest extends CommandsBaseTestCase {
-	private final LineReader lineReader = Mockito.mock(LineReader.class);
-	private final ParsedLine parsedLine = Mockito.mock(ParsedLine.class);
-
 	@Test
 	void candidates_list_contains_all_groups() {
+		commands.execute(printStream, "mk -g /test/one/two");
+		commands.execute(printStream, "mk -g /last");
+		commands.execute(printStream, "mk -g /three/five");
+
 		final GroupCompleter completer = new GroupCompleter(tasks, true);
 
-		commands.execute(printStream, "mkgrp /test/one/two");
-		commands.execute(printStream, "mkgrp /last");
-		commands.execute(printStream, "mkgrp /three/five");
-
-		List<Candidate> candidates = new ArrayList<>();
-
-		completer.complete(lineReader, parsedLine, candidates);
-
-		List<TestCandidate> actual = candidates.stream()
-				.map(TestCandidate::new)
-				.collect(Collectors.toList());
-
-		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/test/")),
-				new TestCandidate(new Candidate("/test/one/")),
-				new TestCandidate(new Candidate("/test/one/two/")),
-				new TestCandidate(new Candidate("/last/")),
-				new TestCandidate(new Candidate("/three/")),
-				new TestCandidate(new Candidate("/three/five/"))
+		assertThat(completer).containsOnly(
+				"/test/",
+				"/test/one/",
+				"/test/one/two/",
+				"/last/",
+				"/three/",
+				"/three/five/"
 		);
 	}
 
 	@Test
 	void group_completer_supports_mode_that_excludes_the_current_group() {
+		commands.execute(printStream, "mk -g /test/one/two");
+		commands.execute(printStream, "mk -g /last");
+		commands.execute(printStream, "mk -g /three/five");
+
+		commands.execute(printStream, "ch -g /test/one");
+
 		final GroupCompleter completer = new GroupCompleter(tasks, false);
 
-		commands.execute(printStream, "mkgrp /test/one/two");
-		commands.execute(printStream, "mkgrp /last");
-		commands.execute(printStream, "mkgrp /three/five");
-
-		commands.execute(printStream, "chgrp /test/one");
-
-		List<Candidate> candidates = new ArrayList<>();
-
-		completer.complete(lineReader, parsedLine, candidates);
-
-		List<TestCandidate> actual = candidates.stream()
-				.map(TestCandidate::new)
-				.collect(Collectors.toList());
-
-		assertThat(actual).containsOnly(
-				new TestCandidate(new Candidate("/test/")),
-				new TestCandidate(new Candidate("/test/one/")),
-				new TestCandidate(new Candidate("/test/one/two/")),
-				new TestCandidate(new Candidate("/last/")),
-				new TestCandidate(new Candidate("/three/")),
-				new TestCandidate(new Candidate("/three/five/"))
+		assertThat(completer).containsOnly(
+				"/test/",
+				"/test/one/",
+				"/test/one/two/",
+				"/last/",
+				"/three/",
+				"/three/five/"
 		);
 	}
 }
