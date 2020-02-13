@@ -20,16 +20,16 @@ public class MoveCommand extends Command {
 	@CommandLine.Option(names = {"-t", "--task"})
 	private Integer id;
 
-	@CommandLine.Option(names = {"-l", "--list"})
+	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
-	@CommandLine.Option(names = {"-g", "--group"})
+	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 	private String group;
 
-	@CommandLine.Option(names = {"--dest-group"})
+	@CommandLine.Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class)
 	private String dest_group;
 
-	@CommandLine.Option(names = {"--dest-list"})
+	@CommandLine.Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class)
 	private String dest_list;
 
 	private final Tasks tasks;

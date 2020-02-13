@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.task.*;
@@ -22,13 +23,13 @@ public class ListCommand extends Command {
 	@CommandLine.Option(names = {"--tasks"})
 	private boolean tasks;
 
-	@CommandLine.Option(names = {"--list"})
+	@CommandLine.Option(names = {"--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
 	@CommandLine.Option(names = {"--lists"})
 	private boolean lists;
 
-	@CommandLine.Option(names = {"--group"})
+	@CommandLine.Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
 	private boolean group;
 
 	@CommandLine.Option(names = {"--recursive"})

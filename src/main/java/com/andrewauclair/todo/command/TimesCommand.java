@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.ActiveListCompleter;
 import com.andrewauclair.todo.jline.ActiveTaskCompleter;
+import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
@@ -35,7 +36,7 @@ public class TimesCommand extends Command {
 	@CommandLine.Option(names = {"--proj-feat"})
 	private boolean proj_feat;
 
-	@CommandLine.Option(names = {"--list"})
+	@CommandLine.Option(names = {"--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
 	@CommandLine.Option(names = {"--task"})

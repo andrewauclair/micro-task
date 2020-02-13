@@ -4,6 +4,7 @@ package com.andrewauclair.todo;
 import com.andrewauclair.todo.command.AddCommand;
 import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.command.TimesCommand;
+import com.andrewauclair.todo.jline.CustomPicocliCommands;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
@@ -123,7 +124,7 @@ public class Main {
 		// set up picocli commands
 		CliCommands cliCommands = new CliCommands();
 		CommandLine cmd = commands.buildCommandLine();
-		PicocliCommands picocliCommands = new PicocliCommands(Paths.get(""), cmd);
+		PicocliCommands picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
 		

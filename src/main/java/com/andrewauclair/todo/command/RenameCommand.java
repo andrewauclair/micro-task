@@ -18,7 +18,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 @CommandLine.Command(name = "rename")
 public class RenameCommand extends Command {
-	@CommandLine.Option(names = {"-l", "--list"})
+	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
 	@CommandLine.Option(names = {"-t", "--task"})

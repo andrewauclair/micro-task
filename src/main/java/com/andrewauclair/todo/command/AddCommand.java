@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine;
@@ -12,7 +13,7 @@ public class AddCommand extends Command {
 	@Option(names = {"-n", "--name"}, required = true)
 	private String name = "";
 
-	@Option(names = {"-l", "--list"})
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list = null;
 
 	@Option(names = {"-r", "--recurring"})

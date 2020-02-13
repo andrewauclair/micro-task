@@ -5,6 +5,7 @@ import com.andrewauclair.todo.Main;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.PicocliFactory;
 import com.andrewauclair.todo.task.TaskFilterBuilder;
 import com.andrewauclair.todo.task.Tasks;
 import org.jline.reader.ParsedLine;
@@ -40,8 +41,8 @@ public class Commands {
 	}
 
 	private void setCommands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
-		commands.put("mklist", new ListCreateCommand(tasks));
-		commands.put("chlist", new ListSwitchCommand(tasks));
+//		commands.put("mklist", new ListCreateCommand(tasks));
+//		commands.put("chlist", new ListSwitchCommand(tasks));
 		commands.put("finish", new FinishCommand(tasks, osInterface));
 		commands.put("start", new StartCommand(tasks, osInterface));
 		commands.put("stop", new StopCommand(tasks, osInterface));
@@ -59,8 +60,8 @@ public class Commands {
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
 		commands.put("set-list", new SetCommand.SetListCommand(tasks));
 		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
-		commands.put("mkgrp", new GroupCreateCommand(tasks));
-		commands.put("chgrp", new GroupSwitchCommand(tasks));
+		commands.put("mk", new MakeCommand(tasks));
+		commands.put("ch", new ChangeCommand(tasks));
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
 		commands.put("git", new GitCommand(osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
@@ -68,7 +69,7 @@ public class Commands {
 	}
 
 	public CommandLine buildCommandLine() {
-		CommandLine cmdLine = new CommandLine(new Main.CliCommands());
+		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
