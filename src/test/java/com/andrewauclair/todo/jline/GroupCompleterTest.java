@@ -21,27 +21,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 		commands.execute(printStream, "mk -g /last");
 		commands.execute(printStream, "mk -g /three/five");
 
-		final GroupCompleter completer = new GroupCompleter(tasks, true);
-
-		assertThat(completer).containsOnly(
-				"/test/",
-				"/test/one/",
-				"/test/one/two/",
-				"/last/",
-				"/three/",
-				"/three/five/"
-		);
-	}
-
-	@Test
-	void group_completer_supports_mode_that_excludes_the_current_group() {
-		commands.execute(printStream, "mk -g /test/one/two");
-		commands.execute(printStream, "mk -g /last");
-		commands.execute(printStream, "mk -g /three/five");
-
-		commands.execute(printStream, "ch -g /test/one");
-
-		final GroupCompleter completer = new GroupCompleter(tasks, false);
+		final GroupCompleter completer = new GroupCompleter(tasks);
 
 		assertThat(completer).containsOnly(
 				"/test/",

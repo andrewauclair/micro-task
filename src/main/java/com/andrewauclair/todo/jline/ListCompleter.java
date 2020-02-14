@@ -13,11 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListCompleter extends ArrayList<String> {
-	public ListCompleter(Tasks tasks, boolean includeCurrentList) {
-		List<String> names = tasks.getListNames().stream()
-				.filter(list -> includeCurrentList || !list.equals(tasks.getActiveList()))
-				.collect(Collectors.toList());
-
-		addAll(names);
+	public ListCompleter(Tasks tasks) {
+		super(tasks.getListNames());
 	}
 }

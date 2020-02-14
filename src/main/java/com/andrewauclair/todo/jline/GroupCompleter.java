@@ -12,11 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GroupCompleter extends ArrayList<String> {
-	public GroupCompleter(Tasks tasks, boolean includeCurrentGroup) {
-		List<String> names = tasks.getGroupNames().stream()
-				.filter(list -> includeCurrentGroup || !list.equals(tasks.getActiveGroup().getFullPath()))
-				.collect(Collectors.toList());
-
-		addAll(names);
+	public GroupCompleter(Tasks tasks) {
+		super(tasks.getGroupNames());
 	}
 }

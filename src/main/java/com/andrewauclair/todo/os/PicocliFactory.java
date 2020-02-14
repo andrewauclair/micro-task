@@ -19,10 +19,10 @@ public class PicocliFactory implements CommandLine.IFactory {
 	@Override
 	public <K> K create(Class<K> cls) throws Exception {
 		if (cls == ListCompleter.class) {
-			return (K) new ListCompleter(tasks, true);
+			return (K) new ListCompleter(tasks);
 		}
 		else if (cls == GroupCompleter.class) {
-			return (K) new GroupCompleter(tasks, true);
+			return (K) new GroupCompleter(tasks);
 		}
 		return CommandLine.defaultFactory().create(cls);
 	}

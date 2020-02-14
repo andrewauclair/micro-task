@@ -21,25 +21,10 @@ class ListCompleterTest extends CommandsBaseTestCase {
 		commands.execute(printStream, "mk -l bravo");
 		commands.execute(printStream, "mk -l /charlie");
 
-		final ListCompleter completer = new ListCompleter(tasks, true);
+		final ListCompleter completer = new ListCompleter(tasks);
 
 		assertThat(completer).containsOnly(
 				"/default",
-				"/alpha",
-				"/bravo",
-				"/charlie"
-		);
-	}
-
-	@Test
-	void list_completer_supports_mode_that_excludes_the_current_list() {
-		commands.execute(printStream, "mk -l alpha");
-		commands.execute(printStream, "mk -l bravo");
-		commands.execute(printStream, "mk -l charlie");
-
-		final ListCompleter completer = new ListCompleter(tasks, false);
-
-		assertThat(completer).containsOnly(
 				"/alpha",
 				"/bravo",
 				"/charlie"
