@@ -54,6 +54,32 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void move_multiple_tasks_at_once() {
+		tasks.addList("/one/two/three", true);
+		tasks.addList("/one/test/five", true);
+		tasks.setActiveList("/one/two/three");
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addTask("Test 3");
+
+		commands.execute(printStream, "move --task 1,2,3 --dest-list /one/test/five");
+
+		assertThat(tasks.getTasksForList("/one/test/five")).containsOnly(
+				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
+				new Task(2, "Test 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(2000))),
+				new Task(3, "Test 3", TaskState.Inactive, Collections.singletonList(new TaskTimes(3000)))
+		);
+
+		assertOutput(
+				"Moved task 1 to list '/one/test/five'",
+				"Moved task 2 to list '/one/test/five'",
+				"Moved task 3 to list '/one/test/five'",
+				""
+		);
+	}
+
+	@Test
 	void move_list_from_one_group_to_another() {
 		tasks.addList("/one/two/three", true);
 		tasks.addList("/one/test/five", true);
@@ -129,7 +155,7 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  move [-h] [--dest-group=<dest_group>] [--dest-list=<dest_list>]",
-				"             [-g=<group>] [-l=<list>] [-t=<id>]",
+				"             [-g=<group>] [-l=<list>] [-t=<id>[,<id>...]]...",
 				"      --dest-group=<dest_group>",
 				"",
 				"      --dest-list=<dest_list>",
@@ -137,7 +163,8 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 				"  -g, --group=<group>",
 				"  -h, --help            Show this help message.",
 				"  -l, --list=<list>",
-				"  -t, --task=<id>"
+				"  -t, --task=<id>[,<id>...]",
+				""
 		);
 	}
 }

@@ -3,22 +3,14 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
-import com.andrewauclair.todo.os.LongCompleter;
 import com.andrewauclair.todo.task.TaskList;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
 import picocli.CommandLine;
-
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.jline.builtins.Completers.TreeCompleter.node;
 
 @CommandLine.Command(name = "move")
 public class MoveCommand extends Command {
-	@CommandLine.Option(names = {"-t", "--task"})
-	private Integer id;
+	@CommandLine.Option(names = {"-t", "--task"}, split = ",")
+	private Integer[] id;
 
 	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
@@ -42,12 +34,11 @@ public class MoveCommand extends Command {
 	public void run() {
 		if (id != null) {
 			String list = this.dest_list;
-			long taskID = id;
+//			long taskID = id;
 
-			TaskList taskList = tasks.getListForTask(taskID);
-			taskList.moveTask(taskID, tasks.getListByName(list));
-
-			System.out.println("Moved task " + taskID + " to list '" + list + "'");
+			for (Integer taskID : id) {
+				moveTask(list, taskID);
+			}
 			System.out.println();
 		}
 		else if (this.list != null) {
@@ -68,5 +59,12 @@ public class MoveCommand extends Command {
 			System.out.println("Moved group '" + srcGroup + "' to group '" + destGroup + "'");
 			System.out.println();
 		}
+	}
+
+	private void moveTask(String list, long taskID) {
+		TaskList taskList = tasks.getListForTask(taskID);
+		taskList.moveTask(taskID, tasks.getListByName(list));
+
+		System.out.println("Moved task " + taskID + " to list '" + list + "'");
 	}
 }
