@@ -134,9 +134,17 @@ public class UpdateCommand extends Command {
 				String list = tasksData.findListForTask(task.id).getFullPath();
 				tasksData.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 			}
-
+			
+			String currentVersion = "Unknown";
+			
+			try {
+				currentVersion = osInterface.getVersion();
+			}
+			catch (IOException ignored) {
+			}
+			
 			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Updating task files.\"", false);
+			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'.\"", false);
 
 			System.out.println("Updated all tasks.");
 		}
