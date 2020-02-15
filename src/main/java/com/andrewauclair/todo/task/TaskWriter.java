@@ -21,9 +21,6 @@ public class TaskWriter {
 	Set<Long> tasks = new HashSet<>();
 
 	public boolean writeTask(Task task, String fileName) {
-		if (tasks.contains(task.id)) {
-			throw new RuntimeException("Already wrote task with id " + task.id);
-		}
 		tasks.add(task.id);
 		try (DataOutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
