@@ -24,8 +24,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void execute_update_command() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenReturn(true);
 
-		Mockito.doThrow(new RuntimeException("Exiting Application")).when(osInterface).exit();
-
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
 
@@ -51,8 +49,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"Updated to version 'version-1'",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
-				"",
-				"Exiting Application", // this doesn't happen in the real execution, we're verifying that the app is calling exit at the end of the update command
 				""
 		);
 	}
@@ -85,8 +81,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_to_release_with_proxy_settings() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", proxy)).thenReturn(true);
 
-		Mockito.doThrow(new RuntimeException("Exiting Application")).when(osInterface).exit();
-
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
 
@@ -112,8 +106,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"Updated to version 'version-1'",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
-				"",
-				"Exiting Application", // this doesn't happen in the real execution, we're verifying that the app is calling exit at the end of the update command
 				""
 		);
 	}
@@ -219,8 +211,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 		Mockito.when(gitLabReleases.updateToRelease("version-3", Proxy.NO_PROXY)).thenReturn(true);
 
-		Mockito.doThrow(new RuntimeException("Exiting Application")).when(osInterface).exit();
-
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
 
@@ -246,8 +236,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"Updated to version 'version-3'",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
-				"",
-				"Exiting Application", // this doesn't happen in the real execution, we're verifying that the app is calling exit at the end of the update command
 				""
 		);
 	}
@@ -256,8 +244,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_to_latest_with_proxy_settings() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(proxy)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 		Mockito.when(gitLabReleases.updateToRelease("version-3", proxy)).thenReturn(true);
-
-		Mockito.doThrow(new RuntimeException("Exiting Application")).when(osInterface).exit();
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -284,8 +270,6 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"Updated to version 'version-3'",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
-				"",
-				"Exiting Application", // this doesn't happen in the real execution, we're verifying that the app is calling exit at the end of the update command
 				""
 		);
 	}
