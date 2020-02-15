@@ -18,7 +18,12 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");
-		
+
+		tasks.addList("/test/two/three/five", true);
+		tasks.setActiveList("/test/two/three/five");
+
+		Task task6 = tasks.addTask("Test");
+
 		Mockito.reset(osInterface, writer);
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 
@@ -30,6 +35,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Mockito.verify(writer).writeTask(task3, "git-data/tasks/one/3.txt");
 		Mockito.verify(writer).writeTask(task4, "git-data/tasks/one/4.txt");
 		Mockito.verify(writer).writeTask(task5, "git-data/tasks/one/5.txt");
+		Mockito.verify(writer).writeTask(task6, "git-data/tasks/test/two/three/five/6.txt");
 		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updating task files to version '19.1.5'.\"", false);
 
@@ -38,7 +44,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
 	void update_commands_on_all_lists_for_unknown_version() throws IOException {
 		Task task1 = tasks.addTask("Test");
@@ -48,13 +54,13 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");
-		
+
 		Mockito.reset(osInterface, writer);
 		Mockito.when(osInterface.getVersion()).thenThrow(IOException.class);
-		
+
 		commands.execute(printStream, "update --tasks");
 		InOrder order = Mockito.inOrder(osInterface);
-		
+
 		Mockito.verify(writer).writeTask(task1, "git-data/tasks/default/1.txt");
 		Mockito.verify(writer).writeTask(task2, "git-data/tasks/default/2.txt");
 		Mockito.verify(writer).writeTask(task3, "git-data/tasks/one/3.txt");
@@ -62,7 +68,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Mockito.verify(writer).writeTask(task5, "git-data/tasks/one/5.txt");
 		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updating task files to version 'Unknown'.\"", false);
-		
+
 		assertOutput(
 				"Updated all tasks.",
 				""
