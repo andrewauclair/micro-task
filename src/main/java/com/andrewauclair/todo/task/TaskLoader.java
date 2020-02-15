@@ -39,7 +39,10 @@ public class TaskLoader {
 						if (scanner.hasNextLine()) {
 							tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
 							tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-							tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
+
+							if (scanner.hasNextLine()) {
+								tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
+							}
 						}
 					}
 					catch (IOException ignored) {
@@ -54,7 +57,10 @@ public class TaskLoader {
 						
 						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
 						tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
-						tasks.setListState(tasks.getListByName(tasks.getActiveList()), TaskContainerState.valueOf(scanner.nextLine()), false);
+
+						if (scanner.hasNextLine()) {
+							tasks.setListState(tasks.getListByName(tasks.getActiveList()), TaskContainerState.valueOf(scanner.nextLine()), false);
+						}
 					}
 					catch (IOException ignored) {
 					}
