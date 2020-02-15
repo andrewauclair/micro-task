@@ -11,6 +11,9 @@ import picocli.CommandLine;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.*;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
@@ -31,6 +34,17 @@ public class UpdateCommand extends Command {
 	@CommandLine.Option(names = {"--release"})
 	private String release;
 
+	@CommandLine.ArgGroup(exclusive = false)
+	private ProxySettings proxy;
+
+	static class ProxySettings {
+		@CommandLine.Option(names = {"--proxy-ip"}, required = true)
+		private InetAddress proxy_ip;
+
+		@CommandLine.Option(names = {"--proxy-port"}, required = true)
+		private int proxy_port;
+	}
+
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
 	private final OSInterface osInterface;
@@ -41,9 +55,9 @@ public class UpdateCommand extends Command {
 		this.osInterface = osInterface;
 	}
 
-	private void updateToVersion(PrintStream output, String version) {
+	private void updateToVersion(PrintStream output, String version, Proxy proxy) {
 		try {
-			boolean updated = gitLabReleases.updateToRelease(version);
+			boolean updated = gitLabReleases.updateToRelease(version, proxy);
 			
 			if (updated) {
 				output.println("Updated to version '" + version + "'");
@@ -60,9 +74,15 @@ public class UpdateCommand extends Command {
 
 	@Override
 	public void run() {
+		Proxy proxy = Proxy.NO_PROXY;
+
+		if (this.proxy != null) {
+			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxy.proxy_ip, this.proxy.proxy_port));
+		}
+
 		List<String> versions;
 		try {
-			versions = gitLabReleases.getVersions();
+			versions = gitLabReleases.getVersions(proxy);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -123,7 +143,7 @@ public class UpdateCommand extends Command {
 			}
 		}
 		else if (latest) {
-			updateToVersion(System.out, versions.get(versions.size() - 1));
+			updateToVersion(System.out, versions.get(versions.size() - 1), proxy);
 		}
 		else if (tasks) {
 			List<Task> taskList = new ArrayList<>(tasksData.getAllTasks());
@@ -149,7 +169,7 @@ public class UpdateCommand extends Command {
 			System.out.println("Updated all tasks.");
 		}
 		else if (release != null) {
-			updateToVersion(System.out, release);
+			updateToVersion(System.out, release, proxy);
 		}
 		else {
 			System.out.println("Invalid command.");
