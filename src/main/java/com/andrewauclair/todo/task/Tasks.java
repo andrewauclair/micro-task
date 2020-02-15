@@ -68,7 +68,11 @@ public class Tasks {
 		
 		return nextID;
 	}
-	
+
+	public long nextID() {
+		return nextID;
+	}
+
 	public TaskList findListForTask(long id) {
 		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
 		if (!listForTask.isPresent()) {
@@ -482,15 +486,15 @@ public class Tasks {
 		group.addChild(newList);
 		
 		if (createFiles) {
-			writeListInfoFile(newList);
+			writeListInfoFile(newList, "git-data");
 			
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"", false);
 		}
 	}
 	
-	private void writeListInfoFile(TaskList list) {
-		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + list.getFullPath() + "/list.txt")) {
+	public void writeListInfoFile(TaskList list, String folder) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + list.getFullPath() + "/list.txt")) {
 			outputStream.write(list.getProject().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(list.getFeature().getBytes());
@@ -519,15 +523,15 @@ public class Tasks {
 		}
 		
 		if (createFiles) {
-			writeGroupInfoFile(newGroup);
+			writeGroupInfoFile(newGroup, "git-data");
 			
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
 		}
 	}
 	
-	private void writeGroupInfoFile(TaskGroup group) {
-		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + group.getFullPath() + "group.txt")) {
+	public void writeGroupInfoFile(TaskGroup group, String folder) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + group.getFullPath() + "group.txt")) {
 			outputStream.write(group.getProject().getBytes());
 			outputStream.write(Utils.NL.getBytes());
 			outputStream.write(group.getFeature().getBytes());
@@ -551,7 +555,7 @@ public class Tasks {
 		group.addChild(newList);
 		
 		if (createFiles) {
-			writeListInfoFile(newList);
+			writeListInfoFile(newList, "git-data");
 			
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"", false);
@@ -574,7 +578,7 @@ public class Tasks {
 		}
 		
 		if (createFiles) {
-			writeGroupInfoFile(newGroup);
+			writeGroupInfoFile(newGroup, "git-data");
 			
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
@@ -674,7 +678,7 @@ public class Tasks {
 		parent.removeChild(taskList);
 		parent.addChild(newList);
 		
-		writeListInfoFile(newList);
+		writeListInfoFile(newList, "git-data");
 		
 		osInterface.runGitCommand("git add tasks" + newList.getFullPath() + "/list.txt", false);
 		osInterface.runGitCommand("git commit -m \"Finished list '" + newList.getFullPath() + "'\"", false);
@@ -692,7 +696,7 @@ public class Tasks {
 		parent.removeChild(origGroup);
 		parent.addChild(taskGroup);
 		
-		writeGroupInfoFile(taskGroup);
+		writeGroupInfoFile(taskGroup, "git-data");
 		
 		osInterface.runGitCommand("git add tasks" + taskGroup.getFullPath() + "group.txt", false);
 		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"", false);

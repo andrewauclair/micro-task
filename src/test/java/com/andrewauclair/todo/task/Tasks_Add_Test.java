@@ -262,4 +262,11 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		
 		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
 	}
+
+	@Test
+	void next_id_increments_after_add() {
+		tasks.addTask("Test");
+
+		assertEquals(2, tasks.nextID());
+	}
 }

@@ -263,44 +263,46 @@ public class Main {
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
-		synchronized (tasks) {
-			int width = terminal.getSize().getColumns();
-			
-			List<AttributedString> as = new ArrayList<>();
-			
-			
-			if (tasks.hasActiveTask()) {
-				String description = tasks.getActiveTask().description();
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				
-				
-				List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
-				TaskTimes currentTime = times.get(times.size() - 1);
-				
-				
-				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
-				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-				
-				if (width < description.length() + time.length()) {
-					int length = width - time.length() - 3;
-					
-					description = description.substring(0, length - 3);
-					description += "...'";
+		if (false) {
+			synchronized (tasks) {
+				int width = terminal.getSize().getColumns();
+
+				List<AttributedString> as = new ArrayList<>();
+
+
+				if (tasks.hasActiveTask()) {
+					String description = tasks.getActiveTask().description();
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+
+					List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
+					TaskTimes currentTime = times.get(times.size() - 1);
+
+
+					TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
+					String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+
+					if (width < description.length() + time.length()) {
+						int length = width - time.length() - 3;
+
+						description = description.substring(0, length - 3);
+						description += "...'";
+					}
+					description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
+					description += time;
+
+					as.add(new AttributedString(padString(terminal, description)));
+					as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
+					as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
 				}
-				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
-				description += time;
-				
-				as.add(new AttributedString(padString(terminal, description)));
-				as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				else {
+					as.add(new AttributedString(padString(terminal, "No active task")));
+					as.add(new AttributedString(padString(terminal, "")));
+					as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				}
+
+				status.update(as);
 			}
-			else {
-				as.add(new AttributedString(padString(terminal, "No active task")));
-				as.add(new AttributedString(padString(terminal, "")));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
-			}
-			
-			status.update(as);
 		}
 	}
 	
@@ -409,26 +411,37 @@ public class Main {
 	// Groups will be exported as 'group-x'
 	// Lists will be exported as 'list-x'
 	private static void exportData(Tasks tasks, OSInterface osInterface) {
-		exportGroup(tasks.getRootGroup(), "/", 1, 1, osInterface);
+		exportGroup(tasks, tasks.getRootGroup(), "/", 1, 1, osInterface);
+
+		try (OutputStream outputStream = osInterface.createOutputStream("git-data-export/next-id.txt")) {
+			outputStream.write(String.valueOf(tasks.nextID()).getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private static void exportGroup(TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
+	private static void exportGroup(Tasks tasks, TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
+		tasks.writeGroupInfoFile(group, "git-data-export");
+
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskGroup) {
 				String name = "group-" + groupNum;
 				groupNum++;
-				exportGroup((TaskGroup) child, path + name + "/", groupNum, listNum, osInterface);
+				exportGroup(tasks, (TaskGroup) child, path + name + "/", groupNum, listNum, osInterface);
 			}
 			else if (child instanceof TaskList) {
 				String name = "list-" + listNum;
 				listNum++;
 				
-				exportList((TaskList) child, path + name, osInterface);
+				exportList(tasks, (TaskList) child, path + name, osInterface);
 			}
 		}
 	}
 	
-	private static void exportList(TaskList list, String path, OSInterface osInterface) {
+	private static void exportList(Tasks tasks, TaskList list, String path, OSInterface osInterface) {
+		tasks.writeListInfoFile(list, "git-data-export");
+
 		TaskWriter writer = new TaskWriter(osInterface);
 		for (Task task : list.getTasks()) {
 			Task strippedTask = new TaskBuilder(task).rename("Task " + task.id);
