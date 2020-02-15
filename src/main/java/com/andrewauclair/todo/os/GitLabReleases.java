@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import javax.net.ssl.*;
 import java.io.*;
+import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -89,8 +90,8 @@ public class GitLabReleases {
 		SSLContext.setDefault(sslContext);
 	}
 	
-	public List<String> getVersions() throws IOException {
-		JSONArray array = getReleasesJSON();
+	public List<String> getVersions(Proxy proxy) throws IOException {
+		JSONArray array = getReleasesJSON(proxy);
 		
 		List<String> releaseNames = new ArrayList<>();
 		
@@ -105,11 +106,11 @@ public class GitLabReleases {
 		return releaseNames;
 	}
 	
-	private JSONArray getReleasesJSON() throws IOException {
+	private JSONArray getReleasesJSON(Proxy proxy) throws IOException {
 		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "http://localhost:3000/api/v4/projects/24/releases"
 		
 		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/releases");
-		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection();
+		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
 		
 		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
 		
@@ -130,8 +131,8 @@ public class GitLabReleases {
 		return new JSONArray(jsonStr);
 	}
 	
-	public boolean updateToRelease(String release) throws IOException {
-		JSONArray array = getReleasesJSON();
+	public boolean updateToRelease(String release, Proxy proxy) throws IOException {
+		JSONArray array = getReleasesJSON(proxy);
 		
 		for (int i = 0; i < array.length() - 1; i++) {
 			JSONObject obj = array.getJSONObject(i);
@@ -145,8 +146,10 @@ public class GitLabReleases {
 			
 			if (release.isEmpty() || releaseName.equals(release)) {
 				// download the jar file and rename it to todo-app.jar
-				
-				try (BufferedInputStream in = new BufferedInputStream(new URL(jar).openStream());
+
+				URL gitlabURL = new URL(jar);
+				HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
+				try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
 					 FileOutputStream fileOutputStream = new FileOutputStream("todo-app.jar")) {
 					byte[] dataBuffer = new byte[1024];
 					int bytesRead;
