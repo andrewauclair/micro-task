@@ -6,17 +6,13 @@ import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.*;
-
-import static org.jline.builtins.Completers.TreeCompleter.node;
 
 @CommandLine.Command(name = "update")
 public class UpdateCommand extends Command {
@@ -55,26 +51,37 @@ public class UpdateCommand extends Command {
 		this.osInterface = osInterface;
 	}
 
-	private void updateToVersion(PrintStream output, String version, Proxy proxy) {
+	private boolean updateToVersion(String version, Proxy proxy) {
 		try {
 			boolean updated = gitLabReleases.updateToRelease(version, proxy);
 			
 			if (updated) {
-				output.println("Updated to version '" + version + "'");
+				System.out.println("Updated to version '" + version + "'");
+				System.out.println();
+				System.out.println("Press any key to shutdown. Please restart with the new version.");
+
+				// force a restart
+				System.in.read();
+
+				return true;
 			}
 			else {
-				output.println("Version '" + version + "' not found on GitLab");
+				System.out.println("Version '" + version + "' not found on GitLab");
 			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			output.println("Failed to update to version '" + version + "'");
+			System.out.println("Failed to update to version '" + version + "'");
 		}
+
+		return false;
 	}
 
 	@Override
 	public void run() {
 		Proxy proxy = Proxy.NO_PROXY;
+
+		boolean updatedToNewRelease = false;
 
 		if (this.proxy != null) {
 			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxy.proxy_ip, this.proxy.proxy_port));
@@ -143,7 +150,7 @@ public class UpdateCommand extends Command {
 			}
 		}
 		else if (latest) {
-			updateToVersion(System.out, versions.get(versions.size() - 1), proxy);
+			updatedToNewRelease = updateToVersion(versions.get(versions.size() - 1), proxy);
 		}
 		else if (tasks) {
 			List<Task> taskList = new ArrayList<>(tasksData.getAllTasks());
@@ -169,11 +176,15 @@ public class UpdateCommand extends Command {
 			System.out.println("Updated all tasks.");
 		}
 		else if (release != null) {
-			updateToVersion(System.out, release, proxy);
+			updatedToNewRelease = updateToVersion(release, proxy);
 		}
 		else {
 			System.out.println("Invalid command.");
 		}
 		System.out.println();
+
+		if (updatedToNewRelease) {
+			osInterface.exit();
+		}
 	}
 }
