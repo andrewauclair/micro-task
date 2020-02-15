@@ -7,9 +7,7 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TaskWriter {
 	private final OSInterface osInterface;
@@ -17,11 +15,8 @@ public class TaskWriter {
 	public TaskWriter(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
-
-	Set<Long> tasks = new HashSet<>();
-
+	
 	public boolean writeTask(Task task, String fileName) {
-		tasks.add(task.id);
 		try (DataOutputStream outputStream = osInterface.createOutputStream(fileName)) {
 			outputStream.write(task.task.getBytes());
 			writeNL(outputStream);

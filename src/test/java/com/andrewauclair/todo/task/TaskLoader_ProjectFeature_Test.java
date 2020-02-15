@@ -29,9 +29,33 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString(), Mockito.anyBoolean())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
 	}
-	
+
 	@Test
-	void load_projects_and_features_for_groups() throws IOException {
+	void load_projects_and_features_for_groups_old_format() throws IOException {
+		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
+				)
+		);
+
+		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false)
+				)
+		);
+
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
+				byteInStream(createFile("Project X", "Feature Y"))
+		);
+
+		loader.load();
+
+		assertEquals("Project X", tasks.getGroup("/one/").getProject());
+		assertEquals("Feature Y", tasks.getGroup("/one/").getFeature());
+	}
+
+	@Test
+	void load_projects_and_features_for_groups_new_format() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
 						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
@@ -88,9 +112,33 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		assertEquals("Project X", tasks.getGroup("/one/two/").getProject());
 		assertEquals("Feature Y", tasks.getGroup("/one/two/").getFeature());
 	}
-	
+
 	@Test
-	void load_projects_and_features_for_lists() throws IOException {
+	void load_projects_and_features_for_lists_old_format() throws IOException {
+		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("two", "git-data/tasks/two", true)
+				)
+		);
+
+		Mockito.when(osInterface.listFiles("git-data/tasks/two")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("list.txt", "git-data/tasks/two/list.txt", false)
+				)
+		);
+
+		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
+				byteInStream(createFile("Project X", "Feature Y"))
+		);
+
+		loader.load();
+
+		assertEquals("Project X", tasks.getListByName("/two").getProject());
+		assertEquals("Feature Y", tasks.getListByName("/two").getFeature());
+	}
+
+	@Test
+	void load_projects_and_features_for_lists_new_format() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
 						new OSInterface.TaskFileInfo("two", "git-data/tasks/two", true)
