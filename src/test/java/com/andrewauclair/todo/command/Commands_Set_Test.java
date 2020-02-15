@@ -24,6 +24,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		Task task = tasks.getTask(1);
 
 		assertTrue(task.isRecurring());
+
+		assertOutput(
+				"Set recurring for task 1 - 'Test 1' to true",
+				""
+		);
 	}
 
 	@Test
@@ -35,6 +40,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		Task task = tasks.getTask(1);
 
 		assertFalse(task.isRecurring());
+
+		assertOutput(
+				"Set recurring for task 1 - 'Test 1' to false",
+				""
+		);
 	}
 
 	@Test
@@ -46,6 +56,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-list --list /test --project \"Issues\"");
 
 		assertEquals("Issues", tasks.getProjectForTask(1));
+
+		assertOutput(
+				"Set project for list '/test' to 'Issues'",
+				""
+		);
 	}
 
 	@Test
@@ -57,6 +72,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-list --list /test --feature \"Feature\"");
 
 		assertEquals("Feature", tasks.getFeatureForTask(1));
+
+		assertOutput(
+				"Set feature for list '/test' to 'Feature'",
+				""
+		);
 	}
 
 	@Test
@@ -69,6 +89,12 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 		assertEquals("Issues", tasks.getProjectForTask(1));
 		assertEquals("Feature", tasks.getFeatureForTask(1));
+
+		assertOutput(
+				"Set project for list '/test' to 'Issues'",
+				"Set feature for list '/test' to 'Feature'",
+				""
+		);
 	}
 
 	@Test
@@ -90,6 +116,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-group --group /test/ --project \"Issues\"");
 
 		assertEquals("Issues", tasks.getProjectForTask(1));
+
+		assertOutput(
+				"Set project for group '/test/' to 'Issues'",
+				""
+		);
 	}
 
 	@Test
@@ -101,6 +132,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-group --group /test/ --feature \"Feature\"");
 
 		assertEquals("Feature", tasks.getFeatureForTask(1));
+
+		assertOutput(
+				"Set feature for group '/test/' to 'Feature'",
+				""
+		);
 	}
 
 	@Test
@@ -113,6 +149,12 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 		assertEquals("Issues", tasks.getProjectForTask(1));
 		assertEquals("Feature", tasks.getFeatureForTask(1));
+
+		assertOutput(
+				"Set project for group '/test/' to 'Issues'",
+				"Set feature for group '/test/' to 'Feature'",
+				""
+		);
 	}
 
 	@Test

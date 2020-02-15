@@ -31,9 +31,15 @@ public abstract class SetCommand extends Command {
 		public void run() {
 			if (recurring != null) {
 				tasks.setRecurring((long) id, true);
+
+				System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to true");
+				System.out.println();
 			}
 			else if (not_recurring != null) {
 				tasks.setRecurring((long) id, false);
+
+				System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to false");
+				System.out.println();
 			}
 			else {
 				Task task = tasks.setTaskState((long) id, TaskState.Inactive);
@@ -60,14 +66,22 @@ public abstract class SetCommand extends Command {
 		@Override
 		public void run() {
 			if (projectFeature.project != null) {
+				TaskList listByName = tasks.getListByName(this.list);
 				String project = this.projectFeature.project;
-				tasks.setProject(tasks.getListByName(this.list), project, true);
+				tasks.setProject(listByName, project, true);
+
+				System.out.println("Set project for list '" + listByName.getFullPath() + "' to '" + project + "'");
 			}
 
 			if (projectFeature.feature != null) {
+				TaskList listByName = tasks.getListByName(this.list);
 				String feature = this.projectFeature.feature;
-				tasks.setFeature(tasks.getListByName(this.list), feature, true);
+				tasks.setFeature(listByName, feature, true);
+
+				System.out.println("Set feature for list '" + listByName.getFullPath() + "' to '" + feature + "'");
 			}
+
+			System.out.println();
 		}
 	}
 
@@ -87,14 +101,22 @@ public abstract class SetCommand extends Command {
 		@Override
 		public void run() {
 			if (projectFeature.project != null) {
+				TaskGroup group = tasks.getGroup(this.group);
 				String project = this.projectFeature.project;
-				tasks.setProject(tasks.getGroup(this.group), project, true);
+				tasks.setProject(group, project, true);
+
+				System.out.println("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
 			}
 
 			if (projectFeature.feature != null) {
+				TaskGroup group = tasks.getGroup(this.group);
 				String feature = this.projectFeature.feature;
-				tasks.setFeature(tasks.getGroup(this.group), feature, true);
+				tasks.setFeature(group, feature, true);
+
+				System.out.println("Set feature for group '" + group.getFullPath() + "' to '" + feature + "'");
 			}
+
+			System.out.println();
 		}
 	}
 
