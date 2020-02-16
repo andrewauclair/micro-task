@@ -343,7 +343,7 @@ public class Main {
 	}
 	
 	private static void exportGroup(Tasks tasks, TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
-		tasks.writeGroupInfoFile(group, "git-data-export");
+		tasks.writeGroupInfoFile(group, "git-data-export" + group.getFullPath());
 		
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskGroup) {
@@ -361,7 +361,7 @@ public class Main {
 	}
 	
 	private static void exportList(Tasks tasks, TaskList list, String path, OSInterface osInterface) {
-		tasks.writeListInfoFile(list, "git-data-export");
+		tasks.writeListInfoFile(list, "git-data-export" + list.getFullPath() + "/");
 		
 		TaskWriter writer = new TaskWriter(osInterface);
 		for (Task task : list.getTasks()) {
