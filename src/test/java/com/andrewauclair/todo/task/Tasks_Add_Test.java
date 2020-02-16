@@ -28,7 +28,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
 	}
-
+	
 	@Test
 	void adding_task_tells_task_writer_to_write_file() {
 		Task task1 = tasks.addTask("Testing task add command 1");

@@ -42,7 +42,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				new Task(2, "Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(2000)))
 		);
 	}
-
+	
 	@ParameterizedTest
 	@ValueSource(strings = {"--recurring", "-r"})
 	void add_recurring_task(String recurring) {

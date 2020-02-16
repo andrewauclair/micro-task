@@ -73,6 +73,8 @@ public class Commands {
 	public CommandLine buildCommandLine() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
+		cmdLine.setTrimQuotes(true);
+		
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
 		aliases.keySet().forEach(name -> {
