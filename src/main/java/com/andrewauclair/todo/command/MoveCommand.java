@@ -34,7 +34,6 @@ public class MoveCommand extends Command {
 	public void run() {
 		if (id != null) {
 			String list = this.dest_list;
-//			long taskID = id;
 
 			for (Integer taskID : id) {
 				moveTask(list, taskID);
