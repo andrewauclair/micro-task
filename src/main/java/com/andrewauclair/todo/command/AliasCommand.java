@@ -40,9 +40,7 @@ public class AliasCommand extends Command {
 	}
 
 	private void writeAliasesFile() {
-		try {
-			DataOutputStream outputStream = osInterface.createOutputStream("git-data/aliases.txt");
-			
+		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/aliases.txt")) {
 			Map<String, String> aliases = commands.getAliases();
 			
 			for (String name : aliases.keySet()) {
@@ -76,7 +74,7 @@ public class AliasCommand extends Command {
 
 				writeAliasesFile();
 
-				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git add .", false);
 				osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + command + "'\"", false);
 			}
 		}
@@ -91,7 +89,7 @@ public class AliasCommand extends Command {
 
 				writeAliasesFile();
 
-				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git add .", false);
 				osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + update + "'\"", false);
 			}
 			else {
@@ -110,7 +108,7 @@ public class AliasCommand extends Command {
 
 				writeAliasesFile();
 
-				osInterface.runGitCommand("git add aliases.txt", false);
+				osInterface.runGitCommand("git add .", false);
 				osInterface.runGitCommand("git commit -m \"Removed alias '" + name + "' for command '" + aliasCommand + "'\"", false);
 			}
 			else {

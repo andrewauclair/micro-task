@@ -89,4 +89,14 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public void moveFolder(String src, String dest) throws IOException {
 	}
+
+	@Override
+	public String getLastInputFile() {
+		return "";
+	}
+
+	@Override
+	public boolean fileExists(String fileName) {
+		return false;
+	}
 }

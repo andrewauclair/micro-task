@@ -175,7 +175,13 @@ public class OSInterfaceImpl implements OSInterface {
 		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
+	@Override
 	public String getLastInputFile() {
 		return lastInputFile;
+	}
+
+	@Override
+	public boolean fileExists(String fileName) {
+		return new File(fileName).exists();
 	}
 }

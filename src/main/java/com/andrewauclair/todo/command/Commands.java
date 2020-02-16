@@ -13,9 +13,11 @@ import org.jline.reader.Parser;
 import org.jline.reader.impl.DefaultParser;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Commands {
 	private final Tasks tasks;
@@ -54,7 +56,7 @@ public class Commands {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks, osInterface));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks, this, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
@@ -138,6 +140,32 @@ public class Commands {
 
 	public DebugCommand getDebugCommand() {
 		return (DebugCommand) commands.get("debug");
+	}
+
+	public void loadAliases() {
+		if (!osInterface.fileExists("git-data/aliases.txt")) {
+			return;
+		}
+
+		try {
+			Scanner scanner = new Scanner(osInterface.createInputStream("git-data/aliases.txt"));
+
+			aliases.clear();
+
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+
+				String[] split = line.split("=");
+
+				String name = split[0];
+				String command = split[1].substring(1, split[1].length() - 1);
+
+				addAlias(name, command);
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
 	}
 
 	public void addAlias(String name, String command) {

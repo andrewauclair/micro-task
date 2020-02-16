@@ -17,7 +17,7 @@ class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	final Tasks tasks = new Tasks(1, writer, new PrintStream(outputStream), osInterface);
+	final Tasks tasks = new Tasks(writer, new PrintStream(outputStream), osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {

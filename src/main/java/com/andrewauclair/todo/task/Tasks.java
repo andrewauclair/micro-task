@@ -3,14 +3,14 @@ package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
+import com.andrewauclair.todo.command.Commands;
+import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,10 +27,9 @@ public class Tasks {
 	private long activeTaskID = NO_ACTIVE_TASK;
 	private String activeList = "/default";
 	
-	private long nextID;
+	private long nextID = 1;
 	
-	public Tasks(long nextID, TaskWriter writer, PrintStream output, OSInterface osInterface) {
-		this.nextID = nextID;
+	public Tasks(TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
@@ -68,11 +67,11 @@ public class Tasks {
 		
 		return nextID;
 	}
-
+	
 	public long nextID() {
 		return nextID;
 	}
-
+	
 	public TaskList findListForTask(long id) {
 		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
 		if (!listForTask.isPresent()) {
@@ -437,33 +436,33 @@ public class Tasks {
 		
 		String list = findListForTask(task.id).getFullPath();
 		replaceTask(list, optionalTask, task);
-
+		
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-
+		
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"", false);
 		
 		return task;
 	}
-
+	
 	public Task setTaskState(long id, TaskState state) {
 		Task optionalTask = getTask(id);
-
+		
 		Task task = new TaskBuilder(optionalTask)
 				.withState(state)
 				.build();
-
+		
 		String list = findListForTask(task.id).getFullPath();
 		replaceTask(list, optionalTask, task);
-
+		
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-
+		
 		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"", false);
-
+		
 		return task;
 	}
-
+	
 	public Task getTask(long id) {
 		Optional<Task> optionalTask = getAllTasks().stream()
 				.filter(task -> task.id == id)
@@ -584,27 +583,27 @@ public class Tasks {
 			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
 		}
 	}
-
+	
 	public void setGroupState(TaskGroup group, TaskContainerState state, boolean createFiles) {
 		TaskGroup parent = getGroup(group.getParent());
-
+		
 		parent.removeChild(group);
-
+		
 		TaskGroup taskGroup = group.changeState(state);
-
+		
 		parent.addChild(taskGroup);
 	}
-
+	
 	public void setListState(TaskList list, TaskContainerState state, boolean createFiles) {
 		TaskGroup parent = getGroupForList(list.getFullPath());
-
+		
 		parent.removeChild(list);
-
+		
 		TaskList newList = list.changeState(state);
-
+		
 		parent.addChild(newList);
 	}
-
+	
 	public String getProjectForTask(long taskID) {
 		TaskList listForTask = findListForTask(taskID);
 		
@@ -674,7 +673,7 @@ public class Tasks {
 		TaskGroup parent = getGroupForList(taskList.getFullPath());
 		
 		TaskList newList = taskList.changeState(TaskContainerState.Finished);
-
+		
 		parent.removeChild(taskList);
 		parent.addChild(newList);
 		
@@ -690,9 +689,9 @@ public class Tasks {
 		
 		TaskGroup origGroup = getGroup(group);
 		TaskGroup parent = getGroup(origGroup.getParent());
-
+		
 		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);
-
+		
 		parent.removeChild(origGroup);
 		parent.addChild(taskGroup);
 		
@@ -702,5 +701,46 @@ public class Tasks {
 		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"", false);
 		
 		return taskGroup;
+	}
+	
+	public boolean load(TaskLoader loader, Commands commands) {
+		rootGroup = new TaskGroup("/");
+		
+		try {
+			nextID = getStartingID();
+			loader.load();
+			commands.loadAliases();
+			
+			Optional<Task> activeTask = getAllTasks().stream()
+					.filter(task -> task.state == TaskState.Active)
+					.findFirst();
+			
+			if (activeTask.isPresent()) {
+				activeTaskID = activeTask.get().id;
+				activeList = findListForTask(activeTaskID).getFullPath();
+				activeGroup = getGroupForList(activeList);
+			}
+		}
+		catch (Exception e) {
+			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);
+			e.printStackTrace(System.out);
+			
+			System.out.println();
+			System.out.println("Last file: " + osInterface.getLastInputFile());
+			
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private long getStartingID() {
+		try (InputStream inputStream = osInterface.createInputStream("git-data/next-id.txt")) {
+			Scanner scanner = new Scanner(inputStream);
+			return scanner.nextLong();
+		}
+		catch (Exception ignored) {
+		}
+		return 1;
 	}
 }

@@ -27,7 +27,7 @@ class CommandsBaseTestCase {
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
-	protected final Tasks tasks = new Tasks(1, writer, printStream, osInterface);
+	protected final Tasks tasks = new Tasks(writer, printStream, osInterface);
 
 	protected Commands commands;
 
@@ -69,7 +69,7 @@ class CommandsBaseTestCase {
 		assertOutput(errorStream, lines);
 	}
 
-	private void assertOutput(OutputStream outputStream, String... lines) {
+	public static void assertOutput(OutputStream outputStream, String... lines) {
 		StringBuilder output = new StringBuilder();
 
 		for (String line : lines) {

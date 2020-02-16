@@ -35,6 +35,10 @@ public interface OSInterface {
 
 	void moveFolder(String src, String dest) throws IOException;
 
+	String getLastInputFile();
+
+	boolean fileExists(String fileName);
+
 	class TaskFileInfo {
 		final String name;
 		final String path;
