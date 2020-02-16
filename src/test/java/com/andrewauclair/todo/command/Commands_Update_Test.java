@@ -409,7 +409,8 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  update [--proxy-ip=<proxy_ip> --proxy-port=<proxy_port>] [-hlr]",
-				"               [--tasks] [--release=<release>]",
+				"               [--from-remote] [--tasks] [--to-remote] [--release=<release>]",
+				"      --from-remote",
 				"  -h, --help                Show this help message.",
 				"  -l, --latest",
 				"      --proxy-ip=<proxy_ip>",
@@ -417,7 +418,8 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"",
 				"  -r, --releases",
 				"      --release=<release>",
-				"      --tasks"
+				"      --tasks",
+				"      --to-remote"
 		);
 	}
 }

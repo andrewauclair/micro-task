@@ -5,6 +5,8 @@ import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskLoader;
+import com.andrewauclair.todo.task.TaskReader;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine;
 
@@ -30,6 +32,12 @@ public class UpdateCommand extends Command {
 	@CommandLine.Option(names = {"--release"})
 	private String release;
 
+	@CommandLine.Option(names = {"--to-remote"})
+	private boolean to_remote;
+
+	@CommandLine.Option(names = {"--from-remote"})
+	private boolean from_remote;
+
 	@CommandLine.ArgGroup(exclusive = false)
 	private ProxySettings proxy;
 
@@ -43,11 +51,13 @@ public class UpdateCommand extends Command {
 
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
+	private final Commands commands;
 	private final OSInterface osInterface;
 	
-	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, OSInterface osInterface) {
+	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasksData = tasks;
+		this.commands = commands;
 		this.osInterface = osInterface;
 	}
 
@@ -177,6 +187,18 @@ public class UpdateCommand extends Command {
 		}
 		else if (release != null) {
 			updatedToNewRelease = updateToVersion(release, proxy);
+		}
+		else if (to_remote) {
+			osInterface.runGitCommand("git push", false);
+
+			System.out.println("Pushed changes to remote");
+		}
+		else if (from_remote) {
+			osInterface.runGitCommand("git pull", false);
+
+			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), osInterface), commands);
+
+			System.out.println("Pulled changes from remote");
 		}
 		else {
 			System.out.println("Invalid command.");

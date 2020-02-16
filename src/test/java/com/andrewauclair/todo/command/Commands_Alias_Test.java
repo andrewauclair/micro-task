@@ -97,7 +97,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add aliases.txt", false);
+		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'ttt' for command 'times --tasks --today'\"", false);
 	}
 	
@@ -153,7 +153,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add aliases.txt", false);
+		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Removed alias 'ttt' for command 'times --tasks --today'\"", false);
 	}
 	
@@ -251,7 +251,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add aliases.txt", false);
+		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"", false);
 	}
 	
