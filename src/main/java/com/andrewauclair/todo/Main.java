@@ -122,7 +122,6 @@ public class Main {
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
 		
-		
 		osInterface.setCommands(commands);
 		
 		Terminal terminal = TerminalBuilder.builder()
@@ -230,15 +229,12 @@ public class Main {
 			
 			List<AttributedString> as = new ArrayList<>();
 			
-			
 			if (tasks.hasActiveTask()) {
 				String description = tasks.getActiveTask().description();
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				
-				
 				List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
 				TaskTimes currentTime = times.get(times.size() - 1);
-				
 				
 				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
 				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);

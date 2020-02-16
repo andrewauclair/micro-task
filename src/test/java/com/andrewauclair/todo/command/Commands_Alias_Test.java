@@ -16,6 +16,8 @@ import java.io.IOException;
 
 import static com.andrewauclair.todo.Utils.NL;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class Commands_Alias_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
@@ -253,6 +255,20 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"", false);
+	}
+	
+	@Test
+	void block_alias_when_behind_remote() {
+		Mockito.when(osInterface.isBehindOrigin()).thenReturn(true);
+		
+		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+		
+		assertNull(commands.getAliases().get("ttt"));
+		
+		assertOutput(
+				"Behind origin/master. Please run 'update --from-remote'",
+				""
+		);
 	}
 	
 	@Test

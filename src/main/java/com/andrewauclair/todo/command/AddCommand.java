@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.jline.ListCompleter;
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine;
@@ -23,15 +24,23 @@ public class AddCommand extends Command {
 	private boolean start = false;
 
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 	private final Commands commands;
 
-	AddCommand(Tasks tasks, Commands commands) {
+	AddCommand(Tasks tasks, OSInterface osInterface, Commands commands) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 		this.commands = commands;
 	}
 
 	@Override
 	public void run() {
+		if (osInterface.isBehindOrigin()) {
+			System.out.println("Behind origin/master. Please run 'update --from-remote'");
+			System.out.println();
+			return;
+		}
+		
 		String list = tasks.getActiveList();
 
 		if (this.list != null) {

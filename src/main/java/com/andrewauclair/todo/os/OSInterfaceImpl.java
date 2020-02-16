@@ -42,39 +42,39 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 		
 		if (print) {
-		    try {
-    			ProcessBuilder pb = new ProcessBuilder();
-    			pb.directory(new File("git-data"));
-    			pb.command(command.split(" "));
-    			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
-    			
-    			Process p = pb.start();
-    			String result = ExecHelper.waitAndCapture(p);
-    			
-    			System.out.println(result);
-    		}
-    		catch (InterruptedException | IOException e) {
-    			e.printStackTrace();
-    			return false;
-    		}
+			try {
+				ProcessBuilder pb = new ProcessBuilder();
+				pb.directory(new File("git-data"));
+				pb.command(command.split(" "));
+				pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+				
+				Process p = pb.start();
+				String result = ExecHelper.waitAndCapture(p);
+				
+				System.out.println(result);
+			}
+			catch (InterruptedException | IOException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
 		else {
-    		ProcessBuilder builder = new ProcessBuilder();
-    		builder.directory(new File("git-data"));
-    		builder.command(command.split(" "));
-    		
-    		if (commands.getDebugCommand().isDebugEnabled() || print) {
-    			System.out.println("run: " + command);
-    			builder.inheritIO();
-    		}
-    
-    		try {
-    			Process process = builder.start();
-    			process.waitFor();
-    		}
-    		catch (IOException | InterruptedException e) {
-    			return false;
-    		}
+			ProcessBuilder builder = new ProcessBuilder();
+			builder.directory(new File("git-data"));
+			builder.command(command.split(" "));
+			
+			if (commands.getDebugCommand().isDebugEnabled() || print) {
+				System.out.println("run: " + command);
+				builder.inheritIO();
+			}
+			
+			try {
+				Process process = builder.start();
+				process.waitFor();
+			}
+			catch (IOException | InterruptedException e) {
+				return false;
+			}
 		}
 		
 		return true;
@@ -179,9 +179,34 @@ public class OSInterfaceImpl implements OSInterface {
 	public String getLastInputFile() {
 		return lastInputFile;
 	}
-
+	
 	@Override
 	public boolean fileExists(String fileName) {
 		return new File(fileName).exists();
+	}
+	
+	private long getRevCount(String branch) {
+		try {
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.directory(new File("git-data"));
+			pb.command("git", "rev-list", "--count", branch);
+			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+			
+			Process p = pb.start();
+			String result = ExecHelper.waitAndCapture(p);
+			
+			return Long.parseLong(result.substring(0, result.lastIndexOf("\n")));
+		}
+		catch (InterruptedException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	@Override
+	public boolean isBehindOrigin() {
+		runGitCommand("git fetch", false);
+		return getRevCount("master") < getRevCount("origin/master");
 	}
 }

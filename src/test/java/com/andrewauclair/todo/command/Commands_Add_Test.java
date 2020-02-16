@@ -13,6 +13,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 class Commands_Add_Test extends CommandsBaseTestCase {
@@ -139,7 +140,21 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-
+	
+	@Test
+	void block_add_when_behind_remote() {
+		Mockito.when(osInterface.isBehindOrigin()).thenReturn(true);
+		
+		commands.execute(printStream, "add -n \"Test\"");
+		
+		assertFalse(tasks.hasTaskWithID(1));
+		
+		assertOutput(
+				"Behind origin/master. Please run 'update --from-remote'",
+				""
+		);
+	}
+	
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void add_command_help(String parameter) {

@@ -39,6 +39,8 @@ public interface OSInterface {
 
 	boolean fileExists(String fileName);
 
+	boolean isBehindOrigin();
+	
 	class TaskFileInfo {
 		final String name;
 		final String path;

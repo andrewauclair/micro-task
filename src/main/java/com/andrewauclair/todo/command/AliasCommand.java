@@ -60,6 +60,12 @@ public class AliasCommand extends Command {
 
 	@Override
 	public void run() {
+		if (osInterface.isBehindOrigin()) {
+			System.out.println("Behind origin/master. Please run 'update --from-remote'");
+			System.out.println();
+			return;
+		}
+		
 		// TODO Command should fail if command, update and/or remove are all present
 		if (command != null) {
 			if (commands.getAliases().containsKey(name)) {
