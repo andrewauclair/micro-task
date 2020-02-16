@@ -122,10 +122,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 	@Test
 	void search_on_nested_list() {
 		tasks.addList("/test/one", true);
-
-		commands.execute(printStream, "chlist /test/one");
-
-		outputStream.reset();
+		tasks.setActiveList("/test/one");
 
 		tasks.addTask("do this task on monday");
 		tasks.addTask("tuesdays are ignored");

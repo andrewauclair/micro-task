@@ -110,10 +110,6 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 	@Test
 	void add_task_to_a_list_in_a_group() {
-		commands.execute(printStream, "create-group /test");
-
-		outputStream.reset();
-
 		tasks.addList("/test/one", true);
 
 		tasks.setActiveList("/test/one");
