@@ -192,11 +192,9 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void list_tasks_on_a_nested_list() {
-		commands.execute(printStream, "create-list /test/one");
-		commands.execute(printStream, "switch-group /test");
-		commands.execute(printStream, "switch-list one");
-		
-		outputStream.reset();
+		tasks.addList("/test/one", true);
+		tasks.switchGroup("/test/");
+		tasks.setActiveList("/test/one");
 		
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
@@ -208,7 +206,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --tasks");
 		
 		assertOutput(
-				"Tasks on list '/default'",
+				"Tasks on list '/test/one'",
 				"",
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
@@ -269,9 +267,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		
 		tasks.addTask("Hidden 3");
 		
-		commands.execute(printStream, "chlist /test/two");
-		
-		outputStream.reset();
+//		outputStream.reset();
 		
 		commands.execute(printStream, "list --tasks --group");
 		

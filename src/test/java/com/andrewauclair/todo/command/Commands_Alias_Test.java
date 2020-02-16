@@ -92,7 +92,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-	void adding_an_alias_commits_the_file_to_git() {
+	void adding_an_alias_commits_the_file_to_git() throws IOException, InterruptedException {
 		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
 		
 		InOrder order = Mockito.inOrder(osInterface);

@@ -29,12 +29,22 @@ public class Tasks {
 	
 	private long nextID = 1;
 	
+	private TaskFilterBuilder filterBuilder = new TaskFilterBuilder();
+	
 	public Tasks(TaskWriter writer, PrintStream output, OSInterface osInterface) {
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
 		
 		activeGroup.addChild(new TaskList("default", rootGroup, osInterface, writer, "", "", TaskContainerState.InProgress));
+	}
+	
+	public TaskFilterBuilder getFilterBuilder() {
+		return filterBuilder;
+	}
+	
+	public void setFilterBuilder(TaskFilterBuilder filterBuilder) {
+		this.filterBuilder = filterBuilder;
 	}
 	
 	public TaskWriter getWriter() {
