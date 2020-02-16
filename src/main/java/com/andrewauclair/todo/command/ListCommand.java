@@ -107,7 +107,6 @@ public class ListCommand extends Command {
 				
 				List<Task> tasksList = listChild.getTasks().stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
-//						.filter(task -> task.state != TaskState.Finished)
 						.collect(Collectors.toList());
 				
 				totalTasks += tasksList.size();
@@ -119,7 +118,7 @@ public class ListCommand extends Command {
 				}
 			}
 			else if (recursive) {
-				totalTasks += printTasks(output, (TaskGroup) child, totalTasks, finished, recursive);
+				totalTasks = printTasks(output, (TaskGroup) child, totalTasks, finished, recursive);
 			}
 		}
 		return totalTasks;

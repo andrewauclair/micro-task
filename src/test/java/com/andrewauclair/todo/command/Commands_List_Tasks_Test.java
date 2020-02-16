@@ -295,9 +295,23 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void print_tasks_in_group_recursively() {
 		tasks.addList("/one/two/three", true);
+		tasks.addList("/one/four", true);
 		tasks.setActiveList("/one/two/three");
 		tasks.addTask("Test");
-		
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		tasks.setActiveList("/one/four");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		tasks.addList("/one/two/five/nine", true);
+		tasks.setActiveList("/one/two/five/nine");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
 		tasks.switchGroup("/one/");
 		
 		commands.execute(printStream, "list --tasks --group --recursive");
@@ -305,9 +319,21 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		assertOutput(
 				ANSI_BOLD + "/one/two/three" + ANSI_RESET,
 				"  1 - 'Test'",
+				"  2 - 'Test'",
+				"  3 - 'Test'",
+				"",
+				ANSI_BOLD + "/one/two/five/nine" + ANSI_RESET,
+				"  7 - 'Test'",
+				"  8 - 'Test'",
+				"  9 - 'Test'",
+				"",
+				ANSI_BOLD + "/one/four" + ANSI_RESET,
+				"  4 - 'Test'",
+				"  5 - 'Test'",
+				"  6 - 'Test'",
 				"",
 				"",
-				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 9" + ANSI_RESET,
 				""
 		);
 	}
