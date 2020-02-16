@@ -158,6 +158,12 @@ public class Commands {
 			cmdLine.addSubcommand(name, cmd);
 		});
 		
+		setHandlers(cmdLine);
+		
+		return cmdLine;
+	}
+	
+	private void setHandlers(CommandLine cmdLine) {
 		CommandLine.IExecutionExceptionHandler defaultHandler = cmdLine.getExecutionExceptionHandler();
 		CommandLine.IParameterExceptionHandler defaultParamHandler = cmdLine.getParameterExceptionHandler();
 		
@@ -172,8 +178,6 @@ public class Commands {
 			System.out.println();
 			return defaultParamHandler.handleParseException(ex, args);
 		});
-		
-		return cmdLine;
 	}
 	
 	public CommandLine buildCommandLine(String command) {
@@ -188,22 +192,9 @@ public class Commands {
 		}
 		
 		cmdLine.addSubcommand(command, realCommand);
-
-		CommandLine.IExecutionExceptionHandler defaultHandler = cmdLine.getExecutionExceptionHandler();
-		CommandLine.IParameterExceptionHandler defaultParamHandler = cmdLine.getParameterExceptionHandler();
-
-		cmdLine.setExecutionExceptionHandler((ex, commandLine1, parseResult) -> {
-			System.out.println(ex.getMessage());
-			System.out.println();
-			return defaultHandler.handleExecutionException(ex, commandLine1, parseResult);
-		});
-
-		cmdLine.setParameterExceptionHandler((ex, args) -> {
-			System.out.println(ex.getMessage());
-			System.out.println();
-			return defaultParamHandler.handleParseException(ex, args);
-		});
-
+		
+		setHandlers(cmdLine);
+		
 		return cmdLine;
 	}
 
