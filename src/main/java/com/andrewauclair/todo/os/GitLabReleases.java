@@ -6,16 +6,17 @@ import org.json.JSONObject;
 
 import javax.net.ssl.*;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class GitLabReleases {
+	private static Map<BigInteger, X509Certificate> trustedCertificates = new HashMap<>();
+
 	public GitLabReleases() throws Exception {
 		TrustManagerFactory tmf = TrustManagerFactory
 				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -52,7 +53,12 @@ public class GitLabReleases {
 				}
 				catch (CertificateException e) {
 					X509Certificate cert = chain[chain.length - 1];
-					
+
+					if (trustedCertificates.get(cert.getSerialNumber()) != null) {
+						// we've already trusted this certificate during this run
+						return;
+					}
+
 					System.out.println(cert.getPublicKey().toString());
 					System.out.println(cert.getIssuerX500Principal().toString());
 					System.out.println(cert.getIssuerDN().toString());
@@ -68,6 +74,10 @@ public class GitLabReleases {
 						
 						if (ch == 'n' || ch == 'N') {
 							throw e;
+						}
+						else {
+							// trust the certificate for the rest of the run
+							trustedCertificates.put(cert.getSerialNumber(), cert);
 						}
 					}
 					catch (IOException e1) {
