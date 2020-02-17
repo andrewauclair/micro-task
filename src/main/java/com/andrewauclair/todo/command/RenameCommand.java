@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.TaskException;
+import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.task.Task;
@@ -20,6 +21,9 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 public class RenameCommand extends Command {
 	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
+
+	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+	private String group;
 
 	@CommandLine.Option(names = {"-t", "--task"})
 	private Integer id;
@@ -53,6 +57,27 @@ public class RenameCommand extends Command {
 
 			System.out.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
 			System.out.println();
+		}
+		else if (group != null) {
+			String newName = this.name;
+			String group = this.group;
+
+			if (!group.endsWith("/")) {
+				System.out.println("Old group name should end with /");
+				System.out.println();
+			}
+			else if (!newName.endsWith("/")) {
+				System.out.println("New group name should end with /");
+				System.out.println();
+			}
+			else {
+				String oldGroupPath = tasks.getGroup(group).getFullPath();
+
+				tasks.renameGroup(group, newName);
+
+				System.out.println("Renamed group '" + oldGroupPath + "' to '" + tasks.getGroup(newName).getFullPath() + "'");
+				System.out.println();
+			}
 		}
 		else if (id != null) {
 			String newName = this.name;

@@ -84,6 +84,13 @@ public final class TaskList implements TaskContainer {
 
 		return list;
 	}
+
+	TaskList changeParent(TaskGroup parent) {
+		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+		list.tasks.addAll(tasks);
+
+		return list;
+	}
 	
 	@Override
 	public int hashCode() {

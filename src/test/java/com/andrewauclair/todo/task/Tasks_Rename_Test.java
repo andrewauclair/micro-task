@@ -184,6 +184,26 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void catch_IOException_from_moveFolder_for_renameGroup() throws IOException {
+		tasks.addGroup("/one/");
+
+		Mockito.reset(osInterface, writer);
+
+		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
+
+		tasks.renameGroup("/one/", "/two/");
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).moveFolder("/one/", "/two/");
+
+		Mockito.verifyNoMoreInteractions(osInterface);
+		Mockito.verifyZeroInteractions(writer);
+
+		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
+	}
+
+	@Test
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
 		tasks.addList("one", true);
 
