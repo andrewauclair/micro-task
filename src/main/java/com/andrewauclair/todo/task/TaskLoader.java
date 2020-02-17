@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.io.IOException;
@@ -20,10 +21,10 @@ public class TaskLoader {
 	
 	
 	public void load() throws IOException {
-		loadTasks("git-data/tasks");
+		loadTasks("git-data/tasks", true);
 	}
 	
-	private void loadTasks(String folder) throws IOException {
+	private void loadTasks(String folder, boolean inGroup) throws IOException {
 		for (OSInterface.TaskFileInfo fileInfo : osInterface.listFiles(folder)) {
 			if (fileInfo.isDirectory()) {
 				String name = fileInfo.getFileName();
@@ -47,6 +48,8 @@ public class TaskLoader {
 					}
 					catch (IOException ignored) {
 					}
+
+					inGroup = true;
 				}
 				else {
 					tasks.addList(name, false);
@@ -64,8 +67,10 @@ public class TaskLoader {
 					}
 					catch (IOException ignored) {
 					}
+
+					inGroup = false;
 				}
-				loadTasks(fileInfo.getPath());
+				loadTasks(fileInfo.getPath(), inGroup);
 				
 				if (isGroup) {
 					tasks.switchGroup(tasks.getActiveGroup().getParent());
@@ -73,9 +78,20 @@ public class TaskLoader {
 			}
 			else if (!fileInfo.getFileName().equals("group.txt") &&
 					!fileInfo.getFileName().equals("list.txt")) {
+				if (inGroup) {
+					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
+				}
+
 				String fileName = fileInfo.getFileName();
-				long id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
-				
+				long id;
+
+				try {
+					id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
+				}
+				catch (NumberFormatException e) {
+					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
+				}
+
 				Task task = reader.readTask(id, fileInfo.getPath());
 				tasks.addTask(task);
 			}
