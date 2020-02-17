@@ -60,7 +60,6 @@ public class Commands {
 		commands.put("mk", new MakeCommand(tasks));
 		commands.put("ch", new ChangeCommand(tasks));
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
-		commands.put("git", new GitCommand(osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
 	}
@@ -107,8 +106,6 @@ public class Commands {
 			return new ChangeCommand(tasks);
 		case "eod":
 			return new EndOfDayCommand(tasks, osInterface);
-		case "git":
-			return new GitCommand(osInterface);
 		case "alias":
 			return new AliasCommand(this, osInterface);
 		case "next":
