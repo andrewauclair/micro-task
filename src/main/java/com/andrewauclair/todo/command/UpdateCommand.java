@@ -183,6 +183,8 @@ public class UpdateCommand extends Command {
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'.\"", false);
 
+			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), osInterface), commands);
+
 			System.out.println("Updated all tasks.");
 		}
 		else if (release != null) {

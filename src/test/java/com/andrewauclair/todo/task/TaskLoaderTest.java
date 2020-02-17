@@ -3,6 +3,7 @@ package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.UtilsTest;
 import com.andrewauclair.todo.os.OSInterface;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
