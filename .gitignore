@@ -5,3 +5,4 @@ tasks.txt
 run/git-data/
 run/*.jar
 /git-data
+/build

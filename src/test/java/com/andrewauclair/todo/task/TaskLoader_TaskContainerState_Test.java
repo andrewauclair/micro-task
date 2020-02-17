@@ -24,7 +24,6 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 
 	@BeforeEach
 	void setup() throws IOException {
-//		super.setup();
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString(), Mockito.anyBoolean())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
@@ -39,8 +38,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
-				Arrays.asList(
-						new OSInterface.TaskFileInfo("1.txt", "git-data/tasks/one/1.txt", false),
+				Collections.singletonList(
 						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false)
 				)
 		);
@@ -49,30 +47,10 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 				byteInStream(createFile("", "", "Active"))
 		);
 
-		InputStream inputStream = byteInStream(createFile(
-				"Test",
-				"Inactive",
-				"false",
-				"",
-				"",
-				"add 123",
-				"start 1234",
-				"Project 1",
-				"Feature 1",
-				"stop 4567",
-				"start 3333",
-				"Project 2",
-				"Feature 2",
-				"stop 5555"
-		));
-
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
-
 		loader.load();
 
 		assertEquals(TaskContainerState.Active, tasks.getGroup("/one/").getState());
 
-		assertNotNull(tasks.getTask(1));
 	}
 
 	@Test

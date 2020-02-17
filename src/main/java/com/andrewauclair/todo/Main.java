@@ -225,7 +225,7 @@ public class Main {
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
-//		if (false ) {// used when I want to run the app from IntelliJ
+		if (false ) {// used when I want to run the app from IntelliJ
 			synchronized (tasks) {
 				int width = terminal.getSize().getColumns();
 
@@ -265,7 +265,7 @@ public class Main {
 
 				status.update(as);
 			}
-//		}
+		}
 	}
 	
 	private static String padString(Terminal terminal, String str) {
