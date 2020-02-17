@@ -259,7 +259,14 @@ public class Tasks {
 		list.removeTask(oldTask);
 		list.addTask(newTask);
 	}
-	
+
+	private String getAbsoluteGroupName(String name) {
+		if (!name.startsWith("/")) {
+			return activeGroup.getFullPath() + name;
+		}
+		return name;
+	}
+
 	public String getAbsoluteListName(String name) {
 		if (!name.startsWith("/")) {
 			return activeGroup.getFullPath() + name;
@@ -346,6 +353,38 @@ public class Tasks {
 		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"", false);
 	}
 	
+	public void renameGroup(String oldName, String newName) {
+		oldName = getAbsoluteGroupName(oldName);
+		newName = getAbsoluteGroupName(newName);
+
+		String oldFolder = oldName;
+		String newFolder = newName;
+
+		newName = newName.substring(newName.substring(0, newName.length() - 2).lastIndexOf('/') + 1);
+		newName = newName.substring(0, newName.length() - 1);
+
+		TaskGroup group = getGroup(oldName);
+
+		boolean isActiveGroup = activeGroup.equals(group);
+
+		TaskGroup parent = getGroup(group.getParent());
+		TaskGroup newGroup = group.rename(newName);
+
+		parent.removeChild(group);
+		parent.addChild(newGroup);
+		
+		try {
+			osInterface.moveFolder(oldFolder, newFolder);
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+		}
+
+		if (isActiveGroup) {
+			activeGroup = newGroup;
+		}
+	}
+	
 	public void addTask(Task task) {
 		if (hasTaskWithID(task.id)) {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
@@ -370,9 +409,10 @@ public class Tasks {
 	}
 	
 	public TaskGroup getGroup(String name) {
-		if (!name.startsWith("/")) {
-			name = activeGroup.getFullPath() + name;
-		}
+		name = getAbsoluteGroupName(name);
+//		if (!name.startsWith("/")) {
+//			name = activeGroup.getFullPath() + name;
+//		}
 		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
 		if (!optionalGroup.isPresent()) {
 			throw new TaskException("Group '" + name + "' does not exist.");

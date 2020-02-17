@@ -118,7 +118,7 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "finish", "list", "move", "set-group", "move", "search"})
+	@ValueSource(strings = {"ch", "finish", "list", "move", "set-group", "move", "search", "rename"})
 	void change_command_group_option_has_group_completer(String group) {
 		commands.execute(printStream, "mk -g /test/");
 

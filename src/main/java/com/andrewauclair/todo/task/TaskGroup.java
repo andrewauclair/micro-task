@@ -18,7 +18,7 @@ public final class TaskGroup implements TaskContainer {
 	private final String feature;
 	
 	private final TaskContainerState state;
-	
+
 	private final List<TaskContainer> children = new ArrayList<>();
 
 	public TaskGroup(String name) {
@@ -38,12 +38,12 @@ public final class TaskGroup implements TaskContainer {
 		
 		this.project = project;
 		this.feature = feature;
-		
+
 		this.state = state;
-		
+
 		if (parent != null) {
 			parentPath = parent.getFullPath();
-			
+
 			if (parent.getFullPath().equals("/")) {
 				fullPath = "/" + name + "/";
 			}
@@ -162,10 +162,28 @@ public final class TaskGroup implements TaskContainer {
 	
 	public TaskGroup rename(String newName) {
 		TaskGroup group = new TaskGroup(newName, parent, project, feature, state);
-		group.children.addAll(children);
+
+		buildNewChildren(group);
+
 		return group;
 	}
-	
+
+	private void buildNewChildren(TaskGroup group) {
+		for (TaskContainer child : children) {
+			if (child instanceof TaskList) {
+				TaskList list = (TaskList) child;
+
+				TaskList newList = list.changeParent(group);
+
+				group.children.add(newList);
+			}
+			else {
+				TaskGroup newGroup = ((TaskGroup) child).changeParent(group);
+				group.children.add(newGroup);
+			}
+		}
+	}
+
 	boolean containsGroup(TaskGroup newGroup) {
 		return children.stream()
 				.filter(child -> child instanceof TaskGroup)
@@ -230,21 +248,29 @@ public final class TaskGroup implements TaskContainer {
 	
 	TaskGroup changeProject(String project) {
 		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-		getChildren().forEach(group::addChild);
+		group.children.addAll(children);
 		
 		return group;
 	}
 	
 	TaskGroup changeFeature(String feature) {
 		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-		getChildren().forEach(group::addChild);
-		
+		group.children.addAll(children);
+
 		return group;
 	}
 
 	TaskGroup changeState(TaskContainerState state) {
 		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-		getChildren().forEach(group::addChild);
+		group.children.addAll(children);
+
+		return group;
+	}
+
+	private TaskGroup changeParent(TaskGroup parent) {
+		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+
+		buildNewChildren(group);
 
 		return group;
 	}
@@ -264,7 +290,7 @@ public final class TaskGroup implements TaskContainer {
 		}
 		return feature;
 	}
-	
+
 	@Override
 	public TaskContainerState getState() {
 		return state;
