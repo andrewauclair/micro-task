@@ -225,45 +225,47 @@ public class Main {
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
-		synchronized (tasks) {
-			int width = terminal.getSize().getColumns();
-			
-			List<AttributedString> as = new ArrayList<>();
-			
-			
-			if (tasks.hasActiveTask()) {
-				String description = tasks.getActiveTask().description();
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				
-				
-				List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
-				TaskTimes currentTime = times.get(times.size() - 1);
-				
-				
-				TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
-				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-				
-				if (width < description.length() + time.length()) {
-					int length = width - time.length() - 3;
-					
-					description = description.substring(0, length - 3);
-					description += "...'";
+//		if (false ) {// used when I want to run the app from IntelliJ
+			synchronized (tasks) {
+				int width = terminal.getSize().getColumns();
+
+				List<AttributedString> as = new ArrayList<>();
+
+
+				if (tasks.hasActiveTask()) {
+					String description = tasks.getActiveTask().description();
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+
+					List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
+					TaskTimes currentTime = times.get(times.size() - 1);
+
+
+					TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
+					String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+
+					if (width < description.length() + time.length()) {
+						int length = width - time.length() - 3;
+
+						description = description.substring(0, length - 3);
+						description += "...'";
+					}
+					description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
+					description += time;
+
+					as.add(new AttributedString(padString(terminal, description)));
+					as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
+					as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
 				}
-				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
-				description += time;
-				
-				as.add(new AttributedString(padString(terminal, description)));
-				as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				else {
+					as.add(new AttributedString(padString(terminal, "No active task")));
+					as.add(new AttributedString(padString(terminal, "")));
+					as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				}
+
+				status.update(as);
 			}
-			else {
-				as.add(new AttributedString(padString(terminal, "No active task")));
-				as.add(new AttributedString(padString(terminal, "")));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
-			}
-			
-			status.update(as);
-		}
+//		}
 	}
 	
 	private static String padString(Terminal terminal, String str) {

@@ -5,16 +5,17 @@ import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.task.*;
-import org.jline.builtins.Completers;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
-import static org.jline.builtins.Completers.TreeCompleter.node;
 
 @CommandLine.Command(name = "list")
 public class ListCommand extends Command {
@@ -25,9 +26,6 @@ public class ListCommand extends Command {
 
 	@CommandLine.Option(names = {"--list"}, completionCandidates = ListCompleter.class)
 	private String list;
-
-	@CommandLine.Option(names = {"--lists"})
-	private boolean lists;
 
 	@CommandLine.Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
 	private boolean group;
@@ -46,7 +44,7 @@ public class ListCommand extends Command {
 	ListCommand(Tasks tasks) {
 		this.tasksData = tasks;
 	}
-	
+
 	private void printTasks(PrintStream output, List<Task> tasksList, int limit) {
 		Optional<Task> max = tasksList.stream()
 				.limit(limit)
@@ -58,17 +56,6 @@ public class ListCommand extends Command {
 				.forEach(str -> printTask(output, str, String.valueOf(max.get().id).length()));
 	}
 
-	private void printList(PrintStream output, String list) {
-		if (list.equals(tasksData.getActiveList())) {
-			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list);
-		}
-		else {
-			output.print("  ");
-			output.println(list);
-		}
-	}
-	
 	private void printListRelative(PrintStream output, TaskList list, boolean finished) {
 		if (list.getFullPath().equals(tasksData.getActiveList())) {
 			output.print("* ");
@@ -82,7 +69,7 @@ public class ListCommand extends Command {
 
 	private void printTask(PrintStream output, Task task, int maxLength) {
 		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
-		
+
 		if (task.id == tasksData.getActiveTaskID()) {
 			output.print("* ");
 			output.print(printID);
@@ -99,18 +86,18 @@ public class ListCommand extends Command {
 			output.println(task.description());
 		}
 	}
-	
+
 	private int printTasks(PrintStream output, TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskList) {
 				TaskList listChild = (TaskList) child;
-				
+
 				List<Task> tasksList = listChild.getTasks().stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList());
-				
+
 				totalTasks += tasksList.size();
-				
+
 				if (tasksList.size() > 0) {
 					output.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
 					printTasks(output, tasksList, Integer.MAX_VALUE);
@@ -128,7 +115,7 @@ public class ListCommand extends Command {
 	public void run() {
 		boolean all = this.all;
 		boolean showTasks = this.tasks;
-		boolean showLists = this.lists;
+//		boolean showLists = this.lists;
 		boolean useGroup = this.group;
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
@@ -143,14 +130,7 @@ public class ListCommand extends Command {
 			list = "/" + list;
 		}
 
-		if (showLists) {
-			tasksData.getListNames().stream()
-					.sorted()
-					.filter(listName -> finished == (tasksData.getListByName(listName).getState() == TaskContainerState.Finished))
-					.forEach(str -> printList(System.out, str));
-			System.out.println();
-		}
-		else if (showTasks) {
+		if (showTasks) {
 			if (!useGroup) {
 				if (finished) {
 					System.out.println("Finished tasks on list '" + list + "'");

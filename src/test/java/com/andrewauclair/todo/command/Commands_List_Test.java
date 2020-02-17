@@ -144,16 +144,15 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list " + parameter);
 
 		assertOutput(
-				"Usage:  list [-h] [--all] [--finished] [--group] [--lists] [--recursive]",
-				"             [--tasks] [--list=<list>]",
-				"      --all",
-				"      --finished",
-				"      --group",
-				"  -h, --help          Show this help message.",
-				"      --list=<list>",
-				"      --lists",
-				"      --recursive",
-				"      --tasks"
+				"Usage:  list [-h] [--all] [--finished] [--group] [--recursive] [--tasks]",
+						"             [--list=<list>]",
+						"      --all",
+						"      --finished",
+						"      --group",
+						"  -h, --help          Show this help message.",
+						"      --list=<list>",
+						"      --recursive",
+						"      --tasks"
 		);
 	}
 }
