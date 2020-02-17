@@ -2,11 +2,16 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskLoader;
+import com.andrewauclair.todo.task.TaskReader;
+import com.andrewauclair.todo.task.Tasks;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.any;
 
 class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 	@Test
@@ -73,5 +78,15 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 				"Updated all tasks.",
 				""
 		);
+	}
+
+	@Test
+	void update_tasks_reloads_tasks() {
+		Tasks tasks = Mockito.mock(Tasks.class);
+		commands = new Commands(tasks, gitLabReleases, osInterface);
+
+		commands.execute(printStream, "update --tasks");
+
+		Mockito.verify(tasks).load(any(), any());
 	}
 }
