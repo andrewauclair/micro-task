@@ -10,6 +10,7 @@ import com.andrewauclair.todo.task.TaskReader;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -179,7 +180,14 @@ public class UpdateCommand extends Command {
 			}
 			catch (IOException ignored) {
 			}
-			
+
+			try (DataOutputStream output = osInterface.createOutputStream("git-data/task-data-version.txt")) {
+				output.write(currentVersion.getBytes());
+			}
+			catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
+
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'.\"", false);
 
