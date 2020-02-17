@@ -155,8 +155,13 @@ public class OSInterfaceImpl implements OSInterface {
 		if (resourceAsStream != null) {
 			props.load(resourceAsStream);
 		}
-		
-		return (String) props.get("version");
+
+		String version = (String) props.get("version");
+
+		if (version == null) {
+			version = "Unknown";
+		}
+		return version;
 	}
 	
 	@Override

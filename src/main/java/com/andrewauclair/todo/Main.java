@@ -93,7 +93,9 @@ public class Main {
 		OSInterfaceImpl osInterface = new OSInterfaceImpl();
 		Tasks tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
-		
+
+		osInterface.setCommands(commands);
+
 		File git_data = new File("git-data");
 		
 		boolean exists = git_data.exists();
@@ -109,7 +111,11 @@ public class Main {
 		}
 		
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), osInterface), commands);
-		
+
+		if (requiresTaskUpdate(osInterface)) {
+			commands.execute(System.out, "update --tasks");
+		}
+
 		Builtins builtins = new Builtins(Paths.get(""), null, null);
 		builtins.rename(org.jline.builtins.Builtins.Command.TTOP, "top");
 		builtins.alias("zle", "widget");
@@ -121,9 +127,6 @@ public class Main {
 		PicocliCommands picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
-		
-		
-		osInterface.setCommands(commands);
 		
 		Terminal terminal = TerminalBuilder.builder()
 				.system(true)
@@ -225,7 +228,7 @@ public class Main {
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
-		if (false ) {// used when I want to run the app from IntelliJ
+//		if (false ) {// used when I want to run the app from IntelliJ
 			synchronized (tasks) {
 				int width = terminal.getSize().getColumns();
 
@@ -265,7 +268,7 @@ public class Main {
 
 				status.update(as);
 			}
-		}
+//		}
 	}
 	
 	private static String padString(Terminal terminal, String str) {
@@ -375,5 +378,27 @@ public class Main {
 			
 			writer.writeTask(strippedTask, "git-data-export/tasks" + path + "/" + task.id + ".txt");
 		}
+	}
+
+	private static boolean requiresTaskUpdate(OSInterface osInterface) {
+		String currentVersion = "";
+
+		try {
+			currentVersion = osInterface.getVersion();
+		}
+		catch (IOException ignored) {
+		}
+
+		try (InputStream inputStream = osInterface.createInputStream("git-data/task-data-version.txt")) {
+			Scanner scanner = new Scanner(inputStream);
+
+			String dataVersion = scanner.nextLine();
+
+			return !currentVersion.equals(dataVersion);
+		}
+		catch (Exception ignored) {
+		}
+		// if the file doesn't exist, then yes, we need to update
+		return true;
 	}
 }
