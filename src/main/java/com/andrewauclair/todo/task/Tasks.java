@@ -153,11 +153,7 @@ public class Tasks {
 	}
 	
 	public Task finishTask() {
-		Task task = finishTask(getActiveTask().id);
-		
-		activeTaskID = NO_ACTIVE_TASK;
-		
-		return task;
+		return finishTask(getActiveTask().id);
 	}
 	
 	public List<Task> getTasksForList(String listName) {
@@ -296,7 +292,13 @@ public class Tasks {
 	}
 	
 	public Task finishTask(long id) {
-		return getListForTask(id).finishTask(id);
+		Task task = getListForTask(id).finishTask(id);
+
+		if (id == activeTaskID) {
+			activeTaskID = NO_ACTIVE_TASK;
+		}
+
+		return task;
 	}
 	
 	public List<Task> getAllTasks() {

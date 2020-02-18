@@ -24,6 +24,16 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void finishing_active_task_clears_active_task_id() {
+		tasks.startTask(1, false);
+
+		assertEquals(1, tasks.getActiveTaskID());
+		tasks.finishTask(1);
+
+		assertEquals(Tasks.NO_ACTIVE_TASK, tasks.getActiveTaskID());
+	}
+
+	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Testing tasks", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),

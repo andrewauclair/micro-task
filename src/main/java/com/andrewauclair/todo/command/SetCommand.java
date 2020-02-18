@@ -9,7 +9,8 @@ import picocli.CommandLine;
 public abstract class SetCommand extends Command {
 
 	static class SetTaskCommand extends SetCommand {
-		@CommandLine.Option(names = {"--task"})
+
+		@CommandLine.Option(required = true, names = {"--task"})
 		private Integer id;
 
 		@CommandLine.Option(names = {"-r", "--recurring"})
@@ -51,7 +52,7 @@ public abstract class SetCommand extends Command {
 	}
 
 	static class SetListCommand extends SetCommand {
-		@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@CommandLine.Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 		private String list;
 
 		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
@@ -86,7 +87,7 @@ public abstract class SetCommand extends Command {
 	}
 
 	static class SetGroupCommand extends SetCommand {
-		@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@CommandLine.Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 		private String group;
 
 		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")

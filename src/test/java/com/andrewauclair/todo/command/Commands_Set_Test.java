@@ -217,7 +217,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-task " + parameter);
 
 		assertOutput(
-				"Usage:  set-task [-hr] [--inactive] [--not-recurring] [--task=<id>]",
+				"Usage:  set-task [-hr] [--inactive] [--not-recurring] --task=<id>",
 				"  -h, --help            Show this help message.",
 				"      --inactive",
 				"      --not-recurring",
@@ -232,7 +232,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-list " + parameter);
 
 		assertOutput(
-				"Usage:  set-list ([-p=<project>] [-f=<feature>]) [-h] [-l=<list>]",
+				"Usage:  set-list ([-p=<project>] [-f=<feature>]) [-h] -l=<list>",
 				"  -f, --feature=<feature>",
 				"  -h, --help                Show this help message.",
 				"  -l, --list=<list>",
@@ -246,7 +246,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-group " + parameter);
 
 		assertOutput(
-				"Usage:  set-group ([-p=<project>] [-f=<feature>]) [-h] [-g=<group>]",
+				"Usage:  set-group ([-p=<project>] [-f=<feature>]) [-h] -g=<group>",
 				"  -f, --feature=<feature>",
 				"  -g, --group=<group>",
 				"  -h, --help                Show this help message.",

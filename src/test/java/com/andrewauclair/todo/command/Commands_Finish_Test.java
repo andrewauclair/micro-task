@@ -96,7 +96,7 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "finish " + parameter);
 
 		assertOutput(
-				"Usage:  finish [-ah] [-g=<group>] [-l=<list>] [-t=<id>]",
+				"Usage:  finish (-t=<id> | -l=<list> | -g=<group> | -a) [-h]",
 				"  -a, --active",
 				"  -g, --group=<group>",
 				"  -h, --help            Show this help message.",

@@ -45,4 +45,9 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 		
 		assertEquals("No active task.", taskException.getMessage());
 	}
+
+	@Test
+	void no_active_task() {
+		assertEquals(Tasks.NO_ACTIVE_TASK, tasks.getActiveTaskID());
+	}
 }

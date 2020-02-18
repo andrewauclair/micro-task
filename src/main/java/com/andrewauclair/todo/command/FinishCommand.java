@@ -5,33 +5,31 @@ import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import org.jline.builtins.Completers;
 import picocli.CommandLine;
-
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.jline.builtins.Completers.TreeCompleter.node;
 
 @CommandLine.Command(name = "finish")
 public class FinishCommand extends Command {
-	@CommandLine.Option(names = {"-t", "--task"})
-	private Integer id;
 
-	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-	private String list;
+	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
+	private FinishOptions options;
 
-	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-	private String group;
+	private static class FinishOptions {
+		@CommandLine.Option(required = true, names = {"-t", "--task"})
+		private Integer id;
 
-	@CommandLine.Option(names = {"-a", "--active"})
-	private boolean active;
+		@CommandLine.Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		private String list;
+
+		@CommandLine.Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		private String group;
+
+		@CommandLine.Option(required = true, names = {"-a", "--active"})
+		private boolean active;
+	}
 
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-	
+
 	FinishCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -39,23 +37,23 @@ public class FinishCommand extends Command {
 
 	@Override
 	public void run() {
-		if (list != null) {
-			String list = this.list;
+		if (options.list != null) {
+			String list = this.options.list;
 
 			TaskList taskList = tasks.finishList(list);
 
 			System.out.println("Finished list '" + taskList.getFullPath() + "'");
 			System.out.println();
 		}
-		else if (this.group != null) {
-			String group = this.group;
+		else if (this.options.group != null) {
+			String group = this.options.group;
 
 			TaskGroup taskGroup = tasks.finishGroup(group);
 
 			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
 			System.out.println();
 		}
-		else if (active) {
+		else if (options.active) {
 			Task task = tasks.finishTask();
 
 			System.out.println("Finished task " + task.description());
@@ -67,12 +65,7 @@ public class FinishCommand extends Command {
 		else {
 			Task task;
 
-//			if (this.id != null) {
-				task = tasks.finishTask(id);
-//			}
-//			else {
-//				task = tasks.finishTask();
-//			}
+			task = tasks.finishTask(options.id);
 
 			System.out.println("Finished task " + task.description());
 			System.out.println();
