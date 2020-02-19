@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Main;
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
@@ -29,7 +30,7 @@ public class Commands {
 	private DefaultParser defaultParser = new DefaultParser();
 	private PicocliFactory factory;
 	private Main.CliCommands cliCommands = new Main.CliCommands();
-	
+
 	public Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
 		this.tasks = tasks;
 
@@ -111,7 +112,7 @@ public class Commands {
 		case "next":
 			return new NextCommand(tasks);
 		}
-		
+
 		for (String alias : aliases.keySet()) {
 			if (command.equals(alias)) {
 				return new Command() {
@@ -121,21 +122,21 @@ public class Commands {
 						System.out.print(aliases.get(alias));
 						System.out.print(ConsoleColors.ANSI_RESET);
 						System.out.println();
-						
+
 						Commands.this.execute(System.out, aliases.get(alias));
 					}
 				};
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public CommandLine buildCommandLine() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
-		
+
 		cmdLine.setTrimQuotes(true);
-		
+
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
 		aliases.keySet().forEach(name -> {
@@ -154,44 +155,47 @@ public class Commands {
 
 			cmdLine.addSubcommand(name, cmd);
 		});
-		
+
 		setHandlers(cmdLine);
-		
+
 		return cmdLine;
 	}
-	
+
 	private void setHandlers(CommandLine cmdLine) {
 		CommandLine.IExecutionExceptionHandler defaultHandler = cmdLine.getExecutionExceptionHandler();
 		CommandLine.IParameterExceptionHandler defaultParamHandler = cmdLine.getParameterExceptionHandler();
-		
+
 		cmdLine.setExecutionExceptionHandler((ex, commandLine1, parseResult) -> {
 			System.out.println(ex.getMessage());
 			System.out.println();
-			return defaultHandler.handleExecutionException(ex, commandLine1, parseResult);
+			if (!(ex instanceof TaskException)) {
+				return defaultHandler.handleExecutionException(ex, commandLine1, parseResult);
+			}
+			return 0;
 		});
-		
+
 		cmdLine.setParameterExceptionHandler((ex, args) -> {
 			System.out.println(ex.getMessage());
 			System.out.println();
 			return defaultParamHandler.handleParseException(ex, args);
 		});
 	}
-	
+
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
 		cmdLine.setTrimQuotes(true);
-		
+
 		Command realCommand = createCommand(command);
-		
+
 		if (realCommand == null) {
 			return buildCommandLine();
 		}
-		
+
 		cmdLine.addSubcommand(command, realCommand);
-		
+
 		setHandlers(cmdLine);
-		
+
 		return cmdLine;
 	}
 
@@ -200,7 +204,7 @@ public class Commands {
 
 		ParsedLine parse = defaultParser.parse(command, 0, Parser.ParseContext.UNSPECIFIED);
 		String[] strings = parse.words().toArray(new String[0]);
-		
+
 		CommandLine commandLine = buildCommandLine(strings[0]); // rebuild
 		commandLine.execute(strings);
 	}
