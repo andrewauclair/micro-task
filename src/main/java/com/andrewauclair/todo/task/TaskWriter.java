@@ -51,6 +51,7 @@ public class TaskWriter {
 				writeNL(outputStream);
 				writeTime(outputStream, "finish", task.getFinishTime().get().start);
 			}
+			writeNL(outputStream);
 		}
 		catch (IOException e) {
 			e.printStackTrace();

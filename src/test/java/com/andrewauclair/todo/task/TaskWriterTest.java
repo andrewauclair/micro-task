@@ -35,13 +35,10 @@ class TaskWriterTest {
 				"Inactive",
 				"false",
 				"",
-				"add 1234"
+				"add 1234",
+				""
 		);
-		Assertions.assertEquals("Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"add 1234", outputStream.toString());
+
 		assertTrue(writeTask);
 	}
 	
@@ -55,13 +52,10 @@ class TaskWriterTest {
 				"Inactive",
 				"true",
 				"",
-				"add 1000"
+				"add 1000",
+				""
 		);
-		assertEquals("Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"true" + Utils.NL +
-				"" + Utils.NL +
-				"add 1000", outputStream.toString());
+
 		assertTrue(writeTask);
 	}
 	
@@ -76,14 +70,10 @@ class TaskWriterTest {
 				"false",
 				"",
 				"add 1234",
-				"start 2345"
+				"start 2345",
+				""
 		);
-		assertEquals("Test" + Utils.NL +
-				"Active" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"add 1234" + Utils.NL +
-				"start 2345", outputStream.toString());
+
 		assertTrue(writeTask);
 	}
 
@@ -99,7 +89,8 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
-				"stop 4567"
+				"stop 4567",
+				""
 		);
 		assertTrue(writeTask);
 	}
@@ -124,16 +115,10 @@ class TaskWriterTest {
 				"add 123",
 				"start 1234",
 				"stop 4567",
-				"start 3333"
+				"start 3333",
+				""
 		);
-		assertEquals("Test" + Utils.NL +
-				"Active" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"add 123" + Utils.NL +
-				"start 1234" + Utils.NL +
-				"stop 4567" + Utils.NL +
-				"start 3333", outputStream.toString());
+
 		assertTrue(writeTask);
 	}
 
@@ -157,17 +142,10 @@ class TaskWriterTest {
 				"start 1234",
 				"stop 4567",
 				"start 3333",
-				"stop 5555"
+				"stop 5555",
+				""
 		);
-		assertEquals("Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"add 123" + Utils.NL +
-				"start 1234" + Utils.NL +
-				"stop 4567" + Utils.NL +
-				"start 3333" + Utils.NL +
-				"stop 5555", outputStream.toString());
+
 		assertTrue(writeTask);
 	}
 
@@ -195,7 +173,8 @@ class TaskWriterTest {
 				"start 3333",
 				"Project 2",
 				"Feature 2",
-				"stop 5555"
+				"stop 5555",
+				""
 		);
 		assertTrue(writeTask);
 	}
@@ -219,7 +198,8 @@ class TaskWriterTest {
 				"add 123",
 				"start 1234",
 				"stop 4567",
-				"finish 5678"
+				"finish 5678",
+				""
 		);
 		assertTrue(writeTask);
 	}
