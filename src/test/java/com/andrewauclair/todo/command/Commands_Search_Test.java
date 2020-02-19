@@ -1,9 +1,13 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.task.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
+import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 
 class Commands_Search_Test extends CommandsBaseTestCase {
 	@Test
@@ -203,17 +207,56 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		);
 	}
 
+	@Test
+	void verbose_search_displays_what_list_each_task_is_on() {
+		tasks.addList("/oranges", true);
+		tasks.addList("/apples", true);
+
+		tasks.setActiveList("/oranges");
+		tasks.addTask("do this task on monday");
+		tasks.addTask("tuesdays are ignored");
+
+		tasks.setActiveList("/apples");
+		tasks.addTask("some days are long, mondays are the longest days");
+
+		tasks.setActiveList("/oranges");
+
+		tasks.addTask("wednesdays too");
+		tasks.addTask("monday is a holiday, don't forget");
+
+		tasks.setActiveList("/apples");
+
+		tasks.addTask("The Beatles?");
+		tasks.addTask("finish this task by monday");
+
+		commands.execute(printStream, "search -vgt \"monday\"");
+
+		assertOutput(
+				"Search Results (4):",
+				"",
+				ANSI_BOLD + "/apples" + ANSI_RESET,
+				"3 - 'some days are long, \u001B[1m\u001B[7mmonday\u001B[0ms are the longest days'",
+				"7 - 'finish this task by \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"",
+				ANSI_BOLD + "/oranges" + ANSI_RESET,
+				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
+				"5 - '\u001B[1m\u001B[7mmonday\u001B[0m is a holiday, don't forget'",
+				""
+		);
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void search_command_help(String parameter) {
 		commands.execute(printStream, "search " + parameter);
 
 		assertOutput(
-				"Usage:  search [-fgh] [-t=<text>]",
+				"Usage:  search [-fghv] [-t=<text>]",
 				"  -f, --finished",
 				"  -g, --group",
 				"  -h, --help          Show this help message.",
-				"  -t, --text=<text>"
+				"  -t, --text=<text>",
+				"  -v, --verbose"
 		);
 	}
 }
