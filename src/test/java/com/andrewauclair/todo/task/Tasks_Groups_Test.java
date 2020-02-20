@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.never;
 
 class Tasks_Groups_Test extends CommandsBaseTestCase {
 	@Test
@@ -161,5 +162,16 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		assertTrue(tasks.hasGroupPath("/one/two/"));
 		
 		Mockito.verifyZeroInteractions(osInterface);
+	}
+	
+	@Test
+	void does_not_commit_files_for_group_that_already_exists() {
+		tasks.addList("/one/two", true);
+		
+		Mockito.reset(osInterface);
+		
+		tasks.addList("/one/three", true);
+		
+		Mockito.verify(osInterface, never()).runGitCommand("git commit -m \"Created group '/one/'\"", false);
 	}
 }

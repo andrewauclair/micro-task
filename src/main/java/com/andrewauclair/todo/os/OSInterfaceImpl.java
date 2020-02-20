@@ -3,7 +3,6 @@ package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Main;
 import com.andrewauclair.todo.command.Commands;
-import org.jline.utils.ExecHelper;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,6 +12,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
@@ -40,42 +41,46 @@ public class OSInterfaceImpl implements OSInterface {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
-		
-		if (print) {
-		    try {
-    			ProcessBuilder pb = new ProcessBuilder();
-    			pb.directory(new File("git-data"));
-    			pb.command(command.split(" "));
-    			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
-    			
-    			Process p = pb.start();
-    			String result = ExecHelper.waitAndCapture(p);
-    			
-    			System.out.println(result);
-    		}
-    		catch (InterruptedException | IOException e) {
-    			e.printStackTrace();
-    			return false;
-    		}
+
+//		if (print) {
+		try {
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.directory(new File("git-data"));
+			pb.command(command.split(" "));
+			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+			
+			Process p = pb.start();
+			int exitCode = waitAndCapture(p, print);
+			
+			if (exitCode != 0) {
+				System.out.println();
+				System.out.println(ANSI_FG_RED + "Error while executing \"" + command + "\"" + ConsoleColors.ANSI_RESET);
+				System.out.println();
+			}
 		}
-		else {
-    		ProcessBuilder builder = new ProcessBuilder();
-    		builder.directory(new File("git-data"));
-    		builder.command(command.split(" "));
-    		
-    		if (commands.getDebugCommand().isDebugEnabled() || print) {
-    			System.out.println("run: " + command);
-    			builder.inheritIO();
-    		}
-    
-    		try {
-    			Process process = builder.start();
-    			process.waitFor();
-    		}
-    		catch (IOException | InterruptedException e) {
-    			return false;
-    		}
+		catch (InterruptedException | IOException e) {
+			e.printStackTrace();
+			return false;
 		}
+//		}
+//		else {
+//    		ProcessBuilder builder = new ProcessBuilder();
+//    		builder.directory(new File("git-data"));
+//    		builder.command(command.split(" "));
+//
+//    		if (commands.getDebugCommand().isDebugEnabled() || print) {
+//    			System.out.println("run: " + command);
+//    			builder.inheritIO();
+//    		}
+//
+//    		try {
+//    			Process process = builder.start();
+//    			process.waitFor();
+//    		}
+//    		catch (IOException | InterruptedException e) {
+//    			return false;
+//    		}
+//		}
 		
 		return true;
 	}
@@ -155,9 +160,9 @@ public class OSInterfaceImpl implements OSInterface {
 		if (resourceAsStream != null) {
 			props.load(resourceAsStream);
 		}
-
+		
 		String version = (String) props.get("version");
-
+		
 		if (version == null) {
 			version = "Unknown";
 		}
@@ -184,9 +189,44 @@ public class OSInterfaceImpl implements OSInterface {
 	public String getLastInputFile() {
 		return lastInputFile;
 	}
-
+	
 	@Override
 	public boolean fileExists(String fileName) {
 		return new File(fileName).exists();
+	}
+	
+	// copied from ExecHelper in jline so that we can customize it
+	public static int waitAndCapture(Process p, boolean print) throws IOException, InterruptedException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+//		InputStream in = null;
+//		InputStream err = null;
+//		OutputStream out = null;
+		
+		try (InputStream in = p.getInputStream(); InputStream err = p.getErrorStream(); OutputStream out = p.getOutputStream()) {
+//			in = p.getInputStream();
+			
+			int c;
+			while ((c = in.read()) != -1) {
+				bout.write(c);
+			}
+
+//			err = p.getErrorStream();
+			
+			while ((c = err.read()) != -1) {
+				bout.write(c);
+			}
+
+//			out = p.getOutputStream();
+			int exitCode = p.waitFor();
+			
+			if (print || exitCode != 0) {
+				System.out.println(bout.toString());
+			}
+			
+			return exitCode;
+//		} finally {
+//			close(in, out, err);
+//		}
+		}
 	}
 }

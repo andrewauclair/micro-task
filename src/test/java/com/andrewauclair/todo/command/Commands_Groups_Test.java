@@ -4,12 +4,15 @@ package com.andrewauclair.todo.command;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import picocli.CommandLine;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.never;
 
 class Commands_Groups_Test extends CommandsBaseTestCase {
 	@Test
@@ -17,14 +20,16 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mk -g /test/one/two/three/");
 
 		assertTrue(tasks.hasGroupPath("/test/one/two/three/"));
-
-		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");
-		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/group.txt");
-		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/group.txt");
-		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/three/group.txt");
-		Mockito.verify(osInterface).runGitCommand("git add .", false);
-		Mockito.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"", false);
-
+		
+		InOrder inOrder = Mockito.inOrder(osInterface);
+		
+		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");
+		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/group.txt");
+		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/group.txt");
+		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/three/group.txt");
+		inOrder.verify(osInterface).runGitCommand("git add .", false);
+		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"", false);
+		
 		assertOutput(
 				"Created group '/test/one/two/three/'",
 				""

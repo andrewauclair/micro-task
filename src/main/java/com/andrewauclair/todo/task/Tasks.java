@@ -430,8 +430,12 @@ public class Tasks {
 		if (!groupName.startsWith("/")) {
 			groupName = activeGroup.getFullPath() + groupName;
 		}
+		
+		boolean hasGroup = hasGroupPath(groupName);
+		
 		String currentParent = "/";
 		TaskGroup newGroup = null;
+		
 		for (String group : groupName.substring(1).split("/")) {
 			if (group.isEmpty()) {
 				continue;
@@ -453,7 +457,7 @@ public class Tasks {
 			}
 		}
 		
-		if (createFiles) {
+		if (createFiles && !hasGroup) {
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
 		}
