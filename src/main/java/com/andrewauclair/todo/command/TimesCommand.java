@@ -23,6 +23,9 @@ import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
 
 @CommandLine.Command(name = "times")
 public class TimesCommand extends Command {
+	@Option(names = {"--info"})
+	private boolean info;
+	
 	@Option(names = {"--proj-feat"})
 	private boolean proj_feat;
 	
@@ -318,6 +321,9 @@ public class TimesCommand extends Command {
 				displayTimes(filter, lists.size() > 1);
 			}
 		}
+		else if (info) {
+			displayLog(filter);
+		}
 		else if (today && !proj_feat) {
 			displayTimesForDay(Instant.ofEpochSecond(osInterface.currentSeconds()), filter);
 		}
@@ -358,6 +364,45 @@ public class TimesCommand extends Command {
 				System.out.println();
 			}
 		}
+	}
+	
+	private static class InfoData {
+		final long time;
+		final TaskState state;
+		
+		private InfoData(long time, TaskState state) {
+			this.time = time;
+			this.state = state;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			InfoData infoData = (InfoData) o;
+			return time == infoData.time &&
+					state == infoData.state;
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hash(time, state);
+		}
+	}
+	
+	private void displayLog(TaskTimesFilter filter) {
+		Map<InfoData, Task> data = new HashMap<>();
+		
+		for (TaskTimesFilter.TaskTimeFilterResult result : filter.getData()) {
+		
+		}
+		
+		new ArrayList<>(data.keySet()).sort(new Comparator<InfoData>() {
+			@Override
+			public int compare(InfoData o1, InfoData o2) {
+				return Long.compare(o1.time, o2.time);
+			}
+		});
 	}
 	
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
