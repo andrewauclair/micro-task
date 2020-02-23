@@ -22,7 +22,7 @@ public final class TaskList implements TaskContainer {
 	
 	private final List<Task> tasks = new ArrayList<>();
 	
-	TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, String project, String feature, TaskContainerState state) {
+	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, String project, String feature, TaskContainerState state) {
 		Objects.requireNonNull(parent);
 		
 		this.name = name;

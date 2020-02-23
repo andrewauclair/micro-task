@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.time.*;
@@ -8,19 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TaskFilter {
+public class TaskTimesFilter {
 	private final OSInterface osInterface;
 	private final Tasks tasks;
+	private List<String> lists = new ArrayList<>();
 	private List<Task> allTasks = new ArrayList<>();
-	private List<TaskFilterResult> results;
+	private List<TaskTimeFilterResult> results = new ArrayList<>();
 	
-	public TaskFilter(Tasks tasks) {
+	public TaskTimesFilter(Tasks tasks) {
 		osInterface = tasks.osInterface;
 		this.tasks = tasks;
 		this.allTasks.addAll(tasks.getAllTasks());
 		
-		List<Task> newTasks = new ArrayList<>();
-		List<TaskFilterResult> newResults = new ArrayList<>();
+		buildResults();
+	}
+	
+	private void buildResults() {
+		results.clear();
 		
 		for (Task task : allTasks) {
 			long totalTime = 0;
@@ -28,19 +33,27 @@ public class TaskFilter {
 			for (TaskTimes time : task.getStartStopTimes()) {
 				totalTime += time.getDuration(osInterface);
 			}
-
-			newTasks.add(task);
-			newResults.add(new TaskFilterResult(totalTime, task));
+			
+			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
 		}
-		allTasks = newTasks;
-		results = newResults;
 	}
 	
 	public void filterForList(String list) {
-		allTasks = tasks.getTasksForList(list);
+		lists.add(list);
+		
+		allTasks.clear();
+		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(name)));
+		
+		buildResults();
 	}
 	
-	public TaskFilter filterForDay(int month, int day, int year) {
+	public void filterForGroup(TaskGroup group) {
+		group.getChildren().stream()
+				.filter(child -> child instanceof TaskList)
+				.forEach(list -> filterForList(list.getFullPath()));
+	}
+	
+	public TaskTimesFilter filterForDay(int month, int day, int year) {
 		LocalDate of = LocalDate.of(year, month, day);
 		
 		ZoneId zoneId = osInterface.getZoneId();
@@ -50,11 +63,32 @@ public class TaskFilter {
 		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
 		LocalDateTime nextMidnight = midnight.plusDays(1);
 		
+		applyDateRange(zoneId, midnight, nextMidnight);
+		
+		return this;
+	}
+	
+	public TaskTimesFilter filterForWeek(int month, int day, int year) {
+		LocalDate of = LocalDate.of(year, month, day);
+		
+		LocalDate weekStart = of.minusDays(of.getDayOfWeek().getValue());
+		
+		ZoneId zoneId = osInterface.getZoneId();
+		
+		LocalDateTime midnight = LocalDateTime.of(weekStart, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(7);
+		
+		applyDateRange(zoneId, midnight, nextMidnight);
+		
+		return this;
+	}
+	
+	private void applyDateRange(ZoneId zoneId, LocalDateTime midnight, LocalDateTime nextMidnight) {
 		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
 		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
 		
 		List<Task> newTasks = new ArrayList<>();
-		List<TaskFilterResult> newResults = new ArrayList<>();
+		List<TaskTimeFilterResult> newResults = new ArrayList<>();
 		
 		for (Task task : allTasks) {
 			long totalTime = 0;
@@ -67,37 +101,38 @@ public class TaskFilter {
 			
 			if (totalTime > 0) {
 				newTasks.add(task);
-				newResults.add(new TaskFilterResult(totalTime, task));
+				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
 			}
 		}
+		
 		allTasks = newTasks;
 		results = newResults;
-		
-		return this;
 	}
 	
 	public List<Task> getTasks() {
 		return allTasks;
 	}
 	
-	public List<TaskFilterResult> getData() {
+	public List<TaskTimeFilterResult> getData() {
 		return results;
 	}
 	
-	public static final class TaskFilterResult {
-		private final long total;
-		private final Task task;
+	public static final class TaskTimeFilterResult {
+		public final long total;
+		public final Task task;
+		public final String list;
 		
-		public TaskFilterResult(long total, Task task) {
-			
+		public TaskTimeFilterResult(long total, Task task, String list) {
 			this.total = total;
 			this.task = task;
+			this.list = list;
 		}
 		
 		public long getTotal() {
 			return total;
 		}
 		
+		// TODO To be replaced by just using task
 		public Task getTask() {
 			return task;
 		}
@@ -110,14 +145,15 @@ public class TaskFilter {
 			if (o == null || getClass() != o.getClass()) {
 				return false;
 			}
-			TaskFilterResult that = (TaskFilterResult) o;
+			TaskTimeFilterResult that = (TaskTimeFilterResult) o;
 			return total == that.total &&
-					Objects.equals(task, that.task);
+					Objects.equals(task, that.task) &&
+					Objects.equals(list, that.list);
 		}
 		
 		@Override
 		public int hashCode() {
-			return Objects.hash(total, task);
+			return Objects.hash(total, task, list);
 		}
 		
 		@Override
@@ -125,6 +161,7 @@ public class TaskFilter {
 			return "TaskFilterResult{" +
 					"total=" + total +
 					", task=" + task +
+					", list='" + list + "'" +
 					'}';
 		}
 	}

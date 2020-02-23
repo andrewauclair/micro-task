@@ -1,18 +1,16 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
-import com.andrewauclair.todo.task.TaskFilter;
+import com.andrewauclair.todo.task.TaskTimesFilter;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
 import picocli.CommandLine;
 
-import java.io.PrintStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 @CommandLine.Command(name = "eod")
@@ -38,12 +36,12 @@ class EndOfDayCommand extends Command {
 
 		LocalDate today = LocalDate.ofInstant(instant, zoneId);
 
-		List<TaskFilter.TaskFilterResult> data = new TaskFilter(this.tasks).filterForDay(today.getMonth().getValue(), today.getDayOfMonth(), today.getYear()).getData();
+		List<TaskTimesFilter.TaskTimeFilterResult> data = new TaskTimesFilter(this.tasks).filterForDay(today.getMonth().getValue(), today.getDayOfMonth(), today.getYear()).getData();
 
 		// total the task times and determine how much time is left, then add that to the current seconds
 		long totalTime = 0;
 
-		for (TaskFilter.TaskFilterResult filterResult : data) {
+		for (TaskTimesFilter.TaskTimeFilterResult filterResult : data) {
 			totalTime += filterResult.getTotal();
 		}
 
@@ -55,9 +53,9 @@ class EndOfDayCommand extends Command {
 		}
 		else {
 			System.out.print("End of Day is in ");
-
-			TimesCommand.printTotalTime(System.out, eod - epochSecond, false);
-
+			
+			System.out.print(Utils.formatTime(eod - epochSecond, Utils.HighestTime.None));
+			
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(eod).atZone(zoneId).format(dateTimeFormatter);
 

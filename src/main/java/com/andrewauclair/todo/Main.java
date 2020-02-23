@@ -2,7 +2,6 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.command.Commands;
-import com.andrewauclair.todo.command.TimesCommand;
 import com.andrewauclair.todo.jline.CustomPicocliCommands;
 import com.andrewauclair.todo.os.GitLabReleases;
 import com.andrewauclair.todo.os.OSInterface;
@@ -242,9 +241,9 @@ public class Main {
 
 					List<TaskTimes> times = tasks.getActiveTask().getStartStopTimes();
 					TaskTimes currentTime = times.get(times.size() - 1);
-
-
-					TimesCommand.printTotalTime(new PrintStream(stream), tasks.getActiveTask().getElapsedTime(osInterface), false);
+					
+					
+					new PrintStream(stream).print(Utils.formatTime(tasks.getActiveTask().getElapsedTime(osInterface), Utils.HighestTime.None));
 					String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
 
 					if (width < description.length() + time.length()) {

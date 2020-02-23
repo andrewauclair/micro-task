@@ -1,6 +1,6 @@
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.task.TaskFilter;
+import com.andrewauclair.todo.task.TaskTimesFilter;
 import com.andrewauclair.todo.task.TaskFilterBuilder;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -18,13 +18,13 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 	final long june18_8_am = june17_8_am + SECONDS_IN_DAY;
 	
 	final TaskFilterBuilder mockTaskFilterBuilder = mock(TaskFilterBuilder.class);
-	final TaskFilter mockTaskFilter = mock(TaskFilter.class);
+	final TaskTimesFilter mockTaskTimesFilter = mock(TaskTimesFilter.class);
 	
 	@BeforeEach
 	void setup() throws IOException {
 		super.setup();
 		
-		when(mockTaskFilterBuilder.createFilter(tasks)).thenReturn(mockTaskFilter);
+		when(mockTaskFilterBuilder.createFilter(tasks)).thenReturn(mockTaskTimesFilter);
 		
 		tasks.setFilterBuilder(mockTaskFilterBuilder);
 	}
