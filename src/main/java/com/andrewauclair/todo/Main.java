@@ -136,23 +136,18 @@ public class Main {
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 		
-		LineReader lineReader = LineReaderBuilder.builder()
-				.terminal(terminal)
-				.completer(systemCompleter)
-				.parser(new DefaultParser())
-				.variable(LineReader.LIST_MAX, 50)
-				.variable(LineReader.BELL_STYLE, "none")
-				.build();
+		LineReader lineReader = buildLineReader(systemCompleter, terminal);
 		
 		builtins.setLineReader(lineReader);
 		cliCommands.setReader(lineReader);
+		bindCtrlBackspace(lineReader);
+
 		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
 		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
 		
 		Status status = Status.getStatus(terminal);
 		status.setBorder(true);
 		
-		bindCtrlBackspace(lineReader);
 		
 		if (loadSuccessful) {
 			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
@@ -217,6 +212,21 @@ public class Main {
 				hasActiveTask = tasks.hasActiveTask();
 				
 				updateStatus(tasks, status, terminal, osInterface);
+				
+				// set up picocli commands
+				cliCommands = new CliCommands();
+				cmd = commands.buildCommandLine();
+				picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
+				
+				systemCompleter = builtins.compileCompleters();
+				systemCompleter.add(picocliCommands.compileCompleters());
+				systemCompleter.compile();
+				
+				lineReader = buildLineReader(systemCompleter, terminal);
+				
+				builtins.setLineReader(lineReader);
+				cliCommands.setReader(lineReader);
+				bindCtrlBackspace(lineReader);
 			}
 			catch (UserInterruptException ignored) {
 			}
@@ -224,6 +234,16 @@ public class Main {
 				return;
 			}
 		}
+	}
+	
+	private static LineReader buildLineReader(Completers.SystemCompleter systemCompleter, Terminal terminal) {
+		return LineReaderBuilder.builder()
+					.terminal(terminal)
+					.completer(systemCompleter)
+					.parser(new DefaultParser())
+					.variable(LineReader.LIST_MAX, 50)
+					.variable(LineReader.BELL_STYLE, "none")
+					.build();
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
