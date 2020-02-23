@@ -138,6 +138,16 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		assertEquals("/default", spec.optionsMap().get("--dest-list").completionCandidates().iterator().next());
 	}
 	
+	@Test
+	void invalid_list_path() {
+		commands.execute(printStream, "ch -l /project/test/");
+		
+		assertOutput(
+				"'/project/test/' is not a valid list path",
+				""
+		);
+	}
+	
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void list_command_help(String parameter) {

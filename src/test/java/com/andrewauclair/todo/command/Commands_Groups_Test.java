@@ -147,6 +147,16 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 		assertEquals("/test/", spec.optionsMap().get("--dest-group").completionCandidates().iterator().next());
 	}
 
+	@Test
+	void invalid_group_path() {
+		commands.execute(printStream, "ch -g /project/test");
+		
+		assertOutput(
+				"'/project/test' is not a valid group path",
+				""
+		);
+	}
+	
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void mklist_command_help(String parameter) {
