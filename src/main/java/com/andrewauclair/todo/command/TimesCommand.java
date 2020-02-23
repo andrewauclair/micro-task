@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
@@ -258,6 +259,14 @@ public class TimesCommand extends Command {
 		}
 		else if (day != null) {
 			ZoneId zoneId = osInterface.getZoneId();
+			
+			if (day < 1 || day > 31) {
+				throw new TaskException("Day option must be 1 - 31");
+			}
+			
+			if (month != null && (month < 1 || month > 12)) {
+				throw new TaskException("Month option must be 1 - 12");
+			}
 			
 			int day = this.day;
 			int month = this.month != null ? this.month : instant.atZone(zoneId).getMonthValue();
