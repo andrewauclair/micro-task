@@ -21,10 +21,10 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"-c", "--command"})
 	void add_new_alias(String arg) {
-		commands.execute(printStream, "alias -n ttt " + arg + " \"times --tasks --today\"");
+		commands.execute(printStream, "alias -n ttt " + arg + " \"times --today\"");
 		
 		assertOutput(
-				"Created alias 'ttt' for command 'times --tasks --today'",
+				"Created alias 'ttt' for command 'times --today'",
 				""
 		);
 	}
@@ -35,10 +35,10 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"ttt=\"times --tasks --today\"" + NL
+				"ttt=\"times --today\"" + NL
 		);
 	}
 	
@@ -46,10 +46,10 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	void write_failure_prints_exception() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 		
-		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
 		
 		assertOutput(
-				"Created alias 'ttt' for command 'times --tasks --today'",
+				"Created alias 'ttt' for command 'times --today'",
 				"",
 				"java.io.IOException"
 		);
@@ -61,58 +61,58 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
 		
 		outputStream.reset();
 		
 		commands.execute(printStream, "alias --name lt --command \"list --tasks\"");
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"ttt=\"times --tasks --today\"" + NL +
+				"ttt=\"times --today\"" + NL +
 						"lt=\"list --tasks\"" + NL
 		);
 	}
 	
 	@Test
 	void running_alias_runs_command() {
-		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+		commands.execute(printStream, "alias -n tt -c \"times --today\"");
 		
-		commands.execute(printStream, "ttt");
+		commands.execute(printStream, "tt");
 		
 		assertOutput(
-				"Created alias 'ttt' for command 'times --tasks --today'",
+				"Created alias 'tt' for command 'times --today'",
 				"",
-				ConsoleColors.ANSI_BOLD + "times --tasks --today" + ConsoleColors.ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "times --today" + ConsoleColors.ANSI_RESET,
 				"Times for day 12/31/1969",
 				"",
 				"",
-				"Total time: 00s",
+				"00s   Total",
 				""
 		);
 	}
 	
 	@Test
-	void adding_an_alias_commits_the_file_to_git() throws IOException, InterruptedException {
-		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+	void adding_an_alias_commits_the_file_to_git() {
+		commands.execute(printStream, "alias -n tt -c \"times --today\"");
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
 		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'ttt' for command 'times --tasks --today'\"", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'tt' for command 'times --today'\"", false);
 	}
 	
 	@Test
 	void remove_an_alias() {
-		commands.addAlias("ttt", "times --tasks --today");
+		commands.addAlias("ttt", "times --today");
 		
-		assertThat(commands.getAliases()).containsEntry("ttt", "times --tasks --today");
+		assertThat(commands.getAliases()).containsEntry("ttt", "times --today");
 		
 		commands.execute(printStream, "alias -r -n ttt");
 		
 		assertThat(commands.getAliases()).isEmpty();
 		
 		assertOutput(
-				"Removed alias 'ttt' for command 'times --tasks --today'",
+				"Removed alias 'ttt' for command 'times --today'",
 				""
 		);
 	}
@@ -123,14 +123,14 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		
 		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		commands.execute(printStream, "alias --name ttt --command \"times --tasks --today\"");
+		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
 		
 		outputStream.reset();
 		
 		commands.execute(printStream, "alias -n ltg -c \"list --tasks --group\"");
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"ttt=\"times --tasks --today\"" + NL +
+				"ttt=\"times --today\"" + NL +
 						"ltg=\"list --tasks --group\"" + NL
 		);
 		
@@ -145,16 +145,16 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void removing_alias_commits_new_file() {
-		commands.addAlias("ttt", "times --tasks --today");
+		commands.addAlias("ttt", "times --today");
 		
-		assertThat(commands.getAliases()).containsEntry("ttt", "times --tasks --today");
+		assertThat(commands.getAliases()).containsEntry("ttt", "times --today");
 		
 		commands.execute(printStream, "alias --remove -n ttt");
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
 		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Removed alias 'ttt' for command 'times --tasks --today'\"", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Removed alias 'ttt' for command 'times --today'\"", false);
 	}
 	
 	@Test
@@ -170,13 +170,13 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"--list", "-l"})
 	void list_aliases_command(String parameter) {
-		commands.addAlias("ttt", "times --tasks --today");
+		commands.addAlias("ttt", "times --today");
 		commands.addAlias("ltg", "list --tasks --group");
 		
 		commands.execute(printStream, "alias " + parameter);
 		
 		assertOutput(
-				"'ttt' = 'times --tasks --today'",
+				"'ttt' = 'times --today'",
 				"'ltg' = 'list --tasks --group'",
 				""
 		);
@@ -184,9 +184,9 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void alias_already_exists() {
-		commands.addAlias("ttt", "times --tasks --today");
+		commands.addAlias("ttt", "times --today");
 		
-		commands.execute(printStream, "alias -n ttt -c \"times --tasks --today\"");
+		commands.execute(printStream, "alias -n ttt -c \"times --today\"");
 		
 		assertOutput(
 				"Alias 'ttt' already exists.",

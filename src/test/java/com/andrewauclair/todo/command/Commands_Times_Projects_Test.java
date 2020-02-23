@@ -1,90 +1,408 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.task.Task;
+import com.andrewauclair.todo.task.TaskState;
+import com.andrewauclair.todo.task.TaskTimes;
+import com.andrewauclair.todo.task.TaskTimesFilter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
+import static org.mockito.Mockito.*;
 
-class Commands_Times_Projects_Test extends CommandsBaseTestCase {
+class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	@Test
-	void basic_times_command_for_projects_and_features() {
-		tasks.setActiveList("/default");
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
-		
-		tasks.addTask("Test");
-		addTaskTimes(1, 1561080202, 1561081202);
-		
-		tasks.addList("one", true);
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
-		
-		tasks.setActiveList("/one");
-		tasks.addTask("Test");
-		
-		addTaskTimes(2, 1561080202, 1561081402);
-		
+	void times_with_only_proj_feat_is_invalid() {
 		commands.execute(printStream, "times --proj-feat");
 		
 		assertOutput(
-				"Project 1 / Feature 1     16m 40s",
-				"Project 2 / Feature 2     20m 00s",
+				"Invalid command.",
+				""
+		);
+	}
+	
+	@Test
+	void basic_times_command_for_projects_and_features() {
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+		
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat --all-time");
+		
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, atLeast(1)).getData();
+		order.verifyNoMoreInteractions();
+		
+		assertOutput(
+				"01h 12m 00s   Project 1 / Feature 1",
+				"02h 21m 35s   Project 2 / Feature 2",
 				"",
-				"Total                     36m 40s",
+				"03h 33m 35s   Total",
+				""
+		);
+	}
+	
+	@Test
+	void project_feature_times_today() {
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+		
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getTasks()).thenReturn(
+				Arrays.asList(task1, task2, task3, task5)
+		);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		setTime(june17_8_am);
+		
+		commands.execute(printStream, "times --proj-feat --today");
+		
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+		
+		assertOutput(
+				"01h 12m 00s   Project 1 / Feature 1",
+				"02h 21m 35s   Project 2 / Feature 2",
+				"",
+				"03h 33m 35s   Total",
+				""
+		);
+	}
+	
+	@Test
+	void project_feature_times_yesterday() {
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+		
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getTasks()).thenReturn(
+				Arrays.asList(task1, task2, task3, task5)
+		);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		setTime(june17_8_am);
+		
+		commands.execute(printStream, "times --proj-feat --yesterday");
+		
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 16, 2019);
+		
+		assertOutput(
+				"01h 12m 00s   Project 1 / Feature 1",
+				"02h 21m 35s   Project 2 / Feature 2",
+				"",
+				"03h 33m 35s   Total",
+				""
+		);
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = {"-m 6 -d 17 -y 2019", "-m 6 -d 17", "-d 17 -y 2019"})
+	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight(String parameters) {
+		setTime(june18_8_am);
+		
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+		
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getTasks()).thenReturn(
+				Arrays.asList(task1, task2, task3, task5)
+		);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat " + parameters);
+		
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+		
+		assertOutput(
+				"01h 12m 00s   Project 1 / Feature 1",
+				"02h 21m 35s   Project 2 / Feature 2",
+				"",
+				"03h 33m 35s   Total",
+				""
+		);
+	}
+	
+	@Test
+	void project_feature_output_for_entire_week() {
+		setTime(june17_8_am);
+		
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
+		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+		
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat --week");
+		
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForWeek(6, 17, 2019);
+		
+		assertOutput(
+				"01h 12m 00s   Project 1 / Feature 1",
+				"02h 21m 35s   Project 2 / Feature 2",
+				"",
+				"03h 33m 35s   Total",
 				""
 		);
 	}
 	
 	@Test
 	void tasks_with_no_project_or_feature_say_none() {
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
 		tasks.setActiveList("/default");
 		
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		
-		commands.execute(printStream, "times --proj-feat");
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Collections.singletonList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				ANSI_REVERSED + "None" + ANSI_RESET + " / " + ANSI_REVERSED + "None" + ANSI_RESET + "     16m 40s",
+				"10m 21s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
-				"Total           16m 40s",
+				"10m 21s   Total",
 				""
 		);
 	}
 	
 	@Test
 	void task_with_no_project_says_none() {
-		tasks.setActiveList("/default");
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 		
-		tasks.addTask("Test 1");
-		addTaskTimes(1, 1561080202, 1561081202);
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
 		
-		commands.execute(printStream, "times --proj-feat");
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1     16m 40s",
+				"03h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1",
 				"",
-				"Total                16m 40s",
+				"03h 33m 35s   Total",
 				""
 		);
 	}
 	
 	@Test
 	void task_with_no_feature_says_none() {
-		tasks.setActiveList("/default");
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		
-		tasks.addTask("Test 1");
-		addTaskTimes(1, 1561080202, 1561081202);
+		tasks.setActiveList("/default");
+		tasks.addTask(task1);
+		tasks.addTask(task2);
 		
-		commands.execute(printStream, "times --proj-feat");
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+		
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+		
+		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET + "     16m 40s",
+				"03h 33m 35s" + "   Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
-				"Total                16m 40s",
+				"03h 33m 35s   Total",
 				""
 		);
 	}

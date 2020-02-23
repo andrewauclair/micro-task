@@ -256,7 +256,7 @@ public class Tasks {
 		list.addTask(newTask);
 	}
 
-	private String getAbsoluteGroupName(String name) {
+	public String getAbsoluteGroupName(String name) {
 		if (!name.startsWith("/")) {
 			return activeGroup.getFullPath() + name;
 		}

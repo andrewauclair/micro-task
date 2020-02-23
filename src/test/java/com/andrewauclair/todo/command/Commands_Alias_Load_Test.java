@@ -17,7 +17,7 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 	void load_alias() throws IOException {
 		Mockito.when(osInterface.fileExists("git-data/aliases.txt")).thenReturn(true);
 
-		String contents = "ttt=\"times --tasks --today\"" + Utils.NL +
+		String contents = "t=\"times --today\"" + Utils.NL +
 				"end=\"eod -h 8\"" + Utils.NL;
 
 		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
@@ -27,7 +27,7 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 		commands.loadAliases();
 
 		assertThat(commands.getAliases()).containsOnly(
-				entry("ttt", "times --tasks --today"),
+				entry("t", "times --today"),
 				entry("end", "eod -h 8")
 		);
 	}
@@ -36,7 +36,7 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 	void loading_aliases_removes_existing_aliases() throws IOException {
 		Mockito.when(osInterface.fileExists("git-data/aliases.txt")).thenReturn(true);
 
-		String contents = "ttt=\"times --tasks --today\"" + Utils.NL +
+		String contents = "tt=\"times --today\"" + Utils.NL +
 				"end=\"eod -h 8\"" + Utils.NL;
 
 		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
@@ -48,7 +48,7 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 		commands.loadAliases();
 
 		assertThat(commands.getAliases()).containsOnly(
-				entry("ttt", "times --tasks --today"),
+				entry("tt", "times --today"),
 				entry("end", "eod -h 8")
 		);
 	}

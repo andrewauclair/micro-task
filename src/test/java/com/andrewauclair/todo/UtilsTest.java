@@ -29,10 +29,10 @@ public class UtilsTest {
 				Arguments.of("01w 03d 01h 08m 05s", 234_485, Utils.HighestTime.None),
 				
 				Arguments.of("05s", 5, Utils.HighestTime.Second),
-				Arguments.of("00m 05s", 5, Utils.HighestTime.Minute),
-				Arguments.of("00h 00m 05s", 5, Utils.HighestTime.Hour),
-				Arguments.of("00d 00h 00m 05s", 5, Utils.HighestTime.Day),
-				Arguments.of("00w 00d 00h 00m 05s", 5, Utils.HighestTime.Week),
+				Arguments.of("    05s", 5, Utils.HighestTime.Minute),
+				Arguments.of("        05s", 5, Utils.HighestTime.Hour),
+				Arguments.of("            05s", 5, Utils.HighestTime.Day),
+				Arguments.of("                05s", 5, Utils.HighestTime.Week),
 				
 				Arguments.of("01w 00d 00h 00m 00s", 144_000, Utils.HighestTime.None),
 				Arguments.of("01d 00h 00m 00s", 28_800, Utils.HighestTime.None),
@@ -50,12 +50,9 @@ public class UtilsTest {
 	public static String createFile(String... lines) {
 		StringBuilder buffer = new StringBuilder();
 
-		for (int i = 0; i < lines.length; i++) {
-			buffer.append(lines[i]);
-//			if (i + 1 < lines.length)
-			{
-				buffer.append(NL);
-			}
+		for (String line : lines) {
+			buffer.append(line);
+			buffer.append(NL);
 		}
 
 		return buffer.toString();

@@ -6,7 +6,7 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.*;
 import picocli.CommandLine;
 
-public abstract class SetCommand extends Command {
+abstract class SetCommand extends Command {
 
 	static class SetTaskCommand extends SetCommand {
 

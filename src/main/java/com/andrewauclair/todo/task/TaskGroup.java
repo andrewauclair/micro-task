@@ -109,7 +109,7 @@ public final class TaskGroup implements TaskContainer {
 		return parent.getFullPath();
 	}
 	
-	void addChild(TaskContainer child) {
+	public void addChild(TaskContainer child) {
 		children.add(child);
 	}
 	

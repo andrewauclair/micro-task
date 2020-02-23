@@ -17,7 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TaskFilterTest extends TaskBaseTestCase {
+class TaskTimesFilterTest extends TaskBaseTestCase {
 	private static final long SECONDS_IN_DAY = 86400;
 	private static final long MINUTE = 60;
 	private static final long HOUR = 60 * MINUTE;
@@ -58,57 +58,57 @@ class TaskFilterTest extends TaskBaseTestCase {
 	List<Integer> taskLengths = new ArrayList<>();
 	
 	//	@BeforeEach
-	void setup() {
-		int count = 81;
-		for (int i = 0; i < 27; i++) {
-			taskLengths.add(count);
-			count -= 3;
-		}
-		
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, createTaskTimes(1), false));
-		tasks.addTask(new Task(2, "Test 2", TaskState.Inactive, createTaskTimes(2), false));
-		tasks.addTask(new Task(3, "Test 3", TaskState.Inactive, createTaskTimes(3), false));
-		tasks.addTask(new Task(4, "Test 4", TaskState.Inactive, createTaskTimes(4), false));
-		tasks.addTask(new Task(5, "Test 5", TaskState.Inactive, createTaskTimes(5), false));
-		tasks.addTask(new Task(6, "Test 6", TaskState.Inactive, createTaskTimes(6), false));
-		tasks.addTask(new Task(7, "Test 7", TaskState.Inactive, createTaskTimes(7), false));
-		tasks.addTask(new Task(8, "Test 8", TaskState.Inactive, createTaskTimes(8), false));
-		tasks.addTask(new Task(9, "Test 9", TaskState.Inactive, createTaskTimes(9), false));
-		
-		tasks.createGroup("/one");
-		tasks.switchGroup("/one");
-		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
-		
-		tasks.addTask(new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false));
-		tasks.addTask(new Task(11, "Test 11", TaskState.Inactive, createTaskTimes(11), false));
-		tasks.addTask(new Task(12, "Test 12", TaskState.Inactive, createTaskTimes(12), false));
-		tasks.addTask(new Task(13, "Test 13", TaskState.Inactive, createTaskTimes(13), false));
-		tasks.addTask(new Task(14, "Test 14", TaskState.Inactive, createTaskTimes(14), false));
-		tasks.addTask(new Task(15, "Test 15", TaskState.Inactive, createTaskTimes(15), false));
-		tasks.addTask(new Task(16, "Test 16", TaskState.Inactive, createTaskTimes(16), false));
-		tasks.addTask(new Task(17, "Test 17", TaskState.Inactive, createTaskTimes(17), false));
-		tasks.addTask(new Task(18, "Test 18", TaskState.Inactive, createTaskTimes(18), false));
-		
-		tasks.createGroup("/two/three");
-		tasks.switchGroup("/two/three");
-		
-		tasks.addList("stuff", true);
-		tasks.setActiveList("stuff");
-		
-		tasks.addTask(new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false));
-		tasks.addTask(new Task(20, "Test 20", TaskState.Inactive, createTaskTimes(20), false));
-		tasks.addTask(new Task(21, "Test 21", TaskState.Inactive, createTaskTimes(21), false));
-		tasks.addTask(new Task(22, "Test 22", TaskState.Inactive, createTaskTimes(22), false));
-		tasks.addTask(new Task(23, "Test 23", TaskState.Inactive, createTaskTimes(23), false));
-		tasks.addTask(new Task(24, "Test 24", TaskState.Inactive, createTaskTimes(24), false));
-		tasks.addTask(new Task(25, "Test 25", TaskState.Inactive, createTaskTimes(25), false));
-		tasks.addTask(new Task(26, "Test 26", TaskState.Inactive, createTaskTimes(26), false));
-		tasks.addTask(new Task(27, "Test 27", TaskState.Inactive, createTaskTimes(27), false));
-		
-		tasks.addTask(new Task(28, "Test 28", TaskState.Inactive, Collections.singletonList(new TaskTimes(june17_8_am, june17_8_am + 10))));
-	}
+//	void setup() {
+//		int count = 81;
+//		for (int i = 0; i < 27; i++) {
+//			taskLengths.add(count);
+//			count -= 3;
+//		}
+//
+//		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, createTaskTimes(1), false));
+//		tasks.addTask(new Task(2, "Test 2", TaskState.Inactive, createTaskTimes(2), false));
+//		tasks.addTask(new Task(3, "Test 3", TaskState.Inactive, createTaskTimes(3), false));
+//		tasks.addTask(new Task(4, "Test 4", TaskState.Inactive, createTaskTimes(4), false));
+//		tasks.addTask(new Task(5, "Test 5", TaskState.Inactive, createTaskTimes(5), false));
+//		tasks.addTask(new Task(6, "Test 6", TaskState.Inactive, createTaskTimes(6), false));
+//		tasks.addTask(new Task(7, "Test 7", TaskState.Inactive, createTaskTimes(7), false));
+//		tasks.addTask(new Task(8, "Test 8", TaskState.Inactive, createTaskTimes(8), false));
+//		tasks.addTask(new Task(9, "Test 9", TaskState.Inactive, createTaskTimes(9), false));
+//
+//		tasks.createGroup("/one");
+//		tasks.switchGroup("/one");
+//
+//		tasks.addList("test", true);
+//		tasks.setActiveList("test");
+//
+//		tasks.addTask(new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false));
+//		tasks.addTask(new Task(11, "Test 11", TaskState.Inactive, createTaskTimes(11), false));
+//		tasks.addTask(new Task(12, "Test 12", TaskState.Inactive, createTaskTimes(12), false));
+//		tasks.addTask(new Task(13, "Test 13", TaskState.Inactive, createTaskTimes(13), false));
+//		tasks.addTask(new Task(14, "Test 14", TaskState.Inactive, createTaskTimes(14), false));
+//		tasks.addTask(new Task(15, "Test 15", TaskState.Inactive, createTaskTimes(15), false));
+//		tasks.addTask(new Task(16, "Test 16", TaskState.Inactive, createTaskTimes(16), false));
+//		tasks.addTask(new Task(17, "Test 17", TaskState.Inactive, createTaskTimes(17), false));
+//		tasks.addTask(new Task(18, "Test 18", TaskState.Inactive, createTaskTimes(18), false));
+//
+//		tasks.createGroup("/two/three");
+//		tasks.switchGroup("/two/three");
+//
+//		tasks.addList("stuff", true);
+//		tasks.setActiveList("stuff");
+//
+//		tasks.addTask(new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false));
+//		tasks.addTask(new Task(20, "Test 20", TaskState.Inactive, createTaskTimes(20), false));
+//		tasks.addTask(new Task(21, "Test 21", TaskState.Inactive, createTaskTimes(21), false));
+//		tasks.addTask(new Task(22, "Test 22", TaskState.Inactive, createTaskTimes(22), false));
+//		tasks.addTask(new Task(23, "Test 23", TaskState.Inactive, createTaskTimes(23), false));
+//		tasks.addTask(new Task(24, "Test 24", TaskState.Inactive, createTaskTimes(24), false));
+//		tasks.addTask(new Task(25, "Test 25", TaskState.Inactive, createTaskTimes(25), false));
+//		tasks.addTask(new Task(26, "Test 26", TaskState.Inactive, createTaskTimes(26), false));
+//		tasks.addTask(new Task(27, "Test 27", TaskState.Inactive, createTaskTimes(27), false));
+//
+//		tasks.addTask(new Task(28, "Test 28", TaskState.Inactive, Collections.singletonList(new TaskTimes(june17_8_am, june17_8_am + 10))));
+//	}
 	
 	private List<TaskTimes> createTaskTimes(long id) {
 		// june 17 to june 28
@@ -211,13 +211,13 @@ class TaskFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void TaskFilterResult_equals() {
-		EqualsVerifier.forClass(TaskFilter.TaskFilterResult.class).verify();
+		EqualsVerifier.forClass(TaskTimesFilter.TaskTimeFilterResult.class).verify();
 	}
 	
 	@Test
 	void TaskFilterResult_toString() {
-		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, taskTimes=[1000 - 2000, project='', feature=''], recurring=false}}",
-				new TaskFilter.TaskFilterResult(1000, new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000, 2000)))).toString());
+		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, taskTimes=[1000 - 2000, project='', feature=''], recurring=false}, list='/default'}",
+				new TaskTimesFilter.TaskTimeFilterResult(1000, new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
 	}
 	
 	@Test
@@ -228,12 +228,12 @@ class TaskFilterTest extends TaskBaseTestCase {
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
-		TaskFilter filter = new TaskFilter(tasks);
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
 		
 		filter.filterForDay(6, 18, 2019);
 		
 		assertThat(filter.getData()).containsOnly(
-				new TaskFilter.TaskFilterResult(HOUR, task2)
+				new TaskTimesFilter.TaskTimeFilterResult(HOUR, task2, "/default")
 		);
 	}
 	
@@ -245,12 +245,12 @@ class TaskFilterTest extends TaskBaseTestCase {
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
-		TaskFilter filter = new TaskFilter(tasks);
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
 		
 		filter.filterForDay(6, 18, 2019);
 		
 		assertThat(filter.getData()).containsOnly(
-				new TaskFilter.TaskFilterResult(HOUR, task2)
+				new TaskTimesFilter.TaskTimeFilterResult(HOUR, task2, "/default")
 		);
 	}
 	
@@ -264,12 +264,12 @@ class TaskFilterTest extends TaskBaseTestCase {
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
-		TaskFilter filter = new TaskFilter(tasks);
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
 		
 		filter.filterForDay(6, 18, 2019);
 		
 		assertThat(filter.getData()).containsOnly(
-				new TaskFilter.TaskFilterResult(HOUR, task2)
+				new TaskTimesFilter.TaskTimeFilterResult(HOUR, task2, "/default")
 		);
 	}
 	
@@ -285,13 +285,13 @@ class TaskFilterTest extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(june17_8_am + SECONDS_IN_DAY + HOUR + MINUTE);
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
-		TaskFilter filter = new TaskFilter(tasks);
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
 		
 		filter.filterForDay(6, 18, 2019);
 		
 		assertThat(filter.getData()).containsOnly(
-				new TaskFilter.TaskFilterResult(HOUR, task2),
-				new TaskFilter.TaskFilterResult(HOUR + MINUTE, task3)
+				new TaskTimesFilter.TaskTimeFilterResult(HOUR, task2, "/default"),
+				new TaskTimesFilter.TaskTimeFilterResult(HOUR + MINUTE, task3, "/default")
 		);
 	}
 	
@@ -313,12 +313,90 @@ class TaskFilterTest extends TaskBaseTestCase {
 		
 		tasks.addTask("Test 5");
 		
-		TaskFilter filter = new TaskFilter(tasks);
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
 		
 		filter.filterForList("/test/one");
 		
 		assertThat(filter.getTasks()).containsOnly(
 				task3, task4
+		);
+	}
+
+	@Test
+	void filter_by_multiple_lists() throws IOException {
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		tasks.addList("/test/one", true);
+		tasks.setActiveList("/test/one");
+
+		Task task3 = tasks.addTask("Test 3");
+		Task task4 = tasks.addTask("Test 4");
+
+		tasks.addList("/test/two", true);
+		tasks.setActiveList("/test/two");
+
+		Task task5 = tasks.addTask("Test 5");
+
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
+
+		filter.filterForList("/test/one");
+		filter.filterForList("/test/two");
+
+		assertThat(filter.getTasks()).containsOnly(
+				task3, task4, task5
+		);
+
+		assertThat(filter.getData()).containsOnly(
+				new TaskTimesFilter.TaskTimeFilterResult(0, task3, "/test/one"),
+				new TaskTimesFilter.TaskTimeFilterResult(0, task4, "/test/one"),
+				new TaskTimesFilter.TaskTimeFilterResult(0, task5, "/test/two")
+		);
+	}
+
+	@Test
+	void filter_by_group() throws IOException {
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
+
+		tasks.addList("/one/impl", true);
+		tasks.addList("/one/test", true);
+
+		tasks.addList("/two/impl", true);
+		tasks.addList("/two/test", true);
+
+		tasks.setActiveList("/one/impl");
+
+		Task task1 = tasks.addTask("Test 1");
+		Task task2 = tasks.addTask("Test 2");
+
+		tasks.setActiveList("/one/test");
+
+		Task task3 = tasks.addTask("Test 3");
+		Task task4 = tasks.addTask("Test 4");
+
+		tasks.setActiveList("/two/impl");
+		tasks.addTask("Test 5");
+		tasks.addTask("Test 6");
+
+		tasks.setActiveList("/two/test");
+		tasks.addTask("Test 7");
+		tasks.addTask("Test 8");
+
+		TaskTimesFilter filter = new TaskTimesFilter(tasks);
+
+		filter.filterForGroup(tasks.getGroup("/one/"));
+
+		assertThat(filter.getTasks()).containsOnly(
+				task1, task2, task3, task4
+		);
+
+		assertThat(filter.getData()).containsOnly(
+				new TaskTimesFilter.TaskTimeFilterResult(0, task1, "/one/impl"),
+				new TaskTimesFilter.TaskTimeFilterResult(0, task2, "/one/impl"),
+				new TaskTimesFilter.TaskTimeFilterResult(0, task3, "/one/test"),
+				new TaskTimesFilter.TaskTimeFilterResult(0, task4, "/one/test")
 		);
 	}
 }

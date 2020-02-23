@@ -9,20 +9,22 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 	@ValueSource(strings = {"-h", "--help"})
 	void times_command_help(String parameter) {
 		commands.execute(printStream, "times " + parameter);
-
+		
 		assertOutput(
-				"Usage:  times [-h] [--proj-feat] [--summary] [--tasks] [--today] [-d=<day>]",
-				"              [--list=<list>] [-m=<month>] [--task=<id>] [-y=<year>]",
+				"Usage:  times [-h] [--all-time] [--proj-feat] [--today] [--week] [--yesterday]",
+				"              [-d=<day>] [-m=<month>] [-y=<year>] [--group=<group>]...",
+				"              [--list=<list>]...",
+				"      --all-time",
 				"  -d, --day=<day>",
+				"      --group=<group>",
 				"  -h, --help            Show this help message.",
 				"      --list=<list>",
 				"  -m, --month=<month>",
 				"      --proj-feat",
-				"      --summary",
-				"      --task=<id>",
-				"      --tasks",
 				"      --today",
-				"  -y, --year=<year>"
+				"      --week",
+				"  -y, --year=<year>",
+				"      --yesterday"
 		);
 	}
 }

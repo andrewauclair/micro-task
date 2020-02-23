@@ -63,6 +63,7 @@ public class Commands {
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
+		commands.put("info", new InfoCommand(tasks, osInterface));
 	}
 
 	private Command createCommand(String command) {
@@ -111,6 +112,8 @@ public class Commands {
 			return new AliasCommand(this, osInterface);
 		case "next":
 			return new NextCommand(tasks);
+		case "info":
+			return new InfoCommand(tasks, osInterface);
 		}
 
 		for (String alias : aliases.keySet()) {

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public final class TaskTimes {
-	static final long TIME_NOT_SET = Long.MIN_VALUE;
+	public static final long TIME_NOT_SET = Long.MIN_VALUE;
 	
 	public final long start;
 	public final long stop;

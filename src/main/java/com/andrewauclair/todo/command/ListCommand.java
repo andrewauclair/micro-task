@@ -45,7 +45,7 @@ public class ListCommand extends Command {
 		this.tasksData = tasks;
 	}
 
-	private void printTasks(PrintStream output, List<Task> tasksList, int limit) {
+	private void printTasks(List<Task> tasksList, int limit) {
 		Optional<Task> max = tasksList.stream()
 				.limit(limit)
 				.max(Comparator.comparingInt(o -> String.valueOf(o.id).length()));
@@ -53,41 +53,41 @@ public class ListCommand extends Command {
 		tasksList.stream()
 				.limit(limit)
 				.sorted(Comparator.comparingLong(o -> o.id))
-				.forEach(str -> printTask(output, str, String.valueOf(max.get().id).length()));
+				.forEach(str -> printTask(str, String.valueOf(max.get().id).length()));
 	}
 
-	private void printListRelative(PrintStream output, TaskList list, boolean finished) {
+	private void printListRelative(TaskList list, boolean finished) {
 		if (list.getFullPath().equals(tasksData.getActiveList())) {
-			output.print("* ");
-			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
+			System.out.print("* ");
+			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
 		}
 		else if (finished == (list.getState() == TaskContainerState.Finished)) {
-			output.print("  ");
-			output.println(list.getName());
+			System.out.print("  ");
+			System.out.println(list.getName());
 		}
 	}
 
-	private void printTask(PrintStream output, Task task, int maxLength) {
+	private void printTask(Task task, int maxLength) {
 		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
 
 		if (task.id == tasksData.getActiveTaskID()) {
-			output.print("* ");
-			output.print(printID);
-			ConsoleColors.println(output, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+			System.out.print("* ");
+			System.out.print(printID);
+			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
 		}
 		else if (task.isRecurring()) {
-			output.print("R ");
-			output.print(printID);
-			output.println(task.description());
+			System.out.print("R ");
+			System.out.print(printID);
+			System.out.println(task.description());
 		}
 		else {
-			output.print("  ");
-			output.print(printID);
-			output.println(task.description());
+			System.out.print("  ");
+			System.out.print(printID);
+			System.out.println(task.description());
 		}
 	}
 
-	private int printTasks(PrintStream output, TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
+	private int printTasks(TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskList) {
 				TaskList listChild = (TaskList) child;
@@ -99,13 +99,13 @@ public class ListCommand extends Command {
 				totalTasks += tasksList.size();
 
 				if (tasksList.size() > 0) {
-					output.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
-					printTasks(output, tasksList, Integer.MAX_VALUE);
-					output.println();
+					System.out.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
+					printTasks(tasksList, Integer.MAX_VALUE);
+					System.out.println();
 				}
 			}
 			else if (recursive) {
-				totalTasks = printTasks(output, (TaskGroup) child, totalTasks, finished, recursive);
+				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, recursive);
 			}
 		}
 		return totalTasks;
@@ -146,7 +146,7 @@ public class ListCommand extends Command {
 			int totalTasks = 0;
 
 			if (useGroup) {
-				totalTasks = printTasks(System.out, tasksData.getActiveGroup(), totalTasks, finished, recursive);
+				totalTasks = printTasks(tasksData.getActiveGroup(), totalTasks, finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasksData.getTasksForList(list).stream()
@@ -155,7 +155,7 @@ public class ListCommand extends Command {
 
 				totalTasks += tasksList.size();
 
-				printTasks(System.out, tasksList, limit);
+				printTasks(tasksList, limit);
 			}
 
 			if (totalTasks > limit) {
@@ -191,7 +191,7 @@ public class ListCommand extends Command {
 
 			for (TaskContainer child : children) {
 				if (child instanceof TaskList) {
-					printListRelative(System.out, (TaskList) child, finished);
+					printListRelative((TaskList) child, finished);
 				}
 				else if (finished == (child.getState() == TaskContainerState.Finished)) {
 					System.out.print("  ");

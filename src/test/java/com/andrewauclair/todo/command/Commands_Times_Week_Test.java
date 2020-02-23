@@ -1,13 +1,12 @@
-// Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.task.Task;
-import com.andrewauclair.todo.task.TaskTimesFilter;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.TaskTimes;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import com.andrewauclair.todo.task.TaskTimesFilter;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
@@ -18,16 +17,15 @@ import java.util.List;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
-	@ParameterizedTest
-	@ValueSource(strings = {"-m 6 -d 17 -y 2019", "-m 6 -d 17", "-d 17 -y 2019"})
-	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight(String parameters) {
-		setTime(june18_8_am);
+class Commands_Times_Week_Test extends Commands_Times_BaseTestCase {
+	@Test
+	void filter_for_a_week_worth_of_tasks_in_current_week() {
+		setTime(june17_8_am);
+		
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 		
 		tasks.addTask("Test 1");
 		tasks.startTask(1, false);
-		
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 		
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -38,14 +36,14 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 		
-		commands.execute(printStream, "times " + parameters);
+		commands.execute(printStream, "times --week");
 		
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
-		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+		order.verify(mockTaskTimesFilter, times(1)).filterForWeek(6, 17, 2019);
 		
 		assertOutput(
-				"Times for day 06/17/2019",
+				"Times for week of 06/16/2019",
 				"",
 				"01h 49m 15s F 3 - 'Test 3'",
 				"01h 01m 39s   2 - 'Test 2'",
@@ -56,5 +54,4 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
-	// TODO Test that this output is cut off on the right if task name is too long, "Execute the instructions in ...", cut off at the space that fits
 }
