@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.TaskList;
@@ -33,30 +34,33 @@ public class MoveCommand extends Command {
 	@Override
 	public void run() {
 		if (id != null) {
-			String list = this.dest_list;
-//			long taskID = id;
-
+			if (dest_list == null) {
+				throw new TaskException("move --task requires --dest-list");
+			}
+			
 			for (Integer taskID : id) {
-				moveTask(list, taskID);
+				moveTask(dest_list, taskID);
 			}
 			System.out.println();
 		}
 		else if (this.list != null) {
-			String list = this.list;
-			String group = this.dest_group;
+			if (dest_group == null) {
+				throw new TaskException("move --list requires --dest-group");
+			}
 
-			tasks.moveList(list, group);
+			tasks.moveList(list, dest_group);
 
-			System.out.println("Moved list " + list + " to group '" + group + "'");
+			System.out.println("Moved list " + list + " to group '" + dest_group + "'");
 			System.out.println();
 		}
 		else if (this.group != null) {
-			String srcGroup = this.group;
-			String destGroup = this.dest_group;
+			if (dest_group == null) {
+				throw new TaskException("move --group requires --dest-group");
+			}
+			
+			tasks.moveGroup(group, dest_group);
 
-			tasks.moveGroup(srcGroup, destGroup);
-
-			System.out.println("Moved group '" + srcGroup + "' to group '" + destGroup + "'");
+			System.out.println("Moved group '" + group + "' to group '" + dest_group + "'");
 			System.out.println();
 		}
 	}
