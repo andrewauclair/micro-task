@@ -126,7 +126,7 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 				"",
 				ANSI_BOLD + "/one/impl" + ANSI_RESET,
 				"    01h 01m 39s    2 - 'Test 2'",
-				"        10m 21s *  " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
+				"        10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + " 1 - 'Test 1'" + ANSI_RESET,
 				"",
 				ANSI_BOLD + "/default" + ANSI_RESET,
 				"        48m 14s    8 - 'Test 8'",

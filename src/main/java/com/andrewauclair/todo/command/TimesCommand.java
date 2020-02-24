@@ -95,8 +95,8 @@ public class TimesCommand extends Command {
 			}
 		}
 		
-		long idSpace = Long.toString(maxID).length() - Long.toString(minID).length() + 1;
-		
+		long idSpace = Long.toString(maxID).length();
+
 		if (individualLists) {
 			Map<String, List<TaskTimesFilter.TaskTimeFilterResult>> map = new HashMap<>();
 			
@@ -189,28 +189,22 @@ public class TimesCommand extends Command {
 			System.out.print(Utils.formatTime(result.getTotal(), highestTime));
 			
 			Task task = result.getTask();
-			
-			String idPad = String.join("", Collections.nCopies((int) (idSpace - Long.toString(task.id).length()), " "));
-			
+
 			if (tasks.getActiveTaskID() == task.id) {
 				System.out.print(" * ");
-				System.out.print(idPad);
-				ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+				ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description(idSpace));
 			}
 			else if (task.state == TaskState.Finished) {
 				System.out.print(" F ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				System.out.println(task.description(idSpace));
 			}
 			else if (task.isRecurring()) {
 				System.out.print(" R ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				System.out.println(task.description(idSpace));
 			}
 			else {
 				System.out.print("   ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				System.out.println(task.description(idSpace));
 			}
 			
 			totalTime += result.getTotal();
