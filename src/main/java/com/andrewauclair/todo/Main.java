@@ -214,19 +214,19 @@ public class Main {
 				updateStatus(tasks, status, terminal, osInterface);
 				
 				// set up picocli commands
-				cliCommands = new CliCommands();
-				cmd = commands.buildCommandLine();
-				picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
-				
-				systemCompleter = builtins.compileCompleters();
-				systemCompleter.add(picocliCommands.compileCompleters());
-				systemCompleter.compile();
-				
-				lineReader = buildLineReader(systemCompleter, terminal);
-				
-				builtins.setLineReader(lineReader);
-				cliCommands.setReader(lineReader);
-				bindCtrlBackspace(lineReader);
+//				cliCommands = new CliCommands();
+//				cmd = commands.buildCommandLine();
+//				picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
+//
+//				systemCompleter = builtins.compileCompleters();
+//				systemCompleter.add(picocliCommands.compileCompleters());
+//				systemCompleter.compile();
+//
+//				lineReader = buildLineReader(systemCompleter, terminal);
+//
+//				builtins.setLineReader(lineReader);
+//				cliCommands.setReader(lineReader);
+//				bindCtrlBackspace(lineReader);
 			}
 			catch (UserInterruptException ignored) {
 			}
