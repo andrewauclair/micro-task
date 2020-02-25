@@ -27,14 +27,15 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 		
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.addTask(new Task(10, "Test 1", TaskState.Active, addTime));
+//		tasks.startTask(10, false);
 		
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(10, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(20, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(30, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(500, "Testing a longer name in the times command because it's not done anywhere else and there's a bug right now", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
 		
@@ -47,10 +48,10 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				"01h 49m 15s F 3 - 'Test 3'",
-				"01h 01m 39s   2 - 'Test 2'",
-				"    32m 20s R 5 - 'Test 5'",
-				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				"01h 49m 15s F  30 - 'Test 3'",
+				"01h 01m 39s    20 - 'Test 2'",
+				"    32m 20s R 500 - 'Testing a longer name in the times command because it's not done anywhere else and there's a bug right now'",
+				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + " 10 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
 				"03h 33m 35s   Total",
 				""
