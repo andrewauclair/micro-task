@@ -71,10 +71,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verifyNoMoreInteractions();
 		
 		assertOutput(
-				"01h 12m 00s   Project 1 / Feature 1",
-				"02h 21m 35s   Project 2 / Feature 2",
+				"1h 12m  0s   Project 1 / Feature 1",
+				"2h 21m 35s   Project 2 / Feature 2",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -125,10 +125,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
 		
 		assertOutput(
-				"01h 12m 00s   Project 1 / Feature 1",
-				"02h 21m 35s   Project 2 / Feature 2",
+				"1h 12m  0s   Project 1 / Feature 1",
+				"2h 21m 35s   Project 2 / Feature 2",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -179,10 +179,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 16, 2019);
 		
 		assertOutput(
-				"01h 12m 00s   Project 1 / Feature 1",
-				"02h 21m 35s   Project 2 / Feature 2",
+				"1h 12m  0s   Project 1 / Feature 1",
+				"2h 21m 35s   Project 2 / Feature 2",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -243,10 +243,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
 		
 		assertOutput(
-				"01h 12m 00s   Project 1 / Feature 1",
-				"02h 21m 35s   Project 2 / Feature 2",
+				"1h 12m  0s   Project 1 / Feature 1",
+				"2h 21m 35s   Project 2 / Feature 2",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -293,10 +293,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForWeek(6, 17, 2019);
 		
 		assertOutput(
-				"01h 12m 00s   Project 1 / Feature 1",
-				"02h 21m 35s   Project 2 / Feature 2",
+				"1h 12m  0s   Project 1 / Feature 1",
+				"2h 21m 35s   Project 2 / Feature 2",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -360,9 +360,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"03h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1",
+				"3h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1",
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -400,9 +400,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"03h 33m 35s" + "   Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"3h 33m 35s" + "   Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
