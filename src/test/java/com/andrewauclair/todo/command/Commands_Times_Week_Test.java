@@ -45,12 +45,12 @@ class Commands_Times_Week_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for week of 06/16/2019",
 				"",
-				"01h 49m 15s F 3 - 'Test 3'",
-				"01h 01m 39s   2 - 'Test 2'",
-				"    32m 20s R 5 - 'Test 5'",
-				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				"1h 49m 15s F 3 - 'Test 3'",
+				"1h  1m 39s   2 - 'Test 2'",
+				"   32m 20s R 5 - 'Test 5'",
+				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}

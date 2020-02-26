@@ -48,12 +48,12 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				"01h 49m 15s F  30 - 'Test 3'",
-				"01h 01m 39s    20 - 'Test 2'",
-				"    32m 20s R 500 - 'Testing a longer name in the times command because it's not done anywhere else and there's a bug right now'",
-				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + " 10 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				"1h 49m 15s F  30 - 'Test 3'",
+				"1h  1m 39s    20 - 'Test 2'",
+				"   32m 20s R 500 - 'Testing a longer name in the times command because it's not done anywhere else and there's a bug right now'",
+				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + " 10 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -82,10 +82,10 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				"Times for day 06/17/2019",
 				"",
 				ANSI_BOLD + "/one/design" + ANSI_RESET,
-				"01h 49m 15s F 3 - 'Test 3'",
-				"    32m 20s R 5 - 'Test 5'",
+				"1h 49m 15s F 3 - 'Test 3'",
+				"   32m 20s R 5 - 'Test 5'",
 				"",
-				"02h 21m 35s   Total",
+				"2h 21m 35s   Total",
 				""
 		);
 	}
@@ -114,10 +114,10 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				"Times for day 06/17/2019",
 				"",
 				ANSI_BOLD + "/one/design" + ANSI_RESET,
-				"01h 49m 15s F 3 - 'Test 3'",
-				"    32m 20s R 5 - 'Test 5'",
+				"1h 49m 15s F 3 - 'Test 3'",
+				"   32m 20s R 5 - 'Test 5'",
 				"",
-				"02h 21m 35s   Total",
+				"2h 21m 35s   Total",
 				""
 		);
 	}

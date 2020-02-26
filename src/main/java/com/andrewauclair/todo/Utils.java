@@ -26,7 +26,7 @@ public final class Utils {
 		boolean alreadyPrinting = false;
 
 		if (weeks > 0) {
-			output += String.format("%02dw ", weeks);
+			output += String.format("%2dw ", weeks);
 			alreadyPrinting = true;
 		}
 		else if (highestTime.isAtLeast(HighestTime.Week)) {
@@ -34,29 +34,29 @@ public final class Utils {
 		}
 
 		if (days > 0 || alreadyPrinting) {
-			output += String.format("%02dd ", days);
+			output += String.format("%dd ", days);
 			alreadyPrinting = true;
 		}
 		else if (highestTime.isAtLeast(HighestTime.Day)) {
-			output += "    ";
+			output += "   ";
 		}
 
 		if (hours > 0 || alreadyPrinting) {
-			output += String.format("%02dh ", hours);
+			output += String.format("%dh ", hours);
 			alreadyPrinting = true;
 		}
 		else if (highestTime.isAtLeast(HighestTime.Hour)) {
-			output += "    ";
+			output += "   ";
 		}
 
 		if (minutes > 0 || alreadyPrinting) {
-			output += String.format("%02dm ", minutes);
+			output += String.format("%2dm ", minutes);
 		}
 		else if (highestTime.isAtLeast(HighestTime.Minute)) {
-			output += "    ";
+			output += "   ";
 		}
 
-		output += String.format("%02ds", seconds);
+		output += String.format("%2ds", seconds);
 
 		return output;
 	}

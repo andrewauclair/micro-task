@@ -44,16 +44,16 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Times",
 				"",
-				"    16m 40s   1 - 'Test 1'",
-				"    16m 40s   2 - 'Test 2'",
-				"    16m 40s   3 - 'Test 3'",
-				"    16m 40s   4 - 'Test 4'",
-				"    16m 40s   5 - 'Test 5'",
-				"    16m 40s   6 - 'Test 6'",
-				"    16m 40s   7 - 'Test 7'",
-				"    16m 40s   8 - 'Test 8'",
+				"   16m 40s   1 - 'Test 1'",
+				"   16m 40s   2 - 'Test 2'",
+				"   16m 40s   3 - 'Test 3'",
+				"   16m 40s   4 - 'Test 4'",
+				"   16m 40s   5 - 'Test 5'",
+				"   16m 40s   6 - 'Test 6'",
+				"   16m 40s   7 - 'Test 7'",
+				"   16m 40s   8 - 'Test 8'",
 				"",
-				"02h 13m 20s   Total",
+				"2h 13m 20s   Total",
 				""
 		);
 	}
