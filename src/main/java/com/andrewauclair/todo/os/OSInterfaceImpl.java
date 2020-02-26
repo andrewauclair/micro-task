@@ -3,6 +3,7 @@ package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Main;
 import com.andrewauclair.todo.command.Commands;
+import org.jline.terminal.Terminal;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANS
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
+	private Terminal terminal;
 	private Commands commands;
 	
 	private String lastInputFile = "";
@@ -29,6 +31,10 @@ public class OSInterfaceImpl implements OSInterface {
 			}
 		}
 		return false;
+	}
+	
+	public void setTerminal(Terminal terminal) {
+		this.terminal = terminal;
 	}
 	
 	@Override
@@ -151,6 +157,11 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 		catch (IOException | InterruptedException ignored) {
 		}
+	}
+	
+	@Override
+	public int getTerminalWidth() {
+		return terminal.getWidth();
 	}
 	
 	@Override

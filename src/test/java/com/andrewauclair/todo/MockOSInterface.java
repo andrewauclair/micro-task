@@ -71,7 +71,12 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public void clearScreen() {
 	}
-
+	
+	@Override
+	public int getTerminalWidth() {
+		return 60;
+	}
+	
 	@Override
 	public String getVersion() throws IOException {
 		// needs to have throws IOException to pass tests even though it's unused

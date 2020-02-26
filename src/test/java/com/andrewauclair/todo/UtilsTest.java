@@ -29,10 +29,10 @@ public class UtilsTest {
 				Arguments.of(" 1w 3d 1h  8m  5s", 234_485, Utils.HighestTime.None),
 				
 				Arguments.of(" 5s", 5, Utils.HighestTime.Second),
-				Arguments.of("    5s", 5, Utils.HighestTime.Minute),
-				Arguments.of("       5s", 5, Utils.HighestTime.Hour),
-				Arguments.of("          5s", 5, Utils.HighestTime.Day),
-				Arguments.of("              5s", 5, Utils.HighestTime.Week),
+				Arguments.of("     5s", 5, Utils.HighestTime.Minute),
+				Arguments.of("        5s", 5, Utils.HighestTime.Hour),
+				Arguments.of("           5s", 5, Utils.HighestTime.Day),
+				Arguments.of("               5s", 5, Utils.HighestTime.Week),
 				
 				Arguments.of(" 1w 0d 0h  0m  0s", 144_000, Utils.HighestTime.None),
 				Arguments.of("1d 0h  0m  0s", 28_800, Utils.HighestTime.None),

@@ -133,6 +133,8 @@ public class Main {
 				.nativeSignals(true)
 				.build();
 		
+		osInterface.setTerminal(terminal);
+		
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 		

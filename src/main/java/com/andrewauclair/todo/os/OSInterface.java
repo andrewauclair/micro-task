@@ -26,6 +26,8 @@ public interface OSInterface {
 	List<TaskFileInfo> listFiles(String folder);
 	
 	void clearScreen();
+	
+	int getTerminalWidth();
 
 	String getVersion() throws IOException;
 

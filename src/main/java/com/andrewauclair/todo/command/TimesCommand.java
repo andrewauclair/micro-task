@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
 @CommandLine.Command(name = "times")
 public class TimesCommand extends Command {
@@ -96,7 +97,7 @@ public class TimesCommand extends Command {
 		}
 		
 		long idSpace = Long.toString(maxID).length();
-
+		
 		if (individualLists) {
 			Map<String, List<TaskTimesFilter.TaskTimeFilterResult>> map = new HashMap<>();
 			
@@ -186,26 +187,44 @@ public class TimesCommand extends Command {
 		long totalTime = 0;
 		
 		for (TaskTimesFilter.TaskTimeFilterResult result : data) {
-			System.out.print(Utils.formatTime(result.getTotal(), highestTime));
+			String line = Utils.formatTime(result.getTotal(), highestTime);
 			
 			Task task = result.getTask();
-
-			if (tasks.getActiveTaskID() == task.id) {
-				System.out.print(" * ");
-				ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description(idSpace));
+			
+			boolean active = tasks.getActiveTaskID() == task.id;
+			
+			if (active) {
+				line += " * ";
+				line += ANSI_FG_GREEN;
 			}
 			else if (task.state == TaskState.Finished) {
-				System.out.print(" F ");
-				System.out.println(task.description(idSpace));
+				line += " F ";
 			}
 			else if (task.isRecurring()) {
-				System.out.print(" R ");
-				System.out.println(task.description(idSpace));
+				line += " R ";
 			}
 			else {
-				System.out.print("   ");
-				System.out.println(task.description(idSpace));
+				line += "   ";
 			}
+			
+			line += task.description(idSpace);
+			
+			int length = line.length();
+			
+			if (active) {
+				length -= ANSI_FG_GREEN.toString().length();
+			}
+			
+			if (length > osInterface.getTerminalWidth()) {
+				line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
+				line += "...'";
+			}
+			
+			if (active) {
+				line += ANSI_RESET;
+			}
+			
+			System.out.println(line);
 			
 			totalTime += result.getTotal();
 		}
