@@ -46,7 +46,7 @@ public class Commands {
 		commands.put("stop", new StopCommand(tasks, osInterface));
 		commands.put("add", new AddCommand(tasks, this));
 		commands.put("active", new ActiveCommand(tasks, osInterface));
-		commands.put("list", new ListCommand(tasks));
+		commands.put("list", new ListCommand(tasks, osInterface));
 		commands.put("times", new TimesCommand(tasks, osInterface));//, new TaskFilterBuilder()));
 		commands.put("debug", new DebugCommand());
 		commands.put("rename", new RenameCommand(tasks));
@@ -79,7 +79,7 @@ public class Commands {
 		case "active":
 			return new ActiveCommand(tasks, osInterface);
 		case "list":
-			return new ListCommand(tasks);
+			return new ListCommand(tasks, osInterface);
 		case "times":
 			return new TimesCommand(tasks, osInterface);
 		case "debug":

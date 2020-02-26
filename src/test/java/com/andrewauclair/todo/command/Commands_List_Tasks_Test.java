@@ -2,6 +2,7 @@
 package com.andrewauclair.todo.command;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.stream.IntStream;
 
@@ -352,6 +353,33 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"R 1 - 'Test'",
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
+	void long_task_names_are_cutoff() {
+		tasks.addTask("Very long titles will be cut off at the side of the screen so that they do not wrap around and mess with the times");
+		tasks.addTask("Very long titles will be cut off at the side of the screen so that they do not wrap around and mess with the times");
+		tasks.addTask("Very long titles will be cut off at the side of the screen so that they do not wrap around and mess with the times");
+		tasks.addTask("Very long titles will be cut off at the side of the screen so that they do not wrap around and mess with the times");
+		tasks.startTask(2, false);
+		tasks.startTask(3, true);
+
+		tasks.setRecurring(1, true);
+
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+
+		commands.execute(printStream, "list --tasks");
+
+		assertOutput(
+				"Tasks on list '/default'",
+				"",
+				"R 1 - 'Very long titles will be cut off at the side of t...'",
+				"* " + ANSI_FG_GREEN + "3 - 'Very long titles will be cut off at the side of t...'" + ANSI_RESET,
+				"  4 - 'Very long titles will be cut off at the side of t...'",
+				"",
+				ANSI_BOLD + "Total Tasks: 3" + ANSI_RESET,
 				""
 		);
 	}
