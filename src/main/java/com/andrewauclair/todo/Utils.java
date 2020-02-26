@@ -53,7 +53,7 @@ public final class Utils {
 			output += String.format("%2dm ", minutes);
 		}
 		else if (highestTime.isAtLeast(HighestTime.Minute)) {
-			output += "   ";
+			output += "    ";
 		}
 
 		output += String.format("%2ds", seconds);

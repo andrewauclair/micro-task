@@ -50,7 +50,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				"",
 				"1h 49m 15s F  30 - 'Test 3'",
 				"1h  1m 39s    20 - 'Test 2'",
-				"   32m 20s R 500 - 'Testing a longer name in the times command because it's not done anywhere else and there's a bug right now'",
+				"   32m 20s R 500 - 'Testing a longer name in the times c...'",
 				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + " 10 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
@@ -121,5 +121,4 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
-	// TODO Test that this output is cut off on the right if task name is too long, "Execute the instructions in ...", cut off at the space that fits
 }
