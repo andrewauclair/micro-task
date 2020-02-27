@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -45,7 +46,12 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
+	@Test
+	void proj_feat_output_equals() {
+		EqualsVerifier.forClass(TimesCommand.ProjFeatOutput.class).verify();
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {"-h", "--help"})
 	void times_command_help(String parameter) {
