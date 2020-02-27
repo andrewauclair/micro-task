@@ -4,10 +4,10 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
 import picocli.CommandLine;
 
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
 @CommandLine.Command(name = "list")
 public class ListCommand extends Command {
@@ -40,9 +41,11 @@ public class ListCommand extends Command {
 	private boolean all;
 
 	private final Tasks tasksData;
+	private final OSInterface osInterface;
 
-	ListCommand(Tasks tasks) {
+	ListCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasksData = tasks;
+		this.osInterface = osInterface;
 	}
 
 	private void printTasks(List<Task> tasksList, int limit) {
@@ -59,7 +62,7 @@ public class ListCommand extends Command {
 	private void printListRelative(TaskList list, boolean finished) {
 		if (list.getFullPath().equals(tasksData.getActiveList())) {
 			System.out.print("* ");
-			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
+			ConsoleColors.println(System.out, ANSI_FG_GREEN, list.getName());
 		}
 		else if (finished == (list.getState() == TaskContainerState.Finished)) {
 			System.out.print("  ");
@@ -68,23 +71,44 @@ public class ListCommand extends Command {
 	}
 
 	private void printTask(Task task, int maxLength) {
-		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
+		String line;
 
-		if (task.id == tasksData.getActiveTaskID()) {
-			System.out.print("* ");
-			System.out.print(printID);
-			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+		boolean active = task.id == tasksData.getActiveTaskID();
+
+		if (active) {
+			line = "* ";
 		}
 		else if (task.isRecurring()) {
-			System.out.print("R ");
-			System.out.print(printID);
-			System.out.println(task.description());
+			line = "R ";
 		}
 		else {
-			System.out.print("  ");
-			System.out.print(printID);
-			System.out.println(task.description());
+			line = "  ";
 		}
+
+		line += String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
+
+		if (active) {
+			line += ANSI_FG_GREEN;
+		}
+
+		line += task.description();
+
+		int length = line.length();
+
+		if (active) {
+			length -= ANSI_FG_GREEN.toString().length();
+		}
+
+		if (length > osInterface.getTerminalWidth()) {
+			line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
+			line += "...'";
+		}
+
+		if (active) {
+			line += ANSI_RESET;
+		}
+
+		System.out.println(line);
 	}
 
 	private int printTasks(TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
