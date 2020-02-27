@@ -81,7 +81,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				ANSI_BOLD + "/one/design" + ANSI_RESET,
+				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
 				"1h 49m 15s F 3 - 'Test 3'",
 				"   32m 20s R 5 - 'Test 5'",
 				"",
@@ -113,7 +113,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				ANSI_BOLD + "/one/design" + ANSI_RESET,
+				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
 				"1h 49m 15s F 3 - 'Test 3'",
 				"   32m 20s R 5 - 'Test 5'",
 				"",

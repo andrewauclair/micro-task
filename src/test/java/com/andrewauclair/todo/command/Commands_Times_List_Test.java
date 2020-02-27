@@ -80,11 +80,11 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for multiple lists",
 				"",
-				ConsoleColors.ANSI_BOLD + "/testing" + ConsoleColors.ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ConsoleColors.ANSI_RESET,
 				"1h 49m 15s F 3 - 'Test 3'",
 				"   32m 20s R 5 - 'Test 5'",
 				"",
-				ConsoleColors.ANSI_BOLD + "/default" + ConsoleColors.ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ConsoleColors.ANSI_RESET,
 				"1h  1m 39s   2 - 'Test 2'",
 				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
 				"",

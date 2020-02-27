@@ -99,6 +99,8 @@ public class TimesCommand extends Command {
 
 		long idSpace = Long.toString(maxID).length();
 
+		Utils.HighestTime highestTime = getHighestTime(filter);
+
 		if (individualLists) {
 			Map<String, List<TaskTimesFilter.TaskTimeFilterResult>> map = new HashMap<>();
 
@@ -136,24 +138,31 @@ public class TimesCommand extends Command {
 			for (List<TaskTimesFilter.TaskTimeFilterResult> taskTimeFilterResults : lists) {
 				taskTimeFilterResults.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
 
+				long listTime = 0;
+				for (TaskTimesFilter.TaskTimeFilterResult task : taskTimeFilterResults) {
+					listTime += task.total;
+				}
+
 				System.out.println();
 				System.out.print(ConsoleColors.ANSI_BOLD);
+				System.out.print(Utils.formatTime(listTime, highestTime));
+				System.out.print(" ");
 				System.out.print(taskTimeFilterResults.get(0).list);
 				System.out.print(ANSI_RESET);
 				System.out.println();
-				totalTime += printResults(taskTimeFilterResults, getHighestTime(filter), idSpace);
+				totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
 			}
 
 			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, getHighestTime(filter)));
+			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
-
-			long totalTime = printResults(results, getHighestTime(filter), idSpace);
-
+			
+			long totalTime = printResults(results, highestTime, idSpace);
+			
 			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, getHighestTime(filter)));
+			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		System.out.print("   Total");
 		System.out.println();
