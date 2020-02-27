@@ -39,8 +39,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 		
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
+		tasks.setFeature(tasks.getGroup("/"), "Short Feat", true);
 		
 		tasks.setActiveList("/default");
 		tasks.addTask(task1);
@@ -48,8 +48,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		
 		tasks.addList("/one", true);
 		tasks.setActiveList("/one");
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
 		
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -57,7 +57,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
 						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
 						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
 				)
@@ -71,10 +71,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verifyNoMoreInteractions();
 		
 		assertOutput(
-				"1h 12m  0s   Project 1 / Feature 1",
-				"2h 21m 35s   Project 2 / Feature 2",
+				"Time            Project               Feature",
 				"",
-				"3h 33m 35s   Total",
+				"   6h 12m  0s   Longer Project Name   Short Feat",
+				"   2h 21m 35s   Short Proj            Longer Feature Name",
+				"",
+				"1d 0h 33m 35s   Total",
 				""
 		);
 	}
@@ -123,10 +125,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
-		
+
 		assertOutput(
-				"1h 12m  0s   Project 1 / Feature 1",
-				"2h 21m 35s   Project 2 / Feature 2",
+				"Time         Project     Feature",
+				"",
+				"2h 21m 35s   Project 2   Feature 2",
+				"1h 12m  0s   Project 1   Feature 1",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -177,10 +181,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 16, 2019);
-		
+
 		assertOutput(
-				"1h 12m  0s   Project 1 / Feature 1",
-				"2h 21m 35s   Project 2 / Feature 2",
+				"Time         Project     Feature",
+				"",
+				"2h 21m 35s   Project 2   Feature 2",
+				"1h 12m  0s   Project 1   Feature 1",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -243,8 +249,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
 		
 		assertOutput(
-				"1h 12m  0s   Project 1 / Feature 1",
-				"2h 21m 35s   Project 2 / Feature 2",
+				"Time         Project     Feature",
+				"",
+				"2h 21m 35s   Project 2   Feature 2",
+				"1h 12m  0s   Project 1   Feature 1",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -291,10 +299,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForWeek(6, 17, 2019);
-		
+
 		assertOutput(
-				"1h 12m  0s   Project 1 / Feature 1",
-				"2h 21m 35s   Project 2 / Feature 2",
+				"Time         Project     Feature",
+				"",
+				"2h 21m 35s   Project 2   Feature 2",
+				"1h 12m  0s   Project 1   Feature 1",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -320,7 +330,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"10m 21s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"Time      Project   Feature",
+				"",
+				"10m 21s   " + ANSI_REVERSED + "None" + ANSI_RESET + "   " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
 				"10m 21s   Total",
 				""
@@ -360,7 +372,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"3h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + " / Feature 1",
+				"Time         Project   Feature",
+				"",
+				"3h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + "   Feature 1",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -400,7 +414,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		commands.execute(printStream, "times --proj-feat --all-time");
 		
 		assertOutput(
-				"3h 33m 35s" + "   Project 1 / " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"Time         Project     Feature",
+				"",
+				"3h 33m 35s" + "   Project 1   " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
