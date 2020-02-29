@@ -91,10 +91,10 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test", true);
+		tasks.addList("/test", false);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
-		
+
 		tasks.setProject(tasks.findListForTask(1), "Issue", true);
 		
 		TestUtils.assertOutput(listStream,
@@ -117,7 +117,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test/one", true);
+		tasks.addList("/test/one", false);
 		tasks.setActiveList("/test/one");
 		
 		tasks.setProject(tasks.getGroupForList("/test/one"), "Issue", true);
@@ -142,7 +142,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test", true);
+		tasks.addList("/test", false);
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
 		
@@ -168,7 +168,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("/test/one", true);
+		tasks.addList("/test/one", false);
 		tasks.setActiveList("/test/one");
 		
 		tasks.setFeature(tasks.getGroupForList("/test/one"), "Feature", true);

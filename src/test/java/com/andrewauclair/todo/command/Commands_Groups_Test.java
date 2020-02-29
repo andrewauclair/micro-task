@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -9,7 +10,10 @@ import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
 import picocli.CommandLine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.never;
@@ -17,6 +21,10 @@ import static org.mockito.Mockito.never;
 class Commands_Groups_Test extends CommandsBaseTestCase {
 	@Test
 	void create_group_command() throws IOException {
+		OutputStream listStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/group.txt")).thenReturn(new DataOutputStream(listStream));
+
 		commands.execute(printStream, "mk -g /test/one/two/three/");
 
 		assertTrue(tasks.hasGroupPath("/test/one/two/three/"));
@@ -29,7 +37,14 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/three/group.txt");
 		inOrder.verify(osInterface).runGitCommand("git add .", false);
 		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"", false);
-		
+
+		TestUtils.assertOutput(listStream,
+				"",
+				"",
+				"InProgress",
+				""
+		);
+
 		assertOutput(
 				"Created group '/test/one/two/three/'",
 				""

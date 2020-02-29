@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -165,11 +168,15 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-	void does_not_commit_files_for_group_that_already_exists() {
+	void does_not_commit_files_for_group_that_already_exists() throws IOException {
 		tasks.addList("/one/two", true);
 		
 		Mockito.reset(osInterface);
-		
+
+		OutputStream listStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/one/three/list.txt")).thenReturn(new DataOutputStream(listStream));
+
 		tasks.addList("/one/three", true);
 		
 		Mockito.verify(osInterface, never()).runGitCommand("git commit -m \"Created group '/one/'\"", false);
