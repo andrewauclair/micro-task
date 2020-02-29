@@ -763,6 +763,7 @@ public class Tasks {
 
 	public boolean load(TaskLoader loader, Commands commands) {
 		rootGroup = new TaskGroup("/");
+		activeGroup = rootGroup;
 
 		try {
 			nextID = getStartingID();
