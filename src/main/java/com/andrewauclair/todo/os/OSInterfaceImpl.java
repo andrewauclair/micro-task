@@ -53,7 +53,7 @@ public class OSInterfaceImpl implements OSInterface {
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
 			pb.command(command.split(" "));
-			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+//			pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
 			
 			Process p = pb.start();
 			int exitCode = waitAndCapture(p, print);

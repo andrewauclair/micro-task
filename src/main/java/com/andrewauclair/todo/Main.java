@@ -171,7 +171,9 @@ public class Main {
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-				updateStatus(tasks, status, terminal, osInterface);
+				if (!runningCommand.get()) {
+					updateStatus(tasks, status, terminal, osInterface);
+				}
 			}
 		};
 		
@@ -211,7 +213,7 @@ public class Main {
 							}
 						}
 					};
-					timer.schedule(timerTask, 1000, 500);
+					timer.schedule(timerTask, 1000, 30000);
 				}
 				else {
 					timerTask.cancel();
