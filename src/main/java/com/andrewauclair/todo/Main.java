@@ -27,13 +27,14 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.HelpCommand;
+import static picocli.CommandLine.*;
 
 public class Main {
 	private static final char BACKSPACE_KEY = '\u0008';
-	
+	private static AtomicBoolean runningCommand = new AtomicBoolean(false);
+
 	/**
 	 * Top-level command that just prints help.
 	 */
@@ -179,7 +180,7 @@ public class Main {
 		if (hasActiveTask) {
 			timer.schedule(timerTask, 1000, 30000);
 		}
-		
+
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
@@ -195,7 +196,9 @@ public class Main {
 					generateTestData(tasks);
 				}
 				else {
+					runningCommand.set(true);
 					commands.execute(System.out, command);
+					runningCommand.set(false);
 				}
 				
 				if (tasks.hasActiveTask()) {
@@ -203,10 +206,12 @@ public class Main {
 					timerTask = new TimerTask() {
 						@Override
 						public void run() {
-							updateStatus(tasks, status, terminal, osInterface);
+							if (!runningCommand.get()) {
+								updateStatus(tasks, status, terminal, osInterface);
+							}
 						}
 					};
-					timer.schedule(timerTask, 1000, 30000);
+					timer.schedule(timerTask, 1000, 500);
 				}
 				else {
 					timerTask.cancel();
@@ -249,7 +254,7 @@ public class Main {
 	}
 	
 	private static void updateStatus(Tasks tasks, Status status, Terminal terminal, OSInterface osInterface) {
-		if (false ) {// used when I want to run the app from IntelliJ
+//		if (false ) {// used when I want to run the app from IntelliJ
 			synchronized (tasks) {
 				int width = terminal.getSize().getColumns();
 
@@ -289,7 +294,7 @@ public class Main {
 
 				status.update(as);
 			}
-		}
+//		}
 	}
 	
 	private static String padString(Terminal terminal, String str) {
