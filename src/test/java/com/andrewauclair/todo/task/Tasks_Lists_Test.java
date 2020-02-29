@@ -2,9 +2,15 @@
 package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.TaskException;
+import com.andrewauclair.todo.TestUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +69,34 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 				new Task(3, "test List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(3000))),
 				new Task(4, "test List Task 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(4000)))
 		);
+	}
+
+	@Test
+	void adding_list_creates_list_txt() throws IOException {
+		OutputStream listStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
+
+		tasks.addList("test", true);
+
+		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
+
+		TestUtils.assertOutput(listStream,
+				"",
+				"",
+				"InProgress",
+				""
+		);
+	}
+
+	@Test
+	void adding_list_commits_the_list_txt_file() {
+		tasks.addList("/test/one", true);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).runGitCommand("git add .", false);
+		order.verify(osInterface).runGitCommand("git commit -m \"Created list '/test/one'\"", false);
 	}
 
 	@Test
