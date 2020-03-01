@@ -3,6 +3,7 @@ package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -21,17 +22,23 @@ final class AliasCommand implements Runnable {
 	@Option(names = {"-n", "--name"})
 	private String name;
 
-	@Option(names = {"-c", "--command"})
-	private String command;
+	@CommandLine.ArgGroup(multiplicity = "1")
+	private Args args;
 
-	@Option(names = {"-u", "--update"})
-	private String update = null;
+	private static class Args {
+		@Option(names = {"-c", "--command"})
+		private String command;
 
-	@Option(names = {"-r", "--remove"})
-	private boolean remove;
+		@Option(names = {"-u", "--update"})
+		private String update;
 
-	@Option(names = {"-l", "--list"})
-	private boolean list;
+		@Option(names = {"-r", "--remove"})
+		private boolean remove;
+
+		@Option(names = {"-l", "--list"})
+		private boolean list;
+	}
+
 
 	AliasCommand(Commands commands, OSInterface osInterface) {
 		this.commands = commands;
@@ -40,44 +47,61 @@ final class AliasCommand implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Command should fail if command, update and/or remove are all present
-		if (command != null) {
+		if (args.command != null) {
+			if (name == null) {
+				System.out.println("Option 'command' requires option 'name'");
+				System.out.println();
+				return;
+			}
+
 			if (commands.getAliases().containsKey(name)) {
 				System.out.println("Alias '" + name + "' already exists.");
 				System.out.println();
 			}
 			else {
-				System.out.println("Created alias '" + name + "' for command '" + command + "'");
+				System.out.println("Created alias '" + name + "' for command '" + args.command + "'");
 				System.out.println();
 
-				commands.addAlias(name, command);
+				commands.addAlias(name, args.command);
 
 				writeAliasesFile();
 
 				osInterface.runGitCommand("git add .", false);
-				osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + command + "'\"", false);
+				osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + args.command + "'\"", false);
 			}
 		}
-		else if (update != null) {
+		else if (args.update != null) {
+			if (name == null) {
+				System.out.println("Option 'update' requires option 'name'");
+				System.out.println();
+				return;
+			}
+
 			if (commands.getAliases().containsKey(name)) {
 				commands.removeAlias(name);
 
-				System.out.println("Updated alias '" + name + "' to command '" + update + "'");
+				System.out.println("Updated alias '" + name + "' to command '" + args.update + "'");
 				System.out.println();
 
-				commands.addAlias(name, update);
+				commands.addAlias(name, args.update);
 
 				writeAliasesFile();
 
 				osInterface.runGitCommand("git add .", false);
-				osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + update + "'\"", false);
+				osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + args.update + "'\"", false);
 			}
 			else {
 				System.out.println("Alias '" + name + "' does not exist.");
 				System.out.println();
 			}
 		}
-		else if (remove) {
+		else if (args.remove) {
+			if (name == null) {
+				System.out.println("Option 'remove' requires option 'name'");
+				System.out.println();
+				return;
+			}
+
 			String aliasCommand = commands.getAliases().get(name);
 
 			if (aliasCommand != null) {
@@ -96,7 +120,7 @@ final class AliasCommand implements Runnable {
 				System.out.println();
 			}
 		}
-		else if (list) {
+		else if (args.list) {
 			Map<String, String> aliases = commands.getAliases();
 
 			for (String name : aliases.keySet()) {
