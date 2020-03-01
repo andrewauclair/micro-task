@@ -8,7 +8,7 @@ public final class Utils {
 	private static final int SECONDS_IN_MINUTE = 60;
 	private static final int HOURS_IN_DAY = 8;
 	private static final int HOURS_IN_WEEK = 40;
-	
+
 	public static String formatTime(long time, HighestTime highestTime) {
 		long minsInHour = 60 * 60;
 		long hours = time / minsInHour;
@@ -76,7 +76,7 @@ public final class Utils {
 		}
 		return HighestTime.Second;
 	}
-	
+
 	public enum HighestTime {
 		None,
 		Second,

@@ -8,84 +8,56 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskLoader;
 import com.andrewauclair.todo.task.TaskReader;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
-@CommandLine.Command(name = "update")
-public class UpdateCommand extends Command {
+@Command(name = "update")
+final class UpdateCommand implements Runnable {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
-
-	@CommandLine.Option(names = {"--tasks"})
-	private boolean tasks;
-
-	@CommandLine.Option(names = {"-r", "--releases"})
-	private boolean releases;
-
-	@CommandLine.Option(names = {"-l", "--latest"})
-	private boolean latest;
-
-	@CommandLine.Option(names = {"--release"})
-	private String release;
-
-	@CommandLine.Option(names = {"--to-remote"})
-	private boolean to_remote;
-
-	@CommandLine.Option(names = {"--from-remote"})
-	private boolean from_remote;
-
-	@CommandLine.ArgGroup(exclusive = false)
-	private ProxySettings proxy;
-
-	static class ProxySettings {
-		@CommandLine.Option(names = {"--proxy-ip"}, required = true)
-		private InetAddress proxy_ip;
-
-		@CommandLine.Option(names = {"--proxy-port"}, required = true)
-		private int proxy_port;
-	}
-
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
 	private final Commands commands;
 	private final OSInterface osInterface;
-	
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"--tasks"})
+	private boolean tasks;
+
+	@Option(names = {"-r", "--releases"})
+	private boolean releases;
+
+	@Option(names = {"-l", "--latest"})
+	private boolean latest;
+
+	@Option(names = {"--release"})
+	private String release;
+
+	@Option(names = {"--to-remote"})
+	private boolean to_remote;
+
+	@Option(names = {"--from-remote"})
+	private boolean from_remote;
+
+	@ArgGroup(exclusive = false)
+	private ProxySettings proxy;
+
 	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasksData = tasks;
 		this.commands = commands;
 		this.osInterface = osInterface;
-	}
-
-	private boolean updateToVersion(String version, Proxy proxy) {
-		try {
-			boolean updated = gitLabReleases.updateToRelease(version, proxy);
-			
-			if (updated) {
-				System.out.println("Updated to version '" + version + "'");
-				System.out.println();
-				System.out.println("Press any key to shutdown. Please restart with the new version.");
-
-				// force a restart
-				System.in.read();
-
-				return true;
-			}
-			else {
-				System.out.println("Version '" + version + "' not found on GitLab");
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Failed to update to version '" + version + "'");
-		}
-
-		return false;
 	}
 
 	@Override
@@ -172,9 +144,9 @@ public class UpdateCommand extends Command {
 				String list = tasksData.findListForTask(task.id).getFullPath();
 				tasksData.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 			}
-			
+
 			String currentVersion = "Unknown";
-			
+
 			try {
 				currentVersion = osInterface.getVersion();
 			}
@@ -218,5 +190,39 @@ public class UpdateCommand extends Command {
 		if (updatedToNewRelease) {
 			osInterface.exit();
 		}
+	}
+
+	private boolean updateToVersion(String version, Proxy proxy) {
+		try {
+			boolean updated = gitLabReleases.updateToRelease(version, proxy);
+
+			if (updated) {
+				System.out.println("Updated to version '" + version + "'");
+				System.out.println();
+				System.out.println("Press any key to shutdown. Please restart with the new version.");
+
+				// force a restart
+				System.in.read();
+
+				return true;
+			}
+			else {
+				System.out.println("Version '" + version + "' not found on GitLab");
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Failed to update to version '" + version + "'");
+		}
+
+		return false;
+	}
+
+	private static final class ProxySettings {
+		@Option(names = {"--proxy-ip"}, required = true)
+		private InetAddress proxy_ip;
+
+		@Option(names = {"--proxy-port"}, required = true)
+		private int proxy_port;
 	}
 }

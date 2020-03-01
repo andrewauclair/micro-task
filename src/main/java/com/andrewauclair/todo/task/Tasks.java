@@ -14,6 +14,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("CanBeFinal")
 public class Tasks {
 	public static final int NO_ACTIVE_TASK = -1;
 
@@ -60,8 +61,10 @@ public class Tasks {
 		return getList(list).addTask(incrementID(), task);
 	}
 
-	private void throwTaskNotFound(long id) {
-		throw new TaskException("Task " + id + " does not exist.");
+	private TaskList getList(String name) {
+		String absoluteList = getAbsoluteListName(name);
+
+		return getGroupForList(absoluteList).getListAbsolute(absoluteList);
 	}
 
 	private long incrementID() {
@@ -78,16 +81,45 @@ public class Tasks {
 		return nextID;
 	}
 
-	public long nextID() {
-		return nextID;
+	public String getAbsoluteListName(String name) {
+		if (!name.startsWith("/")) {
+			return activeGroup.getFullPath() + name;
+		}
+		return name;
 	}
 
-	public TaskList findListForTask(long id) {
-		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
-		if (!listForTask.isPresent()) {
-			throw new TaskException("List for task " + id + " was not found.");
+	public TaskGroup getGroupForList(String name) {
+		String groupName = getGroupNameForList(name);
+
+		return getGroup(groupName);
+	}
+
+	private String getGroupNameForList(String name) {
+		String absoluteList = getAbsoluteListName(name);
+
+		return absoluteList.substring(0, absoluteList.lastIndexOf('/') + 1);
+	}
+
+	public TaskGroup getGroup(String name) {
+		name = getAbsoluteGroupName(name);
+
+		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
+
+		if (!optionalGroup.isPresent()) {
+			throw new TaskException("Group '" + name + "' does not exist.");
 		}
-		return listForTask.get();
+		return optionalGroup.get();
+	}
+
+	public String getAbsoluteGroupName(String name) {
+		if (!name.startsWith("/")) {
+			return activeGroup.getFullPath() + name;
+		}
+		return name;
+	}
+
+	public long nextID() {
+		return nextID;
 	}
 
 	public void moveList(String list, String group) {
@@ -115,7 +147,7 @@ public class Tasks {
 
 	public TaskList getListForTask(long id) {
 		if (!hasTaskWithID(id)) {
-			throwTaskNotFound(id);
+			throw new TaskException("Task " + id + " does not exist.");
 		}
 		return findListForTask(id);
 	}
@@ -169,12 +201,6 @@ public class Tasks {
 
 	public TaskList getListByName(String name) {
 		return getList(name);
-	}
-
-	private TaskList getList(String name) {
-		String absoluteList = getAbsoluteListName(name);
-
-		return getGroupForList(absoluteList).getListAbsolute(absoluteList);
 	}
 
 	public Set<String> getListNames() {
@@ -256,39 +282,8 @@ public class Tasks {
 		return stoppedTask;
 	}
 
-	// TODO Move this into the TaskList class
-	private void replaceTask(String listName, Task oldTask, Task newTask) {
-		TaskList list = getList(listName);
-		list.removeTask(oldTask);
-		list.addTask(newTask);
-	}
-
-	public String getAbsoluteGroupName(String name) {
-		if (!name.startsWith("/")) {
-			return activeGroup.getFullPath() + name;
-		}
-		return name;
-	}
-
-	public String getAbsoluteListName(String name) {
-		if (!name.startsWith("/")) {
-			return activeGroup.getFullPath() + name;
-		}
-		return name;
-	}
-
-	public void setActiveList(String name) {
-		activeList = getList(name).getFullPath();
-	}
-
 	public List<Task> getTasks() {
 		return getList(activeList).getTasks();
-	}
-
-	public TaskGroup getGroupForList(String name) {
-		String groupName = getGroupNameForList(name);
-
-		return getGroup(groupName);
 	}
 
 	public String getActiveTaskList() {
@@ -306,21 +301,6 @@ public class Tasks {
 		}
 
 		return task;
-	}
-
-	public List<Task> getAllTasks() {
-		return rootGroup.getTasks();
-	}
-
-	private String getGroupNameForList(String name) {
-		String absoluteList = getAbsoluteListName(name);
-
-		String groupName = absoluteList.substring(0, absoluteList.lastIndexOf('/') + 2);
-
-		if (!groupName.equals("/")) {
-			groupName = groupName.substring(0, groupName.length() - 1);
-		}
-		return groupName;
 	}
 
 	public Task getActiveTask() {
@@ -411,22 +391,14 @@ public class Tasks {
 		return activeList;
 	}
 
+	public void setActiveList(String name) {
+		activeList = getList(name).getFullPath();
+	}
+
 	public boolean hasListWithName(String name) {
 		String absoluteList = getAbsoluteListName(name);
 
 		return getGroupForList(absoluteList).containsListAbsolute(absoluteList);
-	}
-
-	public TaskGroup getGroup(String name) {
-		name = getAbsoluteGroupName(name);
-//		if (!name.startsWith("/")) {
-//			name = activeGroup.getFullPath() + name;
-//		}
-		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
-		if (!optionalGroup.isPresent()) {
-			throw new TaskException("Group '" + name + "' does not exist.");
-		}
-		return optionalGroup.get();
 	}
 
 	public TaskGroup addGroup(String groupName) {
@@ -467,6 +439,27 @@ public class Tasks {
 		return newGroup;
 	}
 
+	public boolean hasGroupPath(String groupName) {
+		if (!groupName.startsWith("/")) {
+			throw new TaskException("Group path must start with root (/).");
+		}
+		return rootGroup.getGroupAbsolute(groupName).isPresent();
+	}
+
+	public void writeGroupInfoFile(TaskGroup group, String folder) {
+		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + group.getFullPath() + "group.txt")) {
+			outputStream.write(group.getProject().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(group.getFeature().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+			outputStream.write(group.getState().toString().getBytes());
+			outputStream.write(Utils.NL.getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace(output);
+		}
+	}
+
 	public TaskGroup createGroup(String groupName) {
 		return createGroup(groupName, true);
 	}
@@ -503,6 +496,36 @@ public class Tasks {
 		return task;
 	}
 
+	public Task getTask(long id) {
+		Optional<Task> optionalTask = getAllTasks().stream()
+				.filter(task -> task.id == id)
+				.findFirst();
+
+		if (!optionalTask.isPresent()) {
+			throw new TaskException("Task " + id + " does not exist.");
+		}
+		return optionalTask.get();
+	}
+
+	public TaskList findListForTask(long id) {
+		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
+		if (!listForTask.isPresent()) {
+			throw new TaskException("List for task " + id + " was not found.");
+		}
+		return listForTask.get();
+	}
+
+	// TODO Move this into the TaskList class
+	private void replaceTask(String listName, Task oldTask, Task newTask) {
+		TaskList list = getList(listName);
+		list.removeTask(oldTask);
+		list.addTask(newTask);
+	}
+
+	public List<Task> getAllTasks() {
+		return rootGroup.getTasks();
+	}
+
 	public Task setTaskState(long id, TaskState state) {
 		Task optionalTask = getTask(id);
 
@@ -519,17 +542,6 @@ public class Tasks {
 		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"", false);
 
 		return task;
-	}
-
-	public Task getTask(long id) {
-		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.id == id)
-				.findFirst();
-
-		if (!optionalTask.isPresent()) {
-			throwTaskNotFound(id);
-		}
-		return optionalTask.get();
 	}
 
 	public void setProject(TaskList list, String project, boolean createFiles) {
@@ -584,20 +596,6 @@ public class Tasks {
 
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
-		}
-	}
-
-	public void writeGroupInfoFile(TaskGroup group, String folder) {
-		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + group.getFullPath() + "group.txt")) {
-			outputStream.write(group.getProject().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(group.getFeature().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(group.getState().toString().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
 		}
 	}
 
@@ -700,13 +698,6 @@ public class Tasks {
 
 	String getGroupPath() {
 		return activeGroup.getFullPath();
-	}
-
-	public boolean hasGroupPath(String groupName) {
-		if (!groupName.startsWith("/")) {
-			throw new TaskException("Group path must start with root (/).");
-		}
-		return rootGroup.getGroupAbsolute(groupName).isPresent();
 	}
 
 	public TaskGroup switchGroup(String groupName) {

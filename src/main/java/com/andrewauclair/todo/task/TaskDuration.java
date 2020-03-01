@@ -7,10 +7,10 @@ import com.andrewauclair.todo.os.OSInterface;
 import java.util.Collections;
 import java.util.List;
 
-public class TaskDuration {
+public final class TaskDuration {
 	private final List<TaskTimes> times;
 	private final OSInterface osInterface;
-	
+
 	public TaskDuration(TaskTimes times, OSInterface osInterface) {
 		this.times = Collections.singletonList(times);
 		this.osInterface = osInterface;
@@ -20,13 +20,13 @@ public class TaskDuration {
 		times = task.getStartStopTimes();
 		this.osInterface = osInterface;
 	}
-	
+
 	@Override
 	public String toString() {
 		long totalTime = times.stream()
 				.map(times -> times.getDuration(osInterface))
 				.reduce(0L, Long::sum);
-		
+
 		return Utils.formatTime(totalTime, Utils.HighestTime.None);
 	}
 }

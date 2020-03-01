@@ -99,43 +99,6 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	@Disabled
-	void renaming_list_deletes_the_current_task_files_in_the_folder() {
-		tasks.addList("one", true);
-
-		tasks.setActiveList("one");
-
-		tasks.addTask("Test 1");
-		tasks.addTask("Test 2");
-
-		Mockito.reset(osInterface); // reset the os interface after it does all the git adds and commits above
-
-		tasks.renameList("one", "test");
-
-		Mockito.verify(osInterface).removeFile("git-data/tasks/one/1.txt");
-		Mockito.verify(osInterface).removeFile("git-data/tasks/one/2.txt");
-		Mockito.verify(osInterface).removeFile("git-data/tasks/one");
-	}
-
-	@Test
-	@Disabled
-	void renaming_list_writes_new_task_files_into_new_folder() {
-		tasks.addList("one", true);
-
-		tasks.setActiveList("one");
-
-		Task task1 = tasks.addTask("Test 1");
-		Task task2 = tasks.addTask("Test 2");
-
-		Mockito.reset(writer); // reset the writer after it does all the add writes above
-
-		tasks.renameList("one", "test");
-
-		Mockito.verify(writer).writeTask(task1, "git-data/tasks/test/1.txt");
-		Mockito.verify(writer).writeTask(task2, "git-data/tasks/test/2.txt");
-	}
-
-	@Test
 	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
 		tasks.addList("one", true);
 

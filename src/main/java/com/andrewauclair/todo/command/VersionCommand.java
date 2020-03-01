@@ -2,21 +2,19 @@
 package com.andrewauclair.todo.command;
 
 import com.andrewauclair.todo.os.OSInterface;
-import org.jline.builtins.Completers;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Collections;
-import java.util.List;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
-
-@CommandLine.Command(name = "version")
-public class VersionCommand extends Command {
+@Command(name = "version")
+final class VersionCommand implements Runnable {
 	private final OSInterface osInterface;
-	
-	public VersionCommand(OSInterface osInterface) {
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	VersionCommand(OSInterface osInterface) {
 		this.osInterface = osInterface;
 	}
 

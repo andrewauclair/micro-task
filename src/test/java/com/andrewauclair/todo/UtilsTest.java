@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import picocli.CommandLine;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,6 +48,22 @@ public class UtilsTest {
 	@MethodSource("timeFormatSource")
 	void test(String output, long time, Utils.HighestTime highestTime) {
 		assertEquals(output, Utils.formatTime(time, highestTime));
+	}
+
+	static Stream<Arguments> fromTimestampSource() {
+		return Stream.of(
+				Arguments.of(0, Utils.HighestTime.Second),
+				Arguments.of(60, Utils.HighestTime.Minute),
+				Arguments.of(3600, Utils.HighestTime.Hour),
+				Arguments.of(8 * 3600, Utils.HighestTime.Day),
+				Arguments.of(40 * 3600, Utils.HighestTime.Week)
+		);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("fromTimestampSource")
+	void from_timestamp(int time, Utils.HighestTime highestTime) {
+		assertEquals(highestTime, Utils.fromTimestamp(time));
 	}
 
 	public static String createFile(String... lines) {

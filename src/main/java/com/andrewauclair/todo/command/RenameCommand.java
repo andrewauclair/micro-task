@@ -4,35 +4,30 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.TaskException;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
-import com.andrewauclair.todo.jline.RenameCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+@Command(name = "rename")
+final class RenameCommand implements Runnable {
+	private final Tasks tasks;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
 
-@CommandLine.Command(name = "rename")
-public class RenameCommand extends Command {
-	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
-	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 	private String group;
 
-	@CommandLine.Option(names = {"-t", "--task"})
+	@Option(names = {"-t", "--task"})
 	private Integer id;
 
-	@CommandLine.Option(names = {"-n", "--name"})
+	@Option(names = {"-n", "--name"})
 	private String name;
 
-	private final Tasks tasks;
-	
 	RenameCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}

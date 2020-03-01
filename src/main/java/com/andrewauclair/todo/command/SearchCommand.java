@@ -7,28 +7,32 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskList;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@CommandLine.Command(name = "search")
-public class SearchCommand extends Command {
-	@CommandLine.Option(names = {"-t", "--text"})
+@Command(name = "search")
+final class SearchCommand implements Runnable {
+	private final Tasks tasks;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"-t", "--text"})
 	private String text;
 
-	@CommandLine.Option(names = {"-f", "--finished"})
+	@Option(names = {"-f", "--finished"})
 	private boolean finished;
 
-	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 	private boolean group;
 
-	@CommandLine.Option(names = {"-v", "--verbose"})
+	@Option(names = {"-v", "--verbose"})
 	private boolean verbose;
-
-	private final Tasks tasks;
 
 	SearchCommand(Tasks tasks) {
 		this.tasks = tasks;

@@ -6,7 +6,8 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,30 +19,32 @@ import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
-@CommandLine.Command(name = "list")
-public class ListCommand extends Command {
+@Command(name = "list")
+final class ListCommand implements Runnable {
 	private static final int MAX_DISPLAYED_TASKS = 20;
-
-	@CommandLine.Option(names = {"--tasks"})
-	private boolean tasks;
-
-	@CommandLine.Option(names = {"--list"}, completionCandidates = ListCompleter.class)
-	private String list;
-
-	@CommandLine.Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
-	private boolean group;
-
-	@CommandLine.Option(names = {"--recursive"})
-	private boolean recursive;
-
-	@CommandLine.Option(names = {"--finished"})
-	private boolean finished;
-
-	@CommandLine.Option(names = {"--all"})
-	private boolean all;
-
 	private final Tasks tasksData;
 	private final OSInterface osInterface;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"--tasks"})
+	private boolean tasks;
+
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
+	private String list;
+
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
+	private boolean group;
+
+	@Option(names = {"--recursive"})
+	private boolean recursive;
+
+	@Option(names = {"--finished"})
+	private boolean finished;
+
+	@Option(names = {"--all"})
+	private boolean all;
 
 	ListCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasksData = tasks;
@@ -53,10 +56,10 @@ public class ListCommand extends Command {
 				.limit(limit)
 				.max(Comparator.comparingInt(o -> String.valueOf(o.id).length()));
 
-		tasksList.stream()
+		max.ifPresent(task -> tasksList.stream()
 				.limit(limit)
 				.sorted(Comparator.comparingLong(o -> o.id))
-				.forEach(str -> printTask(str, String.valueOf(max.get().id).length()));
+				.forEach(str -> printTask(str, String.valueOf(task.id).length())));
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
@@ -129,7 +132,7 @@ public class ListCommand extends Command {
 				}
 			}
 			else if (recursive) {
-				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, recursive);
+				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, true);
 			}
 		}
 		return totalTasks;

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
 import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.never;
 
 class Commands_Groups_Test extends CommandsBaseTestCase {
 	@Test
@@ -142,7 +140,7 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 	void change_command_group_option_has_group_completer(String group) {
 		commands.execute(printStream, "mk -g /test/");
 
-		CommandLine cmd = commands.buildCommandLine();
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(group).getCommandSpec();
 
@@ -154,7 +152,7 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 	void move_command_dest_group_option_has_group_completer() {
 		commands.execute(printStream, "mk -g /test/");
 		
-		CommandLine cmd = commands.buildCommandLine();
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 		
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
 		

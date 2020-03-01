@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public final class TaskTimes {
 	public static final long TIME_NOT_SET = Long.MIN_VALUE;
-	
+
 	public final long start;
 	public final long stop;
 	public final String project;
@@ -19,10 +19,6 @@ public final class TaskTimes {
 
 	public TaskTimes(long start) {
 		this(start, TIME_NOT_SET);
-	}
-
-	public TaskTimes(long start, String project, String feature) {
-		this(start, TIME_NOT_SET, project, feature);
 	}
 
 	public TaskTimes(long start, long stop) {
@@ -39,7 +35,11 @@ public final class TaskTimes {
 		this.project = project;
 		this.feature = feature;
 	}
-	
+
+	public TaskTimes(long start, String project, String feature) {
+		this(start, TIME_NOT_SET, project, feature);
+	}
+
 	public long getDuration(OSInterface osInterface) {
 		if (stop == TIME_NOT_SET) {
 			return osInterface.currentSeconds() - start;
@@ -74,7 +74,7 @@ public final class TaskTimes {
 		}
 		return start + " - " + stop + ", project='" + project + "', feature='" + feature + "'";
 	}
-	
+
 	public String description(ZoneId zone) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(dateTimeFormatter);

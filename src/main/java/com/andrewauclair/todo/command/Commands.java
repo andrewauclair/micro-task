@@ -12,6 +12,7 @@ import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
 import org.jline.reader.impl.DefaultParser;
 import picocli.CommandLine;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,17 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Commands {
+@SuppressWarnings("CanBeFinal")
+public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final Tasks tasks;
 
-	public final Map<String, Command> commands = new HashMap<>();
+	private final Map<String, Runnable> commands = new HashMap<>();
 
 	private final Map<String, String> aliases = new HashMap<>();
 	private final GitLabReleases gitLabReleases;
 	private final OSInterface osInterface;
-	private DefaultParser defaultParser = new DefaultParser();
-	private PicocliFactory factory;
-	private Main.CliCommands cliCommands = new Main.CliCommands();
+	private final DefaultParser defaultParser = new DefaultParser();
+	private final PicocliFactory factory;
+	private final Main.CliCommands cliCommands = new Main.CliCommands();
+	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
 	public Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -66,59 +69,62 @@ public class Commands {
 		commands.put("info", new InfoCommand(tasks, osInterface));
 	}
 
-	private Command createCommand(String command) {
+	private Runnable createCommand(String command) {
 		switch (command) {
-		case "finish":
-			return new FinishCommand(tasks, osInterface);
-		case "start":
-			return new StartCommand(tasks, osInterface);
-		case "stop":
-			return new StopCommand(tasks, osInterface);
-		case "add":
-			return new AddCommand(tasks, this);
-		case "active":
-			return new ActiveCommand(tasks, osInterface);
-		case "list":
-			return new ListCommand(tasks, osInterface);
-		case "times":
-			return new TimesCommand(tasks, osInterface);
-		case "debug":
-			return new DebugCommand();
-		case "rename":
-			return new RenameCommand(tasks);
-		case "search":
-			return new SearchCommand(tasks);
-		case "version":
-			return new VersionCommand(osInterface);
-		case "update":
-			return new UpdateCommand(gitLabReleases, tasks, this, osInterface);
-		case "exit":
-			return new ExitCommand(osInterface);
-		case "move":
-			return new MoveCommand(tasks);
-		case "set-task":
-			return new SetCommand.SetTaskCommand(tasks);
-		case "set-list":
-			return new SetCommand.SetListCommand(tasks);
-		case "set-group":
-			return new SetCommand.SetGroupCommand(tasks);
-		case "mk":
-			return new MakeCommand(tasks);
-		case "ch":
-			return new ChangeCommand(tasks);
-		case "eod":
-			return new EndOfDayCommand(tasks, osInterface);
-		case "alias":
-			return new AliasCommand(this, osInterface);
-		case "next":
-			return new NextCommand(tasks);
-		case "info":
-			return new InfoCommand(tasks, osInterface);
+			case "finish":
+				return new FinishCommand(tasks, osInterface);
+			case "start":
+				return new StartCommand(tasks, osInterface);
+			case "stop":
+				return new StopCommand(tasks, osInterface);
+			case "add":
+				return new AddCommand(tasks, this);
+			case "active":
+				return new ActiveCommand(tasks, osInterface);
+			case "list":
+				return new ListCommand(tasks, osInterface);
+			case "times":
+				return new TimesCommand(tasks, osInterface);
+			case "debug":
+				return new DebugCommand();
+			case "rename":
+				return new RenameCommand(tasks);
+			case "search":
+				return new SearchCommand(tasks);
+			case "version":
+				return new VersionCommand(osInterface);
+			case "update":
+				return new UpdateCommand(gitLabReleases, tasks, this, osInterface);
+			case "exit":
+				return new ExitCommand(osInterface);
+			case "move":
+				return new MoveCommand(tasks);
+			case "set-task":
+				return new SetCommand.SetTaskCommand(tasks);
+			case "set-list":
+				return new SetCommand.SetListCommand(tasks);
+			case "set-group":
+				return new SetCommand.SetGroupCommand(tasks);
+			case "mk":
+				return new MakeCommand(tasks);
+			case "ch":
+				return new ChangeCommand(tasks);
+			case "eod":
+				return new EndOfDayCommand(tasks, osInterface);
+			case "alias":
+				return new AliasCommand(this, osInterface);
+			case "next":
+				return new NextCommand(tasks);
+			case "info":
+				return new InfoCommand(tasks, osInterface);
 		}
 
 		for (String alias : aliases.keySet()) {
 			if (command.equals(alias)) {
-				return new Command() {
+				return new Runnable() {
+					@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+					private boolean help;
+
 					@Override
 					public void run() {
 						System.out.print(ConsoleColors.ANSI_BOLD);
@@ -135,7 +141,7 @@ public class Commands {
 		return null;
 	}
 
-	public CommandLine buildCommandLine() {
+	public CommandLine buildCommandLineWithAllCommands() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
 		cmdLine.setTrimQuotes(true);
@@ -144,7 +150,10 @@ public class Commands {
 
 		aliases.keySet().forEach(name -> {
 
-			Command cmd = new Command() {
+			Runnable cmd = new Runnable() {
+				@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+				private boolean help;
+
 				@Override
 				public void run() {
 					System.out.print(ConsoleColors.ANSI_BOLD);
@@ -153,6 +162,7 @@ public class Commands {
 					System.out.println();
 
 					Commands.this.execute(System.out, aliases.get(name));
+
 				}
 			};
 
@@ -165,17 +175,10 @@ public class Commands {
 	}
 
 	private void setHandlers(CommandLine cmdLine) {
-		CommandLine.IExecutionExceptionHandler defaultHandler = cmdLine.getExecutionExceptionHandler();
+		defaultHandler = cmdLine.getExecutionExceptionHandler();
 		CommandLine.IParameterExceptionHandler defaultParamHandler = cmdLine.getParameterExceptionHandler();
 
-		cmdLine.setExecutionExceptionHandler((ex, commandLine1, parseResult) -> {
-			System.out.println(ex.getMessage());
-			System.out.println();
-			if (!(ex instanceof TaskException)) {
-				return defaultHandler.handleExecutionException(ex, commandLine1, parseResult);
-			}
-			return 0;
-		});
+		cmdLine.setExecutionExceptionHandler(this);
 
 		cmdLine.setParameterExceptionHandler((ex, args) -> {
 			System.out.println(ex.getMessage());
@@ -189,10 +192,10 @@ public class Commands {
 
 		cmdLine.setTrimQuotes(true);
 
-		Command realCommand = createCommand(command);
+		Runnable realCommand = createCommand(command);
 
 		if (realCommand == null) {
-			return buildCommandLine();
+			return buildCommandLineWithAllCommands();
 		}
 
 		cmdLine.addSubcommand(command, realCommand);
@@ -266,5 +269,15 @@ public class Commands {
 
 	Map<String, String> getAliases() {
 		return aliases;
+	}
+
+	@Override
+	public int handleExecutionException(Exception ex, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
+		System.out.println(ex.getMessage());
+		System.out.println();
+		if (!(ex instanceof TaskException)) {
+			return defaultHandler.handleExecutionException(ex, commandLine, parseResult);
+		}
+		return 0;
 	}
 }
