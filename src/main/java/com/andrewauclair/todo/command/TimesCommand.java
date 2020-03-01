@@ -11,6 +11,7 @@ import com.andrewauclair.todo.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -31,8 +32,8 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--info"})
-	private boolean info;
+	@Option(names = {"--log"})
+	private boolean log;
 
 	@Option(names = {"--proj-feat"})
 	private boolean proj_feat;
@@ -331,7 +332,7 @@ public final class TimesCommand implements Runnable {
 				displayTimes(filter, lists.size() > 1);
 			}
 		}
-		else if (info) {
+		else if (log) {
 			displayLog(filter);
 		}
 		else if (today && !proj_feat) {
@@ -376,13 +377,21 @@ public final class TimesCommand implements Runnable {
 		}
 	}
 
-	private static class InfoData {
+	private static class InfoData implements Comparable<InfoData> {
 		final long time;
-		final TaskState state;
+		private final Type type;
+		final String message;
 
-		private InfoData(long time, TaskState state) {
+		enum Type {
+			Add,
+			Start,
+			Stop,
+			Finish
+		}
+		private InfoData(long time, Type type, String message) {
 			this.time = time;
-			this.state = state;
+			this.type = type;
+			this.message = message;
 		}
 
 		@Override
@@ -391,28 +400,56 @@ public final class TimesCommand implements Runnable {
 			if (o == null || getClass() != o.getClass()) return false;
 			InfoData infoData = (InfoData) o;
 			return time == infoData.time &&
-					state == infoData.state;
+					type == infoData.type &&
+					message.equals(infoData.message);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(time, state);
+			return Objects.hash(time, type, message);
+		}
+
+		@Override
+		public int compareTo(InfoData o) {
+			if (time == o.time) {
+				return type.compareTo(o.type);
+			}
+			return Long.compare(time, o.time);
 		}
 	}
 
 	private void displayLog(TaskTimesFilter filter) {
-		Map<InfoData, Task> data = new HashMap<>();
+		List<InfoData> data = new ArrayList<>();
 
 		for (TaskTimesFilter.TaskTimeFilterResult result : filter.getData()) {
+			data.add(new InfoData(result.task.getAddTime().start, InfoData.Type.Add, "Added " + result.task.description()));
 
+			for (final TaskTimes startStopTime : result.task.getStartStopTimes()) {
+				data.add(new InfoData(startStopTime.start, InfoData.Type.Start, "Started " + result.task.description()));
+
+				if (startStopTime.stop != TaskTimes.TIME_NOT_SET) {
+					data.add(new InfoData(startStopTime.stop, InfoData.Type.Stop, "Stopped " + result.task.description()));
+				}
+			}
+
+			if (result.task.getFinishTime().isPresent()) {
+				data.add(new InfoData(result.task.getFinishTime().get().start, InfoData.Type.Finish, "Finished " + result.task.description()));
+			}
 		}
 
-		new ArrayList<>(data.keySet()).sort(new Comparator<InfoData>() {
-			@Override
-			public int compare(InfoData o1, InfoData o2) {
-				return Long.compare(o1.time, o2.time);
-			}
-		});
+		data.sort(Comparator.naturalOrder());
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+
+		ZoneId zoneId = osInterface.getZoneId();
+
+		for (final InfoData infoData : data) {
+			Instant instant = Instant.ofEpochSecond(infoData.time);
+
+			System.out.print(instant.atZone(zoneId).format(dateTimeFormatter));
+			System.out.print("   ");
+			System.out.println(infoData.message);
+		}
 	}
 
 	private void displayProjectsFeatures(TaskTimesFilter filter) {

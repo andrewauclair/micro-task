@@ -24,8 +24,8 @@ class Commands_Times_Info_Test extends Commands_Times_BaseTestCase {
 		
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 		
-		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+//		tasks.addTask("Test 1");
+//		tasks.startTask(1, false);
 		
 		String list = "/default";
 		
@@ -107,45 +107,38 @@ class Commands_Times_Info_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times log for 06/17/2019",
 				"",
-				"08:02:35 AM   Add 1 - 'Test 1'",
-				"08:02:40 AM   Add 2 - 'Test 2'",
-				"08:02:50 AM   Add 3 - 'Test 3'",
-				"08:03:05 AM   Start 1 - 'Test 1'",
-				"08:38:00 AM   Stop 1 - 'Test 1'",
-				"08:38:00 AM   Start 2 - 'Test 2'",
-				"09:15:14 AM   Finish 2 - 'Test 2'",
-				"09:15:14 AM   Start 1 - 'Test 1'",
-				"10:27:11 AM   Finish 1 - 'Test 1'",
-				"10:27:11 AM   Start 3 - 'Test 3'",
-				"10:41:19 AM   Add 4 - 'Test 4'",
-				"10:42:22 AM   Add 5 - 'Test 5'",
-				"11:04:40 AM   Add 6 - 'Test 6'",
-				"11:05:00 AM   Stop 3 - 'Test 3'",
-				"11:05:00 AM   Start 6 - 'Test 6'",
-				"12:01:12 PM   Stop 6 - 'Test 6'",
-				"12:35:55 PM   Start 8 - 'Test 8'",
-				"12:40:35 PM   Add 7 - 'Test 7'",
-				"12:43:35 PM   Add 8 - 'Test 8'",
-				"01:01:01 PM   Finish 8 - 'Test 8'",
-				"01:01:01 PM   Start 4 - 'Test 4'",
-				"01:11:00 PM   Finish 4 - 'Test 4'",
-				"01:11:00 PM   Start 7 - 'Test 7'",
-				"02:15:48 PM   Stop 7 - 'Test 7'",
-				"02:15:48 PM   Start 3 - 'Test 3'",
-				"02:30:35 PM   Add 9 - 'Test 9'",
-				"03:11:49 PM   Add 10 - 'Test 10'",
-				"03:15:00 PM   Finish 3 - 'Test 3'",
-				
+				"08:02:35 AM   Added 1 - 'Test 1'",
+				"08:02:40 AM   Added 2 - 'Test 2'",
+				"08:02:50 AM   Added 3 - 'Test 3'",
+				"08:03:05 AM   Started 1 - 'Test 1'",
+				"08:38:00 AM   Stopped 1 - 'Test 1'",
+				"08:38:00 AM   Started 2 - 'Test 2'",
+				"09:15:14 AM   Finished 2 - 'Test 2'",
+				"09:15:14 AM   Started 1 - 'Test 1'",
+				"10:27:11 AM   Finished 1 - 'Test 1'",
+				"10:27:11 AM   Started 3 - 'Test 3'",
+				"10:41:19 AM   Added 4 - 'Test 4'",
+				"10:42:22 AM   Added 5 - 'Test 5'",
+				"11:04:40 AM   Added 6 - 'Test 6'",
+				"11:05:00 AM   Stopped 3 - 'Test 3'",
+				"11:05:00 AM   Started 6 - 'Test 6'",
+				"12:01:12 PM   Stopped 6 - 'Test 6'",
+				"12:35:55 PM   Started 8 - 'Test 8'",
+				"12:40:35 PM   Added 7 - 'Test 7'",
+				"12:43:35 PM   Added 8 - 'Test 8'",
+				"01:01:01 PM   Finished 8 - 'Test 8'",
+				"01:01:01 PM   Started 4 - 'Test 4'",
+				"01:11:00 PM   Finished 4 - 'Test 4'",
+				"01:11:00 PM   Started 7 - 'Test 7'",
+				"02:15:48 PM   Stopped 7 - 'Test 7'",
+				"02:15:48 PM   Started 3 - 'Test 3'",
+				"02:30:35 PM   Added 9 - 'Test 9'",
+				"03:11:49 PM   Added 10 - 'Test 10'",
+				"03:15:00 PM   Finished 3 - 'Test 3'",
+				"",
 				"10 added",
 				" 8 started",
 				" 5 finished",
-				
-				"01h 49m 15s F 3 - 'Test 3'",
-				"01h 01m 39s   2 - 'Test 2'",
-				"    32m 20s R 5 - 'Test 5'",
-				"    10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
-				"",
-				"03h 33m 35s   Total",
 				""
 		);
 	}
