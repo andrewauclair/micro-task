@@ -51,15 +51,15 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for group '/one/'",
 				"",
-				ANSI_BOLD + "/one/test" + ANSI_RESET,
-				"01h 49m 15s F 3 - 'Test 3'",
-				"    32m 20s R 5 - 'Test 5'",
+				ANSI_BOLD + "2h 21m 35s /one/test" + ANSI_RESET,
+				"1h 49m 15s F 3 - 'Test 3'",
+				"   32m 20s R 5 - 'Test 5'",
 				"",
-				ANSI_BOLD + "/one/impl" + ANSI_RESET,
-				"01h 01m 39s   2 - 'Test 2'",
-				"    10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
+				ANSI_BOLD + "1h 12m  0s /one/impl" + ANSI_RESET,
+				"1h  1m 39s   2 - 'Test 2'",
+				"   10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}
@@ -100,15 +100,15 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for multiple groups",
 				"",
-				ANSI_BOLD + "/two/data" + ANSI_RESET,
-				"01h 49m 15s F 3 - 'Test 3'",
-				"    32m 20s R 5 - 'Test 5'",
+				ANSI_BOLD + "2h 21m 35s /two/data" + ANSI_RESET,
+				"1h 49m 15s F 3 - 'Test 3'",
+				"   32m 20s R 5 - 'Test 5'",
 				"",
-				ANSI_BOLD + "/one/data" + ANSI_RESET,
-				"01h 01m 39s   2 - 'Test 2'",
-				"    10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
+				ANSI_BOLD + "1h 12m  0s /one/data" + ANSI_RESET,
+				"1h  1m 39s   2 - 'Test 2'",
+				"   10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
 				"",
-				"03h 33m 35s   Total",
+				"3h 33m 35s   Total",
 				""
 		);
 	}

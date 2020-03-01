@@ -28,7 +28,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "eod --hours 8");
 
 		assertOutput(
-				"End of Day is in 02h 58m 08s at 06:17:15 PM",
+				"End of Day is in 2h 58m  8s at 06:17:15 PM",
 				""
 		);
 	}
@@ -38,7 +38,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "eod --hours 9");
 
 		assertOutput(
-				"End of Day is in 03h 58m 08s at 07:17:15 PM",
+				"End of Day is in 3h 58m  8s at 07:17:15 PM",
 				""
 		);
 	}
@@ -48,7 +48,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "eod");
 		
 		assertOutput(
-				"End of Day is in 02h 58m 08s at 06:17:15 PM",
+				"End of Day is in 2h 58m  8s at 06:17:15 PM",
 				""
 		);
 	}

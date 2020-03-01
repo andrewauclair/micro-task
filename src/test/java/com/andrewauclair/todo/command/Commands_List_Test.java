@@ -120,7 +120,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "set-list", "times"})
 	void command_list_option_has_list_completer(String command) {
-		CommandLine cmd = commands.buildCommandLine();
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
 
@@ -130,7 +130,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void move_command_dest_list_option_has_list_completer() {
-		CommandLine cmd = commands.buildCommandLine();
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 		
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
 		

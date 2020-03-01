@@ -4,10 +4,11 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,33 +17,38 @@ import java.util.stream.Collectors;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
-@CommandLine.Command(name = "list")
-public class ListCommand extends Command {
+@Command(name = "list")
+final class ListCommand implements Runnable {
 	private static final int MAX_DISPLAYED_TASKS = 20;
+	private final Tasks tasksData;
+	private final OSInterface osInterface;
 
-	@CommandLine.Option(names = {"--tasks"})
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"--tasks"})
 	private boolean tasks;
 
-	@CommandLine.Option(names = {"--list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
 	private String list;
 
-	@CommandLine.Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
 	private boolean group;
 
-	@CommandLine.Option(names = {"--recursive"})
+	@Option(names = {"--recursive"})
 	private boolean recursive;
 
-	@CommandLine.Option(names = {"--finished"})
+	@Option(names = {"--finished"})
 	private boolean finished;
 
-	@CommandLine.Option(names = {"--all"})
+	@Option(names = {"--all"})
 	private boolean all;
 
-	private final Tasks tasksData;
-
-	ListCommand(Tasks tasks) {
+	ListCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasksData = tasks;
+		this.osInterface = osInterface;
 	}
 
 	private void printTasks(List<Task> tasksList, int limit) {
@@ -50,16 +56,16 @@ public class ListCommand extends Command {
 				.limit(limit)
 				.max(Comparator.comparingInt(o -> String.valueOf(o.id).length()));
 
-		tasksList.stream()
+		max.ifPresent(task -> tasksList.stream()
 				.limit(limit)
 				.sorted(Comparator.comparingLong(o -> o.id))
-				.forEach(str -> printTask(str, String.valueOf(max.get().id).length()));
+				.forEach(str -> printTask(str, String.valueOf(task.id).length())));
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
 		if (list.getFullPath().equals(tasksData.getActiveList())) {
 			System.out.print("* ");
-			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, list.getName());
+			ConsoleColors.println(System.out, ANSI_FG_GREEN, list.getName());
 		}
 		else if (finished == (list.getState() == TaskContainerState.Finished)) {
 			System.out.print("  ");
@@ -68,23 +74,44 @@ public class ListCommand extends Command {
 	}
 
 	private void printTask(Task task, int maxLength) {
-		String printID = String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
+		String line;
 
-		if (task.id == tasksData.getActiveTaskID()) {
-			System.out.print("* ");
-			System.out.print(printID);
-			ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+		boolean active = task.id == tasksData.getActiveTaskID();
+
+		if (active) {
+			line = "* ";
 		}
 		else if (task.isRecurring()) {
-			System.out.print("R ");
-			System.out.print(printID);
-			System.out.println(task.description());
+			line = "R ";
 		}
 		else {
-			System.out.print("  ");
-			System.out.print(printID);
-			System.out.println(task.description());
+			line = "  ";
 		}
+
+		line += String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
+
+		if (active) {
+			line += ANSI_FG_GREEN;
+		}
+
+		line += task.description();
+
+		int length = line.length();
+
+		if (active) {
+			length -= ANSI_FG_GREEN.toString().length();
+		}
+
+		if (length > osInterface.getTerminalWidth()) {
+			line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
+			line += "...'";
+		}
+
+		if (active) {
+			line += ANSI_RESET;
+		}
+
+		System.out.println(line);
 	}
 
 	private int printTasks(TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
@@ -105,7 +132,7 @@ public class ListCommand extends Command {
 				}
 			}
 			else if (recursive) {
-				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, recursive);
+				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, true);
 			}
 		}
 		return totalTasks;

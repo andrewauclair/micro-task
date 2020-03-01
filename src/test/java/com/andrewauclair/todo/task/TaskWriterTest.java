@@ -3,6 +3,7 @@ package com.andrewauclair.todo.task;
 
 import com.andrewauclair.todo.TestUtils;
 import com.andrewauclair.todo.Utils;
+import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.os.OSInterfaceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskWriterTest {
 	private final OutputStream outputStream = new ByteArrayOutputStream();
-	private final OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
+	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = new TaskWriter(osInterface);
 
 	@BeforeEach
@@ -43,7 +44,7 @@ class TaskWriterTest {
 	}
 	
 	@Test
-	void write_recurring_task_with_project_and_feature() {
+	void write_recurring_task() {
 		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
@@ -58,7 +59,82 @@ class TaskWriterTest {
 
 		assertTrue(writeTask);
 	}
-	
+
+	@Test
+	void write_task_with_project() {
+		Task task = new Task(1, "Test", TaskState.Inactive,
+				Arrays.asList(
+						new TaskTimes(123),
+						new TaskTimes(1234, 4567, "Project 1", "")
+				)
+		);
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"add 123",
+				"start 1234",
+				"Project 1",
+				"",
+				"stop 4567",
+				""
+		);
+		assertTrue(writeTask);
+	}
+
+	@Test
+	void write_task_with_feature() {
+		Task task = new Task(1, "Test", TaskState.Inactive,
+				Arrays.asList(
+						new TaskTimes(123),
+						new TaskTimes(1234, 4567, "", "Feature 1")
+				)
+		);
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"add 123",
+				"start 1234",
+				"",
+				"Feature 1",
+				"stop 4567",
+				""
+		);
+		assertTrue(writeTask);
+	}
+
+	@Test
+	void write_task_with_project_and_feature() {
+		Task task = new Task(1, "Test", TaskState.Inactive,
+				Arrays.asList(
+						new TaskTimes(123),
+						new TaskTimes(1234, 4567, "Project 1", "Feature 1")
+				)
+		);
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"add 123",
+				"start 1234",
+				"Project 1",
+				"Feature 1",
+				"stop 4567",
+				""
+		);
+		assertTrue(writeTask);
+	}
+
 	@Test
 	void write_task_with_start_time() {
 		Task task = new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345)));
@@ -206,8 +282,6 @@ class TaskWriterTest {
 	
 	@Test
 	void thrown_exception_makes_writeTask_return_false() throws IOException {
-		OSInterfaceImpl osInterface = Mockito.mock(OSInterfaceImpl.class);
-		
 		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
 

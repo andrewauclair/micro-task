@@ -10,12 +10,12 @@ public interface TaskContainer {
 	String getFullPath();
 
 	List<Task> getTasks();
-	
+
 	Optional<TaskList> findListForTask(long id);
-	
+
 	String getProject();
-	
+
 	String getFeature();
-	
+
 	TaskContainerState getState();
 }

@@ -38,7 +38,7 @@ class TaskDurationTest {
 		
 		TaskDuration duration = new TaskDuration(task, osInterface);
 		
-		assertEquals("01h 08m 06s", duration.toString());
+		assertEquals("1h  8m  6s", duration.toString());
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class TaskDurationTest {
 		
 		TaskDuration duration = new TaskDuration(taskTimes, osInterface);
 
-		assertEquals("05s", duration.toString());
+		assertEquals(" 5s", duration.toString());
 	}
 
 	@Test
@@ -65,6 +65,6 @@ class TaskDurationTest {
 		
 		TaskDuration duration = new TaskDuration(taskTimes, osInterface);
 
-		assertEquals("01h 00m 00s", duration.toString());
+		assertEquals("1h  0m  0s", duration.toString());
 	}
 }

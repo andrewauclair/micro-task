@@ -1,27 +1,24 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
-import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.TaskGroup;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-@CommandLine.Command(name = "mk")
-public class MakeCommand extends Command {
+@Command(name = "mk")
+final class MakeCommand implements Runnable {
 	private final Tasks tasks;
-	@CommandLine.ArgGroup(multiplicity = "1")
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@ArgGroup(multiplicity = "1")
 	private ListGroup listGroup;
 
-	public MakeCommand(Tasks tasks) {
+	MakeCommand(Tasks tasks) {
 		this.tasks = tasks;
-	}
-
-	static class ListGroup {
-		@CommandLine.Option(names = {"-l", "--list"})
-		private String list;
-
-		@CommandLine.Option(names = {"-g", "--group"})
-		private String group;
 	}
 
 	@Override
@@ -48,5 +45,13 @@ public class MakeCommand extends Command {
 			System.out.println("Created group '" + group.getFullPath() + "'");
 			System.out.println();
 		}
+	}
+
+	private static final class ListGroup {
+		@Option(names = {"-l", "--list"})
+		private String list;
+
+		@Option(names = {"-g", "--group"})
+		private String group;
 	}
 }

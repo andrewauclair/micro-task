@@ -8,7 +8,7 @@ import org.jline.reader.ParsedLine;
 
 import java.util.List;
 
-public class LongCompleter implements Completer {
+final class LongCompleter implements Completer {
 	@Override
 	public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
 		try {

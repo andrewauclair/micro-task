@@ -5,7 +5,8 @@ import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.TaskTimesFilter;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,13 +14,16 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@CommandLine.Command(name = "eod")
-class EndOfDayCommand extends Command {
-	@CommandLine.Option(names = {"--hours"})
-	private Integer hours;
-
+@Command(name = "eod")
+final class EndOfDayCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"--hours"})
+	private Integer hours;
 
 	EndOfDayCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -53,9 +57,9 @@ class EndOfDayCommand extends Command {
 		}
 		else {
 			System.out.print("End of Day is in ");
-			
+
 			System.out.print(Utils.formatTime(eod - epochSecond, Utils.HighestTime.None));
-			
+
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(eod).atZone(zoneId).format(dateTimeFormatter);
 

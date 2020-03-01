@@ -16,10 +16,6 @@ public class MockOSInterface implements OSInterface {
 	private boolean incrementTime = true;
 
 	@Override
-	public void setCommands(Commands commands) {
-	}
-
-	@Override
 	public boolean runGitCommand(String command, boolean print) {
 		return false;
 	}
@@ -71,7 +67,12 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public void clearScreen() {
 	}
-
+	
+	@Override
+	public int getTerminalWidth() {
+		return 60;
+	}
+	
 	@Override
 	public String getVersion() throws IOException {
 		// needs to have throws IOException to pass tests even though it's unused

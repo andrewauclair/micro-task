@@ -6,15 +6,19 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.List;
 
-@CommandLine.Command(name = "active")
-public class ActiveCommand extends Command {
+@Command(name = "active")
+final class ActiveCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-	
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
 	ActiveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;

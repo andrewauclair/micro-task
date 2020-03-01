@@ -8,7 +8,7 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.time.Instant;
@@ -20,75 +20,80 @@ import java.util.stream.Collectors;
 
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
+import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
+import static java.util.stream.Collectors.toMap;
 
-@CommandLine.Command(name = "times")
-public class TimesCommand extends Command {
-	@Option(names = {"--info"})
-	private boolean info;
-	
-	@Option(names = {"--proj-feat"})
-	private boolean proj_feat;
-	
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
-	private String[] list;
-	
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
-	private String[] group;
-	
-	@Option(names = {"--today"})
-	private boolean today;
-	
-	@Option(names = {"--yesterday"})
-	private boolean yesterday;
-	
-	@Option(names = {"-d", "--day"})
-	private Integer day;
-	
-	@Option(names = {"-m", "--month"})
-	private Integer month;
-	
-	@Option(names = {"-y", "--year"})
-	private Integer year;
-	
-	@Option(names = {"--week"})
-	private boolean week;
-	
-	@Option(names = {"--all-time"})
-	private boolean all_time;
-	
+@Command(name = "times")
+public final class TimesCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
-	
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"--info"})
+	private boolean info;
+
+	@Option(names = {"--proj-feat"})
+	private boolean proj_feat;
+
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
+	private String[] list;
+
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
+	private String[] group;
+
+	@Option(names = {"--today"})
+	private boolean today;
+
+	@Option(names = {"--yesterday"})
+	private boolean yesterday;
+
+	@Option(names = {"-d", "--day"})
+	private Integer day;
+
+	@Option(names = {"-m", "--month"})
+	private Integer month;
+
+	@Option(names = {"-y", "--year"})
+	private Integer year;
+
+	@Option(names = {"--week"})
+	private boolean week;
+
+	@Option(names = {"--all-time"})
+	private boolean all_time;
+
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
-	
+
 	private void displayTimesForDay(Instant day, TaskTimesFilter filter) {
 		// get date and execute it
 		System.out.print("Times for day ");
-		
+
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-		
+
 		ZoneId zoneId = osInterface.getZoneId();
-		
+
 		System.out.println(day.atZone(zoneId).format(dateTimeFormatter));
-		
+
 		boolean printListNames = list != null;
-		
+
 		if (!printListNames) {
 			System.out.println();
 		}
-		
+
 		displayTimes(filter, printListNames);
 	}
-	
+
 	private void displayTimes(TaskTimesFilter filter, boolean individualLists) {
 		List<TaskTimesFilter.TaskTimeFilterResult> results = filter.getData();
-		
+
 		long maxID = Long.MIN_VALUE;
 		long minID = Long.MAX_VALUE;
-		
+
 		for (TaskTimesFilter.TaskTimeFilterResult result : results) {
 			if (result.task.id > maxID) {
 				maxID = result.task.id;
@@ -97,198 +102,203 @@ public class TimesCommand extends Command {
 				minID = result.task.id;
 			}
 		}
-		
-		long idSpace = Long.toString(maxID).length() - Long.toString(minID).length() + 1;
-		
+
+		long idSpace = Long.toString(maxID).length();
+
+		Utils.HighestTime highestTime = getHighestTime(filter);
+
 		if (individualLists) {
 			Map<String, List<TaskTimesFilter.TaskTimeFilterResult>> map = new HashMap<>();
-			
+
 			for (TaskTimesFilter.TaskTimeFilterResult datum : results) {
 				List<TaskTimesFilter.TaskTimeFilterResult> result = map.getOrDefault(datum.list, new ArrayList<>());
 				result.add(datum);
 				map.put(datum.list, result);
 			}
-			
+
 			List<List<TaskTimesFilter.TaskTimeFilterResult>> lists = new ArrayList<>();
-			
+
 			for (String s : map.keySet()) {
 				lists.add(map.get(s));
 			}
-			
+
 			lists.sort(
 					(o1, o2) -> {
 						long total_1 = 0;
 						long total_2 = 0;
-						
+
 						for (TaskTimesFilter.TaskTimeFilterResult taskTimeFilterResult : o1) {
 							total_1 += taskTimeFilterResult.getTotal();
 						}
-						
+
 						for (TaskTimesFilter.TaskTimeFilterResult taskTimeFilterResult : o2) {
 							total_2 += taskTimeFilterResult.getTotal();
 						}
-						
+
 						return Long.compare(total_2, total_1);
 					}
 			);
-			
+
 			long totalTime = 0;
-			
+
 			for (List<TaskTimesFilter.TaskTimeFilterResult> taskTimeFilterResults : lists) {
 				taskTimeFilterResults.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
-				
+
+				long listTime = 0;
+				for (TaskTimesFilter.TaskTimeFilterResult task : taskTimeFilterResults) {
+					listTime += task.total;
+				}
+
 				System.out.println();
 				System.out.print(ConsoleColors.ANSI_BOLD);
+				System.out.print(Utils.formatTime(listTime, highestTime));
+				System.out.print(" ");
 				System.out.print(taskTimeFilterResults.get(0).list);
 				System.out.print(ANSI_RESET);
 				System.out.println();
-				totalTime += printResults(taskTimeFilterResults, getHighestTime(filter), idSpace);
+				totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
 			}
-			
+
 			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, getHighestTime(filter)));
+			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
-			
-			long totalTime = printResults(results, getHighestTime(filter), idSpace);
-			
+
+			long totalTime = printResults(results, highestTime, idSpace);
+
 			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, getHighestTime(filter)));
+			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		System.out.print("   Total");
 		System.out.println();
 		System.out.println();
 	}
-	
+
 	private Utils.HighestTime getHighestTime(TaskTimesFilter filter) {
-		Utils.HighestTime highestTime = Utils.HighestTime.Second;
-		
-		long totalTime = 0;
-		
-		for (TaskTimesFilter.TaskTimeFilterResult result : filter.getData()) {
-			Utils.HighestTime resultHighest = Utils.fromTimestamp(result.total);
-			
-			if (resultHighest.isAtLeast(highestTime)) {
-				highestTime = resultHighest;
-			}
-			
-			totalTime += result.total;
-		}
-		
-		Utils.HighestTime totalHighest = Utils.fromTimestamp(totalTime);
-		
-		if (totalHighest.isAtLeast(highestTime)) {
-			highestTime = totalHighest;
-		}
-		
-		return highestTime;
+		long totalTime = filter.getData().stream()
+				.map(TaskTimesFilter.TaskTimeFilterResult::getTotal)
+				.reduce(0L, Long::sum);
+
+		return Utils.fromTimestamp(totalTime);
 	}
-	
+
 	private long printResults(List<TaskTimesFilter.TaskTimeFilterResult> data, Utils.HighestTime highestTime, long idSpace) {
 		long totalTime = 0;
-		
+
 		for (TaskTimesFilter.TaskTimeFilterResult result : data) {
-			System.out.print(Utils.formatTime(result.getTotal(), highestTime));
-			
+			String line = Utils.formatTime(result.getTotal(), highestTime);
+
 			Task task = result.getTask();
-			
-			String idPad = String.join("", Collections.nCopies((int) (idSpace - Long.toString(task.id).length()), " "));
-			
-			if (tasks.getActiveTaskID() == task.id) {
-				System.out.print(" * ");
-				System.out.print(idPad);
-				ConsoleColors.println(System.out, ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN, task.description());
+
+			boolean active = tasks.getActiveTaskID() == task.id;
+
+			if (active) {
+				line += " * ";
+				line += ANSI_FG_GREEN;
 			}
 			else if (task.state == TaskState.Finished) {
-				System.out.print(" F ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				line += " F ";
 			}
 			else if (task.isRecurring()) {
-				System.out.print(" R ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				line += " R ";
 			}
 			else {
-				System.out.print("   ");
-				System.out.print(idPad);
-				System.out.println(task.description());
+				line += "   ";
 			}
-			
+
+			line += task.description(idSpace);
+
+			int length = line.length();
+
+			if (active) {
+				length -= ANSI_FG_GREEN.toString().length();
+			}
+
+			if (length > osInterface.getTerminalWidth()) {
+				line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
+				line += "...'";
+			}
+
+			if (active) {
+				line += ANSI_RESET;
+			}
+
+			System.out.println(line);
+
 			totalTime += result.getTotal();
 		}
 		return totalTime;
 	}
-	
+
 	private void printTasks(TaskTimesFilter filter) {
 		displayTimes(filter, false);
 	}
-	
+
 	@Override
 	public void run() {
 		TaskTimesFilter filter = tasks.getFilterBuilder().createFilter(tasks);
-		
+
 		if (list != null) {
 			Arrays.stream(list).forEach(list -> filter.filterForList(tasks.getAbsoluteListName(list)));
 		}
-		
+
 		if (group != null) {
 			Arrays.stream(group).forEach(group -> filter.filterForGroup(tasks.getGroup(group)));
 		}
-		
+
 		Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
-		
+
 		if (week) {
 			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
-			
+
 			instant = day.minusDays(day.getDayOfWeek().getValue()).atStartOfDay(osInterface.getZoneId()).toInstant();
-			
+
 			filter.filterForWeek(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
 		}
 		else if (today) {
 			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
-			
+
 			filter.filterForDay(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
 		}
 		else if (yesterday) {
 			long epochSecond = osInterface.currentSeconds() - (60 * 60 * 24);
-			
+
 			instant = Instant.ofEpochSecond(epochSecond);
-			
+
 			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
-			
+
 			filter.filterForDay(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
 		}
 		else if (day != null) {
 			ZoneId zoneId = osInterface.getZoneId();
-			
+
 			if (day < 1 || day > 31) {
 				throw new TaskException("Day option must be 1 - 31");
 			}
-			
+
 			if (month != null && (month < 1 || month > 12)) {
 				throw new TaskException("Month option must be 1 - 12");
 			}
-			
+
 			int day = this.day;
 			int month = this.month != null ? this.month : instant.atZone(zoneId).getMonthValue();
 			int year = this.year != null ? this.year : instant.atZone(zoneId).getYear();
-			
+
 			LocalDate of = LocalDate.of(year, month, day);
-			
+
 			instant = of.atStartOfDay(zoneId).toInstant();
-			
+
 			filter.filterForDay(month, day, year);
 		}
-		
+
 		if ((list != null || group != null) && day == null && !today) {
 			List<String> lists = new ArrayList<>();
-			
+
 			if (list != null) {
 				lists.addAll(Arrays.asList(list));
 			}
-			
+
 			if (group != null) {
 				for (String group : group) {
 					lists.addAll(tasks.getGroup(group).getChildren().stream()
@@ -297,7 +307,7 @@ public class TimesCommand extends Command {
 							.collect(Collectors.toSet()));
 				}
 			}
-			
+
 			if (list != null && lists.size() > 1) {
 				System.out.println("Times for multiple lists");
 			}
@@ -309,11 +319,11 @@ public class TimesCommand extends Command {
 			}
 			else {
 				String list = tasks.getAbsoluteListName(lists.get(0));
-				
+
 				System.out.println("Times for list '" + list + "'");
 				System.out.println();
 			}
-			
+
 			if (group != null && list == null) {
 				displayTimes(filter, true);
 			}
@@ -333,11 +343,11 @@ public class TimesCommand extends Command {
 		else if (week && !proj_feat) {
 			System.out.print("Times for week of ");
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-			
+
 			ZoneId zoneId = osInterface.getZoneId();
-			
+
 			System.out.println(instant.atZone(zoneId).format(dateTimeFormatter));
-			
+
 			System.out.println();
 			displayTimes(filter, false);
 		}
@@ -365,16 +375,16 @@ public class TimesCommand extends Command {
 			}
 		}
 	}
-	
+
 	private static class InfoData {
 		final long time;
 		final TaskState state;
-		
+
 		private InfoData(long time, TaskState state) {
 			this.time = time;
 			this.state = state;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
@@ -383,20 +393,20 @@ public class TimesCommand extends Command {
 			return time == infoData.time &&
 					state == infoData.state;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return Objects.hash(time, state);
 		}
 	}
-	
+
 	private void displayLog(TaskTimesFilter filter) {
 		Map<InfoData, Task> data = new HashMap<>();
-		
+
 		for (TaskTimesFilter.TaskTimeFilterResult result : filter.getData()) {
-		
+
 		}
-		
+
 		new ArrayList<>(data.keySet()).sort(new Comparator<InfoData>() {
 			@Override
 			public int compare(InfoData o1, InfoData o2) {
@@ -404,48 +414,104 @@ public class TimesCommand extends Command {
 			}
 		});
 	}
-	
+
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
-		Map<String, Long> totals = new HashMap<>();
+		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
+
 		long totalTime = 0;
-		
+		int longestProject = 0;
+
+		Utils.HighestTime highestTime = getHighestTime(filter);
+
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
 			String project = tasks.getProjectForTask(task.task.id);
 			String feature = tasks.getFeatureForTask(task.task.id);
-			
+
 			if (project.isEmpty()) {
 				project = "None";
 			}
 			if (feature.isEmpty()) {
 				feature = "None";
 			}
-			String projfeat = project + " / " + feature;
-			
-			totals.put(projfeat, totals.getOrDefault(projfeat, 0L) + task.total);
+
 			totalTime += task.total;
-		}
-		
-		List<String> str = new ArrayList<>(totals.keySet());
-		str.sort(String::compareTo);
-		
-		Optional<String> longest = str.stream()
-				.max(Comparator.comparingInt(String::length));
-		
-		for (String s1 : str) {
-			String projFeat = s1;
-			if (projFeat.contains("None")) {
-				projFeat = projFeat.replaceAll("None", ANSI_REVERSED + "None" + ANSI_RESET);
+
+			ProjFeatOutput output = new ProjFeatOutput(project, feature);
+
+			outputs.put(output, outputs.getOrDefault(output, 0L) + task.total);
+
+			if (project.length() > longestProject) {
+				longestProject = project.length();
 			}
-			System.out.print(Utils.formatTime(totals.get(s1), getHighestTime(filter)));
-			System.out.print(String.join("", Collections.nCopies(longest.get().length() - s1.length() + 3, " ")));
-			System.out.print(projFeat);
-			
-			System.out.println();
 		}
+
+		int longestTime = Utils.formatTime(totalTime, highestTime).length();
+
+		LinkedHashMap<ProjFeatOutput, Long> collect = outputs.entrySet()
+				.stream()
+				.sorted(Map.Entry.<ProjFeatOutput, Long>comparingByValue().reversed())
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
+
+		System.out.print(String.format("%-" + longestTime + "s", "Time"));
+		System.out.print("   ");
+		System.out.print(String.format("%-" + longestProject + "s", "Project"));
+		System.out.print("   Feature");
 		System.out.println();
-		System.out.print(Utils.formatTime(totalTime, getHighestTime(filter)));
+		System.out.println();
+
+		for (ProjFeatOutput output : collect.keySet()) {
+			long time = outputs.get(output);
+
+			System.out.print(Utils.formatTime(time, highestTime));
+			System.out.print("   ");
+			if (output.project.equals("None")) {
+				System.out.print(ANSI_REVERSED + "None" + ANSI_RESET);
+			}
+			else {
+				System.out.print(output.project);
+			}
+			System.out.print(String.join("", Collections.nCopies(longestProject - output.project.length(), " ")));
+			System.out.print("   ");
+			if (output.feature.equals("None")) {
+				System.out.println(ANSI_REVERSED + "None" + ANSI_RESET);
+			}
+			else {
+				System.out.println(output.feature);
+			}
+		}
+
+		System.out.println();
+		System.out.print(Utils.formatTime(totalTime, highestTime));
 		System.out.print("   Total");
 		System.out.println();
 		System.out.println();
+	}
+
+	public static final class ProjFeatOutput {
+		final String project;
+		final String feature;
+
+		ProjFeatOutput(String project, String feature) {
+			this.project = project;
+			this.feature = feature;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(project, feature);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			ProjFeatOutput that = (ProjFeatOutput) o;
+			return Objects.equals(project, that.project) &&
+					Objects.equals(feature, that.feature);
+		}
 	}
 }

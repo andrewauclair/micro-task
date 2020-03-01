@@ -7,25 +7,35 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.TaskList;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-@CommandLine.Command(name = "move")
-public class MoveCommand extends Command {
-	@CommandLine.Option(names = {"-t", "--task"}, split = ",")
-	private Integer[] id;
+@Command(name = "move")
+final class MoveCommand implements Runnable {
+	private final Tasks tasks;
 
-	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-	private String list;
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
 
-	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-	private String group;
+	@CommandLine.ArgGroup(multiplicity = "1")
+	private Args args;
 
-	@CommandLine.Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class)
+	private static class Args {
+		@Option(names = {"-t", "--task"}, split = ",")
+		private Integer[] id;
+
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		private String list;
+
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		private String group;
+	}
+
+	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class)
 	private String dest_group;
 
-	@CommandLine.Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class)
 	private String dest_list;
-
-	private final Tasks tasks;
 
 	MoveCommand(Tasks tasks) {
 		this.tasks = tasks;
@@ -33,34 +43,34 @@ public class MoveCommand extends Command {
 
 	@Override
 	public void run() {
-		if (id != null) {
+		if (args.id != null) {
 			if (dest_list == null) {
 				throw new TaskException("move --task requires --dest-list");
 			}
-			
-			for (Integer taskID : id) {
+
+			for (Integer taskID : args.id) {
 				moveTask(dest_list, taskID);
 			}
 			System.out.println();
 		}
-		else if (this.list != null) {
+		else if (args.list != null) {
 			if (dest_group == null) {
 				throw new TaskException("move --list requires --dest-group");
 			}
 
-			tasks.moveList(list, dest_group);
+			tasks.moveList(args.list, dest_group);
 
-			System.out.println("Moved list " + list + " to group '" + dest_group + "'");
+			System.out.println("Moved list " + args.list + " to group '" + dest_group + "'");
 			System.out.println();
 		}
-		else if (this.group != null) {
+		else {
 			if (dest_group == null) {
 				throw new TaskException("move --group requires --dest-group");
 			}
-			
-			tasks.moveGroup(group, dest_group);
 
-			System.out.println("Moved group '" + group + "' to group '" + dest_group + "'");
+			tasks.moveGroup(args.group, dest_group);
+
+			System.out.println("Moved group '" + args.group + "' to group '" + dest_group + "'");
 			System.out.println();
 		}
 	}

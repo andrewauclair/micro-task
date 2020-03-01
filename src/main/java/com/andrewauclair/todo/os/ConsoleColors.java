@@ -4,11 +4,16 @@ package com.andrewauclair.todo.os;
 import java.io.PrintStream;
 
 // See this link for info: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
-public class ConsoleColors {
+public final class ConsoleColors {
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BOLD = "\u001B[1m";
 	public static final String ANSI_UNDERLINE = "\u001B[4m";
 	public static final String ANSI_REVERSED = "\u001B[7m";
+
+	public static void println(PrintStream stream, ConsoleForegroundColor color, String message) {
+		print(stream, color, message);
+		stream.println();
+	}
 
 	// TODO I could write some simple tests for this stuff
 	private static void print(PrintStream stream, ConsoleForegroundColor color, String message) {
@@ -17,21 +22,16 @@ public class ConsoleColors {
 		stream.print(ANSI_RESET);
 	}
 
-	public static void println(PrintStream stream, ConsoleForegroundColor color, String message) {
-		print(stream, color, message);
+	public static void println(PrintStream stream, ConsoleForegroundColor fgColor, ConsoleBackgroundColor bgColor, String message) {
+		print(stream, fgColor, bgColor, message);
 		stream.println();
 	}
-	
+
 	private static void print(PrintStream stream, ConsoleForegroundColor fgColor, ConsoleBackgroundColor bgColor, String message) {
 		stream.print(bgColor);
 		stream.print(fgColor);
 		stream.print(message);
 		stream.print(ANSI_RESET);
-	}
-
-	public static void println(PrintStream stream, ConsoleForegroundColor fgColor, ConsoleBackgroundColor bgColor, String message) {
-		print(stream, fgColor, bgColor, message);
-		stream.println();
 	}
 
 	public enum ConsoleForegroundColor {

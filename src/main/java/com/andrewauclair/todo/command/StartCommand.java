@@ -6,30 +6,27 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
+@Command(name = "start")
+final class StartCommand implements Runnable {
+	private final Tasks tasks;
+	private final OSInterface osInterface;
 
-@CommandLine.Command(name = "start")
-public class StartCommand extends Command {
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
 	@Parameters(index = "0")
 	private long id;
 
 	@Option(names = {"-f", "--finish"})
 	private boolean finish;
 
-	private final Tasks tasks;
-	private final OSInterface osInterface;
-	
 	StartCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;

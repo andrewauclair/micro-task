@@ -86,7 +86,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 				"Times for day 12/31/1969",
 				"",
 				"",
-				"00s   Total",
+				" 0s   Total",
 				""
 		);
 	}

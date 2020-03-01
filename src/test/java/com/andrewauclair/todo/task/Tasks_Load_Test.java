@@ -139,4 +139,14 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		assertEquals(2, tasks.nextID());
 	}
+
+	@Test
+	void tasks_load_resets_active_group() {
+		tasks.createGroup("/one/");
+		tasks.switchGroup("/one/");
+
+		tasks.load(loader, commands);
+
+		assertEquals("/", tasks.getActiveGroup().getFullPath());
+	}
 }
