@@ -5,30 +5,20 @@ import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-@CommandLine.Command(name = "finish")
-public class FinishCommand extends Command {
-
-	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
-	private FinishOptions options;
-
-	private static class FinishOptions {
-		@CommandLine.Option(required = true, names = {"-t", "--task"})
-		private Integer id;
-
-		@CommandLine.Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-		private String list;
-
-		@CommandLine.Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-		private String group;
-
-		@CommandLine.Option(required = true, names = {"-a", "--active"})
-		private boolean active;
-	}
-
+@Command(name = "finish")
+final class FinishCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@ArgGroup(multiplicity = "1")
+	private FinishOptions options;
 
 	FinishCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -73,5 +63,19 @@ public class FinishCommand extends Command {
 			System.out.println(new TaskDuration(task, osInterface));
 			System.out.println();
 		}
+	}
+
+	private static final class FinishOptions {
+		@Option(required = true, names = {"-t", "--task"})
+		private Integer id;
+
+		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		private String list;
+
+		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		private String group;
+
+		@Option(required = true, names = {"-a", "--active"})
+		private boolean active;
 	}
 }

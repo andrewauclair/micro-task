@@ -6,21 +6,20 @@ import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
-
-@CommandLine.Command(name = "stop")
-public class StopCommand extends Command {
+@Command(name = "stop")
+final class StopCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 
-	public StopCommand(Tasks tasks, OSInterface osInterface) {
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	StopCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}

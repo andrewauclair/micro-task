@@ -16,10 +16,6 @@ public class MockOSInterface implements OSInterface {
 	private boolean incrementTime = true;
 
 	@Override
-	public void setCommands(Commands commands) {
-	}
-
-	@Override
 	public boolean runGitCommand(String command, boolean print) {
 		return false;
 	}

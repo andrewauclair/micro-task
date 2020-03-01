@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
-import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 
 import java.time.*;
@@ -9,134 +8,140 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("CanBeFinal")
 public class TaskTimesFilter {
 	private final OSInterface osInterface;
 	private final Tasks tasks;
-	private List<String> lists = new ArrayList<>();
+	private final List<String> lists = new ArrayList<>();
 	private List<Task> allTasks = new ArrayList<>();
 	private List<TaskTimeFilterResult> results = new ArrayList<>();
-	
+
 	public TaskTimesFilter(Tasks tasks) {
 		osInterface = tasks.osInterface;
 		this.tasks = tasks;
 		this.allTasks.addAll(tasks.getAllTasks());
-		
+
 		buildResults();
 	}
-	
+
 	private void buildResults() {
 		results.clear();
-		
+
 		for (Task task : allTasks) {
 			long totalTime = 0;
-			
+
 			for (TaskTimes time : task.getStartStopTimes()) {
 				totalTime += time.getDuration(osInterface);
 			}
-			
+
 			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
 		}
 	}
-	
-	public void filterForList(String list) {
-		lists.add(list);
-		
-		allTasks.clear();
-		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(name)));
-		
-		buildResults();
-	}
-	
+
 	public void filterForGroup(TaskGroup group) {
 		group.getChildren().stream()
 				.filter(child -> child instanceof TaskList)
 				.forEach(list -> filterForList(list.getFullPath()));
 	}
-	
+
+	public void filterForList(String list) {
+		lists.add(list);
+
+		allTasks.clear();
+		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(name)));
+
+		buildResults();
+	}
+
 	public TaskTimesFilter filterForDay(int month, int day, int year) {
 		LocalDate of = LocalDate.of(year, month, day);
-		
+
 		ZoneId zoneId = osInterface.getZoneId();
 		Instant instant = of.atStartOfDay(zoneId).toInstant();
-		
+
 		LocalDate today = LocalDate.ofInstant(instant, zoneId);
 		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
 		LocalDateTime nextMidnight = midnight.plusDays(1);
-		
+
 		applyDateRange(zoneId, midnight, nextMidnight);
-		
+
 		return this;
 	}
-	
-	public TaskTimesFilter filterForWeek(int month, int day, int year) {
-		LocalDate of = LocalDate.of(year, month, day);
-		
-		LocalDate weekStart = of.minusDays(of.getDayOfWeek().getValue());
-		
-		ZoneId zoneId = osInterface.getZoneId();
-		
-		LocalDateTime midnight = LocalDateTime.of(weekStart, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(7);
-		
-		applyDateRange(zoneId, midnight, nextMidnight);
-		
-		return this;
-	}
-	
+
 	private void applyDateRange(ZoneId zoneId, LocalDateTime midnight, LocalDateTime nextMidnight) {
 		long midnightStart = midnight.atZone(zoneId).toEpochSecond();
 		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
-		
+
 		List<Task> newTasks = new ArrayList<>();
 		List<TaskTimeFilterResult> newResults = new ArrayList<>();
-		
+
 		for (Task task : allTasks) {
 			long totalTime = 0;
-			
+
 			for (TaskTimes time : task.getStartStopTimes()) {
 				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 					totalTime += time.getDuration(osInterface);
 				}
 			}
-			
+
 			if (totalTime > 0) {
 				newTasks.add(task);
 				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
 			}
 		}
-		
+
 		allTasks = newTasks;
 		results = newResults;
 	}
-	
+
+	public TaskTimesFilter filterForWeek(int month, int day, int year) {
+		LocalDate of = LocalDate.of(year, month, day);
+
+		LocalDate weekStart = of.minusDays(of.getDayOfWeek().getValue());
+
+		ZoneId zoneId = osInterface.getZoneId();
+
+		LocalDateTime midnight = LocalDateTime.of(weekStart, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(7);
+
+		applyDateRange(zoneId, midnight, nextMidnight);
+
+		return this;
+	}
+
 	public List<Task> getTasks() {
 		return allTasks;
 	}
-	
+
 	public List<TaskTimeFilterResult> getData() {
 		return results;
 	}
-	
+
 	public static final class TaskTimeFilterResult {
 		public final long total;
 		public final Task task;
 		public final String list;
-		
+
 		public TaskTimeFilterResult(long total, Task task, String list) {
 			this.total = total;
 			this.task = task;
 			this.list = list;
 		}
-		
+
 		public long getTotal() {
 			return total;
 		}
-		
+
 		// TODO To be replaced by just using task
 		public Task getTask() {
 			return task;
 		}
-		
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(total, task, list);
+		}
+
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) {
@@ -150,12 +155,7 @@ public class TaskTimesFilter {
 					Objects.equals(task, that.task) &&
 					Objects.equals(list, that.list);
 		}
-		
-		@Override
-		public int hashCode() {
-			return Objects.hash(total, task, list);
-		}
-		
+
 		@Override
 		public String toString() {
 			return "TaskFilterResult{" +

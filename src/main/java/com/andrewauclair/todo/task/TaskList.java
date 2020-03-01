@@ -14,17 +14,17 @@ public final class TaskList implements TaskContainer {
 
 	private final OSInterface osInterface;
 	private final TaskWriter writer;
-	
+
 	private final String project;
 	private final String feature;
-	
+
 	private final TaskContainerState state;
-	
+
 	private final List<Task> tasks = new ArrayList<>();
-	
+
 	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, String project, String feature, TaskContainerState state) {
 		Objects.requireNonNull(parent);
-		
+
 		this.name = name;
 		this.parent = parent;
 //		this.name = name.substring(name.lastIndexOf('/') + 1);
@@ -33,9 +33,9 @@ public final class TaskList implements TaskContainer {
 		this.project = project;
 		this.feature = feature;
 		this.state = state;
-		
+
 		parentPath = parent.getFullPath();
-		
+
 		if (parent.getFullPath().equals("/")) {
 			fullPath = "/" + name;
 		}
@@ -52,29 +52,62 @@ public final class TaskList implements TaskContainer {
 	public String getFullPath() {
 		return fullPath;
 	}
-	
+
+	@Override
+	public List<Task> getTasks() {
+		return Collections.unmodifiableList(tasks);
+	}
+
+	@Override
+	public Optional<TaskList> findListForTask(long id) {
+		if (containsTask(id)) {
+			return Optional.of(this);
+		}
+		return Optional.empty();
+	}
+
+	boolean containsTask(long taskID) {
+		return tasks.stream()
+				.anyMatch(task -> task.id == taskID);
+	}
+
+	@Override
+	public String getProject() {
+		return project;
+	}
+
+	@Override
+	public String getFeature() {
+		return feature;
+	}
+
+	@Override
+	public TaskContainerState getState() {
+		return state;
+	}
+
 	public TaskWriter getWriter() {
 		return writer;
 	}
-	
+
 	public TaskList rename(String name) {
 		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
-	
+
 	TaskList changeProject(String project) {
 		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
-	
+
 	TaskList changeFeature(String feature) {
 		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
 		list.tasks.addAll(tasks);
-		
+
 		return list;
 	}
 
@@ -91,7 +124,7 @@ public final class TaskList implements TaskContainer {
 
 		return list;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(name, fullPath, parentPath, tasks, osInterface, writer, project, feature, state);
@@ -117,8 +150,15 @@ public final class TaskList implements TaskContainer {
 				Objects.equals(state, taskList.state);
 	}
 
-	public void addTask(Task task) {
-		tasks.add(task);
+	@Override
+	public String toString() {
+		return "TaskList{" +
+				"name='" + name + '\'' +
+				", fullPath='" + fullPath + '\'' +
+				", tasks=" + tasks +
+				", project='" + project + '\'' +
+				", feature='" + feature + '\'' +
+				'}';
 	}
 
 	public Task addTask(long id, String name) {
@@ -131,7 +171,16 @@ public final class TaskList implements TaskContainer {
 
 		return task;
 	}
-	
+
+	private void writeTask(Task task) {
+		writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+	}
+
+	private void addAndCommit(Task task, String comment) {
+		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt", false);
+		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"", false);
+	}
+
 	public Task startTask(long id, long startTime, Tasks tasks) {
 		Task currentTask = getTask(id);
 
@@ -144,6 +193,30 @@ public final class TaskList implements TaskContainer {
 		addAndCommit(newActiveTask, "Started task");
 
 		return newActiveTask;
+	}
+
+	Task getTask(long id) {
+		Optional<Task> optionalTask = tasks.stream()
+				.filter(task -> task.id == id)
+				.findFirst();
+
+		if (optionalTask.isPresent()) {
+			return optionalTask.get();
+		}
+		throw new TaskException("Task " + id + " does not exist.");
+	}
+
+	private void replaceTask(Task oldTask, Task newTask) {
+		removeTask(oldTask);
+		addTask(newTask);
+	}
+
+	void removeTask(Task task) {
+		tasks.remove(task);
+	}
+
+	public void addTask(Task task) {
+		tasks.add(task);
 	}
 
 	public Task stopTask(long id) {
@@ -175,58 +248,6 @@ public final class TaskList implements TaskContainer {
 		return finishedTask;
 	}
 
-	private void replaceTask(Task oldTask, Task newTask) {
-		removeTask(oldTask);
-		addTask(newTask);
-	}
-
-	private void writeTask(Task task) {
-		writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
-	}
-
-	private void addAndCommit(Task task, String comment) {
-		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"", false);
-	}
-
-	void removeTask(Task task) {
-		tasks.remove(task);
-	}
-
-	boolean containsTask(long taskID) {
-		return tasks.stream()
-				.anyMatch(task -> task.id == taskID);
-	}
-
-	@Override
-	public Optional<TaskList> findListForTask(long id) {
-		if (containsTask(id)) {
-			return Optional.of(this);
-		}
-		return Optional.empty();
-	}
-	
-	@Override
-	public String toString() {
-		return "TaskList{" +
-				"name='" + name + '\'' +
-				", fullPath='" + fullPath + '\'' +
-				", tasks=" + tasks +
-				", project='" + project + '\'' +
-				", feature='" + feature + '\'' +
-				'}';
-	}
-	
-	@Override
-	public String getProject() {
-		return project;
-	}
-	
-	@Override
-	public List<Task> getTasks() {
-		return Collections.unmodifiableList(tasks);
-	}
-	
 	public Task moveTask(long id, TaskList list) {
 		Task task = getTask(id);
 
@@ -236,15 +257,15 @@ public final class TaskList implements TaskContainer {
 
 		removeTask(task);
 		list.addTask(task);
-		
+
 		// TODO This can be replaced with moveFile
 		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
-		
+
 		list.writeTask(task);
 		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git add tasks" + list.getFullPath() + "/" + task.id + ".txt", false);
 		osInterface.runGitCommand("git commit -m \"Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'\"", false);
-		
+
 		return task;
 	}
 
@@ -259,26 +280,5 @@ public final class TaskList implements TaskContainer {
 		addAndCommit(renamedTask, "Renamed task");
 
 		return renamedTask;
-	}
-	
-	Task getTask(long id) {
-		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.id == id)
-				.findFirst();
-		
-		if (optionalTask.isPresent()) {
-			return optionalTask.get();
-		}
-		throw new TaskException("Task " + id + " does not exist.");
-	}
-	
-	@Override
-	public String getFeature() {
-		return feature;
-	}
-	
-	@Override
-	public TaskContainerState getState() {
-		return state;
 	}
 }

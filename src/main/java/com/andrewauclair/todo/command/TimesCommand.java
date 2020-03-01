@@ -8,7 +8,7 @@ import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.os.ConsoleColors;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.time.Instant;
@@ -23,8 +23,14 @@ import static com.andrewauclair.todo.os.ConsoleColors.ANSI_REVERSED;
 import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
-@CommandLine.Command(name = "times")
-public class TimesCommand extends Command {
+@Command(name = "times")
+public final class TimesCommand implements Runnable {
+	private final Tasks tasks;
+	private final OSInterface osInterface;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
 	@Option(names = {"--proj-feat"})
 	private boolean proj_feat;
 
@@ -54,9 +60,6 @@ public class TimesCommand extends Command {
 
 	@Option(names = {"--all-time"})
 	private boolean all_time;
-
-	private final Tasks tasks;
-	private final OSInterface osInterface;
 
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -158,9 +161,9 @@ public class TimesCommand extends Command {
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
-			
+
 			long totalTime = printResults(results, highestTime, idSpace);
-			
+
 			System.out.println();
 			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
@@ -170,27 +173,11 @@ public class TimesCommand extends Command {
 	}
 
 	private Utils.HighestTime getHighestTime(TaskTimesFilter filter) {
-		Utils.HighestTime highestTime = Utils.HighestTime.Second;
+		long totalTime = filter.getData().stream()
+				.map(TaskTimesFilter.TaskTimeFilterResult::getTotal)
+				.reduce(0L, Long::sum);
 
-		long totalTime = 0;
-
-		for (TaskTimesFilter.TaskTimeFilterResult result : filter.getData()) {
-			Utils.HighestTime resultHighest = Utils.fromTimestamp(result.total);
-
-			if (resultHighest.isAtLeast(highestTime)) {
-				highestTime = resultHighest;
-			}
-
-			totalTime += result.total;
-		}
-
-		Utils.HighestTime totalHighest = Utils.fromTimestamp(totalTime);
-
-		if (totalHighest.isAtLeast(highestTime)) {
-			highestTime = totalHighest;
-		}
-
-		return highestTime;
+		return Utils.fromTimestamp(totalTime);
 	}
 
 	private long printResults(List<TaskTimesFilter.TaskTimeFilterResult> data, Utils.HighestTime highestTime, long idSpace) {
@@ -383,40 +370,11 @@ public class TimesCommand extends Command {
 		}
 	}
 
-	public static final class ProjFeatOutput {
-		final String project;
-		final String feature;
-
-		ProjFeatOutput(String project, String feature) {
-			this.project = project;
-			this.feature = feature;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o == null || getClass() != o.getClass()) {
-				return false;
-			}
-			ProjFeatOutput that = (ProjFeatOutput) o;
-			return Objects.equals(project, that.project) &&
-					Objects.equals(feature, that.feature);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(project, feature);
-		}
-	}
-
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
 		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
 
 		long totalTime = 0;
 		int longestProject = 0;
-		int longestTime = 0;
 
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
@@ -440,17 +398,9 @@ public class TimesCommand extends Command {
 			if (project.length() > longestProject) {
 				longestProject = project.length();
 			}
-
-			int timeLength = Utils.formatTime(task.total, highestTime).length();
-			if (timeLength > longestTime) {
-				longestTime = timeLength;
-			}
 		}
 
-		int totalTimeLength = Utils.formatTime(totalTime, highestTime).length();
-		if (totalTimeLength > longestTime) {
-			longestTime = totalTimeLength;
-		}
+		int longestTime = Utils.formatTime(totalTime, highestTime).length();
 
 		LinkedHashMap<ProjFeatOutput, Long> collect = outputs.entrySet()
 				.stream()
@@ -490,5 +440,33 @@ public class TimesCommand extends Command {
 		System.out.print("   Total");
 		System.out.println();
 		System.out.println();
+	}
+
+	public static final class ProjFeatOutput {
+		final String project;
+		final String feature;
+
+		ProjFeatOutput(String project, String feature) {
+			this.project = project;
+			this.feature = feature;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(project, feature);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			ProjFeatOutput that = (ProjFeatOutput) o;
+			return Objects.equals(project, that.project) &&
+					Objects.equals(feature, that.feature);
+		}
 	}
 }

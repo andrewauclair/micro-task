@@ -4,24 +4,23 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskState;
 import com.andrewauclair.todo.task.Tasks;
-import org.jline.builtins.Completers;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-import java.io.PrintStream;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.jline.builtins.Completers.TreeCompleter.node;
+@Command(name = "next")
+final class NextCommand implements Runnable {
+	private final Tasks tasks;
 
-@CommandLine.Command(name = "next")
-public class NextCommand extends Command {
-	@CommandLine.Option(names = {"-c", "--count"})
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"-c", "--count"})
 	private int count;
 
-	private final Tasks tasks;
-	
 	NextCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}

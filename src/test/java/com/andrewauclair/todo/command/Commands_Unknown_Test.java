@@ -22,10 +22,13 @@ class Commands_Unknown_Test extends CommandsBaseTestCase {
 
 	@Test
 	void prints_stack_for_exceptions() {
-		CommandLine commandLine = commands.buildCommandLine();
+		CommandLine commandLine = commands.buildCommandLineWithAllCommands();
 
 
-		commandLine.addSubcommand("throw-exception", new Command() {
+		commandLine.addSubcommand("throw-exception", new Runnable() {
+			@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+			private boolean help;
+
 			@Override
 			public void run() {
 				throw new RuntimeException();
@@ -35,6 +38,6 @@ class Commands_Unknown_Test extends CommandsBaseTestCase {
 		commandLine.execute("throw-exception");
 
 		assertThat(errorStream).asString().startsWith("java.lang.RuntimeException" + Utils.NL +
-				"\tat com.andrewauclair.todo.command.Commands_Unknown_Test$1.run(Commands_Unknown_Test.java:31)");
+				"\tat com.andrewauclair.todo.command.Commands_Unknown_Test$1.run(Commands_Unknown_Test.java:34)");
 	}
 }

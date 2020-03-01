@@ -4,26 +4,29 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import static picocli.CommandLine.Option;
 
-@CommandLine.Command(name = "add")
-public class AddCommand extends Command {
-	@Option(names = {"-n", "--name"}, required = true)
-	private String name = "";
-
-	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-	private String list = null;
-
-	@Option(names = {"-r", "--recurring"})
-	private boolean recurring = false;
-	
-	@Option(names = {"-s", "--start"})
-	private boolean start = false;
-
+@Command(name = "add")
+final class AddCommand implements Runnable {
 	private final Tasks tasks;
 	private final Commands commands;
+
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
+
+	@Option(names = {"-n", "--name"}, required = true)
+	private String name;
+
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+	private String list;
+
+	@Option(names = {"-r", "--recurring"})
+	private boolean recurring;
+
+	@Option(names = {"-s", "--start"})
+	private boolean start;
 
 	AddCommand(Tasks tasks, Commands commands) {
 		this.tasks = tasks;

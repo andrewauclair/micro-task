@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@SuppressWarnings("CanBeFinal")
 public class TaskReader {
 	private final OSInterface osInterface;
 
@@ -33,9 +34,9 @@ public class TaskReader {
 		long stop = TaskTimes.TIME_NOT_SET;
 		String timeProject = "";
 		String timeFeature = "";
-		
+
 		boolean readFinish = false;
-		
+
 		List<TaskTimes> timesList = new ArrayList<>();
 
 		boolean readTimes = false;
@@ -62,9 +63,9 @@ public class TaskReader {
 			}
 			else if (line.startsWith("finish")) {
 				long finish = Integer.parseInt(line.substring(7));
-				
+
 				timesList.add(new TaskTimes(finish));
-				
+
 				readFinish = true;
 			}
 			else if (timesList.size() > 0) {
@@ -76,7 +77,7 @@ public class TaskReader {
 		if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
 			timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
 		}
-		
+
 		if (!readFinish && state == TaskState.Finished) {
 			if (stop == TaskTimes.TIME_NOT_SET) {
 				timesList.add(new TaskTimes(timesList.get(0).start));

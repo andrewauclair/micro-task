@@ -4,25 +4,27 @@ package com.andrewauclair.todo.command;
 import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.*;
-import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Option;
 
-abstract class SetCommand extends Command {
+abstract class SetCommand implements Runnable {
+	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+	private boolean help;
 
-	static class SetTaskCommand extends SetCommand {
+	static final class SetTaskCommand extends SetCommand {
+		private final Tasks tasks;
 
-		@CommandLine.Option(required = true, names = {"--task"})
+		@Option(required = true, names = {"--task"})
 		private Integer id;
 
-		@CommandLine.Option(names = {"-r", "--recurring"})
+		@Option(names = {"-r", "--recurring"})
 		private Boolean recurring;
 
-		@CommandLine.Option(names = {"--not-recurring"})
+		@Option(names = {"--not-recurring"})
 		private Boolean not_recurring;
 
-		@CommandLine.Option(names = {"--inactive"})
+		@Option(names = {"--inactive"})
 		private boolean inactive;
-
-		private final Tasks tasks;
 
 		SetTaskCommand(Tasks tasks) {
 			this.tasks = tasks;
@@ -51,14 +53,14 @@ abstract class SetCommand extends Command {
 		}
 	}
 
-	static class SetListCommand extends SetCommand {
-		@CommandLine.Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+	static final class SetListCommand extends SetCommand {
+		private final Tasks tasks;
+
+		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 		private String list;
 
-		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+		@ArgGroup(exclusive = false, multiplicity = "1")
 		private ProjectFeature projectFeature;
-
-		private final Tasks tasks;
 
 		SetListCommand(Tasks tasks) {
 			this.tasks = tasks;
@@ -86,14 +88,14 @@ abstract class SetCommand extends Command {
 		}
 	}
 
-	static class SetGroupCommand extends SetCommand {
-		@CommandLine.Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+	static final class SetGroupCommand extends SetCommand {
+		private final Tasks tasks;
+
+		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
 		private String group;
 
-		@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+		@ArgGroup(exclusive = false, multiplicity = "1")
 		private ProjectFeature projectFeature;
-
-		private final Tasks tasks;
 
 		SetGroupCommand(Tasks tasks) {
 			this.tasks = tasks;
@@ -121,11 +123,11 @@ abstract class SetCommand extends Command {
 		}
 	}
 
-	static class ProjectFeature {
-		@CommandLine.Option(names = {"-p", "--project"})
+	static final class ProjectFeature {
+		@Option(names = {"-p", "--project"})
 		private String project;
 
-		@CommandLine.Option(names = {"-f", "--feature"})
+		@Option(names = {"-f", "--feature"})
 		private String feature;
 	}
 }

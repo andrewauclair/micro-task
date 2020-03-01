@@ -1,8 +1,6 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.task;
 
-import com.andrewauclair.todo.os.OSInterface;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +12,7 @@ public final class Task {
 	public final TaskState state;
 	private final List<TaskTimes> taskTimes;
 	private final boolean recurring;
-	
+
 	public Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
 		this.task = task;
@@ -22,7 +20,7 @@ public final class Task {
 		taskTimes = Collections.unmodifiableList(times);
 		recurring = false;
 	}
-	
+
 	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring) {
 		this.id = id;
 		this.task = task;
@@ -30,15 +28,15 @@ public final class Task {
 		taskTimes = Collections.unmodifiableList(times);
 		this.recurring = recurring;
 	}
-	
+
 	public List<TaskTimes> getAllTimes() {
 		return taskTimes;
 	}
-	
+
 	public TaskTimes getAddTime() {
 		return taskTimes.get(0);
 	}
-	
+
 	public List<TaskTimes> getStartStopTimes() {
 		// exclude add and finish when finished
 		if (state == TaskState.Finished) {
@@ -47,25 +45,12 @@ public final class Task {
 		// exclude add
 		return taskTimes.subList(1, taskTimes.size());
 	}
-	
+
 	public Optional<TaskTimes> getFinishTime() {
 		if (state == TaskState.Finished) {
 			return Optional.ofNullable(taskTimes.get(taskTimes.size() - 1));
 		}
 		return Optional.empty();
-	}
-	
-	public long getElapsedTime(OSInterface osInterface) {
-		long total = 0;
-		for (TaskTimes time : getStartStopTimes()) {
-			if (time.stop != TaskTimes.TIME_NOT_SET) {
-				total += time.stop - time.start;
-			}
-			else {
-				total += osInterface.currentSeconds() - time.start;
-			}
-		}
-		return total;
 	}
 
 	@Override
@@ -100,7 +85,7 @@ public final class Task {
 				", recurring=" + recurring +
 				'}';
 	}
-	
+
 	public String description() {
 		return id + " - '" + task + "'";
 	}

@@ -10,7 +10,7 @@ import org.jline.reader.ParsedLine;
 import java.util.List;
 import java.util.Objects;
 
-public class ActiveListCompleter implements Completer {
+public final class ActiveListCompleter implements Completer {
 	private final Tasks tasks;
 
 	public ActiveListCompleter(Tasks tasks) {
