@@ -50,6 +50,8 @@ public final class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 
+		System.out.flush();
+
 		try {
 			// pause doesn't seem to work and we need input with the git commands
 			// calling close and then rebuilding the terminal is the only thing that we can do
