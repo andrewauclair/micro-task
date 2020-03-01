@@ -6,6 +6,7 @@ import com.andrewauclair.todo.jline.GroupCompleter;
 import com.andrewauclair.todo.jline.ListCompleter;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.Tasks;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -16,75 +17,65 @@ final class RenameCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-	private String list;
+	@CommandLine.ArgGroup(multiplicity = "1")
+	private Args args;
 
-	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-	private String group;
+	private static class Args {
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		private String list;
 
-	@Option(names = {"-t", "--task"})
-	private Integer id;
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		private String group;
 
-	@Option(names = {"-n", "--name"})
+		@Option(names = {"-t", "--task"})
+		private Long id;
+	}
+
+	@Option(names = {"-n", "--name"}, required = true)
 	private String name;
 
 	RenameCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 
-	// TODO Although it isn't really possible, we shouldn't allow list and task at the same time. it'll just run like a list rename, as it always has, but it should throw an error, this should be part of the CommandParser options
-
 	@Override
 	public void run() {
-		if (list != null) {
-			String newName = this.name;
-			String list = this.list;
-
-			if (newName.contains("/")) {
+		if (args.list != null) {
+			if (name.contains("/")) {
 				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
 
-			if (list.contains("/")) {
+			if (args.list.contains("/")) {
 				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
 
-			tasks.renameList(list, newName);
+			tasks.renameList(args.list, name);
 
-			System.out.println("Renamed list '" + tasks.getAbsoluteListName(list) + "' to '" + tasks.getAbsoluteListName(newName) + "'");
+			System.out.println("Renamed list '" + tasks.getAbsoluteListName(args.list) + "' to '" + tasks.getAbsoluteListName(name) + "'");
 			System.out.println();
 		}
-		else if (group != null) {
-			String newName = this.name;
-			String group = this.group;
-
-			if (!group.endsWith("/")) {
+		else if (args.group != null) {
+			if (!args.group.endsWith("/")) {
 				System.out.println("Old group name should end with /");
 				System.out.println();
 			}
-			else if (!newName.endsWith("/")) {
+			else if (!name.endsWith("/")) {
 				System.out.println("New group name should end with /");
 				System.out.println();
 			}
 			else {
-				String oldGroupPath = tasks.getGroup(group).getFullPath();
+				String oldGroupPath = tasks.getGroup(args.group).getFullPath();
 
-				tasks.renameGroup(group, newName);
+				tasks.renameGroup(args.group, name);
 
-				System.out.println("Renamed group '" + oldGroupPath + "' to '" + tasks.getGroup(newName).getFullPath() + "'");
+				System.out.println("Renamed group '" + oldGroupPath + "' to '" + tasks.getGroup(name).getFullPath() + "'");
 				System.out.println();
 			}
 		}
-		else if (id != null) {
-			String newName = this.name;
-			long taskID = id;
-
-			Task task = tasks.renameTask(taskID, newName);
+		else {
+			Task task = tasks.renameTask(args.id, name);
 
 			System.out.println("Renamed task " + task.description());
-			System.out.println();
-		}
-		else {
-			System.out.println("Invalid command.");
 			System.out.println();
 		}
 	}

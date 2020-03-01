@@ -74,18 +74,18 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
 	void rename_a_group() {
 		tasks.addGroup("/one/");
-		
+
 		assertTrue(tasks.hasGroupPath("/one/"));
-		
+
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
-		
+
 		assertFalse(tasks.hasGroupPath("/one/"));
 		assertTrue(tasks.hasGroupPath("/two/"));
-		
+
 		assertOutput(
 				"Renamed group '/one/' to '/two/'",
 				""
@@ -159,7 +159,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename --task 2 \"Test\"");
 
 		assertOutput(
-				"Unmatched argument at index 3: 'Test'",
+				"Missing required option '--name=<name>'",
 				""
 		);
 	}
@@ -169,7 +169,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename");
 
 		assertOutput(
-				"Invalid command.",
+				"Missing required option '--name=<name>'",
 				""
 		);
 	}
@@ -180,12 +180,12 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename " + parameter);
 
 		assertOutput(
-				"Usage:  rename [-h] [-g=<group>] [-l=<list>] [-n=<name>] [-t=<id>]",
-						"  -g, --group=<group>",
-						"  -h, --help            Show this help message.",
-						"  -l, --list=<list>",
-						"  -n, --name=<name>",
-						"  -t, --task=<id>"
+				"Usage:  rename (-l=<list> | -g=<group> | -t=<id>) [-h] -n=<name>",
+				"  -g, --group=<group>",
+				"  -h, --help            Show this help message.",
+				"  -l, --list=<list>",
+				"  -n, --name=<name>",
+				"  -t, --task=<id>"
 		);
 	}
 }
