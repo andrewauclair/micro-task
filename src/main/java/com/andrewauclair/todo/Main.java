@@ -53,7 +53,27 @@ public final class Main {
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
 
+		boolean loadHistory = false;
+
+		if (lineReader != null) {
+			try {
+				lineReader.getHistory().save();
+				loadHistory = true;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		lineReader = buildLineReader(systemCompleter, terminal);
+
+		if (loadHistory) {
+			try {
+				lineReader.getHistory().load();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		builtins.setLineReader(lineReader);
 		bindCtrlBackspace(lineReader);
@@ -211,6 +231,7 @@ public final class Main {
 				.parser(new DefaultParser())
 				.variable(LineReader.LIST_MAX, 50)
 				.variable(LineReader.BELL_STYLE, "none")
+				.variable(LineReader.HISTORY_FILE, "history.txt")
 				.build();
 	}
 
