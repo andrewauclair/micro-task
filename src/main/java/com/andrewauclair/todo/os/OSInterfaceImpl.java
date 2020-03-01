@@ -2,9 +2,13 @@
 package com.andrewauclair.todo.os;
 
 import com.andrewauclair.todo.Main;
+import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.Status;
 
 import java.io.*;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -20,9 +24,24 @@ public final class OSInterfaceImpl implements OSInterface {
 	private Terminal terminal;
 
 	private String lastInputFile = "";
+	private Main main;
 
-	public void setTerminal(Terminal terminal) {
-		this.terminal = terminal;
+	public void setMain(Main main) {
+		this.main = main;
+	}
+
+	public void createTerminal() throws IOException {
+		terminal = TerminalBuilder.builder()
+				.system(true)
+				.jna(true)
+				.nativeSignals(true)
+				.streams(System.in, System.out)
+				.build();
+
+		System.setIn(terminal.input());
+		System.setOut(new PrintStream(terminal.output()));
+
+		main.newTerminal(terminal);
 	}
 
 	@Override
@@ -32,12 +51,20 @@ public final class OSInterfaceImpl implements OSInterface {
 		}
 
 		try {
+			// pause doesn't seem to work and we need input with the git commands
+			// calling close and then rebuilding the terminal is the only thing that we can do
+			terminal.close();
+
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
 			pb.command(command.split(" "));
+			pb.redirectInput(Redirect.INHERIT);
+
+			pb.redirectOutput(print ? Redirect.INHERIT : Redirect.DISCARD);
 
 			Process p = pb.start();
-			int exitCode = waitAndCapture(p, print);
+
+			int exitCode = p.waitFor();
 
 			if (exitCode != 0) {
 				System.out.println();
@@ -48,6 +75,15 @@ public final class OSInterfaceImpl implements OSInterface {
 		catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 			return false;
+		}
+		finally {
+			// rebuild terminal
+			try {
+				createTerminal();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return true;

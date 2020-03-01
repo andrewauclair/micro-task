@@ -30,7 +30,42 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.HelpCommand;
 
+
 public final class Main {
+
+	private final Commands commands;
+	private LineReader lineReader;
+	private Terminal terminal;
+	private Status status;
+
+	public void newTerminal(Terminal terminal) {
+		this.terminal = terminal;
+
+		Builtins builtins = new Builtins(Paths.get(""), null, null);
+		builtins.rename(org.jline.builtins.Builtins.Command.TTOP, "top");
+		builtins.alias("zle", "widget");
+		builtins.alias("bindkey", "keymap");
+		Completers.SystemCompleter systemCompleter = builtins.compileCompleters();
+		// set up picocli commands
+//		CliCommands cliCommands = new CliCommands();
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
+		PicocliCommands picocliCommands = new PicocliCommands(Paths.get(""), cmd);
+		systemCompleter.add(picocliCommands.compileCompleters());
+		systemCompleter.compile();
+
+		lineReader = buildLineReader(systemCompleter, terminal);
+
+		builtins.setLineReader(lineReader);
+		bindCtrlBackspace(lineReader);
+
+		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
+		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
+
+		status = Status.getStatus(terminal);
+		status.setBorder(true);
+
+	}
+
 	private static final char BACKSPACE_KEY = '\u0008';
 	private static final AtomicBoolean runningCommand = new AtomicBoolean(false);
 
@@ -40,7 +75,7 @@ public final class Main {
 
 	private Main() throws Exception {
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
+		commands = new Commands(tasks, new GitLabReleases(), osInterface);
 
 		File git_data = new File("git-data");
 
@@ -62,40 +97,14 @@ public final class Main {
 			commands.execute(System.out, "update --tasks");
 		}
 
-		Builtins builtins = new Builtins(Paths.get(""), null, null);
-		builtins.rename(org.jline.builtins.Builtins.Command.TTOP, "top");
-		builtins.alias("zle", "widget");
-		builtins.alias("bindkey", "keymap");
-		Completers.SystemCompleter systemCompleter = builtins.compileCompleters();
-		// set up picocli commands
-//		CliCommands cliCommands = new CliCommands();
-		CommandLine cmd = commands.buildCommandLineWithAllCommands();
-		PicocliCommands picocliCommands = new PicocliCommands(Paths.get(""), cmd);
-		systemCompleter.add(picocliCommands.compileCompleters());
-		systemCompleter.compile();
 
-		Terminal terminal = TerminalBuilder.builder()
-				.system(true)
-				.jna(true)
-				.nativeSignals(true)
-				.streams(System.in, System.out)
-				.build();
 
-		osInterface.setTerminal(terminal);
 
-		System.setIn(terminal.input());
-		System.setOut(new PrintStream(terminal.output()));
 
-		LineReader lineReader = buildLineReader(systemCompleter, terminal);
+//		osInterface.setTerminal(terminal);
+		osInterface.setMain(this);
+		osInterface.createTerminal();
 
-		builtins.setLineReader(lineReader);
-		bindCtrlBackspace(lineReader);
-
-		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
-		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
-
-		Status status = Status.getStatus(terminal);
-		status.setBorder(true);
 
 
 		if (loadSuccessful) {
