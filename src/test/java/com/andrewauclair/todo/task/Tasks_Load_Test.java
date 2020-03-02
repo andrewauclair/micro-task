@@ -149,4 +149,15 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		assertEquals("/", tasks.getActiveGroup().getFullPath());
 	}
+
+	@Test
+	void tasks_load_resets_active_task() {
+		tasks.addTask("Test");
+		tasks.startTask(1, false);
+
+		tasks.load(loader, commands);
+
+		assertFalse(tasks.hasActiveTask());
+		assertEquals("/default", tasks.getActiveList());
+	}
 }

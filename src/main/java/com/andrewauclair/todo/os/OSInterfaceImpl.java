@@ -55,7 +55,7 @@ public final class OSInterfaceImpl implements OSInterface {
 		try {
 			// pause doesn't seem to work and we need input with the git commands
 			// calling close and then rebuilding the terminal is the only thing that we can do
-			terminal.close();
+//			terminal.close();
 
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
@@ -80,12 +80,12 @@ public final class OSInterfaceImpl implements OSInterface {
 		}
 		finally {
 			// rebuild terminal
-			try {
-				createTerminal();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				createTerminal();
+//			}
+//			catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}
 
 		return true;

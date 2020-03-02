@@ -755,6 +755,7 @@ public class Tasks {
 	public boolean load(TaskLoader loader, Commands commands) {
 		rootGroup = new TaskGroup("/");
 		activeGroup = rootGroup;
+		activeTaskID = NO_ACTIVE_TASK;
 
 		try {
 			nextID = getStartingID();
