@@ -4,54 +4,82 @@ package com.andrewauclair.todo.os;
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.task.*;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.terminal.impl.AbstractWindowsTerminal;
 import org.jline.utils.AttributedString;
+import org.jline.utils.InfoCmp;
 import org.jline.utils.Status;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class StatusConsole {
 
+	private String currentGroup;
+	private String currentList;
+	private String currentCommand = "times --today";
+	private final TaskLoader loader;
+	private final Socket client;
+	private final Commands commands;
+	private final Terminal terminal;
+	private final LineReader lineReader;
+	private final Status status;
+
+	public enum TransferType {
+		Command,
+		CurrentGroup,
+		CurrentList
+	}
+
 	private final Tasks tasks;
 
-	private final OSInterface osInterface = new OSInterfaceImpl();
+	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
+		@Override
+		public DataOutputStream createOutputStream(String fileName) {
+			throw new RuntimeException("The status console can't create files. It is read only");
+		}
+	};
 
 	public StatusConsole() throws Exception {
-		Socket client = new Socket("localhost", 5678);
+		client = new Socket("localhost", 5678);
 
 		System.out.println("Connected");
 
-		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-
-
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		Commands commands = new Commands(tasks, new GitLabReleases(), osInterface);
+		commands = new Commands(tasks, new GitLabReleases(), osInterface);
 
-		TaskLoader loader = new TaskLoader(tasks, new TaskReader(osInterface), osInterface);
+		loader = new TaskLoader(tasks, new TaskReader(osInterface), osInterface);
 
 
-
-		Terminal terminal = TerminalBuilder.builder()
+		terminal = TerminalBuilder.builder()
 				.system(true)
 				.jna(true)
 				.nativeSignals(true)
 				.streams(System.in, System.out)
 				.build();
 
+		lineReader = LineReaderBuilder.builder()
+				.terminal(terminal)
+//				.completer(systemCompleter)
+//				.parser(new DefaultParser())
+//				.variable(LineReader.LIST_MAX, 50)
+				.variable(LineReader.BELL_STYLE, "none")
+//				.variable(LineReader.HISTORY_FILE, "history.txt")
+				.build();
+
+		osInterface.setTerminal(terminal);
+
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 
-		Status status = Status.getStatus(terminal);
+		status = Status.getStatus(terminal);
 		status.setBorder(true);
-
 
 		updateStatus(status, terminal);
 
@@ -60,42 +88,59 @@ public class StatusConsole {
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
-//				if (!runningCommand.get()) {
-								updateStatus(status, terminal);
-//				}
+				updateStatus(status, terminal);
 			}
 		};
 
-//		boolean hasActiveTask = tasks.hasActiveTask();
+		timer.schedule(timerTask, 1000, 1000);
 
-//		if (hasActiveTask) {
-			timer.schedule(timerTask, 1000, 1000);
-//		}
+		currentGroup = tasks.getActiveGroup().getFullPath();
+		currentList = tasks.getActiveList();
+	}
 
+	public void run() throws IOException {
+		DataInputStream in = new DataInputStream(client.getInputStream());
 
-		int c = 0;
-		while ((c = inFromServer.read()) != -1) {
-			synchronized (tasks) {
-				tasks.load(loader, commands);
+		int c;
+		try {
+			while ((c = in.read()) != -1) {
+				synchronized (tasks) {
+					tasks.load(loader, commands);
 
-				osInterface.clearScreen();
+//					osInterface.clearScreen();
+					lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//					clearScreen();
 
-//				if (tasks.hasActiveTask()) {
-//					System.out.println("Active task: " + tasks.getActiveTask().description());
-//					System.out.println("Active List: " + tasks.getActiveList());
-//					System.out.println("Active Group: " + tasks.getActiveGroup().getFullPath());
-//				}
-//				else {
-//					System.out.println("No active task.");
-//				}
+					if (c == TransferType.Command.ordinal()) {
+						currentCommand = in.readUTF();
+					}
+					else if (c == TransferType.CurrentGroup.ordinal()) {
+						currentGroup = in.readUTF();
+					}
+					else if (c == TransferType.CurrentList.ordinal()) {
+						currentList = in.readUTF();
+					}
 
-				commands.execute(System.out, "list");
+					tasks.switchGroup(currentGroup);
+					tasks.setActiveList(currentList);
+
+					try {
+						commands.execute(System.out, currentCommand);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				updateStatus(status, terminal);
 			}
 		}
+		catch (IOException ignored) {
+		}
+
+		long state = getElapsedTime(new Task(1, "State", TaskState.Inactive, Collections.emptyList()));
 	}
 
 	private void updateStatus(Status status, Terminal terminal) {
-//		if (false ) {// used when I want to run the app from IntelliJ
 		synchronized (tasks) {
 			int width = terminal.getSize().getColumns();
 
@@ -118,18 +163,17 @@ public class StatusConsole {
 				description += time;
 
 				as.add(new AttributedString(padString(terminal, description)));
-				as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				as.add(new AttributedString(padString(terminal, "Active Task List: " + tasks.getActiveTaskList())));
+				as.add(new AttributedString(padString(terminal, "Current Group: " + currentGroup + "  Current List: " + currentList)));
 			}
 			else {
 				as.add(new AttributedString(padString(terminal, "No active task")));
 				as.add(new AttributedString(padString(terminal, "")));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
+				as.add(new AttributedString(padString(terminal, "Current Group: " + currentGroup + "  Current List: " + currentList)));
 			}
 
 			status.update(as);
 		}
-//		}
 	}
 
 	public long getElapsedTime(Task task) {

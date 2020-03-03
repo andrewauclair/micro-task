@@ -2,7 +2,10 @@
 package com.andrewauclair.todo;
 
 import com.andrewauclair.todo.command.Commands;
-import com.andrewauclair.todo.os.*;
+import com.andrewauclair.todo.os.GitLabReleases;
+import com.andrewauclair.todo.os.OSInterface;
+import com.andrewauclair.todo.os.OSInterfaceImpl;
+import com.andrewauclair.todo.os.StatusConsole;
 import com.andrewauclair.todo.task.*;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
@@ -13,19 +16,19 @@ import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
-import org.jline.utils.AttributedString;
 import org.jline.utils.Status;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliCommands;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.rmi.Naming;
-import java.rmi.Remote;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static picocli.CommandLine.Command;
@@ -81,9 +84,6 @@ public final class Main {
 		
 		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
 		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
-
-//		status = Status.getStatus(terminal);
-//		status.setBorder(true);
 	
 	}
 	
@@ -97,7 +97,9 @@ public final class Main {
 	private Main() throws Exception {
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		commands = new Commands(tasks, new GitLabReleases(), osInterface);
-		
+
+		System.out.println("Waiting for client on " + InetAddress.getLocalHost() + ":5678");
+
 		ServerSocket server = new ServerSocket(5678);
 		Socket accept = server.accept();
 		
@@ -123,12 +125,9 @@ public final class Main {
 			commands.execute(System.out, "update --tasks");
 		}
 
-
-//		osInterface.setTerminal(terminal);
 		osInterface.setMain(this);
 		osInterface.createTerminal();
-		
-		
+
 		if (loadSuccessful) {
 			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
@@ -140,29 +139,9 @@ public final class Main {
 			// set active group to the group of the active task
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
-		
-		//updateStatus(status, terminal);
-		
-		Timer timer = new Timer();
-		
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				if (!runningCommand.get()) {
-					//			updateStatus(status, terminal);
-				}
-			}
-		};
-		
-		boolean hasActiveTask = tasks.hasActiveTask();
-		
-		if (hasActiveTask) {
-			timer.schedule(timerTask, 1000, 30000);
-		}
-		
-		// update status console now that we've loaded everything
-		serverOut.write(0);
-		
+
+		sendCurrentStatus(serverOut);
+
 		while (true) {
 			try {
 				String command = lineReader.readLine(commands.getPrompt());
@@ -177,47 +156,17 @@ public final class Main {
 				else if (command.equals("test-data")) {
 					generateTestData(tasks);
 				}
+				else if (command.startsWith("status")) {
+					serverOut.write(StatusConsole.TransferType.Command.ordinal());
+					serverOut.writeUTF(command.substring(7));
+				}
 				else {
 					runningCommand.set(true);
 					commands.execute(System.out, command);
 					runningCommand.set(false);
 				}
-				
-				if (tasks.hasActiveTask()) {
-					timerTask.cancel();
-					timerTask = new TimerTask() {
-						@Override
-						public void run() {
-							if (!runningCommand.get()) {
-								//updateStatus(status, terminal);
-							}
-						}
-					};
-					timer.schedule(timerTask, 1000, 30000);
-				}
-				else {
-					timerTask.cancel();
-				}
-				hasActiveTask = tasks.hasActiveTask();
-				
-				serverOut.write(0);
-				
-				//updateStatus(status, terminal);
-				
-				// set up picocli commands
-//				cliCommands = new CliCommands();
-//				cmd = commands.buildCommandLine();
-//				picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
-//
-//				systemCompleter = builtins.compileCompleters();
-//				systemCompleter.add(picocliCommands.compileCompleters());
-//				systemCompleter.compile();
-//
-//				lineReader = buildLineReader(systemCompleter, terminal);
-//
-//				builtins.setLineReader(lineReader);
-//				cliCommands.setReader(lineReader);
-//				bindCtrlBackspace(lineReader);
+
+				sendCurrentStatus(serverOut);
 			}
 			catch (UserInterruptException ignored) {
 			}
@@ -226,10 +175,20 @@ public final class Main {
 			}
 		}
 	}
-	
+
+	private void sendCurrentStatus(DataOutputStream serverOut) throws IOException {
+		serverOut.write(StatusConsole.TransferType.CurrentGroup.ordinal());
+		serverOut.writeUTF(tasks.getActiveGroup().getFullPath());
+
+		serverOut.write(StatusConsole.TransferType.CurrentList.ordinal());
+		serverOut.writeUTF(tasks.getActiveList());
+	}
+
 	public static void main(String[] args) throws Exception {
 		if (args.length > 0 && args[0].equals("status")) {
-			new StatusConsole();
+			StatusConsole statusConsole = new StatusConsole();
+
+			statusConsole.run();
 		}
 		else {
 			new Main();
@@ -245,62 +204,6 @@ public final class Main {
 				.variable(LineReader.BELL_STYLE, "none")
 				.variable(LineReader.HISTORY_FILE, "history.txt")
 				.build();
-	}
-	
-	public long getElapsedTime(Task task) {
-		long total = 0;
-		for (TaskTimes time : task.getStartStopTimes()) {
-			if (time.stop != TaskTimes.TIME_NOT_SET) {
-				total += time.stop - time.start;
-			}
-			else {
-				total += osInterface.currentSeconds() - time.start;
-			}
-		}
-		return total;
-	}
-	
-	private void updateStatus(Status status, Terminal terminal) {
-//		if (false ) {// used when I want to run the app from IntelliJ
-		synchronized (tasks) {
-			int width = terminal.getSize().getColumns();
-			
-			List<AttributedString> as = new ArrayList<>();
-			
-			if (tasks.hasActiveTask()) {
-				String description = tasks.getActiveTask().description();
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				
-				new PrintStream(stream).print(Utils.formatTime(getElapsedTime(tasks.getActiveTask()), Utils.HighestTime.None));
-				String time = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-				
-				if (width < description.length() + time.length()) {
-					int length = width - time.length() - 3;
-					
-					description = description.substring(0, length - 3);
-					description += "...'";
-				}
-				description += String.join("", Collections.nCopies(width - description.length() - time.length(), " "));
-				description += time;
-				
-				as.add(new AttributedString(padString(terminal, description)));
-				as.add(new AttributedString(padString(terminal, "Active Task Group: " + tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath() + "    Active Task List: " + tasks.getActiveTaskList())));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
-			}
-			else {
-				as.add(new AttributedString(padString(terminal, "No active task")));
-				as.add(new AttributedString(padString(terminal, "")));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + tasks.getActiveGroup().getFullPath() + "  Current List: " + tasks.getActiveList())));
-			}
-			
-			status.update(as);
-		}
-//		}
-	}
-	
-	private String padString(Terminal terminal, String str) {
-		int width = terminal.getSize().getColumns();
-		return str + String.join("", Collections.nCopies(width - str.length(), " "));
 	}
 	
 	private void bindCtrlBackspace(LineReader lineReader) {
