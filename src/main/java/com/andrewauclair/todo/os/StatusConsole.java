@@ -4,14 +4,12 @@ package com.andrewauclair.todo.os;
 import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.command.Commands;
 import com.andrewauclair.todo.task.*;
+import com.sun.jna.platform.win32.*;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.terminal.impl.AbstractWindowsTerminal;
 import org.jline.utils.AttributedString;
-import org.jline.utils.InfoCmp;
 import org.jline.utils.Status;
 
 import java.io.*;
@@ -96,6 +94,10 @@ public class StatusConsole {
 
 		currentGroup = tasks.getActiveGroup().getFullPath();
 		currentList = tasks.getActiveList();
+
+		final Kernel32 kernel32 = Kernel32.INSTANCE;
+
+		kernel32.SetConsoleTitle("TODO App Status Console");
 	}
 
 	public void run() throws IOException {
@@ -130,6 +132,8 @@ public class StatusConsole {
 					catch (Exception e) {
 						e.printStackTrace();
 					}
+
+					bringWindowToFront();
 				}
 				updateStatus(status, terminal);
 			}
@@ -176,7 +180,7 @@ public class StatusConsole {
 		}
 	}
 
-	public long getElapsedTime(Task task) {
+	private long getElapsedTime(Task task) {
 		long total = 0;
 		for (TaskTimes time : task.getStartStopTimes()) {
 			if (time.stop != TaskTimes.TIME_NOT_SET) {
@@ -192,5 +196,13 @@ public class StatusConsole {
 	private String padString(Terminal terminal, String str) {
 		int width = terminal.getSize().getColumns();
 		return str + String.join("", Collections.nCopies(width - str.length(), " "));
+	}
+
+	private void bringWindowToFront() {
+		WinDef.HWND hWnd = User32.INSTANCE.FindWindow(null, "TODO App Status Console");
+		if (hWnd == null) {
+			return;
+		}
+		User32.INSTANCE.SetForegroundWindow(hWnd);
 	}
 }
