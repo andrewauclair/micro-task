@@ -149,7 +149,11 @@ public final class Main {
 				if (command.equals("proj-feat-assign")) {
 					manualProjectFeatureAssign(tasks);
 				}
-				
+
+				if (command.equals("exit")) {
+					serverOut.write(StatusConsole.TransferType.Exit.ordinal());
+				}
+
 				if (command.equals("export")) {
 					exportData(tasks);
 				}
@@ -159,6 +163,9 @@ public final class Main {
 				else if (command.startsWith("status")) {
 					serverOut.write(StatusConsole.TransferType.Command.ordinal());
 					serverOut.writeUTF(command.substring(7));
+				}
+				else if (command.startsWith("focus")) {
+					serverOut.write(StatusConsole.TransferType.Focus.ordinal());
 				}
 				else {
 					runningCommand.set(true);
@@ -189,6 +196,8 @@ public final class Main {
 			StatusConsole statusConsole = new StatusConsole();
 
 			statusConsole.run();
+
+			System.exit(0);
 		}
 		else {
 			new Main();
