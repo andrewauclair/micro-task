@@ -20,7 +20,7 @@ import java.util.Properties;
 import static com.andrewauclair.todo.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
-public final class OSInterfaceImpl implements OSInterface {
+public class OSInterfaceImpl implements OSInterface {
 	private Terminal terminal;
 
 	private String lastInputFile = "";
@@ -44,6 +44,10 @@ public final class OSInterfaceImpl implements OSInterface {
 		main.newTerminal(terminal);
 	}
 
+	public void setTerminal(Terminal terminal) {
+		this.terminal = terminal;
+	}
+
 	@Override
 	public boolean runGitCommand(String command, boolean print) {
 		if (isJUnitTest()) {
@@ -55,7 +59,7 @@ public final class OSInterfaceImpl implements OSInterface {
 		try {
 			// pause doesn't seem to work and we need input with the git commands
 			// calling close and then rebuilding the terminal is the only thing that we can do
-//			terminal.close();
+			terminal.close();
 
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
@@ -80,12 +84,12 @@ public final class OSInterfaceImpl implements OSInterface {
 		}
 		finally {
 			// rebuild terminal
-//			try {
-//				createTerminal();
-//			}
-//			catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				createTerminal();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return true;

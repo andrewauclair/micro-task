@@ -161,6 +161,7 @@ public final class TaskGroup implements TaskContainer {
 	TaskList getListAbsolute(String path) {
 		Optional<TaskList> optionalList = children.stream()
 				.filter(child -> child instanceof TaskList)
+
 				.map(child -> (TaskList) child)
 				.filter(list -> list.getFullPath().equals(path))
 				.findFirst();
