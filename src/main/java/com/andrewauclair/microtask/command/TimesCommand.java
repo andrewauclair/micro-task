@@ -246,50 +246,58 @@ public final class TimesCommand implements Runnable {
 
 		Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
 
+		LocalDate currentDate = LocalDate.ofInstant(instant, osInterface.getZoneId());
+
+		int day = currentDate.getDayOfMonth();
+		int month = currentDate.getMonth().getValue();
+		int year = currentDate.getYear();
+
+		if (this.day != null) {
+			ZoneId zoneId = osInterface.getZoneId();
+
+			if (this.day < 1 || this.day > 31) {
+				throw new TaskException("Day option must be 1 - 31");
+			}
+
+			if (this.month != null && (this.month < 1 || this.month > 12)) {
+				throw new TaskException("Month option must be 1 - 12");
+			}
+
+			day = this.day;
+			month = this.month != null ? this.month : instant.atZone(zoneId).getMonthValue();
+			year = this.year != null ? this.year : instant.atZone(zoneId).getYear();
+
+			LocalDate of = LocalDate.of(year, month, day);
+
+			instant = of.atStartOfDay(zoneId).toInstant();
+		}
+
 		if (week) {
-			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
+			LocalDate weekDay = LocalDate.ofInstant(instant, osInterface.getZoneId());
 
-			instant = day.minusDays(day.getDayOfWeek().getValue()).atStartOfDay(osInterface.getZoneId()).toInstant();
+			instant = weekDay.minusDays(weekDay.getDayOfWeek().getValue()).atStartOfDay(osInterface.getZoneId()).toInstant();
 
-			filter.filterForWeek(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
+			filter.filterForWeek(month, day, year);
 		}
 		else if (today) {
-			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
+//			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
 
-			filter.filterForDay(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
+			filter.filterForDay(currentDate.getMonth().getValue(), currentDate.getDayOfMonth(), currentDate.getYear());
 		}
 		else if (yesterday) {
 			long epochSecond = osInterface.currentSeconds() - (60 * 60 * 24);
 
 			instant = Instant.ofEpochSecond(epochSecond);
 
-			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
+			LocalDate yesterday = LocalDate.ofInstant(instant, osInterface.getZoneId());
 
-			filter.filterForDay(day.getMonth().getValue(), day.getDayOfMonth(), day.getYear());
+			filter.filterForDay(yesterday.getMonth().getValue(), yesterday.getDayOfMonth(), yesterday.getYear());
 		}
-		else if (day != null) {
-			ZoneId zoneId = osInterface.getZoneId();
-
-			if (day < 1 || day > 31) {
-				throw new TaskException("Day option must be 1 - 31");
-			}
-
-			if (month != null && (month < 1 || month > 12)) {
-				throw new TaskException("Month option must be 1 - 12");
-			}
-
-			int day = this.day;
-			int month = this.month != null ? this.month : instant.atZone(zoneId).getMonthValue();
-			int year = this.year != null ? this.year : instant.atZone(zoneId).getYear();
-
-			LocalDate of = LocalDate.of(year, month, day);
-
-			instant = of.atStartOfDay(zoneId).toInstant();
-
+		else if (this.day != null) {
 			filter.filterForDay(month, day, year);
 		}
 
-		if ((list != null || group != null) && day == null && !today) {
+		if ((list != null || group != null) && this.day == null && !today) {
 			List<String> lists = new ArrayList<>();
 
 			if (list != null) {
@@ -346,7 +354,7 @@ public final class TimesCommand implements Runnable {
 			displayTimes(filter, false);
 		}
 		else if (proj_feat) {
-			if (all_time || today || yesterday || week || day != null) {
+			if (all_time || today || yesterday || week || this.day != null) {
 				displayProjectsFeatures(filter);
 			}
 			else {
@@ -360,7 +368,7 @@ public final class TimesCommand implements Runnable {
 				System.out.println();
 				printTasks(new TaskTimesFilter(tasks));
 			}
-			else if (day != null) {
+			else if (this.day != null) {
 				displayTimesForDay(instant, filter);
 			}
 			else {
