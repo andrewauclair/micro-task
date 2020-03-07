@@ -41,9 +41,7 @@ sourceCompatibility = '10'
 
 jar {
     manifest {
-//        attributes "Main-Class": "picocli.CheckSum"
-        attributes "Main-Class": "com.andrewauclair.todo.Main"
-//        attributes "Main-Class": "picocli.shell.jline3.example.Example"
+        attributes "Main-Class": "com.andrewauclair.microtask.Main"
     }
 
     from {
