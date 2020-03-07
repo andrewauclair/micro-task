@@ -3,7 +3,7 @@
 echo $CI_COMMIT_TAG
 echo ""
 
-curl_upload_result=$(curl -v --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --form "file=@build/libs/todo-app.jar" https://gitlab.com/api/v4/projects/12882469/uploads)
+curl_upload_result=$(curl -v --header "PRIVATE-TOKEN: ${PRIVATE_TOKEN}" --form "file=@build/libs/micro-task.jar" https://gitlab.com/api/v4/projects/12882469/uploads)
 
 echo $curl_upload_result
 echo ""

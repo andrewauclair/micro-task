@@ -26,5 +26,5 @@ comment:
   require_changes: no
 
 ignore:
-  - "src/main/java/com/andrewauclair/todo/os"
-  - "src/main/java/com/andrewauclair/todo/Main.java"
+  - "src/main/java/com/andrewauclair/microtask/os"
+  - "src/main/java/com/andrewauclair/microtask/Main.java"
