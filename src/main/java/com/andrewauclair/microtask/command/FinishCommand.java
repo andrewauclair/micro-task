@@ -53,21 +53,21 @@ final class FinishCommand implements Runnable {
 			System.out.println();
 		}
 		else {
-			Task task;
+			for (final Integer id : options.id) {
+				Task task = tasks.finishTask(id);
 
-			task = tasks.finishTask(options.id);
-
-			System.out.println("Finished task " + task.description());
-			System.out.println();
-			System.out.print("Task finished in: ");
-			System.out.println(new TaskDuration(task, osInterface));
-			System.out.println();
+				System.out.println("Finished task " + task.description());
+				System.out.println();
+				System.out.print("Task finished in: ");
+				System.out.println(new TaskDuration(task, osInterface));
+				System.out.println();
+			}
 		}
 	}
 
 	private static final class FinishOptions {
-		@Option(required = true, names = {"-t", "--task"})
-		private Integer id;
+		@Option(required = true, names = {"-t", "--task"}, split = ",")
+		private Integer[] id;
 
 		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
 		private String list;
