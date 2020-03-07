@@ -60,6 +60,34 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void finish_multiple_tasks_at_once() {
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addTask("Test 3");
+
+		commands.execute(printStream, "finish --task 1,2,3");
+
+		assertOutput(
+				"Finished task 1 - 'Test 1'",
+				"",
+				"Task finished in:  0s",
+				"",
+				"Finished task 2 - 'Test 2'",
+				"",
+				"Task finished in:  0s",
+				"",
+				"Finished task 3 - 'Test 3'",
+				"",
+				"Task finished in:  0s",
+				""
+		);
+
+		assertEquals(TaskState.Finished, tasks.getTask(1).state);
+		assertEquals(TaskState.Finished, tasks.getTask(2).state);
+		assertEquals(TaskState.Finished, tasks.getTask(3).state);
+	}
+
+	@Test
 	void finish_a_list() {
 		tasks.addList("/test", true);
 
@@ -96,12 +124,14 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "finish " + parameter);
 
 		assertOutput(
-				"Usage:  finish (-t=<id> | -l=<list> | -g=<group> | -a) [-h]",
+				"Usage:  finish (-t=<id>[,<id>...] [-t=<id>[,<id>...]]... | -l=<list> |",
+				"               -g=<group> | -a) [-h]",
 				"  -a, --active",
 				"  -g, --group=<group>",
 				"  -h, --help            Show this help message.",
 				"  -l, --list=<list>",
-				"  -t, --task=<id>"
+				"  -t, --task=<id>[,<id>...]",
+				""
 		);
 	}
 }
