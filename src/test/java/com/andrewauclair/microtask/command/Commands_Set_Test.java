@@ -53,7 +53,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.setActiveList("/test");
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-list --list /test --project \"Issues\"");
+		commands.execute(printStream, "set-list --list /test --project=\"Issues\"");
 
 		assertEquals("Issues", tasks.getProjectForTask(1));
 

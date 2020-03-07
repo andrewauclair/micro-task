@@ -144,8 +144,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLineWithAllCommands() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
-		cmdLine.setTrimQuotes(true);
-
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
 		aliases.keySet().forEach(name -> {
@@ -169,6 +167,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			cmdLine.addSubcommand(name, cmd);
 		});
 
+		// has to be done after we add the subcommands
+		cmdLine.setTrimQuotes(true);
+
 		setHandlers(cmdLine);
 
 		return cmdLine;
@@ -190,8 +191,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		cmdLine.setTrimQuotes(true);
-
 		Runnable realCommand = createCommand(command);
 
 		if (realCommand == null) {
@@ -199,6 +198,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		}
 
 		cmdLine.addSubcommand(command, realCommand);
+
+		// has to be done after we add the subcommands
+		cmdLine.setTrimQuotes(true);
 
 		setHandlers(cmdLine);
 
