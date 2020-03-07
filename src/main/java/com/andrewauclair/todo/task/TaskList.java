@@ -27,7 +27,6 @@ public final class TaskList implements TaskContainer {
 
 		this.name = name;
 		this.parent = parent;
-//		this.name = name.substring(name.lastIndexOf('/') + 1);
 		this.osInterface = osInterface;
 		this.writer = writer;
 		this.project = project;
@@ -238,6 +237,7 @@ public final class TaskList implements TaskContainer {
 		if (currentTask.isRecurring()) {
 			throw new TaskException("Recurring tasks cannot be finished.");
 		}
+
 		Task finishedTask = new TaskBuilder(currentTask).finish(osInterface.currentSeconds());
 
 		replaceTask(currentTask, finishedTask);
@@ -258,7 +258,6 @@ public final class TaskList implements TaskContainer {
 		removeTask(task);
 		list.addTask(task);
 
-		// TODO This can be replaced with moveFile
 		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
 
 		list.writeTask(task);

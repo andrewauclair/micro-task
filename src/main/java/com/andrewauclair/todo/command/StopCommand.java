@@ -1,9 +1,9 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
-import com.andrewauclair.todo.task.TaskDuration;
 import com.andrewauclair.todo.task.TaskTimes;
 import com.andrewauclair.todo.task.Tasks;
 import picocli.CommandLine.Command;
@@ -37,7 +37,7 @@ final class StopCommand implements Runnable {
 		System.out.println(stopTime.description(osInterface.getZoneId()));
 		System.out.println();
 		System.out.print("Task was active for: ");
-		System.out.println(new TaskDuration(stopTime, osInterface));
+		System.out.println(Utils.formatTime(stopTime.getDuration(osInterface), Utils.HighestTime.None));
 		System.out.println();
 	}
 }

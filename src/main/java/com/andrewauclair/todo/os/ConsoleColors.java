@@ -15,7 +15,6 @@ public final class ConsoleColors {
 		stream.println();
 	}
 
-	// TODO I could write some simple tests for this stuff
 	private static void print(PrintStream stream, ConsoleForegroundColor color, String message) {
 		stream.print(color);
 		stream.print(message);
