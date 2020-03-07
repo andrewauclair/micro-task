@@ -56,7 +56,6 @@ public class Tasks {
 		return addTask(task, activeList);
 	}
 
-	// TODO I'm thinking we can start removing these train wrecks by moving all the addTask testing to TaskList tests and thoroughly testing getList in the Tasks tests, then in the few real places we use this addTask method we can get the right list first and call it directly. Just not sure how to do the incrementID part.
 	public Task addTask(String task, String list) {
 		return getList(list).addTask(incrementID(), task);
 	}
@@ -156,7 +155,6 @@ public class Tasks {
 		return getListForTask(id).renameTask(id, task);
 	}
 
-	// TODO Should this stuff go in the TaskGroup class?
 	public boolean addList(String name, boolean createFiles) {
 		TaskGroup group;
 
@@ -171,6 +169,7 @@ public class Tasks {
 		if (group.containsListAbsolute(absoluteList)) {
 			return false;
 		}
+
 		TaskList newList = new TaskList(absoluteList.substring(absoluteList.lastIndexOf('/') + 1), group, osInterface, writer, "", "", TaskContainerState.InProgress);
 
 		group.addChild(newList);
@@ -464,7 +463,6 @@ public class Tasks {
 		return createGroup(groupName, true);
 	}
 
-	// TODO This could be a method on the TaskContainer interface
 	public boolean hasTaskWithID(long id) {
 		for (String listName : getListNames()) {
 			if (getList(listName).containsTask(id)) {
@@ -515,7 +513,6 @@ public class Tasks {
 		return listForTask.get();
 	}
 
-	// TODO Move this into the TaskList class
 	private void replaceTask(String listName, Task oldTask, Task newTask) {
 		TaskList list = getList(listName);
 		list.removeTask(oldTask);

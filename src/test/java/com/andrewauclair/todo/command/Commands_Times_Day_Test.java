@@ -56,5 +56,4 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
-	// TODO Test that this output is cut off on the right if task name is too long, "Execute the instructions in ...", cut off at the space that fits
 }

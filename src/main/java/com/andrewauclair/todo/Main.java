@@ -305,6 +305,7 @@ public final class Main {
 		tasks.writeListInfoFile(list, "git-data-export");
 		
 		TaskWriter writer = new TaskWriter(osInterface);
+
 		for (Task task : list.getTasks()) {
 			Task strippedTask = new TaskBuilder(task).rename("Task " + task.id);
 			
@@ -316,12 +317,12 @@ public final class Main {
 		String currentVersion = "";
 		
 		try {
-			currentVersion = ((OSInterface) Main.osInterface).getVersion();
+			currentVersion = Main.osInterface.getVersion();
 		}
 		catch (IOException ignored) {
 		}
 		
-		try (InputStream inputStream = ((OSInterface) Main.osInterface).createInputStream("git-data/task-data-version.txt")) {
+		try (InputStream inputStream = Main.osInterface.createInputStream("git-data/task-data-version.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 			
 			String dataVersion = scanner.nextLine();

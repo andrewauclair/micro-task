@@ -17,7 +17,6 @@ import java.util.List;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-// TODO I would like a more detailed broken down set of tests for the times command variations
 class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 	@Test
 	void times_on_default_list() {

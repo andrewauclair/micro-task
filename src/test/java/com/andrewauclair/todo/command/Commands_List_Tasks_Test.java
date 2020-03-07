@@ -157,7 +157,6 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		
 		tasks.startTask(2, false);
 		
-		// TODO This should also accept "list -ta"
 		commands.execute(printStream, "list --tasks --all");
 		
 		assertOutput(

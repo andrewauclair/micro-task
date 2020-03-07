@@ -28,75 +28,91 @@ public class TaskLoader {
 	private void loadTasks(String folder, boolean inGroup) throws IOException {
 		for (OSInterface.TaskFileInfo fileInfo : osInterface.listFiles(folder)) {
 			if (fileInfo.isDirectory()) {
-				String name = fileInfo.getFileName();
-
-				boolean isGroup = isGroupFolder(fileInfo.getPath());
-				if (isGroup) {
-					TaskGroup group = tasks.addGroup(name + "/");
-					tasks.switchGroup(name + "/");
-
-					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
-						Scanner scanner = new Scanner(inputStream);
-
-						if (scanner.hasNextLine()) {
-							tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-							tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-
-							if (scanner.hasNextLine()) {
-								tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
-							}
-						}
-					}
-					catch (IOException ignored) {
-					}
-
-					inGroup = true;
+				if (isGroupFolder(fileInfo.getPath())) {
+					loadGroup(folder, fileInfo);
 				}
 				else {
-					tasks.addList(name, false);
-					tasks.setActiveList(name);
-
-					try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
-						Scanner scanner = new Scanner(inputStream);
-
-						tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
-						tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
-
-						if (scanner.hasNextLine()) {
-							tasks.setListState(tasks.getListByName(tasks.getActiveList()), TaskContainerState.valueOf(scanner.nextLine()), false);
-						}
-					}
-					catch (IOException ignored) {
-					}
-
-					inGroup = false;
-				}
-				loadTasks(fileInfo.getPath(), inGroup);
-
-				if (isGroup) {
-					tasks.switchGroup(tasks.getActiveGroup().getParent());
+					loadList(folder, fileInfo);
 				}
 			}
-			else if (!fileInfo.getFileName().equals("group.txt") &&
-					!fileInfo.getFileName().equals("list.txt")) {
+			else if (isTaskFile(fileInfo)) {
 				if (inGroup) {
 					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
 				}
 
 				String fileName = fileInfo.getFileName();
-				long id;
-
-				try {
-					id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
-				}
-				catch (NumberFormatException e) {
-					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
-				}
+				long id = idFromFileName(fileInfo, fileName);
 
 				Task task = reader.readTask(id, fileInfo.getPath());
 				tasks.addTask(task);
 			}
 		}
+	}
+
+	private long idFromFileName(OSInterface.TaskFileInfo fileInfo, String fileName) {
+		long id;
+
+		try {
+			id = Long.parseLong(fileName.substring(fileName.lastIndexOf('/') + 1, fileName.indexOf(".txt")));
+		}
+		catch (NumberFormatException e) {
+			throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
+		}
+		return id;
+	}
+
+	private boolean isTaskFile(OSInterface.TaskFileInfo fileInfo) {
+		return !fileInfo.getFileName().equals("group.txt") &&
+				!fileInfo.getFileName().equals("list.txt");
+	}
+
+	private void loadList(String folder, OSInterface.TaskFileInfo fileInfo) throws IOException {
+		String name = fileInfo.getFileName();
+
+		tasks.addList(name, false);
+		tasks.setActiveList(name);
+
+		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
+			Scanner scanner = new Scanner(inputStream);
+
+			tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
+			tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
+
+			if (scanner.hasNextLine()) {
+				tasks.setListState(tasks.getListByName(tasks.getActiveList()), TaskContainerState.valueOf(scanner.nextLine()), false);
+			}
+		}
+		catch (IOException ignored) {
+			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
+		}
+
+		loadTasks(fileInfo.getPath(), false);
+	}
+
+	private void loadGroup(String folder, OSInterface.TaskFileInfo fileInfo) throws IOException {
+		String name = fileInfo.getFileName();
+
+		TaskGroup group = tasks.addGroup(name + "/");
+		tasks.switchGroup(name + "/");
+
+		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
+			Scanner scanner = new Scanner(inputStream);
+
+			if (scanner.hasNextLine()) {
+				tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
+				tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
+
+				if (scanner.hasNextLine()) {
+					tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
+				}
+			}
+		}
+		catch (IOException ignored) {
+			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
+		}
+
+		loadTasks(fileInfo.getPath(), true);
+		tasks.switchGroup(tasks.getActiveGroup().getParent());
 	}
 
 	private boolean isGroupFolder(String folder) {

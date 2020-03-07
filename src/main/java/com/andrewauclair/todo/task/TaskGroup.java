@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.*;
 
 public final class TaskGroup implements TaskContainer {
+	private static final String ROOT_PATH = "/";
+
 	private final String name;
 	private final String fullPath;
 	private final TaskGroup parent;
@@ -44,16 +46,16 @@ public final class TaskGroup implements TaskContainer {
 		if (parent != null) {
 			parentPath = parent.getFullPath();
 
-			if (parent.getFullPath().equals("/")) {
-				fullPath = "/" + name + "/";
+			if (parentPath.equals(ROOT_PATH)) {
+				fullPath = ROOT_PATH + name + "/";
 			}
 			else {
-				fullPath = parent.getFullPath() + name + "/";
+				fullPath = parentPath + name + "/";
 			}
 		}
 		else {
 			parentPath = "";
-			fullPath = "/";
+			fullPath = ROOT_PATH;
 		}
 	}
 
@@ -161,7 +163,6 @@ public final class TaskGroup implements TaskContainer {
 	TaskList getListAbsolute(String path) {
 		Optional<TaskList> optionalList = children.stream()
 				.filter(child -> child instanceof TaskList)
-
 				.map(child -> (TaskList) child)
 				.filter(list -> list.getFullPath().equals(path))
 				.findFirst();

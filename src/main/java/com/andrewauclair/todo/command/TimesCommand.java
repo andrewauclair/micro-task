@@ -186,7 +186,7 @@ public final class TimesCommand implements Runnable {
 		for (TaskTimesFilter.TaskTimeFilterResult result : data) {
 			String line = Utils.formatTime(result.getTotal(), highestTime);
 
-			Task task = result.getTask();
+			Task task = result.task;
 
 			boolean active = tasks.getActiveTaskID() == task.id;
 

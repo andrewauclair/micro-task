@@ -132,11 +132,6 @@ public class TaskTimesFilter {
 			return total;
 		}
 
-		// TODO To be replaced by just using task
-		public Task getTask() {
-			return task;
-		}
-
 		@Override
 		public int hashCode() {
 			return Objects.hash(total, task, list);

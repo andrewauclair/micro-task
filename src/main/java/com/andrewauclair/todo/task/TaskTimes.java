@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public final class TaskTimes {
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 	public static final long TIME_NOT_SET = Long.MIN_VALUE;
 
 	public final long start;
@@ -25,6 +26,10 @@ public final class TaskTimes {
 		this(start, stop, "", "");
 	}
 
+	public TaskTimes(long start, String project, String feature) {
+		this(start, TIME_NOT_SET, project, feature);
+	}
+
 	public TaskTimes(long start, long stop, String project, String feature) {
 		if (stop < start && stop != TIME_NOT_SET) {
 			throw new TaskException("Stop time can not come before start time.");
@@ -34,10 +39,6 @@ public final class TaskTimes {
 		this.stop = stop;
 		this.project = project;
 		this.feature = feature;
-	}
-
-	public TaskTimes(long start, String project, String feature) {
-		this(start, TIME_NOT_SET, project, feature);
 	}
 
 	public long getDuration(OSInterface osInterface) {
@@ -76,11 +77,10 @@ public final class TaskTimes {
 	}
 
 	public String description(ZoneId zone) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
-		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(dateTimeFormatter);
+		String startStr = Instant.ofEpochSecond(start).atZone(zone).format(DATE_TIME_FORMATTER);
 
 		if (stop != TIME_NOT_SET) {
-			String stopStr = Instant.ofEpochSecond(stop).atZone(zone).format(dateTimeFormatter);
+			String stopStr = Instant.ofEpochSecond(stop).atZone(zone).format(DATE_TIME_FORMATTER);
 			return startStr + " - " + stopStr;
 		}
 		return startStr + " -";

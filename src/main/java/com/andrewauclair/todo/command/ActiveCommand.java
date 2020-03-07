@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.todo.command;
 
+import com.andrewauclair.todo.Utils;
 import com.andrewauclair.todo.os.OSInterface;
 import com.andrewauclair.todo.task.Task;
 import com.andrewauclair.todo.task.TaskDuration;
@@ -44,7 +45,7 @@ final class ActiveCommand implements Runnable {
 
 			activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());
 			System.out.print("Current time elapsed: ");
-			System.out.println(new TaskDuration(activeTime, osInterface));
+			System.out.println(Utils.formatTime(activeTime.getDuration(osInterface), Utils.HighestTime.None));
 			System.out.println();
 		}
 		catch (RuntimeException e) {
