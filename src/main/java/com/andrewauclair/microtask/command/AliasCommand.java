@@ -59,15 +59,22 @@ final class AliasCommand implements Runnable {
 				System.out.println();
 			}
 			else {
-				System.out.println("Created alias '" + name + "' for command '" + args.command + "'");
-				System.out.println();
+				if (commands.isValidCommand(args.command)) {
+					System.out.println("Created alias '" + name + "' for command '" + args.command + "'");
+					System.out.println();
 
-				commands.addAlias(name, args.command);
+					commands.addAlias(name, args.command);
 
-				writeAliasesFile();
+					writeAliasesFile();
 
-				osInterface.runGitCommand("git add .", false);
-				osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + args.command + "'\"", false);
+					osInterface.runGitCommand("git add .", false);
+					osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + args.command + "'\"", false);
+				}
+				else {
+					System.out.println();
+					System.out.println("Command '" + args.command + "' is invalid.");
+					System.out.println();
+				}
 			}
 		}
 		else if (args.update != null) {
@@ -78,17 +85,24 @@ final class AliasCommand implements Runnable {
 			}
 
 			if (commands.getAliases().containsKey(name)) {
-				commands.removeAlias(name);
+				if (commands.isValidCommand(args.update)) {
+					commands.removeAlias(name);
 
-				System.out.println("Updated alias '" + name + "' to command '" + args.update + "'");
-				System.out.println();
+					System.out.println("Updated alias '" + name + "' to command '" + args.update + "'");
+					System.out.println();
 
-				commands.addAlias(name, args.update);
+					commands.addAlias(name, args.update);
 
-				writeAliasesFile();
+					writeAliasesFile();
 
-				osInterface.runGitCommand("git add .", false);
-				osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + args.update + "'\"", false);
+					osInterface.runGitCommand("git add .", false);
+					osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + args.update + "'\"", false);
+				}
+				else {
+					System.out.println();
+					System.out.println("Command '" + args.update + "' is invalid.");
+					System.out.println();
+				}
 			}
 			else {
 				System.out.println("Alias '" + name + "' does not exist.");
