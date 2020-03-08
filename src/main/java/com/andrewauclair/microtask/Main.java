@@ -92,12 +92,7 @@ public final class Main {
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		commands = new Commands(tasks, new GitLabReleases(), osInterface);
 
-		System.out.println("Waiting for client on " + InetAddress.getLocalHost() + ":5678");
-
-		ServerSocket server = new ServerSocket(5678);
-		Socket accept = server.accept();
-
-		DataOutputStream serverOut = new DataOutputStream(accept.getOutputStream());
+		osInterface.openStatusLink();
 
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), osInterface), commands);
 
@@ -120,7 +115,7 @@ public final class Main {
 			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
 
-		sendCurrentStatus(serverOut);
+		sendCurrentStatus();
 
 		while (true) {
 			try {
@@ -130,19 +125,8 @@ public final class Main {
 					manualProjectFeatureAssign(tasks);
 				}
 
-				if (command.equals("exit")) {
-					serverOut.write(StatusConsole.TransferType.Exit.ordinal());
-				}
-
 				if (command.equals("export")) {
 					exportData(tasks);
-				}
-				else if (command.startsWith("status")) {
-					serverOut.write(StatusConsole.TransferType.Command.ordinal());
-					serverOut.writeUTF(command.substring(7));
-				}
-				else if (command.startsWith("focus")) {
-					serverOut.write(StatusConsole.TransferType.Focus.ordinal());
 				}
 				else {
 					runningCommand.set(true);
@@ -150,7 +134,7 @@ public final class Main {
 					runningCommand.set(false);
 				}
 
-				sendCurrentStatus(serverOut);
+				sendCurrentStatus();
 			}
 			catch (UserInterruptException ignored) {
 			}
@@ -160,12 +144,9 @@ public final class Main {
 		}
 	}
 
-	private void sendCurrentStatus(DataOutputStream serverOut) throws IOException {
-		serverOut.write(StatusConsole.TransferType.CurrentGroup.ordinal());
-		serverOut.writeUTF(tasks.getActiveGroup().getFullPath());
-
-		serverOut.write(StatusConsole.TransferType.CurrentList.ordinal());
-		serverOut.writeUTF(tasks.getActiveList());
+	private void sendCurrentStatus() {
+		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentGroup, tasks.getActiveGroup().getFullPath());
+		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentList, tasks.getActiveList());
 	}
 
 	public static void main(String[] args) throws Exception {

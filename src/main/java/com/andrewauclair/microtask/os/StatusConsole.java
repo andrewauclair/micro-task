@@ -43,8 +43,17 @@ public class StatusConsole {
 
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
 		@Override
+		public void createTerminal() {
+		}
+
+		@Override
 		public DataOutputStream createOutputStream(String fileName) {
 			throw new RuntimeException("The status console can't create files. It is read only");
+		}
+
+		@Override
+		public boolean runGitCommand(String command, boolean print) {
+			return false;
 		}
 	};
 
@@ -251,7 +260,7 @@ public class StatusConsole {
 	}
 
 	private String padString(String str, int width) {
-		return String.join("", Collections.nCopies(width - str.length(), " "));
+		return str + String.join("", Collections.nCopies(width - str.length(), " "));
 	}
 
 	private void bringWindowToFront() {
