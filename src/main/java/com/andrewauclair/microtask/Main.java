@@ -2,10 +2,9 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.command.Commands;
-import com.andrewauclair.microtask.os.GitLabReleases;
-import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.os.OSInterfaceImpl;
-import com.andrewauclair.microtask.os.StatusConsole;
+import com.andrewauclair.microtask.command.VersionCommand;
+import com.andrewauclair.microtask.os.*;
+import com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor;
 import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
@@ -19,16 +18,18 @@ import org.jline.terminal.Terminal;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliCommands;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.HelpCommand;
 
@@ -116,6 +117,8 @@ public final class Main {
 		}
 
 		sendCurrentStatus();
+
+		VersionCommand.printLogo(osInterface);
 
 		while (true) {
 			try {
