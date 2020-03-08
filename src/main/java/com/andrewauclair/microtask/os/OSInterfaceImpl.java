@@ -29,6 +29,9 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	public void createTerminal() throws IOException {
+		if (terminal != null) {
+			terminal.close();
+		}
 		terminal = TerminalBuilder.builder()
 				.system(true)
 				.jna(true)
@@ -39,7 +42,9 @@ public class OSInterfaceImpl implements OSInterface {
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 
-		main.newTerminal(terminal);
+		if (main != null) {
+			main.newTerminal(terminal);
+		}
 	}
 
 	public void setTerminal(Terminal terminal) {
@@ -52,12 +57,16 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 
-		System.out.flush();
+//		System.out.flush();
+		boolean createdTerminal = false;
 
 		try {
 			// pause doesn't seem to work and we need input with the git commands
 			// calling close and then rebuilding the terminal is the only thing that we can do
-			terminal.close();
+			if (terminal != null) {
+				terminal.close();
+				terminal = null;
+			}
 
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
@@ -65,10 +74,19 @@ public class OSInterfaceImpl implements OSInterface {
 			pb.redirectInput(Redirect.INHERIT);
 
 			pb.redirectOutput(print ? Redirect.INHERIT : Redirect.DISCARD);
+			pb.redirectError(Redirect.INHERIT);
 
 			Process p = pb.start();
 
 			int exitCode = p.waitFor();
+
+			try {
+				createTerminal();
+				createdTerminal = true;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			if (exitCode != 0) {
 				System.out.println();
@@ -82,11 +100,13 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 		finally {
 			// rebuild terminal
-			try {
-				createTerminal();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
+			if (!createdTerminal) {
+				try {
+					createTerminal();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -243,5 +263,10 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public boolean fileExists(String fileName) {
 		return new File(fileName).exists();
+	}
+
+	@Override
+	public String getEnvVar(String name) {
+		return System.getenv(name);
 	}
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 class Commands_EOD_Test extends CommandsBaseTestCase {
 	@BeforeEach
-	void setup() throws IOException {
+	public void setup() throws IOException {
 		super.setup();
 
 		osInterface.setIncrementTime(false);

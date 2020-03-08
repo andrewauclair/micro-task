@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
@@ -12,7 +13,6 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -145,20 +145,7 @@ final class UpdateCommand implements Runnable {
 				tasksData.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 			}
 
-			String currentVersion = "Unknown";
-
-			try {
-				currentVersion = osInterface.getVersion();
-			}
-			catch (IOException ignored) {
-			}
-
-			try (DataOutputStream output = osInterface.createOutputStream("git-data/task-data-version.txt")) {
-				output.write(currentVersion.getBytes());
-			}
-			catch (IOException e) {
-				e.printStackTrace(System.out);
-			}
+			String currentVersion = Utils.writeCurrentVersion(osInterface);
 
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"", false);

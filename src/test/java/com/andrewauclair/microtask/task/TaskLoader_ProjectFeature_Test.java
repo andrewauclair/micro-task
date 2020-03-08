@@ -17,11 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	private TaskLoader loader;
 	
 	@BeforeEach
 	void setup() throws IOException {
-//		super.setup();
+		super.setup();
+
+		loader = new TaskLoader(tasks, reader, osInterface);
+
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString(), Mockito.anyBoolean())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));

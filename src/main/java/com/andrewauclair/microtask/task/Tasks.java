@@ -37,7 +37,22 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 
-		activeGroup.addChild(new TaskList("default", rootGroup, osInterface, writer, "", "", TaskContainerState.InProgress));
+		if (!osInterface.fileExists("git-data")) {
+			String username = osInterface.getEnvVar("username");
+
+			osInterface.createFolder("git-data");
+			osInterface.runGitCommand("git init", false);
+			osInterface.runGitCommand("git config user.name \"" + username + "\"", false);
+			osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"", false);
+
+			Utils.writeCurrentVersion(osInterface);
+			writeNextID();
+
+			osInterface.runGitCommand("git add .", false);
+			osInterface.runGitCommand("git commit -m \"Created new micro task instance.\"", false);
+
+			addList("default", true);
+		}
 	}
 
 	public TaskFilterBuilder getFilterBuilder() {
@@ -69,15 +84,19 @@ public class Tasks {
 	private long incrementID() {
 		long nextID = this.nextID++;
 
+		writeNextID();
+		osInterface.runGitCommand("git add next-id.txt", false);
+
+		return nextID;
+	}
+
+	private void writeNextID() {
 		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
 			outputStream.write(String.valueOf(this.nextID).getBytes());
 		}
 		catch (IOException e) {
 			e.printStackTrace(output);
 		}
-		osInterface.runGitCommand("git add next-id.txt", false);
-
-		return nextID;
 	}
 
 	public String getAbsoluteListName(String name) {

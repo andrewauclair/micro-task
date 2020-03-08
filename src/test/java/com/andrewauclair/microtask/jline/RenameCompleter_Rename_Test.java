@@ -5,11 +5,13 @@ import com.andrewauclair.microtask.command.CommandsBaseTestCase;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class RenameCompleter_Rename_Test extends CommandsBaseTestCase {
-	private final RenameCompleter completer = new RenameCompleter(tasks);
+	private RenameCompleter completer;
 	private final LineReader lineReader = Mockito.mock(LineReader.class);
 	private final ParsedLine parsedLine = Mockito.mock(ParsedLine.class);
+
+	@BeforeEach
+	public void setup() throws IOException {
+		super.setup();
+
+		completer = new RenameCompleter(tasks);
+	}
 
 	@Test
 	void commands_completer_basic_rename_completion() {

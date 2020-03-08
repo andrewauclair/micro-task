@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -17,7 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskLoader_Checks_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	private TaskLoader loader;
+
+	@BeforeEach
+	void setup() throws IOException {
+		super.setup();
+
+		loader = new TaskLoader(tasks, reader, osInterface);
+	}
 
 	@Test
 	void task_loader_throws_exception_for_unknown_file_in_list_folder() throws IOException {

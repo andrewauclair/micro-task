@@ -1,6 +1,11 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask;
 
+import com.andrewauclair.microtask.os.OSInterface;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 public final class Utils {
 	public static final String NL = System.lineSeparator();
 
@@ -75,6 +80,25 @@ public final class Utils {
 			return HighestTime.Minute;
 		}
 		return HighestTime.Second;
+	}
+
+	public static String writeCurrentVersion(OSInterface osInterface) {
+		String currentVersion = "Unknown";
+
+		try {
+			currentVersion = osInterface.getVersion();
+		}
+		catch (IOException ignored) {
+		}
+
+		try (DataOutputStream output = osInterface.createOutputStream("git-data/task-data-version.txt")) {
+			output.write(currentVersion.getBytes());
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
+
+		return currentVersion;
 	}
 
 	public enum HighestTime {

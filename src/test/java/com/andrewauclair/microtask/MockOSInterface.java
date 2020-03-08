@@ -99,4 +99,9 @@ public class MockOSInterface implements OSInterface {
 	public boolean fileExists(String fileName) {
 		return false;
 	}
+
+	@Override
+	public String getEnvVar(String name) {
+		return "";
+	}
 }

@@ -18,8 +18,7 @@ import java.time.ZoneId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public
-class CommandsBaseTestCase {
+public class CommandsBaseTestCase {
 	protected final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	protected final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
@@ -27,17 +26,22 @@ class CommandsBaseTestCase {
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
-	protected final Tasks tasks = new Tasks(writer, printStream, osInterface);
+	protected Tasks tasks;
 
 	protected Commands commands;
 
 	@BeforeEach
-	void setup() throws IOException {
+	public void setup() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 
+		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
+
 		System.setOut(printStream);
 		System.setErr(errPrintStream);
+
+		tasks = new Tasks(writer, printStream, osInterface);
+		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
 		commands = new Commands(tasks, gitLabReleases, osInterface);
 	}

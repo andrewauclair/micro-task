@@ -21,7 +21,7 @@ class Commands_Times_BaseTestCase extends CommandsBaseTestCase {
 	final TaskTimesFilter mockTaskTimesFilter = mock(TaskTimesFilter.class);
 	
 	@BeforeEach
-	void setup() throws IOException {
+	public void setup() throws IOException {
 		super.setup();
 		
 		when(mockTaskFilterBuilder.createFilter(tasks)).thenReturn(mockTaskTimesFilter);

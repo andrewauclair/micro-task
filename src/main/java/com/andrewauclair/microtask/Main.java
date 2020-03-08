@@ -88,6 +88,8 @@ public final class Main {
 	private final Tasks tasks;
 	
 	private Main() throws Exception {
+		osInterface.createTerminal();
+
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		commands = new Commands(tasks, new GitLabReleases(), osInterface);
 
@@ -97,23 +99,9 @@ public final class Main {
 		Socket accept = server.accept();
 		
 		DataOutputStream serverOut = new DataOutputStream(accept.getOutputStream());
-		
-		File git_data = new File("git-data");
-		
-		boolean exists = git_data.exists();
-		
-		if (!exists) {
-			boolean mkdir = git_data.mkdir();
-			
-			System.out.println(mkdir);
-			
-			osInterface.runGitCommand("git init", false);
-			osInterface.runGitCommand("git config user.email \"git@todo.app\"", false);
-			osInterface.runGitCommand("git config user.name \"TODO App\"", false);
-		}
-		
+
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), osInterface), commands);
-		
+
 		if (requiresTaskUpdate()) {
 			commands.execute(System.out, "update --tasks");
 		}
@@ -312,7 +300,8 @@ public final class Main {
 			writer.writeTask(strippedTask, "git-data-export/tasks" + path + "/" + task.id + ".txt");
 		}
 	}
-	
+
+	// TODO Find a way to test this
 	private boolean requiresTaskUpdate() {
 		String currentVersion = "";
 		

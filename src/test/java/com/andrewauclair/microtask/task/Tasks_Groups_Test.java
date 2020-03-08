@@ -160,6 +160,8 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void add_group_without_creating_folder_or_adding_to_git__used_for_reloading_groups() {
+		Mockito.reset(osInterface);
+
 		tasks.addGroup("/one/two/");
 		
 		assertTrue(tasks.hasGroupPath("/one/two/"));
