@@ -223,6 +223,22 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commandLine.execute(strings);
 	}
 
+	public boolean isValidCommand(String command) {
+		ParsedLine parse = defaultParser.parse(command, 0, Parser.ParseContext.UNSPECIFIED);
+		String[] strings = parse.words().toArray(new String[0]);
+
+		CommandLine commandLine = buildCommandLine(strings[0]); // rebuild
+
+		try {
+			commandLine.parseArgs(strings);
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
 	public String getPrompt() {
 		String prompt = "";
 

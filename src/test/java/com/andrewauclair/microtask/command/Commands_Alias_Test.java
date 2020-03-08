@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import static com.andrewauclair.microtask.Utils.NL;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 class Commands_Alias_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
@@ -251,6 +252,44 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		order.verify(osInterface).runGitCommand("git add .", false);
 		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"", false);
+	}
+
+	@Test
+	void alias_command_checks_if_command_is_valid_when_creating_new_alias() {
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "alias -n tt -c \"times --unknown-option\"");
+
+		Mockito.verifyNoInteractions(osInterface);
+
+		assertThat(commands.getAliases()).isEmpty();
+
+		assertOutput(
+				"Unknown option: '--unknown-option'",
+				"",
+				"Command 'times --unknown-option' is invalid.",
+				""
+		);
+	}
+
+	@Test
+	void alias_command_checks_if_command_is_valid_when_updating_alias() {
+		commands.addAlias("tt", "times --today");
+
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "alias -n tt -u \"times --unknown-option\"");
+
+		Mockito.verifyNoInteractions(osInterface);
+
+		assertThat(commands.getAliases()).containsOnly(entry("tt", "times --today"));
+
+		assertOutput(
+				"Unknown option: '--unknown-option'",
+				"",
+				"Command 'times --unknown-option' is invalid.",
+				""
+		);
 	}
 
 	@Test
