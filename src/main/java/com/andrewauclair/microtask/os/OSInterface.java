@@ -37,6 +37,8 @@ public interface OSInterface {
 
 	boolean fileExists(String fileName);
 
+	String getEnvVar(String name);
+
 	final class TaskFileInfo {
 		final String name;
 		final String path;

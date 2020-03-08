@@ -5,18 +5,27 @@ import com.andrewauclair.microtask.command.CommandsBaseTestCase;
 import org.jline.reader.Candidate;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ActiveTaskCompleter_Test extends CommandsBaseTestCase {
-	private final ActiveTaskCompleter completer = new ActiveTaskCompleter(tasks);
+	private ActiveTaskCompleter completer;
 	private final LineReader lineReader = Mockito.mock(LineReader.class);
 	private final ParsedLine parsedLine = Mockito.mock(ParsedLine.class);
+
+	@BeforeEach
+	public void setup() throws IOException {
+		super.setup();
+
+		completer = new ActiveTaskCompleter(tasks);
+	}
 
 	@Test
 	void active_id_is_in_candidates_list() {

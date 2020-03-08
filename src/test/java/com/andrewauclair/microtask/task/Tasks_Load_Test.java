@@ -5,6 +5,8 @@ import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.CommandsBaseTestCase;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -158,5 +160,55 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		assertFalse(tasks.hasActiveTask());
 		assertEquals("/default", tasks.getActiveList());
+	}
+
+	@Test
+	void tasks_creates_git_repo_on_creation_if_it_does_not_exist() throws IOException {
+		Mockito.reset(osInterface);
+
+		Mockito.when(osInterface.getVersion()).thenReturn("10.2.2");
+
+		Mockito.when(osInterface.getEnvVar("username")).thenReturn("Andrew");
+		Mockito.when(osInterface.getEnvVar("computername")).thenReturn("computer");
+
+		ByteArrayOutputStream versionStream = new ByteArrayOutputStream();
+		ByteArrayOutputStream nextIdStream = new ByteArrayOutputStream();
+		ByteArrayOutputStream defaultStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenReturn(new DataOutputStream(versionStream));
+		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(nextIdStream));
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/list.txt")).thenReturn(new DataOutputStream(defaultStream));
+
+		new Tasks(writer, new PrintStream(nextIdStream), osInterface);
+
+		assertEquals("10.2.2", versionStream.toString());
+		assertEquals("1", nextIdStream.toString());
+		CommandsBaseTestCase.assertOutput(defaultStream, "", "", "InProgress");
+
+		InOrder inOrder = Mockito.inOrder(osInterface);
+
+		inOrder.verify(osInterface).createFolder("git-data");
+		inOrder.verify(osInterface).runGitCommand("git init", false);
+		inOrder.verify(osInterface).runGitCommand("git config user.name \"Andrew\"", false);
+		inOrder.verify(osInterface).runGitCommand("git config user.email \"Andrew@computer\"", false);
+		inOrder.verify(osInterface).createOutputStream("git-data/task-data-version.txt");
+		inOrder.verify(osInterface).createOutputStream("git-data/next-id.txt");
+		inOrder.verify(osInterface).runGitCommand("git add .", false);
+		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created new micro task instance.\"", false);
+		inOrder.verify(osInterface).createOutputStream("git-data/tasks/default/list.txt");
+		inOrder.verify(osInterface).runGitCommand("git add .", false);
+		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created list '/default'\"", false);
+	}
+
+	@Test
+	void tasks_does_not_create_git_repo_if_it_already_exists() {
+		Mockito.reset(osInterface);
+
+		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
+
+		new Tasks(writer, new PrintStream(outputStream), osInterface);
+
+		Mockito.verify(osInterface).fileExists("git-data");
+		Mockito.verifyZeroInteractions(osInterface);
 	}
 }
