@@ -7,6 +7,9 @@ import org.jline.terminal.TerminalBuilder;
 
 import java.io.*;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -19,10 +22,11 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
-	private Terminal terminal;
+	private Terminal terminal = null;
 
 	private String lastInputFile = "";
 	private Main main;
+	private DataOutputStream statusOutput;
 
 	public void setMain(Main main) {
 		this.main = main;
@@ -47,7 +51,16 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 	}
 
-	public void setTerminal(Terminal terminal) {
+	public void openStatusLink() throws IOException {
+		System.out.println("Waiting for client on " + InetAddress.getLocalHost() + ":5678");
+
+		ServerSocket server = new ServerSocket(5678);
+		Socket accept = server.accept();
+
+		statusOutput = new DataOutputStream(accept.getOutputStream());
+	}
+
+	void setTerminal(Terminal terminal) {
 		this.terminal = terminal;
 	}
 
@@ -57,7 +70,6 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 
-//		System.out.flush();
 		boolean createdTerminal = false;
 
 		try {
@@ -121,33 +133,6 @@ public class OSInterfaceImpl implements OSInterface {
 			}
 		}
 		return false;
-	}
-
-	// copied from ExecHelper in jline so that we can customize it
-	private static int waitAndCapture(Process p, boolean print) throws IOException, InterruptedException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try (InputStream in = p.getInputStream(); InputStream err = p.getErrorStream(); OutputStream out = p.getOutputStream()) {
-			int c;
-			while ((c = in.read()) != -1) {
-				bout.write(c);
-			}
-
-			while ((c = err.read()) != -1) {
-				bout.write(c);
-			}
-
-			while ((c = err.read()) != -1) {
-				bout.write(c);
-			}
-
-			int exitCode = p.waitFor();
-
-			if (print || exitCode != 0) {
-				System.out.println(bout.toString());
-			}
-
-			return exitCode;
-		}
 	}
 
 	@Override
@@ -268,5 +253,26 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public String getEnvVar(String name) {
 		return System.getenv(name);
+	}
+
+	@Override
+	public void sendStatusMessage(StatusConsole.TransferType transferType) {
+		try {
+			statusOutput.write(transferType.ordinal());
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
+	}
+
+	@Override
+	public void sendStatusMessage(StatusConsole.TransferType transferType, String data) {
+		try {
+			statusOutput.write(transferType.ordinal());
+			statusOutput.writeUTF(data);
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
 	}
 }

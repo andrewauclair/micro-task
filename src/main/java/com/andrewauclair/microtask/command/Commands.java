@@ -67,6 +67,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
 		commands.put("info", new InfoCommand(tasks, osInterface));
+		commands.put("focus", new FocusCommand(osInterface));
+		commands.put("status", new StatusCommand(osInterface));
 	}
 
 	private Runnable createCommand(String command) {
@@ -117,6 +119,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new NextCommand(tasks);
 			case "info":
 				return new InfoCommand(tasks, osInterface);
+			case "focus":
+				return new FocusCommand(osInterface);
+			case "status":
+				return new StatusCommand(osInterface);
 		}
 
 		for (String alias : aliases.keySet()) {

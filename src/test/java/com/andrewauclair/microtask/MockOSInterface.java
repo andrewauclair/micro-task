@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.os.StatusConsole;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -103,5 +104,13 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public String getEnvVar(String name) {
 		return "";
+	}
+
+	@Override
+	public void sendStatusMessage(StatusConsole.TransferType transferType) {
+	}
+
+	@Override
+	public void sendStatusMessage(StatusConsole.TransferType transferType, String data) {
 	}
 }

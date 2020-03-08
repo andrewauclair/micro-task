@@ -1,3 +1,4 @@
+// Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
 import java.io.DataOutputStream;
@@ -38,6 +39,10 @@ public interface OSInterface {
 	boolean fileExists(String fileName);
 
 	String getEnvVar(String name);
+
+	void sendStatusMessage(StatusConsole.TransferType transferType);
+
+	void sendStatusMessage(StatusConsole.TransferType transferType, String data);
 
 	final class TaskFileInfo {
 		final String name;
