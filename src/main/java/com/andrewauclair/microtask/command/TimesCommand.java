@@ -61,14 +61,21 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"--all-time"})
 	private boolean all_time;
 
+	@Option(names = {"--total"})
+	private boolean total;
+
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 	}
 
 	private void displayTimesForDay(Instant day, TaskTimesFilter filter) {
-		// get date and execute it
-		System.out.print("Times for day ");
+		if (total) {
+			System.out.print("Total time for day ");
+		}
+		else {
+			System.out.print("Times for day ");
+		}
 
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -78,7 +85,7 @@ public final class TimesCommand implements Runnable {
 
 		boolean printListNames = list != null;
 
-		if (!printListNames) {
+		if (!printListNames && !total) {
 			System.out.println();
 		}
 
@@ -152,8 +159,15 @@ public final class TimesCommand implements Runnable {
 				System.out.print(" ");
 				System.out.print(taskTimeFilterResults.get(0).list);
 				System.out.print(ANSI_RESET);
-				System.out.println();
+
+				if (!total) {
+					System.out.println();
+				}
 				totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
+			}
+
+			if (total) {
+				System.out.println();
 			}
 
 			System.out.println();
@@ -221,7 +235,9 @@ public final class TimesCommand implements Runnable {
 				line += ANSI_RESET;
 			}
 
-			System.out.println(line);
+			if (!total) {
+				System.out.println(line);
+			}
 
 			totalTime += result.getTotal();
 		}
@@ -280,8 +296,6 @@ public final class TimesCommand implements Runnable {
 			filter.filterForWeek(month, day, year);
 		}
 		else if (today) {
-//			LocalDate day = LocalDate.ofInstant(instant, osInterface.getZoneId());
-
 			filter.filterForDay(currentDate.getMonth().getValue(), currentDate.getDayOfMonth(), currentDate.getYear());
 		}
 		else if (yesterday) {
@@ -314,10 +328,20 @@ public final class TimesCommand implements Runnable {
 			}
 
 			if (list != null && lists.size() > 1) {
-				System.out.println("Times for multiple lists");
+				if (total) {
+					System.out.println("Total times for multiple lists");
+				}
+				else {
+					System.out.println("Times for multiple lists");
+				}
 			}
 			else if (group != null && group.length > 1) {
-				System.out.println("Times for multiple groups");
+				if (total) {
+					System.out.println("Total times for multiple groups");
+				}
+				else {
+					System.out.println("Times for multiple groups");
+				}
 			}
 			else if (group != null) {
 				System.out.println("Times for group '" + tasks.getAbsoluteGroupName(group[0]) + "'");
@@ -343,14 +367,23 @@ public final class TimesCommand implements Runnable {
 			displayTimesForDay(instant, filter);
 		}
 		else if (week && !proj_feat) {
-			System.out.print("Times for week of ");
+			if (total) {
+				System.out.print("Total times for week of ");
+			}
+			else {
+				System.out.print("Times for week of ");
+			}
+
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
 			ZoneId zoneId = osInterface.getZoneId();
 
 			System.out.println(instant.atZone(zoneId).format(dateTimeFormatter));
 
-			System.out.println();
+			if (!total) {
+				System.out.println();
+			}
+
 			displayTimes(filter, false);
 		}
 		else if (proj_feat) {
@@ -364,8 +397,13 @@ public final class TimesCommand implements Runnable {
 		}
 		else {
 			if (all_time) {
-				System.out.println("Times");
-				System.out.println();
+				if (total) {
+					System.out.println("Total times");
+				}
+				else {
+					System.out.println("Times");
+					System.out.println();
+				}
 				printTasks(new TaskTimesFilter(tasks));
 			}
 			else if (this.day != null) {
