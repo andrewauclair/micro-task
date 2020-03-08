@@ -96,4 +96,26 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void times_all_time_prints_all_time_numbers__total_only() {
+		addTaskWithTimes("Test 1", 1561078202, 1561078202 + 1000);
+		addTaskWithTimes("Test 2", 1561178202, 1561178202 + 1000);
+		addTaskWithTimes("Test 3", 1561278202, 1561278202 + 1000);
+		addTaskWithTimes("Test 4", 1561378202, 1561378202 + 1000);
+		addTaskWithTimes("Test 5", 1561478202, 1561478202 + 1000);
+		addTaskWithTimes("Test 6", 1561578202, 1561578202 + 1000);
+		addTaskWithTimes("Test 7", 1561678202, 1561678202 + 1000);
+		addTaskWithTimes("Test 8", 1561778202, 1561778202 + 1000);
+
+		Locale.setDefault(Locale.US);
+		commands.execute(printStream, "times --total --all-time");
+
+		assertOutput(
+				"Total times",
+				"",
+				"2h 13m 20s   Total",
+				""
+		);
+	}
 }

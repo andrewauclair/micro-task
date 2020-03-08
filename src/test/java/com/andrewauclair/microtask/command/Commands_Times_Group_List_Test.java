@@ -137,4 +137,58 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void filter_by_multiple_groups_and_multiple_lists__total_only() {
+		tasks.addList("/one/impl", true);
+		tasks.addList("/one/test", true);
+		tasks.addList("/two/impl", true);
+		tasks.addList("/two/test", true);
+		tasks.addList("/data", true);
+
+		tasks.setActiveList("/one/impl");
+		tasks.addTask("Test 1");
+		tasks.startTask(1, false);
+
+		tasks.setActiveList("/default");
+		tasks.switchGroup("/");
+
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(661, new Task(10, "Test 10", TaskState.Inactive, addTime), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3829, new Task(11, "Test 11", TaskState.Inactive, addTime), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6155, new Task(12, "Test 12", TaskState.Finished, addTime), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(3940, new Task(15, "Test 15", TaskState.Inactive, addTime, true), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, new Task(7, "Test 7", TaskState.Inactive, addTime), "/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(2894, new Task(8, "Test 8", TaskState.Inactive, addTime), "/default")
+				)
+		);
+
+		commands.execute(printStream, "times --total --group /one/ --group /two/ --list /data --list /default");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForList("/data");
+		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/one/"));
+
+		assertOutput(
+				"Total times for multiple lists",
+				"",
+				ANSI_BOLD + "   2h 48m 15s /two/test" + ANSI_RESET,
+				ANSI_BOLD + "   2h 21m 35s /one/test" + ANSI_RESET,
+				ANSI_BOLD + "   1h 14m 50s /two/impl" + ANSI_RESET,
+				ANSI_BOLD + "   1h 12m  0s /one/impl" + ANSI_RESET,
+				ANSI_BOLD + "      48m 14s /default" + ANSI_RESET,
+				ANSI_BOLD + "      46m 24s /data" + ANSI_RESET,
+				"",
+				"1d 1h 11m 18s   Total",
+				""
+		);
+	}
 }
