@@ -416,6 +416,34 @@ public final class TimesCommand implements Runnable {
 		}
 	}
 
+	public String getFeatureForTask(long taskID) {
+		TaskList listForTask = tasks.findListForTask(taskID);
+
+		String feature = listForTask.getFeature();
+
+		TaskGroup group = tasks.getGroupForList(listForTask.getFullPath());
+
+		while (group != null) {
+			if (feature.isEmpty()) {
+				feature = group.getFeature();
+			}
+			else {
+				feature = group.getFeature() + " " + feature;
+			}
+
+			if (group.getFullPath().equals("/")) {
+				break;
+			}
+			if (!group.getParent().equals("/")) {
+				group = tasks.getGroup(group.getParent());
+			}
+			else {
+				group = null;
+			}
+		}
+		return feature;
+	}
+
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
 		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
 
@@ -426,7 +454,7 @@ public final class TimesCommand implements Runnable {
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
 			String project = tasks.getProjectForTask(task.task.id);
-			String feature = tasks.getFeatureForTask(task.task.id);
+			String feature = getFeatureForTask(task.task.id);
 
 			if (project.isEmpty()) {
 				project = "None";
