@@ -427,7 +427,7 @@ public final class TimesCommand implements Runnable {
 			if (feature.isEmpty()) {
 				feature = group.getFeature();
 			}
-			else {
+			else if (!group.getFeature().isEmpty()) {
 				feature = group.getFeature() + " " + feature;
 			}
 

@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
@@ -38,7 +39,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
-		
+
 		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
 		tasks.setFeature(tasks.getGroup("/"), "Short Feat", true);
 		
@@ -53,7 +54,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		
 		tasks.addTask(task3);
 		tasks.addTask(task5);
-		
+
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
 						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
@@ -82,6 +83,68 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	}
 
 	@Test
+	void feature_names_when_parent_group_has_no_feature() {
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task6 = new Task(6, "Test 5", TaskState.Inactive, addTime);
+
+		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
+
+		tasks.setActiveList("/default");
+		tasks.setProject(tasks.getListByName("/default"), "Short Proj", true);
+		tasks.setFeature(tasks.getListByName("/default"), "UI", true);
+
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+
+		tasks.addList("/one", true);
+		tasks.setActiveList("/one");
+		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
+		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
+
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+
+		tasks.addList("/two/three", true);
+		tasks.setActiveList("/two/three");
+		tasks.setProject(tasks.getListByName("/two/three"), "Three Proj", true);
+
+		tasks.addTask(task6);
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(5000, task6, "/two/three")
+				)
+		);
+
+		commands.execute(printStream, "times --proj-feat --all-time");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, atLeast(1)).getData();
+		order.verifyNoMoreInteractions();
+
+		assertOutput(
+				"Time            Project      Feature",
+				"",
+				"   6h 12m  0s   Short Proj   UI",
+				"   2h 21m 35s   Short Proj   Longer Feature Name",
+				"   1h 23m 20s   Three Proj   " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"",
+				"1d 1h 56m 55s   Total",
+				""
+		);
+	}
+
+	@Test
 	void features_are_inherited_from_parent() {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -93,15 +156,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
 		tasks.setFeature(tasks.getGroup("/"), "Impl", true);
 
-
 		tasks.setActiveList("/default");
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
 		tasks.setActiveList("/one");
-		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
-		tasks.setFeature(tasks.getListByName("/one"), "UI", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -125,8 +185,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time            Project               Feature",
 				"",
-				"   6h 12m  0s   Longer Project Name   Impl",
-				"   2h 21m 35s   Short Proj            Impl UI",
+				"1d 0h 33m 35s   Longer Project Name   Impl",
 				"",
 				"1d 0h 33m 35s   Total",
 				""
