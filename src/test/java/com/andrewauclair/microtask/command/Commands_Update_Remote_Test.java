@@ -74,4 +74,18 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 		assertTrue(tasks.hasTaskWithID(1));
 	}
+
+	@Test
+	void updating_to_remote_does_not_get_releases() {
+		commands.execute(printStream, "update --to-remote");
+
+		Mockito.verifyNoInteractions(gitLabReleases);
+	}
+
+	@Test
+	void updating_from_remote_does_not_get_releases() {
+		commands.execute(printStream, "update --from-remote");
+
+		Mockito.verifyNoInteractions(gitLabReleases);
+	}
 }
