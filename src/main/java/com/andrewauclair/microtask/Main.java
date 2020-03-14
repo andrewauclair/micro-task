@@ -3,9 +3,12 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.VersionCommand;
-import com.andrewauclair.microtask.os.*;
-import com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor;
+import com.andrewauclair.microtask.os.GitLabReleases;
+import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.os.OSInterfaceImpl;
+import com.andrewauclair.microtask.os.StatusConsole;
 import com.andrewauclair.microtask.task.*;
+import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Builtins;
@@ -28,13 +31,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
-import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.HelpCommand;
 
 
 public final class Main {
+	private static final String CONSOLE_TITLE = "micro task main";
+
 	private final Commands commands;
 	private LineReader lineReader;
 
@@ -88,6 +91,10 @@ public final class Main {
 	private final Tasks tasks;
 
 	private Main() throws Exception {
+		final Kernel32 kernel32 = Kernel32.INSTANCE;
+
+		kernel32.SetConsoleTitle(CONSOLE_TITLE);
+
 		osInterface.createTerminal();
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);

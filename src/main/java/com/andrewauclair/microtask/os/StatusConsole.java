@@ -21,6 +21,8 @@ import java.time.*;
 import java.util.*;
 
 public class StatusConsole {
+	private final String CONSOLE_TITLE = "micro task status";
+
 	private String currentGroup;
 	private String currentList;
 	private String currentCommand = "times --today";
@@ -105,7 +107,7 @@ public class StatusConsole {
 
 		final Kernel32 kernel32 = Kernel32.INSTANCE;
 
-		kernel32.SetConsoleTitle("TODO App Status Console");
+		kernel32.SetConsoleTitle(CONSOLE_TITLE);
 	}
 
 	public void run() {
@@ -264,7 +266,7 @@ public class StatusConsole {
 	}
 
 	private void bringWindowToFront() {
-		WinDef.HWND hWnd = User32.INSTANCE.FindWindow(null, "TODO App Status Console");
+		WinDef.HWND hWnd = User32.INSTANCE.FindWindow(null, CONSOLE_TITLE);
 		if (hWnd == null) {
 			return;
 		}
