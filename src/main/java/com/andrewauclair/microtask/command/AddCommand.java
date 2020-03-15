@@ -48,6 +48,11 @@ final class AddCommand implements Runnable {
 		}
 
 		System.out.println("Added task " + task.description());
+
+		if (this.list != null) {
+			System.out.println("to list '" + tasks.getAbsoluteListName(this.list) + "'");
+		}
+
 		System.out.println();
 
 		if (start) {
