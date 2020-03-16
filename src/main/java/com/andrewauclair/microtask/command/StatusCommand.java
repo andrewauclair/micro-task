@@ -9,6 +9,7 @@ import static picocli.CommandLine.Option;
 
 @Command(name = "status")
 public class StatusCommand implements Runnable {
+	private final Commands commands;
 	private final OSInterface osInterface;
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
@@ -16,12 +17,20 @@ public class StatusCommand implements Runnable {
 	@Option(names = {"-c", "--command"}, required = true)
 	private String command;
 
-	StatusCommand(OSInterface osInterface) {
+	StatusCommand(Commands commands, OSInterface osInterface) {
+		this.commands = commands;
 		this.osInterface = osInterface;
 	}
 
 	@Override
 	public void run() {
-		osInterface.sendStatusMessage(StatusConsole.TransferType.Command, command);
+		if (commands.isValidCommand(command)) {
+			osInterface.sendStatusMessage(StatusConsole.TransferType.Command, command);
+		}
+		else {
+			System.out.println();
+			System.out.println("Command '" + command + "' is invalid.");
+			System.out.println();
+		}
 	}
 }

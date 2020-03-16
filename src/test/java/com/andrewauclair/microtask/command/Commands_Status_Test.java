@@ -2,9 +2,12 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.StatusConsole;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class Commands_Status_Test extends CommandsBaseTestCase {
 	@ParameterizedTest
@@ -13,6 +16,24 @@ class Commands_Status_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "status -c \"list --tasks\"");
 
 		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.Command, "list --tasks");
+	}
+
+	@Test
+	void status_command_checks_if_command_is_valid() {
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "status -c \"times --unknown-option\"");
+
+		Mockito.verifyNoInteractions(osInterface);
+
+		assertThat(commands.getAliases()).isEmpty();
+
+		assertOutput(
+				"Unknown option: '--unknown-option'",
+				"",
+				"Command 'times --unknown-option' is invalid.",
+				""
+		);
 	}
 
 	@ParameterizedTest

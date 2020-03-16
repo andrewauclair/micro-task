@@ -18,6 +18,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -70,15 +71,18 @@ final class UpdateCommand implements Runnable {
 			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxy.proxy_ip, this.proxy.proxy_port));
 		}
 
-		List<String> versions;
-		try {
-			versions = gitLabReleases.getVersions(proxy);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Failed to get releases from GitLab");
-			System.out.println();
-			return;
+		List<String> versions = Collections.emptyList();
+
+		if (releases || latest || release != null) {
+			try {
+				versions = gitLabReleases.getVersions(proxy);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Failed to get releases from GitLab");
+				System.out.println();
+				return;
+			}
 		}
 
 		if (releases) {

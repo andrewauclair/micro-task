@@ -66,6 +66,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Added task 1 - 'Test'",
+				"to list '/one'",
 				""
 		);
 
