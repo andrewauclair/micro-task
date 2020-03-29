@@ -96,17 +96,14 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 		tasks.addTask("Test");
 		tasks.startTask(1, false);
 		
-		Mockito.doAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-				tasks.addList("/default", true);
-				tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
-				tasks.addList("/test/data", true);
-				tasks.setActiveList("/test/data");
-				tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
-				tasks.setActiveList("/default");
-				return true;
-			}
+		Mockito.doAnswer(invocationOnMock -> {
+			tasks.addList("/default", true);
+			tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
+			tasks.addList("/test/data", true);
+			tasks.setActiveList("/test/data");
+			tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
+			tasks.setActiveList("/default");
+			return true;
 		}).when(loader).load();
 		
 		tasks.load(loader, commands);
