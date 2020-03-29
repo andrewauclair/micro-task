@@ -1,4 +1,4 @@
-image: mightymalakai33/micro-task-docker:latest
+image: mightymalakai33/micro-task:latest
 
 stages:
   - build
