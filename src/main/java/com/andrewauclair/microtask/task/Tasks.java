@@ -410,7 +410,13 @@ public class Tasks {
 	}
 
 	public void setActiveList(String name) {
-		activeList = getList(name).getFullPath();
+		TaskList list = getList(name);
+
+//		setListState(getListByName(activeList), TaskContainerState.InProgress, true);
+
+		activeList = list.getFullPath();
+
+//		setListState(list, TaskContainerState.Active, true);
 	}
 
 	public boolean hasListWithName(String name) {
