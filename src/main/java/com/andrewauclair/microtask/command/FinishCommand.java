@@ -30,17 +30,36 @@ final class FinishCommand implements Runnable {
 		if (options.list != null) {
 			String list = this.options.list;
 
-			TaskList taskList = tasks.finishList(list);
+			if (tasks.getListByName(list).getFullPath().equals(tasks.getActiveList())) {
+				System.out.println("List to finish must not be active.");
+			}
+			else if (tasks.getListByName(list).getTasks().stream()
+					.anyMatch(task -> task.state != TaskState.Finished)) {
+				System.out.println("List to finish still has tasks to complete.");
+			}
+			else {
+				TaskList taskList = tasks.finishList(list);
 
-			System.out.println("Finished list '" + taskList.getFullPath() + "'");
+				System.out.println("Finished list '" + taskList.getFullPath() + "'");
+			}
 			System.out.println();
 		}
 		else if (this.options.group != null) {
 			String group = this.options.group;
 
-			TaskGroup taskGroup = tasks.finishGroup(group);
+			if (tasks.getGroup(group).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
+				System.out.println("Group to finish must not be active.");
+			}
+			else if (tasks.getGroup(group).getTasks().stream()
+					.anyMatch(task -> task.state != TaskState.Finished)) {
+				System.out.println("Group to finish still has tasks to complete.");
+			}
+			else {
+				TaskGroup taskGroup = tasks.finishGroup(group);
 
-			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
+				System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
+			}
+
 			System.out.println();
 		}
 		else if (options.active) {

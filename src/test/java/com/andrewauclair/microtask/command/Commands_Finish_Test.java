@@ -102,10 +102,44 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void not_allowed_to_finish_active_list() {
+		tasks.setActiveList("/default");
+
+		commands.execute(printStream, "finish --list /default");
+
+		assertOutput(
+				"List to finish must not be active.",
+				""
+		);
+
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/default").getState());
+	}
+
+	@Test
+	void lists_with_tasks_that_are_not_finished_cannot_be_finished() {
+		tasks.addList("/test", true);
+
+		tasks.setActiveList("/test");
+		tasks.addTask("Test 1");
+
+		tasks.setActiveList("/default");
+
+		commands.execute(printStream, "finish --list /test");
+
+		assertOutput(
+				"List to finish still has tasks to complete.",
+				""
+		);
+
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test").getState());
+	}
+
+	@Test
 	void finish_a_group() {
 		tasks.addGroup("/test/");
 		tasks.addList("/test/one", true);
 		tasks.addTask("Test", "/test/one");
+		tasks.finishTask(1);
 
 		commands.execute(printStream, "finish --group /test/");
 
@@ -116,6 +150,41 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
 		assertNotNull(tasks.getTask(1));
+	}
+
+	@Test
+	void not_allowed_to_finish_active_group() {
+		tasks.addList("/test/one", true);
+
+		tasks.switchGroup("/test/");
+
+		commands.execute(printStream, "finish --group /test/");
+
+		assertOutput(
+				"Group to finish must not be active.",
+				""
+		);
+
+		assertEquals(TaskContainerState.InProgress, tasks.getGroup("/test/").getState());
+	}
+
+	@Test
+	void groups_with_tasks_that_are_not_finished_cannot_be_finished() {
+		tasks.addList("/test/one", true);
+
+		tasks.setActiveList("/test/one");
+		tasks.addTask("Test 1");
+
+		tasks.setActiveList("/default");
+
+		commands.execute(printStream, "finish --group /test/");
+
+		assertOutput(
+				"Group to finish still has tasks to complete.",
+				""
+		);
+
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test/one").getState());
 	}
 
 	@ParameterizedTest
