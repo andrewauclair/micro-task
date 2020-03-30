@@ -32,8 +32,13 @@ dependencies {
     testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add("--enable-preview")
+}
+
 test {
     useJUnitPlatform()
+    jvmArgs("--enable-preview")
 }
 
 description = 'TODO App'
