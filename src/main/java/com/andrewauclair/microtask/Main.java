@@ -327,7 +327,7 @@ public final class Main {
 			Widgets.CmdDesc out = null;
 
 			if (line.getDescriptionType() == Widgets.CmdLine.DescriptionType.COMMAND) {
-				String cmd = Parser.getCommand(line.getArgs().get(0));
+				String cmd = new DefaultParser().getCommand(line.getArgs().get(0));
 
 				if (builtins.hasCommand(cmd) || picocli.hasCommand(cmd)) {
 					out = builtins.commandDescription(cmd);

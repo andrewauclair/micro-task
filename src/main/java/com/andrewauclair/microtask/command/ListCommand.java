@@ -116,17 +116,15 @@ final class ListCommand implements Runnable {
 
 	private int printTasks(TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
 		for (TaskContainer child : group.getChildren()) {
-			if (child instanceof TaskList) {
-				TaskList listChild = (TaskList) child;
-
-				List<Task> tasksList = listChild.getTasks().stream()
+			if (child instanceof TaskList list) {
+				List<Task> tasksList = list.getTasks().stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList());
 
 				totalTasks += tasksList.size();
 
 				if (tasksList.size() > 0) {
-					System.out.println(ANSI_BOLD + listChild.getFullPath() + ANSI_RESET);
+					System.out.println(ANSI_BOLD + list.getFullPath() + ANSI_RESET);
 					printTasks(tasksList, Integer.MAX_VALUE);
 					System.out.println();
 				}

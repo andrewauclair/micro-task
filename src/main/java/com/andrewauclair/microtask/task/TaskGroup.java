@@ -175,9 +175,7 @@ public final class TaskGroup implements TaskContainer {
 
 	Optional<TaskGroup> getGroupAbsolute(String path) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskGroup) {
-				TaskGroup group = (TaskGroup) child;
-
+			if (child instanceof TaskGroup group) {
 				Optional<TaskGroup> result = group.getGroupAbsolute(path);
 
 				if (result.isPresent()) {
@@ -201,12 +199,8 @@ public final class TaskGroup implements TaskContainer {
 
 	private void buildNewChildren(TaskGroup group) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskList) {
-				TaskList list = (TaskList) child;
-
-				TaskList newList = list.changeParent(group);
-
-				group.children.add(newList);
+			if (child instanceof TaskList list) {
+				group.children.add(list.changeParent(group));
 			}
 			else {
 				TaskGroup newGroup = ((TaskGroup) child).changeParent(group);

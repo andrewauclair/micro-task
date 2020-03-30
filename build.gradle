@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id "com.github.ben-manes.versions" version "0.27.0"
+    id "com.github.ben-manes.versions" version "0.28.0"
 }
 
 apply plugin: 'java'
@@ -18,26 +18,31 @@ repositories {
 dependencies {
     compile 'net.java.dev.jna:jna:5.5.0'
     compile 'net.java.dev.jna:jna-platform:5.5.0'
-    compile 'org.jline:jline:3.13.3'
-    compile 'org.jline:jline-builtins:3.13.3'
+    compile 'org.jline:jline:3.14.0'
+    compile 'org.jline:jline-builtins:3.14.0'
     compile 'org.json:json:20190722'
     compile 'info.picocli:picocli-shell-jline3:4.2.0'
     compile 'org.fusesource.jansi:jansi:1.18'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.6.1'
     testCompile 'org.assertj:assertj-core:3.15.0'
-    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.1.12'
-    testCompile 'org.mockito:mockito-core:3.2.4'
-    testCompile 'org.mockito:mockito-junit-jupiter:3.2.4'
+    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.1.13'
+    testCompile 'org.mockito:mockito-core:3.3.3'
+    testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add("--enable-preview")
 }
 
 test {
     useJUnitPlatform()
+    jvmArgs("--enable-preview")
 }
 
 description = 'TODO App'
-sourceCompatibility = '10'
+sourceCompatibility = '14'
 
 jar {
     manifest {
