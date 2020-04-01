@@ -23,6 +23,9 @@ final class InfoCommand implements Runnable {
 	@Parameters(index = "0")
 	private long id;
 
+	@Option(names = {"--copy-name"})
+	private boolean copy_name;
+
 	InfoCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -31,6 +34,15 @@ final class InfoCommand implements Runnable {
 	@Override
 	public void run() {
 		Task task = tasks.getTask(id);
+
+		if (copy_name) {
+			osInterface.copyToClipboard(task.task);
+
+			System.out.println("Copied name of task " + task.id + " to the clipboard.");
+			System.out.println();
+
+			return;
+		}
 
 		System.out.println("Info for " + task.description());
 		System.out.println();

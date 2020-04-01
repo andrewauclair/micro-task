@@ -21,6 +21,11 @@ import org.jline.terminal.Terminal;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliCommands;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,6 +82,7 @@ public final class Main {
 
 		builtins.setLineReader(lineReader);
 		bindCtrlBackspace(lineReader);
+		bindCtrlV(lineReader);
 
 		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
 		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
@@ -198,6 +204,46 @@ public final class Main {
 				return widget.apply();
 			}
 		}, KeyMap.ctrl(BACKSPACE_KEY));
+	}
+
+	private void bindCtrlV(LineReader lineReader) {
+		KeyMap<Binding> main = lineReader.getKeyMaps().get(LineReader.MAIN);
+
+		main.bind((Widget) () -> {
+			String clipboardContents = getClipboardContents();
+
+			if (!clipboardContents.isEmpty()) {
+				lineReader.getBuffer().write(clipboardContents);
+			}
+
+			return true;
+		}, KeyMap.ctrl('v'));
+	}
+
+	/**
+	 * Get the String residing on the clipboard.
+	 *
+	 * @return any text found on the Clipboard; if none found, return an
+	 * empty String.
+	 */
+	public String getClipboardContents() {
+		String result = "";
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		//odd: the Object param of getContents is not currently used
+		Transferable contents = clipboard.getContents(null);
+		boolean hasTransferableText =
+				(contents != null) &&
+						contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		if (hasTransferableText) {
+			try {
+				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			}
+			catch (UnsupportedFlavorException | IOException ex) {
+				System.out.println(ex);
+				ex.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	// temporary function that we will use to assign a project and feature to all existing task times at work

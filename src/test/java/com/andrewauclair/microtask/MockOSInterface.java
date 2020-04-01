@@ -113,4 +113,8 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public void sendStatusMessage(StatusConsole.TransferType transferType, String data) {
 	}
+
+	@Override
+	public void copyToClipboard(String stringToCopy) {
+	}
 }
