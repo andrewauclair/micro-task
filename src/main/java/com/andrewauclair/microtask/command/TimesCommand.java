@@ -13,8 +13,10 @@ import picocli.CommandLine.Option;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,6 +59,9 @@ public final class TimesCommand implements Runnable {
 
 	@Option(names = {"--week"})
 	private boolean week;
+
+	@Option(names = {"--all-month"})
+	private boolean all_month;
 
 	@Option(names = {"--all-time"})
 	private boolean all_time;
@@ -405,6 +410,22 @@ public final class TimesCommand implements Runnable {
 					System.out.println();
 				}
 				printTasks(new TaskTimesFilter(tasks));
+			}
+			else if (all_month) {
+				String title = Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
+
+				filter.filterForMonth(month);
+
+				if (total) {
+					System.out.print("Total times for month of ");
+					System.out.println(title);
+				}
+				else {
+					System.out.print("Times for month of ");
+					System.out.println(title);
+					System.out.println();
+				}
+				printTasks(filter);
 			}
 			else if (this.day != null) {
 				displayTimesForDay(instant, filter);
