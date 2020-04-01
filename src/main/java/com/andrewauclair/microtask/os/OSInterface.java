@@ -44,6 +44,8 @@ public interface OSInterface {
 
 	void sendStatusMessage(StatusConsole.TransferType transferType, String data);
 
+	void copyToClipboard(String stringToCopy);
+
 	final class TaskFileInfo {
 		final String name;
 		final String path;

@@ -5,6 +5,9 @@ import com.andrewauclair.microtask.Main;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
@@ -274,5 +277,12 @@ public class OSInterfaceImpl implements OSInterface {
 		catch (IOException e) {
 			e.printStackTrace(System.out);
 		}
+	}
+
+	@Override
+	public void copyToClipboard(String stringToCopy) {
+		StringSelection stringSelection = new StringSelection(stringToCopy);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
 	}
 }
