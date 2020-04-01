@@ -109,6 +109,25 @@ public class TaskTimesFilter {
 		return this;
 	}
 
+	public TaskTimesFilter filterForMonth(int month) {
+		Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
+
+		ZoneId zoneId = osInterface.getZoneId();
+
+		LocalDate currentDate = LocalDate.ofInstant(instant, zoneId);
+
+		int year = currentDate.getYear();
+
+		LocalDate monthStart = LocalDate.of(year, month, 1);
+
+		LocalDateTime midnight = LocalDateTime.of(monthStart, LocalTime.MIDNIGHT);
+		LocalDateTime lastMidnight = midnight.plusDays(YearMonth.of(year, month).lengthOfMonth());
+
+		applyDateRange(zoneId, midnight, lastMidnight);
+
+		return this;
+	}
+
 	public List<Task> getTasks() {
 		return allTasks;
 	}

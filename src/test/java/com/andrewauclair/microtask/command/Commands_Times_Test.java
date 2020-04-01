@@ -58,9 +58,10 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times " + parameter);
 
 		assertOutput(
-				"Usage:  times [-h] [--all-time] [--proj-feat] [--today] [--total] [--week]",
-				"              [--yesterday] [-d=<day>] [-m=<month>] [-y=<year>]",
+				"Usage:  times [-h] [--all-month] [--all-time] [--proj-feat] [--today] [--total]",
+				"              [--week] [--yesterday] [-d=<day>] [-m=<month>] [-y=<year>]",
 				"              [--group=<group>]... [--list=<list>]...",
+				"      --all-month",
 				"      --all-time",
 				"  -d, --day=<day>",
 				"      --group=<group>",
