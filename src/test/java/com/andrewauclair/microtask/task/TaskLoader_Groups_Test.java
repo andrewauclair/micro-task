@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,8 @@ import java.util.Collections;
 
 class TaskLoader_Groups_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	private LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+	private TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {

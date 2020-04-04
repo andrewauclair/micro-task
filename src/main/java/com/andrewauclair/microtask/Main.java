@@ -103,12 +103,13 @@ public final class Main {
 
 		osInterface.createTerminal();
 
+		LocalSettings localSettings = new LocalSettings(osInterface);
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		commands = new Commands(tasks, new GitLabReleases(), osInterface);
+		commands = new Commands(tasks, new GitLabReleases(), localSettings, osInterface);
 
 		osInterface.openStatusLink();
 
-		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), osInterface), commands);
+		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
 			commands.execute(System.out, "update --tasks");

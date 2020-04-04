@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.task.*;
@@ -64,10 +65,11 @@ public class StatusConsole {
 
 		System.out.println("Connected");
 
+		LocalSettings localSettings = new LocalSettings(osInterface);
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		commands = new Commands(tasks, new GitLabReleases(), osInterface);
+		commands = new Commands(tasks, new GitLabReleases(), localSettings, osInterface);
 
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), osInterface);
+		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface);
 
 		terminal = TerminalBuilder.builder()
 				.system(true)

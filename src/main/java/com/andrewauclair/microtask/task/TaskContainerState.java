@@ -2,20 +2,13 @@
 package com.andrewauclair.microtask.task;
 
 public enum TaskContainerState {
-	InProgress(0, "InProgress"),
-	Active(1, "Active"),
-	Finished(2, "Finished");
+	InProgress("InProgress"),
+	Finished("Finished");
 
-	private final int value;
 	private final String name;
 
-	TaskContainerState(int value, String name) {
-		this.value = value;
+	TaskContainerState(String name) {
 		this.name = name;
-	}
-
-	public int getValue() {
-		return value;
 	}
 
 	@Override

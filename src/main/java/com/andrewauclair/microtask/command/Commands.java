@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -28,16 +29,18 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 	private final Map<String, String> aliases = new HashMap<>();
 	private final GitLabReleases gitLabReleases;
+	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
 	private final DefaultParser defaultParser = new DefaultParser();
 	private final PicocliFactory factory;
 	private final Main.CliCommands cliCommands = new Main.CliCommands();
 	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
-	public Commands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
+	public Commands(Tasks tasks, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
 
 		this.gitLabReleases = gitLabReleases;
+		this.localSettings = localSettings;
 		this.osInterface = osInterface;
 		factory = new PicocliFactory(this, tasks);
 		setCommands(tasks, this.gitLabReleases, this.osInterface);
@@ -55,14 +58,14 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks, this, osInterface));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
 		commands.put("set-list", new SetCommand.SetListCommand(tasks));
 		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
 		commands.put("mk", new MakeCommand(tasks));
-		commands.put("ch", new ChangeCommand(tasks));
+		commands.put("ch", new ChangeCommand(tasks, localSettings));
 		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
@@ -96,7 +99,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "version":
 				return new VersionCommand(osInterface);
 			case "update":
-				return new UpdateCommand(gitLabReleases, tasks, this, osInterface);
+				return new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
 			case "move":
@@ -110,7 +113,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "mk":
 				return new MakeCommand(tasks);
 			case "ch":
-				return new ChangeCommand(tasks);
+				return new ChangeCommand(tasks, localSettings);
 			case "eod":
 				return new EndOfDayCommand(tasks, osInterface);
 			case "alias":

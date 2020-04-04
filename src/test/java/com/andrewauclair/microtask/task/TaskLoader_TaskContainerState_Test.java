@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import java.util.Collections;
 import static com.andrewauclair.microtask.UtilsTest.byteInStream;
 import static com.andrewauclair.microtask.UtilsTest.createFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
@@ -22,7 +22,9 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 	void setup() throws IOException {
 		super.setup();
 
-		loader = new TaskLoader(tasks, reader, osInterface);
+		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+
+		loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
@@ -44,12 +46,12 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				byteInStream(createFile("", "", "Active"))
+				byteInStream(createFile("", "", "InProgress"))
 		);
 
 		loader.load();
 
-		assertEquals(TaskContainerState.Active, tasks.getGroup("/one/").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getGroup("/one/").getState());
 
 	}
 
@@ -68,11 +70,11 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
-				byteInStream(createFile("", "", "Active"))
+				byteInStream(createFile("", "", "InProgress"))
 		);
 
 		loader.load();
 
-		assertEquals(TaskContainerState.Active, tasks.getListByName("/two").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/two").getState());
 	}
 }

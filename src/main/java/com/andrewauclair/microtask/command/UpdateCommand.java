@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
@@ -28,6 +29,7 @@ final class UpdateCommand implements Runnable {
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
 	private final Commands commands;
+	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
@@ -54,10 +56,11 @@ final class UpdateCommand implements Runnable {
 	@ArgGroup(exclusive = false)
 	private ProxySettings proxy;
 
-	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, OSInterface osInterface) {
+	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasksData = tasks;
 		this.commands = commands;
+		this.localSettings = localSettings;
 		this.osInterface = osInterface;
 	}
 
@@ -154,7 +157,7 @@ final class UpdateCommand implements Runnable {
 			osInterface.runGitCommand("git add .", false);
 			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"", false);
 
-			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), osInterface), commands);
+			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 			System.out.println("Updated all tasks.");
 		}
@@ -169,7 +172,7 @@ final class UpdateCommand implements Runnable {
 		else if (from_remote) {
 			osInterface.runGitCommand("git pull", false);
 
-			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), osInterface), commands);
+			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 			System.out.println("Pulled changes from remote");
 		}

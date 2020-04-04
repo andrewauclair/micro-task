@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.CommandsBaseTestCase;
@@ -176,6 +177,8 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(nextIdStream));
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/list.txt")).thenReturn(new DataOutputStream(defaultStream));
 
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+
 		new Tasks(writer, new PrintStream(nextIdStream), osInterface);
 
 		assertEquals("10.2.2", versionStream.toString());
@@ -198,14 +201,16 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	void tasks_does_not_create_git_repo_if_it_already_exists() {
+	void tasks_does_not_create_git_repo_if_it_already_exists() throws IOException {
 		Mockito.reset(osInterface);
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+
 		new Tasks(writer, new PrintStream(outputStream), osInterface);
 
 		Mockito.verify(osInterface).fileExists("git-data");
-		Mockito.verifyZeroInteractions(osInterface);
+		Mockito.verifyNoMoreInteractions(osInterface);
 	}
 }

@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 
@@ -12,17 +13,20 @@ import java.util.Scanner;
 public class TaskLoader {
 	private final Tasks tasks;
 	private final TaskReader reader;
+	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
 
-	public TaskLoader(Tasks tasks, TaskReader reader, OSInterface osInterface) {
+	public TaskLoader(Tasks tasks, TaskReader reader, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.reader = reader;
+		this.localSettings = localSettings;
 		this.osInterface = osInterface;
 	}
 
-
 	public void load() throws IOException {
 		loadTasks("git-data/tasks", true);
+
+		localSettings.load(tasks);
 	}
 
 	private void loadTasks(String folder, boolean inGroup) throws IOException {

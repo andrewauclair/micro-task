@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.GitLabReleases;
@@ -24,6 +25,7 @@ public class CommandsBaseTestCase {
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	protected final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
+	final LocalSettings localSettings = Mockito.mock(LocalSettings.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
 	protected Tasks tasks;
@@ -37,13 +39,16 @@ public class CommandsBaseTestCase {
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 
+		Mockito.when(localSettings.getActiveList()).thenReturn("/default");
+		Mockito.when(localSettings.getActiveGroup()).thenReturn("/");
+
 		System.setOut(printStream);
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
 		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
-		commands = new Commands(tasks, gitLabReleases, osInterface);
+		commands = new Commands(tasks, gitLabReleases, localSettings, osInterface);
 	}
 
 	void setTime(long time) {
