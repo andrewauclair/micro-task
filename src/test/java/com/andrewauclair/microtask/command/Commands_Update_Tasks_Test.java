@@ -109,7 +109,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenThrow(IOException.class);
 
-		commands = new Commands(tasks, gitLabReleases, osInterface);
+		commands = new Commands(tasks, gitLabReleases, localSettings, osInterface);
 
 		commands.execute(printStream, "update --tasks");
 

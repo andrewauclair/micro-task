@@ -2,20 +2,14 @@
 package com.andrewauclair.microtask.task;
 
 public enum TaskState {
-	Inactive(0, "Inactive"),
-	Active(1, "Active"),
-	Finished(2, "Finished");
+	Inactive("Inactive"),
+	Active("Active"),
+	Finished("Finished");
 
-	private final int value;
 	private final String name;
 
-	TaskState(int value, String name) {
-		this.value = value;
+	TaskState(String name) {
 		this.name = name;
-	}
-
-	public int getValue() {
-		return value;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
@@ -13,6 +14,7 @@ import picocli.CommandLine.Option;
 @Command(name = "ch")
 final class ChangeCommand implements Runnable {
 	private final Tasks tasks;
+	private final LocalSettings localSettings;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
@@ -20,8 +22,9 @@ final class ChangeCommand implements Runnable {
 	@ArgGroup(multiplicity = "1")
 	private ListGroup listGroup;
 
-	ChangeCommand(Tasks tasks) {
+	ChangeCommand(Tasks tasks, LocalSettings localSettings) {
 		this.tasks = tasks;
+		this.localSettings = localSettings;
 	}
 
 	@Override
@@ -41,8 +44,9 @@ final class ChangeCommand implements Runnable {
 
 			tasks.switchGroup(group);
 
+			localSettings.setActiveList(actualList);
+
 			System.out.println("Switched to list '" + actualList + "'");
-			System.out.println();
 		}
 		else {
 			if (!listGroup.group.endsWith("/") && !listGroup.group.equals("..")) {
@@ -57,11 +61,14 @@ final class ChangeCommand implements Runnable {
 				}
 				group = tasks.getActiveGroup().getParent();
 			}
+
 			TaskGroup group1 = tasks.switchGroup(group);
 
+			localSettings.setActiveGroup(group1.getFullPath());
+
 			System.out.println("Switched to group '" + group1.getFullPath() + "'");
-			System.out.println();
 		}
+		System.out.println();
 	}
 
 	private static final class ListGroup {

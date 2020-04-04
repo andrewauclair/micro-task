@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,8 @@ import static com.andrewauclair.microtask.UtilsTest.createFile;
 class TaskLoaderTest extends TaskBaseTestCase {
 	Tasks tasks = Mockito.mock(Tasks.class);
 	private TaskReader reader = Mockito.mock(TaskReader.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, osInterface);
+	private final LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+	private TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 	
 	@BeforeEach
 	void setup() throws IOException {
@@ -47,13 +49,14 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		
 		loader.load();
 		
-		InOrder order = Mockito.inOrder(tasks);
+		InOrder order = Mockito.inOrder(tasks, localSettings);
 		
 		Mockito.verify(reader).readTask(1, "git-data/tasks/test/1.txt");
 		
 		order.verify(tasks).addList("test", false);
 		order.verify(tasks).setActiveList("test");
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
+		order.verify(localSettings).load(tasks);
 	}
 	
 	@Test
@@ -89,7 +92,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Active"))
+				byteInStream(createFile("Project X", "Feature Y", "InProgress"))
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/two/list.txt")).thenReturn(
@@ -100,14 +103,14 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("one", parent, "", "", TaskContainerState.InProgress));
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Active"))
+				byteInStream(createFile("Project X", "Feature Y", "Finished"))
 		);
 		
 		Mockito.when(tasks.addGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", "", TaskContainerState.InProgress));
 
 		loader.load();
 		
-		InOrder order = Mockito.inOrder(tasks);
+		InOrder order = Mockito.inOrder(tasks, localSettings);
 		
 		Mockito.verify(reader).readTask(1, "git-data/tasks/test/1.txt");
 		Mockito.verify(reader).readTask(2, "git-data/tasks/test/2.txt");
@@ -125,5 +128,6 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		order.verify(tasks).setActiveList("test");
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).addTask(new Task(2, "Test", TaskState.Inactive, Collections.emptyList()));
+		order.verify(localSettings).load(tasks);
 	}
 }

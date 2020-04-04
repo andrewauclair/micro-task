@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,9 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 	void setup() throws IOException {
 		super.setup();
 
-		loader = new TaskLoader(tasks, reader, osInterface);
+		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+
+		loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 	}
 
 	@Test
@@ -68,7 +71,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/group.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Active"))
+				byteInStream(createFile("Project X", "Feature Y", "Finished"))
 		);
 
 		TaskException taskException = assertThrows(TaskException.class, () -> loader.load());

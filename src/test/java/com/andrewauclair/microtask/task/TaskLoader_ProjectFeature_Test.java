@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,9 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 	void setup() throws IOException {
 		super.setup();
 
-		loader = new TaskLoader(tasks, reader, osInterface);
+		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+
+		loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
@@ -104,7 +107,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/two/group.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Active"))
+				byteInStream(createFile("Project X", "Feature Y", "Finished"))
 		);
 		
 		loader.load();
@@ -152,7 +155,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		);
 		
 		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Active"))
+				byteInStream(createFile("Project X", "Feature Y", "Finished"))
 		);
 		
 		loader.load();

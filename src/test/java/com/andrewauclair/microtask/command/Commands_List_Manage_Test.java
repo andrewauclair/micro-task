@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
@@ -259,5 +260,14 @@ class Commands_List_Manage_Test extends CommandsBaseTestCase {
 				"List '/random' does not exist.",
 				""
 		);
+	}
+
+	@Test
+	void set_active_list_in_local_settings_when_changing_lists() {
+		tasks.addList("/test/one", true);
+
+		commands.execute(printStream, "ch -l test/one");
+
+		Mockito.verify(localSettings).setActiveList("/test/one");
 	}
 }

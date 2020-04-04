@@ -161,6 +161,15 @@ class Commands_Groups_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void set_active_group_in_local_settings_when_changing_groups() {
+		tasks.addGroup("/test/");
+
+		commands.execute(printStream, "ch -g test/");
+
+		Mockito.verify(localSettings).setActiveGroup("/test/");
+	}
+
+	@Test
 	void invalid_group_path() {
 		commands.execute(printStream, "ch -g /project/test");
 		

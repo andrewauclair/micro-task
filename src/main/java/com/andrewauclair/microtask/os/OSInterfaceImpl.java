@@ -153,10 +153,13 @@ public class OSInterfaceImpl implements OSInterface {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use createOutputStream in tests.");
 		}
+
 		File file = new File(fileName);
-		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+
+		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			System.out.println("Failed to create directory: " + file.getParentFile());
 		}
+
 		return new DataOutputStream(new FileOutputStream(file));
 	}
 
