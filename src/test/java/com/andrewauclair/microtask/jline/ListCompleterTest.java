@@ -22,4 +22,21 @@ class ListCompleterTest extends CommandsBaseTestCase {
 				"/charlie"
 		);
 	}
+
+	@Test
+	void candidates_list_contains_only_in_progress_lists() {
+		tasks.addList("/alpha", true);
+		tasks.addList("/bravo", true);
+		tasks.addList("/charlie", true);
+
+		tasks.finishList("/bravo");
+
+		final ListCompleter completer = new ListCompleter(tasks);
+
+		assertThat(completer).containsOnly(
+				"/alpha",
+				"/charlie",
+				"/default"
+		);
+	}
 }

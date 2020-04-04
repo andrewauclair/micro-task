@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
@@ -222,40 +221,44 @@ public class Tasks {
 		return getList(name);
 	}
 
-	public Set<String> getListNames() {
-		return getListNames(rootGroup);
+	public Set<String> getInProgressListNames() {
+		return getInProgressListNames(rootGroup);
 	}
 
-	private Set<String> getListNames(TaskGroup group) {
+	private Set<String> getInProgressListNames(TaskGroup group) {
 		Set<String> lists = group.getChildren().stream()
 				.filter(child -> child instanceof TaskList)
+				.filter(child -> child.getState() != TaskContainerState.Finished)
 				.map(TaskContainer::getFullPath)
 				.collect(Collectors.toSet());
 
 		group.getChildren().stream()
 				.filter(child -> child instanceof TaskGroup)
+				.filter(child -> child.getState() != TaskContainerState.Finished)
 				.map(child -> (TaskGroup) child)
-				.forEach(nestedGroup -> lists.addAll(getListNames(nestedGroup)));
+				.forEach(nestedGroup -> lists.addAll(getInProgressListNames(nestedGroup)));
 
 		return lists;
 	}
 
-	public Set<String> getGroupNames() {
-		return getGroupNames(rootGroup);
+	public Set<String> getInProgressGroupNames() {
+		return getInProgressGroupNames(rootGroup);
 	}
 
-	private Set<String> getGroupNames(TaskGroup group) {
-		Set<String> lists = group.getChildren().stream()
+	private Set<String> getInProgressGroupNames(TaskGroup group) {
+		Set<String> groups = group.getChildren().stream()
 				.filter(child -> child instanceof TaskGroup)
+				.filter(child -> child.getState() != TaskContainerState.Finished)
 				.map(TaskContainer::getFullPath)
 				.collect(Collectors.toSet());
 
 		group.getChildren().stream()
 				.filter(child -> child instanceof TaskGroup)
+				.filter(child -> child.getState() != TaskContainerState.Finished)
 				.map(child -> (TaskGroup) child)
-				.forEach(nestedGroup -> lists.addAll(getGroupNames(nestedGroup)));
+				.forEach(nestedGroup -> groups.addAll(getInProgressGroupNames(nestedGroup)));
 
-		return lists;
+		return groups;
 	}
 
 	public Task startTask(long id, boolean finishActive) {
@@ -490,7 +493,7 @@ public class Tasks {
 	}
 
 	public boolean hasTaskWithID(long id) {
-		for (String listName : getListNames()) {
+		for (String listName : getInProgressListNames()) {
 			if (getList(listName).containsTask(id)) {
 				return true;
 			}

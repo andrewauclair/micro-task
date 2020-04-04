@@ -20,70 +20,6 @@ final class FinishCommand implements Runnable {
 	@ArgGroup(multiplicity = "1")
 	private FinishOptions options;
 
-	FinishCommand(Tasks tasks, OSInterface osInterface) {
-		this.tasks = tasks;
-		this.osInterface = osInterface;
-	}
-
-	@Override
-	public void run() {
-		if (options.list != null) {
-			String list = this.options.list;
-
-			if (tasks.getListByName(list).getFullPath().equals(tasks.getActiveList())) {
-				System.out.println("List to finish must not be active.");
-			}
-			else if (tasks.getListByName(list).getTasks().stream()
-					.anyMatch(task -> task.state != TaskState.Finished)) {
-				System.out.println("List to finish still has tasks to complete.");
-			}
-			else {
-				TaskList taskList = tasks.finishList(list);
-
-				System.out.println("Finished list '" + taskList.getFullPath() + "'");
-			}
-			System.out.println();
-		}
-		else if (this.options.group != null) {
-			String group = this.options.group;
-
-			if (tasks.getGroup(group).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
-				System.out.println("Group to finish must not be active.");
-			}
-			else if (tasks.getGroup(group).getTasks().stream()
-					.anyMatch(task -> task.state != TaskState.Finished)) {
-				System.out.println("Group to finish still has tasks to complete.");
-			}
-			else {
-				TaskGroup taskGroup = tasks.finishGroup(group);
-
-				System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
-			}
-
-			System.out.println();
-		}
-		else if (options.active) {
-			Task task = tasks.finishTask();
-
-			System.out.println("Finished task " + task.description());
-			System.out.println();
-			System.out.print("Task finished in: ");
-			System.out.println(new TaskDuration(task, osInterface));
-			System.out.println();
-		}
-		else {
-			for (final Integer id : options.id) {
-				Task task = tasks.finishTask(id);
-
-				System.out.println("Finished task " + task.description());
-				System.out.println();
-				System.out.print("Task finished in: ");
-				System.out.println(new TaskDuration(task, osInterface));
-				System.out.println();
-			}
-		}
-	}
-
 	private static final class FinishOptions {
 		@Option(required = true, names = {"-t", "--task"}, split = ",")
 		private Integer[] id;
@@ -96,5 +32,69 @@ final class FinishCommand implements Runnable {
 
 		@Option(required = true, names = {"-a", "--active"})
 		private boolean active;
+	}
+
+	FinishCommand(Tasks tasks, OSInterface osInterface) {
+		this.tasks = tasks;
+		this.osInterface = osInterface;
+	}
+
+	@Override
+	public void run() {
+		if (options.list != null) {
+			finishList();
+		}
+		else if (this.options.group != null) {
+			finishGroup();
+		}
+		else if (options.active) {
+			finishTask(tasks.finishTask());
+		}
+		else {
+			for (final Integer id : options.id) {
+				finishTask(tasks.finishTask(id));
+			}
+		}
+	}
+
+	private void finishTask(Task task) {
+		System.out.println("Finished task " + task.description());
+		System.out.println();
+		System.out.print("Task finished in: ");
+		System.out.println(new TaskDuration(task, osInterface));
+		System.out.println();
+	}
+
+	private void finishGroup() {
+		if (tasks.getGroup(this.options.group).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
+			System.out.println("Group to finish must not be active.");
+		}
+		else if (tasks.getGroup(this.options.group).getTasks().stream()
+				.anyMatch(task -> task.state != TaskState.Finished)) {
+			System.out.println("Group to finish still has tasks to complete.");
+		}
+		else {
+			TaskGroup taskGroup = tasks.finishGroup(this.options.group);
+
+			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
+		}
+
+		System.out.println();
+	}
+
+	private void finishList() {
+		if (tasks.getListByName(this.options.list).getFullPath().equals(tasks.getActiveList())) {
+			System.out.println("List to finish must not be active.");
+		}
+		else if (tasks.getListByName(this.options.list).getTasks().stream()
+				.anyMatch(task -> task.state != TaskState.Finished)) {
+			System.out.println("List to finish still has tasks to complete.");
+		}
+		else {
+			TaskList taskList = tasks.finishList(this.options.list);
+
+			System.out.println("Finished list '" + taskList.getFullPath() + "'");
+		}
+		System.out.println();
 	}
 }
