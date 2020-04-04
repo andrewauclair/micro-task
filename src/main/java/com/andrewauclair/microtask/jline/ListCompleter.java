@@ -7,6 +7,6 @@ import java.util.ArrayList;
 
 public final class ListCompleter extends ArrayList<String> {
 	public ListCompleter(Tasks tasks) {
-		super(tasks.getListNames());
+		super(tasks.getInProgressListNames());
 	}
 }

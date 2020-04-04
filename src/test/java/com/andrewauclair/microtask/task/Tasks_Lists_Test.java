@@ -44,7 +44,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	@Test
 	void returns_a_set_of_the_list_names() {
 		tasks.addList("test", true);
-		assertThat(tasks.getListNames()).containsOnly("/default", "/test");
+		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test");
 	}
 
 	@Test

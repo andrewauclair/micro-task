@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GroupCompleterTest extends CommandsBaseTestCase {
 	@Test
 	void candidates_list_contains_all_groups() {
-		commands.execute(printStream, "mk -g /test/one/two");
-		commands.execute(printStream, "mk -g /last");
-		commands.execute(printStream, "mk -g /three/five");
+		tasks.addGroup("/test/one/two/");
+		tasks.addGroup("/last/");
+		tasks.addGroup("/three/five/");
 
 		final GroupCompleter completer = new GroupCompleter(tasks);
 
@@ -22,6 +22,23 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 				"/last/",
 				"/three/",
 				"/three/five/"
+		);
+	}
+
+	@Test
+	void candidates_list_contains_only_in_progress_groups() {
+		tasks.addGroup("/test/one/");
+		tasks.addGroup("/test/two/");
+		tasks.addGroup("/test/three/");
+
+		tasks.finishGroup("/test/two/");
+
+		final GroupCompleter completer = new GroupCompleter(tasks);
+
+		assertThat(completer).containsOnly(
+				"/test/",
+				"/test/one/",
+				"/test/three/"
 		);
 	}
 }

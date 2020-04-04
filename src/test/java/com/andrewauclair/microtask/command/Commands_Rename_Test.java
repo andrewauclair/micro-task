@@ -39,7 +39,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "rename --list test -n \"new-name\"");
 
-		assertThat(tasks.getListNames()).containsOnly("/default", "/new-name");
+		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/new-name");
 
 		assertOutput(
 				"Renamed list '/test' to '/new-name'",
@@ -61,7 +61,7 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "rename --list two -n \"new/three\"");
 
-		assertThat(tasks.getListNames()).containsOnly("/default", "/test/one", "/test/new/two");
+		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/one", "/test/new/two");
 
 		assertOutput(
 				"Lists must be renamed with name, not paths.",
