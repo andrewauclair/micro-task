@@ -51,7 +51,7 @@ public class CommandsBaseTestCase {
 		commands = new Commands(tasks, gitLabReleases, localSettings, osInterface);
 	}
 
-	void setTime(long time) {
+	protected void setTime(long time) {
 		osInterface.setTime(time);
 	}
 
