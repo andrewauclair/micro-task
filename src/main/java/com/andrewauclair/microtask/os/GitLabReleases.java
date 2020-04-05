@@ -153,8 +153,7 @@ public class GitLabReleases {
 
 			String uploads = description.substring(description.indexOf("(/uploads/") + 1);
 
-			// TOOD We might eventually rename the gitlab project to micro-task, but I'm leaving it for now
-			String jar = "https://gitlab.com/mightymalakai33/todo-app" + uploads.substring(0, uploads.indexOf(')'));
+			String jar = "https://gitlab.com/mightymalakai33/micro-task" + uploads.substring(0, uploads.indexOf(')'));
 
 			if (release.isEmpty() || releaseName.equals(release)) {
 				// download the jar file and rename it to micro-task.jar
