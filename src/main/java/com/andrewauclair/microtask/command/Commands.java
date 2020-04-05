@@ -302,7 +302,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public int handleExecutionException(Exception ex, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
 		System.out.println(ex.getMessage());
 		System.out.println();
-		if (!(ex instanceof TaskException)) {
+
+		if (!(ex instanceof TaskException) || localSettings.isDebugEnabled()) {
 			return defaultHandler.handleExecutionException(ex, commandLine, parseResult);
 		}
 		return 0;

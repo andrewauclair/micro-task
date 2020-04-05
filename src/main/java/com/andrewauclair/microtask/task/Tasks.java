@@ -221,22 +221,29 @@ public class Tasks {
 		return getList(name);
 	}
 
-	public Set<String> getInProgressListNames() {
-		return getInProgressListNames(rootGroup);
+	private Set<String> getAllListNames() {
+		return getLists(rootGroup).stream()
+				.map(TaskList::getFullPath)
+				.collect(Collectors.toSet());
 	}
 
-	private Set<String> getInProgressListNames(TaskGroup group) {
-		Set<String> lists = group.getChildren().stream()
-				.filter(child -> child instanceof TaskList)
-				.filter(child -> child.getState() != TaskContainerState.Finished)
-				.map(TaskContainer::getFullPath)
+	public Set<String> getInProgressListNames() {
+		return getLists(rootGroup).stream()
+				.filter(list -> list.getState() != TaskContainerState.Finished)
+				.map(TaskList::getFullPath)
 				.collect(Collectors.toSet());
+	}
+
+	private List<TaskList> getLists(TaskGroup group) {
+		List<TaskList> lists = group.getChildren().stream()
+				.filter(child -> child instanceof TaskList)
+				.map(child -> (TaskList) child)
+				.collect(Collectors.toList());
 
 		group.getChildren().stream()
 				.filter(child -> child instanceof TaskGroup)
-				.filter(child -> child.getState() != TaskContainerState.Finished)
 				.map(child -> (TaskGroup) child)
-				.forEach(nestedGroup -> lists.addAll(getInProgressListNames(nestedGroup)));
+				.forEach(nestedGroup -> lists.addAll(getLists(nestedGroup)));
 
 		return lists;
 	}
@@ -493,7 +500,7 @@ public class Tasks {
 	}
 
 	public boolean hasTaskWithID(long id) {
-		for (String listName : getInProgressListNames()) {
+		for (String listName : getAllListNames()) {
 			if (getList(listName).containsTask(id)) {
 				return true;
 			}

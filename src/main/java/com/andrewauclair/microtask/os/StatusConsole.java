@@ -262,6 +262,10 @@ public class StatusConsole {
 
 	private String padString(Terminal terminal, String str) {
 		int width = terminal.getSize().getColumns();
+
+		if (width == 0) {
+			width = 80;
+		}
 		return padString(str, width);
 	}
 
