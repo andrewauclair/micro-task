@@ -40,7 +40,7 @@ test {
     jvmArgs("--enable-preview")
 }
 
-description = 'TODO App'
+description = 'micro task'
 sourceCompatibility = '14'
 
 jar {

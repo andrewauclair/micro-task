@@ -6,3 +6,6 @@ run/git-data/
 run/*.jar
 /git-data
 /build
+.gradle/
+out/
+src/main/resources/
