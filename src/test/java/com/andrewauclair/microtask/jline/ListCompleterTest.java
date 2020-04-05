@@ -1,0 +1,68 @@
+// Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.microtask.jline;
+
+import com.andrewauclair.microtask.command.CommandsBaseTestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import picocli.CommandLine;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+class ListCompleterTest extends CommandsBaseTestCase {
+	@Test
+	void candidates_list_contains_all_lists() {
+		commands.execute(printStream, "mk -l alpha");
+		commands.execute(printStream, "mk -l bravo");
+		commands.execute(printStream, "mk -l /charlie");
+
+		final ListCompleter completer = new ListCompleter(tasks);
+
+		assertThat(completer).containsOnly(
+				"/default",
+				"/alpha",
+				"/bravo",
+				"/charlie"
+		);
+	}
+
+	@Test
+	void candidates_list_contains_only_in_progress_lists() {
+		tasks.addList("/alpha", true);
+		tasks.addList("/bravo", true);
+		tasks.addList("/charlie", true);
+
+		tasks.finishList("/bravo");
+
+		final ListCompleter completer = new ListCompleter(tasks);
+
+		assertThat(completer).containsOnly(
+				"/alpha",
+				"/charlie",
+				"/default"
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "set-list", "times"})
+	void command_list_option_has_list_completer(String command) {
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
+
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
+
+		assertNotNull(spec.optionsMap().get("--list").completionCandidates());
+		assertEquals("/default", spec.optionsMap().get("--list").completionCandidates().iterator().next());
+	}
+
+	@Test
+	void move_command_dest_list_option_has_list_completer() {
+		CommandLine cmd = commands.buildCommandLineWithAllCommands();
+
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
+
+		assertNotNull(spec.optionsMap().get("--dest-list").completionCandidates());
+		assertEquals("/default", spec.optionsMap().get("--dest-list").completionCandidates().iterator().next());
+	}
+}
