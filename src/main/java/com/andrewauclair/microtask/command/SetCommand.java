@@ -15,7 +15,7 @@ abstract class SetCommand implements Runnable {
 		private final Tasks tasks;
 
 		@Option(required = true, names = {"--task"})
-		private Integer id;
+		private Long id;
 
 		@Option(names = {"-r", "--recurring"})
 		private Boolean recurring;
@@ -33,23 +33,28 @@ abstract class SetCommand implements Runnable {
 		@Override
 		public void run() {
 			if (recurring != null) {
-				tasks.setRecurring((long) id, true);
+				tasks.setRecurring(id, true);
 
 				System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to true");
-				System.out.println();
 			}
 			else if (not_recurring != null) {
-				tasks.setRecurring((long) id, false);
+				tasks.setRecurring(id, false);
 
 				System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to false");
-				System.out.println();
 			}
 			else {
-				Task task = tasks.setTaskState((long) id, TaskState.Inactive);
+				Task task = tasks.getTask(id);
 
-				System.out.println("Set state of task " + task.description() + " to Inactive");
-				System.out.println();
+				if (task.state == TaskState.Finished) {
+					task = tasks.setTaskState(id, TaskState.Inactive);
+
+					System.out.println("Set state of task " + task.description() + " to Inactive");
+				}
+				else {
+					System.out.println("Task " + task.description() + " must be finished first");
+				}
 			}
+			System.out.println();
 		}
 	}
 
@@ -60,7 +65,15 @@ abstract class SetCommand implements Runnable {
 		private String list;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
-		private ProjectFeature projectFeature;
+		SetListArgs args;
+
+		private static class SetListArgs {
+			@ArgGroup(exclusive = false)
+			private ProjectFeature projectFeature;
+
+			@Option(names = {"--in-progress"})
+			private boolean in_progress;
+		}
 
 		SetListCommand(Tasks tasks) {
 			this.tasks = tasks;
@@ -68,23 +81,42 @@ abstract class SetCommand implements Runnable {
 
 		@Override
 		public void run() {
-			if (projectFeature.project != null) {
+			if (args.projectFeature != null) {
+				handleProjectAndFeature();
+			}
+
+			if (args.in_progress) {
+				TaskList list = tasks.getListByName(this.list);
+
+				if (list.getState() == TaskContainerState.Finished) {
+					tasks.setListState(list, TaskContainerState.InProgress, true);
+
+					System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
+				}
+				else {
+					System.out.println("List '" + list.getFullPath() + "' must be finished first");
+				}
+			}
+
+			System.out.println();
+		}
+
+		private void handleProjectAndFeature() {
+			if (args.projectFeature.project != null) {
 				TaskList listByName = tasks.getListByName(this.list);
-				String project = this.projectFeature.project;
+				String project = this.args.projectFeature.project;
 				tasks.setProject(listByName, project, true);
 
 				System.out.println("Set project for list '" + listByName.getFullPath() + "' to '" + project + "'");
 			}
 
-			if (projectFeature.feature != null) {
+			if (args.projectFeature.feature != null) {
 				TaskList listByName = tasks.getListByName(this.list);
-				String feature = this.projectFeature.feature;
+				String feature = this.args.projectFeature.feature;
 				tasks.setFeature(listByName, feature, true);
 
 				System.out.println("Set feature for list '" + listByName.getFullPath() + "' to '" + feature + "'");
 			}
-
-			System.out.println();
 		}
 	}
 
@@ -95,7 +127,15 @@ abstract class SetCommand implements Runnable {
 		private String group;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
-		private ProjectFeature projectFeature;
+		SetListCommand.SetListArgs args;
+
+		private static class SetGroupArgs {
+			@ArgGroup(exclusive = false)
+			private ProjectFeature projectFeature;
+
+			@Option(names = {"--in-progress"})
+			private boolean in_progress;
+		}
 
 		SetGroupCommand(Tasks tasks) {
 			this.tasks = tasks;
@@ -103,23 +143,42 @@ abstract class SetCommand implements Runnable {
 
 		@Override
 		public void run() {
-			if (projectFeature.project != null) {
+			if (args.projectFeature != null) {
+				handleProjectAndFeature();
+			}
+
+			if (args.in_progress) {
 				TaskGroup group = tasks.getGroup(this.group);
-				String project = this.projectFeature.project;
+
+				if (group.getState() == TaskContainerState.Finished) {
+					tasks.setGroupState(group, TaskContainerState.InProgress, true);
+
+					System.out.println("Set state of group '" + group.getFullPath() + "' to In Progress");
+				}
+				else {
+					System.out.println("Group '" + group.getFullPath() + "' must be finished first");
+				}
+			}
+
+			System.out.println();
+		}
+
+		private void handleProjectAndFeature() {
+			if (args.projectFeature.project != null) {
+				TaskGroup group = tasks.getGroup(this.group);
+				String project = this.args.projectFeature.project;
 				tasks.setProject(group, project, true);
 
 				System.out.println("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
 			}
 
-			if (projectFeature.feature != null) {
+			if (args.projectFeature.feature != null) {
 				TaskGroup group = tasks.getGroup(this.group);
-				String feature = this.projectFeature.feature;
+				String feature = this.args.projectFeature.feature;
 				tasks.setFeature(group, feature, true);
 
 				System.out.println("Set feature for group '" + group.getFullPath() + "' to '" + feature + "'");
 			}
-
-			System.out.println();
 		}
 	}
 

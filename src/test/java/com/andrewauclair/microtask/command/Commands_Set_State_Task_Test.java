@@ -56,4 +56,20 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Set state for task 1 to Inactive\"");
 	}
+
+	@Test
+	void task_needs_to_be_finished_before_it_can_be_set_back_to_inactive() {
+		tasks.addTask("Test");
+
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "set-task --task 1 --inactive");
+
+		Mockito.verifyNoInteractions(osInterface);
+
+		assertOutput(
+				"Task 1 - 'Test' must be finished first",
+				""
+		);
+	}
 }
