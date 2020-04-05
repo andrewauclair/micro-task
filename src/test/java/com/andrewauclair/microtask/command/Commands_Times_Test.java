@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Times_Test extends CommandsBaseTestCase {
 	@Test
@@ -52,10 +50,9 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		EqualsVerifier.forClass(TimesCommand.ProjFeatOutput.class).verify();
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void times_command_help(String parameter) {
-		commands.execute(printStream, "times " + parameter);
+	@Test
+	void times_command_help() {
+		commands.execute(printStream, "times --help");
 
 		assertOutput(
 				"Usage:  times [-h] [--all-month] [--all-time] [--proj-feat] [--today] [--total]",

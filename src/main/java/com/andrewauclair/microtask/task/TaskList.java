@@ -176,8 +176,8 @@ public final class TaskList implements TaskContainer {
 	}
 
 	private void addAndCommit(Task task, String comment) {
-		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"", false);
+		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 
 	public Task startTask(long id, long startTime, Tasks tasks) {
@@ -261,9 +261,9 @@ public final class TaskList implements TaskContainer {
 		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
 
 		list.writeTask(task);
-		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git add tasks" + list.getFullPath() + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'\"", false);
+		osInterface.runGitCommand("git add tasks" + getFullPath() + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git add tasks" + list.getFullPath() + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'\"");
 
 		return task;
 	}

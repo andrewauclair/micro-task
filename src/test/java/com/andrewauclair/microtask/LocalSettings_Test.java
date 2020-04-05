@@ -16,7 +16,7 @@ import java.util.Date;
 import static com.andrewauclair.microtask.TestUtils.assertOutput;
 import static com.andrewauclair.microtask.UtilsTest.byteInStream;
 import static com.andrewauclair.microtask.UtilsTest.createFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LocalSettings_Test {
 	private LocalSettings localSettings;
@@ -40,15 +40,21 @@ class LocalSettings_Test {
 	}
 
 	@Test
+	void default_debug_flag_is_false() {
+		assertFalse(localSettings.isDebugEnabled());
+	}
+
+	@Test
 	void load_settings_from_file() throws IOException {
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("active_list=/test/one", "active_group=/test/"))
+				byteInStream(createFile("active_list=/test/one", "active_group=/test/", "debug=true"))
 		);
 
 		localSettings.load(tasks);
 
 		assertEquals("/test/one", localSettings.getActiveList());
 		assertEquals("/test/", localSettings.getActiveGroup());
+		assertTrue(localSettings.isDebugEnabled());
 	}
 
 	@Test
@@ -65,6 +71,7 @@ class LocalSettings_Test {
 				"#",
 				"#" + new Date().toString(),
 				"active_group=/",
+				"debug=false",
 				"active_list=/test",
 				""
 		);
@@ -84,6 +91,27 @@ class LocalSettings_Test {
 				"#",
 				"#" + new Date().toString(),
 				"active_group=/test/",
+				"debug=false",
+				"active_list=/default",
+				""
+		);
+	}
+
+	@Test
+	void changing_debug_flag_saves_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
+
+		localSettings.setDebugEnabled(true);
+
+		assertOutput(
+				outputStream,
+
+				"#",
+				"#" + new Date().toString(),
+				"active_group=/",
+				"debug=true",
 				"active_list=/default",
 				""
 		);
@@ -135,6 +163,7 @@ class LocalSettings_Test {
 
 		assertEquals("/default", localSettings.getActiveList());
 		assertEquals("/", localSettings.getActiveGroup());
+		assertFalse(localSettings.isDebugEnabled());
 	}
 
 	@Test

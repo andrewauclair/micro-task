@@ -77,8 +77,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		Task task = tasks.setRecurring(1, false);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Set recurring for task 1 to false\"", false);
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Set recurring for task 1 to false\"");
 
 		assertFalse(task.isRecurring());
 	}
@@ -105,8 +105,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Set project for list '/test' to 'Issue'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Set project for list '/test' to 'Issue'\"");
 	}
 	
 	@Test
@@ -130,8 +130,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Set project for group '/test/' to 'Issue'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Set project for group '/test/' to 'Issue'\"");
 	}
 	
 	@Test
@@ -156,8 +156,8 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for list '/test' to 'Feature'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for list '/test' to 'Feature'\"");
 	}
 	
 	@Test
@@ -181,7 +181,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		);
 		
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for group '/test/' to 'Feature'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for group '/test/' to 'Feature'\"");
 	}
 }

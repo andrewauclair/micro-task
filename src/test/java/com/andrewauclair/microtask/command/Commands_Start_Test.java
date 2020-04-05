@@ -6,8 +6,6 @@ import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -30,9 +28,9 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				"06/20/2019 07:50:02 PM -",
 				""
 		);
-		
+
 		Task task = tasks.getTask(1);
-		
+
 		Assertions.assertEquals(TaskState.Active, task.state);
 	}
 
@@ -42,7 +40,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		tasks.startTask(1, false);
 		Task stopTask = tasks.stopTask();
-		
+
 		assertThat(stopTask.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
 				new TaskTimes(2000, 3000)
@@ -58,9 +56,9 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				"06/20/2019 07:50:02 PM -",
 				""
 		);
-		
+
 		Task task = tasks.getTask(1);
-		
+
 		assertEquals(TaskState.Active, task.state);
 	}
 
@@ -72,7 +70,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.startTask(1, false);
-		
+
 		long time = 1561078202L;
 		Mockito.when(osInterface.currentSeconds()).thenReturn(time, time + 1000);
 
@@ -94,9 +92,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"--finish", "-f"})
-	void finish_active_task_with_finish_option(String finish) {
+	@Test
+	void finish_active_task_with_finish_option() {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
 		tasks.addTask("Test 1");
@@ -106,7 +103,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
-		commands.execute(printStream, "start 2 " + finish);
+		commands.execute(printStream, "start 2 --finish");
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L), new TaskTimes(1561078202L))),
@@ -128,7 +125,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	@Test
 	void start_new_task_when_active_task_is_on_nested_list() {
 		tasks.addTask("Test 1");
-		
+
 		tasks.addList("/one/two", true);
 		tasks.setActiveList("/one/two");
 
@@ -151,18 +148,18 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
 	void starting_task_on_different_group_switches_active_group() {
 		tasks.addTask("Test 1");
 		tasks.addList("/one/two", true);
-		
+
 		tasks.setActiveList("/one/two");
 		tasks.addTask("Test 2");
-		
+
 		tasks.switchGroup("/");
 		tasks.startTask(2, false);
-		
+
 		assertEquals("/one/", tasks.getActiveGroup().getFullPath());
 	}
 
@@ -182,10 +179,9 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void start_command_help(String parameter) {
-		commands.execute(printStream, "start " + parameter);
+	@Test
+	void start_command_help() {
+		commands.execute(printStream, "start --help");
 
 		assertOutput(
 				"Usage:  start [-fh] <id>",

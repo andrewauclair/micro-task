@@ -41,15 +41,15 @@ public class Tasks {
 			String username = osInterface.getEnvVar("username");
 
 			osInterface.createFolder("git-data");
-			osInterface.runGitCommand("git init", false);
-			osInterface.runGitCommand("git config user.name \"" + username + "\"", false);
-			osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"", false);
+			osInterface.runGitCommand("git init");
+			osInterface.runGitCommand("git config user.name \"" + username + "\"");
+			osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"");
 
 			Utils.writeCurrentVersion(osInterface);
 			writeNextID();
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Created new micro task instance.\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Created new micro task instance.\"");
 
 			addList("default", true);
 		}
@@ -85,7 +85,7 @@ public class Tasks {
 		long nextID = this.nextID++;
 
 		writeNextID();
-		osInterface.runGitCommand("git add next-id.txt", false);
+		osInterface.runGitCommand("git add next-id.txt");
 
 		return nextID;
 	}
@@ -123,7 +123,7 @@ public class Tasks {
 
 		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
 
-		if (!optionalGroup.isPresent()) {
+		if (optionalGroup.isEmpty()) {
 			throw new TaskException("Group '" + name + "' does not exist.");
 		}
 		return optionalGroup.get();
@@ -198,8 +198,8 @@ public class Tasks {
 		if (createFiles) {
 			writeListInfoFile(newList, "git-data");
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Created list '" + newList.getFullPath() + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Created list '" + newList.getFullPath() + "'\"");
 		}
 
 		return true;
@@ -360,8 +360,8 @@ public class Tasks {
 			return;
 		}
 
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"", false);
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"");
 	}
 
 	public void renameGroup(String oldName, String newName) {
@@ -460,8 +460,8 @@ public class Tasks {
 		}
 
 		if (createFiles && !hasGroup) {
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"");
 		}
 
 		return newGroup;
@@ -517,8 +517,8 @@ public class Tasks {
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"", false);
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"");
 
 		return task;
 	}
@@ -528,7 +528,7 @@ public class Tasks {
 				.filter(task -> task.id == id)
 				.findFirst();
 
-		if (!optionalTask.isPresent()) {
+		if (optionalTask.isEmpty()) {
 			throw new TaskException("Task " + id + " does not exist.");
 		}
 		return optionalTask.get();
@@ -536,7 +536,7 @@ public class Tasks {
 
 	public TaskList findListForTask(long id) {
 		Optional<TaskList> listForTask = rootGroup.findListForTask(id);
-		if (!listForTask.isPresent()) {
+		if (listForTask.isEmpty()) {
 			throw new TaskException("List for task " + id + " was not found.");
 		}
 		return listForTask.get();
@@ -564,8 +564,8 @@ public class Tasks {
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt", false);
-		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"", false);
+		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
+		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"");
 
 		return task;
 	}
@@ -583,8 +583,8 @@ public class Tasks {
 		if (createFiles) {
 			writeListInfoFile(newList, "git-data");
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"");
 		}
 	}
 
@@ -620,8 +620,8 @@ public class Tasks {
 		if (createFiles) {
 			writeGroupInfoFile(newGroup, "git-data");
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"");
 		}
 	}
 
@@ -638,8 +638,8 @@ public class Tasks {
 		if (createFiles) {
 			writeListInfoFile(newList, "git-data");
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"");
 		}
 	}
 
@@ -661,8 +661,8 @@ public class Tasks {
 		if (createFiles) {
 			writeGroupInfoFile(newGroup, "git-data");
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"");
 		}
 	}
 
@@ -754,8 +754,8 @@ public class Tasks {
 
 		writeListInfoFile(newList, "git-data");
 
-		osInterface.runGitCommand("git add tasks" + newList.getFullPath() + "/list.txt", false);
-		osInterface.runGitCommand("git commit -m \"Finished list '" + newList.getFullPath() + "'\"", false);
+		osInterface.runGitCommand("git add tasks" + newList.getFullPath() + "/list.txt");
+		osInterface.runGitCommand("git commit -m \"Finished list '" + newList.getFullPath() + "'\"");
 
 		return newList;
 	}
@@ -772,8 +772,8 @@ public class Tasks {
 
 		writeGroupInfoFile(taskGroup, "git-data");
 
-		osInterface.runGitCommand("git add tasks" + taskGroup.getFullPath() + "group.txt", false);
-		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"", false);
+		osInterface.runGitCommand("git add tasks" + taskGroup.getFullPath() + "group.txt");
+		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"");
 
 		return taskGroup;
 	}

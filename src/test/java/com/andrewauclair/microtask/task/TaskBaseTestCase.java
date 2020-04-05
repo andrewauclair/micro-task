@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.MockOSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +22,7 @@ class TaskBaseTestCase {
 	@BeforeEach
 	void setup() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
-		Mockito.when(osInterface.runGitCommand(Mockito.any(), Mockito.anyBoolean())).thenReturn(true);
+		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 

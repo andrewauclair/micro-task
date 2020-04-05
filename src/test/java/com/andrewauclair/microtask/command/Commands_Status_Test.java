@@ -3,17 +3,14 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.StatusConsole;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Commands_Status_Test extends CommandsBaseTestCase {
-	@ParameterizedTest
-	@ValueSource(strings = {"-c", "--command"})
+	@Test
 	void status_command_sends_a_command_to_the_status_console() {
-		commands.execute(printStream, "status -c \"list --tasks\"");
+		commands.execute(printStream, "status --command \"list --tasks\"");
 
 		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.Command, "list --tasks");
 	}
@@ -36,10 +33,9 @@ class Commands_Status_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void status_command_help(String parameter) {
-		commands.execute(printStream, "status " + parameter);
+	@Test
+	void status_command_help() {
+		commands.execute(printStream, "status --help");
 
 		assertOutput(
 				"Usage:  status [-h] -c=<command>",

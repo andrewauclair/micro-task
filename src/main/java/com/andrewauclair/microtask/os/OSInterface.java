@@ -8,7 +8,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 public interface OSInterface {
-	boolean runGitCommand(String command, boolean print);
+	boolean runGitCommand(String command);
 
 	long currentSeconds();
 
@@ -21,8 +21,6 @@ public interface OSInterface {
 	void removeFile(String fileName);
 
 	List<TaskFileInfo> listFiles(String folder);
-
-	void clearScreen();
 
 	int getTerminalWidth();
 

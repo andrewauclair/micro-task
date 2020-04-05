@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
@@ -130,12 +128,11 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-r", "--releases"})
-	void print_out_releases(String command) throws IOException {
+	@Test
+	void print_out_releases() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 
-		commands.execute(printStream, "update " + command);
+		commands.execute(printStream, "update --releases");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -192,12 +189,11 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-r", "--releases"})
-	void failure_to_retrieve_releases_from_gitlab(String command) throws IOException {
+	@Test
+	void failure_to_retrieve_releases_from_gitlab() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenThrow(IOException.class);
 
-		commands.execute(printStream, "update " + command);
+		commands.execute(printStream, "update --releases");
 
 		assertOutput(
 				"Failed to get releases from GitLab",
@@ -205,9 +201,8 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-l", "--latest"})
-	void update_to_latest_release(String command) throws IOException {
+	@Test
+	void update_to_latest_release() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 		Mockito.when(gitLabReleases.updateToRelease("version-3", Proxy.NO_PROXY)).thenReturn(true);
 
@@ -223,7 +218,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 			return 0;
 		});
 
-		commands.execute(printStream, "update " + command);
+		commands.execute(printStream, "update --latest");
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
@@ -402,10 +397,9 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void update_command_help(String parameter) {
-		commands.execute(printStream, "update " + parameter);
+	@Test
+	void update_command_help() {
+		commands.execute(printStream, "update --help");
 
 		assertOutput(
 				"Usage:  update [--proxy-ip=<proxy_ip> --proxy-port=<proxy_port>] [-hlr]",

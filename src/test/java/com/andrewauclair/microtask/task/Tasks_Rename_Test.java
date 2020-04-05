@@ -65,8 +65,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		tasks.renameTask(1, "Renaming task");
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"", false);
+		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"");
 	}
 
 	@Test
@@ -113,11 +113,11 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		order.verify(osInterface).moveFolder("/one", "/test");
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
 
 		Mockito.verifyNoMoreInteractions(osInterface);
-		Mockito.verifyZeroInteractions(writer);
+		Mockito.verifyNoInteractions(writer);
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		order.verify(osInterface).moveFolder("/one", "/test");
 
 		Mockito.verifyNoMoreInteractions(osInterface);
-		Mockito.verifyZeroInteractions(writer);
+		Mockito.verifyNoInteractions(writer);
 
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
@@ -160,7 +160,7 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 		order.verify(osInterface).moveFolder("/one/", "/two/");
 
 		Mockito.verifyNoMoreInteractions(osInterface);
-		Mockito.verifyZeroInteractions(writer);
+		Mockito.verifyNoInteractions(writer);
 
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
@@ -180,8 +180,8 @@ class Tasks_Rename_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Renamed list '/one' to '/test'\"");
 	}
 
 	@Test

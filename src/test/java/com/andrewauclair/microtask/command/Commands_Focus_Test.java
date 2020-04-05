@@ -15,10 +15,9 @@ class Commands_Focus_Test extends CommandsBaseTestCase {
 		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.Focus);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void focus_command_help(String parameter) {
-		commands.execute(printStream, "focus " + parameter);
+	@Test
+	void focus_command_help() {
+		commands.execute(printStream, "focus --help");
 
 		assertOutput(
 				"Usage:  focus [-h]",

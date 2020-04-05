@@ -54,7 +54,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("active", new ActiveCommand(tasks, osInterface));
 		commands.put("list", new ListCommand(tasks, osInterface));
 		commands.put("times", new TimesCommand(tasks, osInterface));//, new TaskFilterBuilder()));
-		commands.put("debug", new DebugCommand());
+		commands.put("debug", new DebugCommand(localSettings));
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
@@ -91,7 +91,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "times":
 				return new TimesCommand(tasks, osInterface);
 			case "debug":
-				return new DebugCommand();
+				return new DebugCommand(localSettings);
 			case "rename":
 				return new RenameCommand(tasks);
 			case "search":

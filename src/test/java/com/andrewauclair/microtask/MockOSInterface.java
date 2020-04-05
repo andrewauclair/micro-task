@@ -16,7 +16,7 @@ public class MockOSInterface implements OSInterface {
 	private boolean incrementTime = true;
 
 	@Override
-	public boolean runGitCommand(String command, boolean print) {
+	public boolean runGitCommand(String command) {
 		return false;
 	}
 
@@ -43,12 +43,14 @@ public class MockOSInterface implements OSInterface {
 		return null;
 	}
 
+	@SuppressWarnings("RedundantThrows")
 	@Override
 	public DataOutputStream createOutputStream(String fileName) throws IOException {
 		// throws IOException for tests even though it's not used
 		return null;
 	}
 
+	@SuppressWarnings("RedundantThrows")
 	@Override
 	public InputStream createInputStream(String fileName) throws IOException {
 		// throws IOException for tests even though it's not used
@@ -65,14 +67,11 @@ public class MockOSInterface implements OSInterface {
 	}
 	
 	@Override
-	public void clearScreen() {
-	}
-	
-	@Override
 	public int getTerminalWidth() {
 		return 60;
 	}
 	
+	@SuppressWarnings("RedundantThrows")
 	@Override
 	public String getVersion() throws IOException {
 		// needs to have throws IOException to pass tests even though it's unused
@@ -87,6 +86,7 @@ public class MockOSInterface implements OSInterface {
 	public void createFolder(String folder) {
 	}
 
+	@SuppressWarnings("RedundantThrows")
 	@Override
 	public void moveFolder(String src, String dest) throws IOException {
 	}

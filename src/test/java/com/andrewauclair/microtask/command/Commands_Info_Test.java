@@ -5,6 +5,8 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -112,5 +114,17 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 		);
 
 		Mockito.verify(osInterface).copyToClipboard("Test Name");
+	}
+
+	@Test
+	void info_command_help() {
+		commands.execute(printStream, "info --help");
+
+		assertOutput(
+				"Usage:  info [-h] [--copy-name] <id>",
+				"      <id>",
+				"      --copy-name",
+				"  -h, --help        Show this help message."
+		);
 	}
 }

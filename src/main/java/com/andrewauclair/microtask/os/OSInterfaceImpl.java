@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Main;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -30,9 +31,14 @@ public class OSInterfaceImpl implements OSInterface {
 	private String lastInputFile = "";
 	private Main main;
 	private DataOutputStream statusOutput;
+	private LocalSettings localSettings;
 
 	public void setMain(Main main) {
 		this.main = main;
+	}
+
+	public void setLocalSettings(LocalSettings localSettings) {
+		this.localSettings = localSettings;
 	}
 
 	public void createTerminal() throws IOException {
@@ -68,7 +74,7 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	@Override
-	public boolean runGitCommand(String command, boolean print) {
+	public boolean runGitCommand(String command) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
@@ -88,7 +94,7 @@ public class OSInterfaceImpl implements OSInterface {
 			pb.command(command.split(" "));
 			pb.redirectInput(Redirect.INHERIT);
 
-			pb.redirectOutput(print ? Redirect.INHERIT : Redirect.DISCARD);
+			pb.redirectOutput(localSettings.isDebugEnabled() ? Redirect.INHERIT : Redirect.DISCARD);
 			pb.redirectError(Redirect.INHERIT);
 
 			Process p = pb.start();
@@ -192,21 +198,6 @@ public class OSInterfaceImpl implements OSInterface {
 			}
 		}
 		return info;
-	}
-
-	@Override
-	public void clearScreen() {
-		//Clears Screen in java
-		try {
-			if (System.getProperty("os.name").contains("Windows")) {
-				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			}
-			else {
-				Runtime.getRuntime().exec("clear");
-			}
-		}
-		catch (IOException | InterruptedException ignored) {
-		}
 	}
 
 	@Override

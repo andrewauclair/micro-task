@@ -21,7 +21,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 	void update_to_remote_runs_git_push() {
 		commands.execute(printStream, "update --to-remote");
 
-		Mockito.verify(osInterface).runGitCommand("git push", false);
+		Mockito.verify(osInterface).runGitCommand("git push");
 
 		assertOutput(
 				"Pushed changes to remote",
@@ -33,7 +33,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 	void update_from_remote_runs_git_pull() {
 		commands.execute(printStream, "update --from-remote");
 
-		Mockito.verify(osInterface).runGitCommand("git pull", false);
+		Mockito.verify(osInterface).runGitCommand("git pull");
 
 		assertOutput(
 				"Pulled changes from remote",

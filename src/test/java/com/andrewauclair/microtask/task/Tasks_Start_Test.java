@@ -62,8 +62,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Started task 2 - 'Testing task add command 2'\"", false);
+		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
+		order.verify(osInterface).runGitCommand("git commit -m \"Started task 2 - 'Testing task add command 2'\"");
 	}
 
 	@Test
