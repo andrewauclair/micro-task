@@ -104,6 +104,8 @@ public final class Main {
 		osInterface.createTerminal();
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
+		osInterface.setLocalSettings(localSettings);
+
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		commands = new Commands(tasks, new GitLabReleases(), localSettings, osInterface);
 

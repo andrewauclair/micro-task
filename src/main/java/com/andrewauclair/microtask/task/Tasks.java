@@ -570,7 +570,7 @@ public class Tasks {
 		return task;
 	}
 
-	public void setProject(TaskList list, String project, boolean createFiles) {
+	public TaskList setProject(TaskList list, String project, boolean createFiles) {
 		String listName = list.getFullPath();
 
 		TaskGroup group = getGroupForList(listName);
@@ -586,6 +586,8 @@ public class Tasks {
 			osInterface.runGitCommand("git add .");
 			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"");
 		}
+
+		return newList;
 	}
 
 	public void writeListInfoFile(TaskList list, String folder) {
@@ -625,7 +627,7 @@ public class Tasks {
 		}
 	}
 
-	public void setFeature(TaskList list, String feature, boolean createFiles) {
+	public TaskList setFeature(TaskList list, String feature, boolean createFiles) {
 		String listName = list.getFullPath();
 
 		TaskGroup group = getGroupForList(listName);
@@ -641,6 +643,8 @@ public class Tasks {
 			osInterface.runGitCommand("git add .");
 			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"");
 		}
+
+		return newList;
 	}
 
 	public void setFeature(TaskGroup group, String feature, boolean createFiles) {
@@ -674,6 +678,13 @@ public class Tasks {
 		TaskGroup taskGroup = group.changeState(state);
 
 		parent.addChild(taskGroup);
+
+		if (createFiles) {
+			writeGroupInfoFile(taskGroup, "git-data");
+
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set state for group '" + taskGroup.getFullPath() + "' to " + state + "\"");
+		}
 	}
 
 	public void setListState(TaskList list, TaskContainerState state, boolean createFiles) {
@@ -684,6 +695,14 @@ public class Tasks {
 		TaskList newList = list.changeState(state);
 
 		parent.addChild(newList);
+
+
+		if (createFiles) {
+			writeListInfoFile(newList, "git-data");
+
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Set state for list '" + newList.getFullPath() + "' to " + state + "\"");
+		}
 	}
 
 	public String getProjectForTask(long taskID) {

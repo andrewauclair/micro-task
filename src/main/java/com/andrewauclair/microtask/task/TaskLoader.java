@@ -79,11 +79,13 @@ public class TaskLoader {
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			tasks.setProject(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
-			tasks.setFeature(tasks.getListByName(tasks.getActiveList()), scanner.nextLine(), false);
+			TaskList list = tasks.getListByName(tasks.getActiveList());
+
+			list = tasks.setProject(list, scanner.nextLine(), false);
+			list = tasks.setFeature(list, scanner.nextLine(), false);
 
 			if (scanner.hasNextLine()) {
-				tasks.setListState(tasks.getListByName(tasks.getActiveList()), TaskContainerState.valueOf(scanner.nextLine()), false);
+				tasks.setListState(list, TaskContainerState.valueOf(scanner.nextLine()), false);
 			}
 		}
 		catch (IOException ignored) {

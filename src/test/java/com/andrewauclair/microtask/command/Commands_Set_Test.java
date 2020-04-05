@@ -23,9 +23,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-list --help");
 
 		assertOutput(
-				"Usage:  set-list ([-p=<project>] [-f=<feature>]) [-h] -l=<list>",
+				"Usage:  set-list ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
+				"                 -l=<list>",
 				"  -f, --feature=<feature>",
 				"  -h, --help                Show this help message.",
+				"      --in-progress",
 				"  -l, --list=<list>",
 				"  -p, --project=<project>"
 		);
@@ -36,10 +38,12 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set-group --help");
 
 		assertOutput(
-				"Usage:  set-group ([-p=<project>] [-f=<feature>]) [-h] -g=<group>",
+				"Usage:  set-group ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
+				"                  -g=<group>",
 				"  -f, --feature=<feature>",
 				"  -g, --group=<group>",
 				"  -h, --help                Show this help message.",
+				"      --in-progress",
 				"  -p, --project=<project>"
 		);
 	}
