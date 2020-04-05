@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -55,10 +53,9 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void version_command_help(String parameter) {
-		commands.execute(printStream, "version " + parameter);
+	@Test
+	void version_command_help() {
+		commands.execute(printStream, "version --help");
 
 		assertOutput(
 				"Usage:  version [-h]",

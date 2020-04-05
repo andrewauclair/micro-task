@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
@@ -17,10 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 class Commands_Alias_Test extends CommandsBaseTestCase {
-	@ParameterizedTest
-	@ValueSource(strings = {"-c", "--command"})
-	void add_new_alias(String arg) {
-		commands.execute(printStream, "alias -n ttt " + arg + " \"times --today\"");
+	@Test
+	void add_new_alias() {
+		commands.execute(printStream, "alias -n ttt --command \"times --today\"");
 
 		assertOutput(
 				"Created alias 'ttt' for command 'times --today'",
@@ -96,8 +93,8 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'tt' for command 'times --today'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Added alias 'tt' for command 'times --today'\"");
 	}
 
 	@Test
@@ -152,8 +149,8 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Removed alias 'ttt' for command 'times --today'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Removed alias 'ttt' for command 'times --today'\"");
 	}
 
 	@Test
@@ -166,13 +163,12 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"--list", "-l"})
-	void list_aliases_command(String parameter) {
+	@Test
+	void list_aliases_command() {
 		commands.addAlias("ttt", "times --today");
 		commands.addAlias("ltg", "list --tasks --group");
 
-		commands.execute(printStream, "alias " + parameter);
+		commands.execute(printStream, "alias --list");
 
 		assertOutput(
 				"'ttt' = 'times --today'",
@@ -193,12 +189,11 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"--update", "-u"})
-	void update_alias_command(String parameter) {
+	@Test
+	void update_alias_command() {
 		commands.addAlias("end", "eod -h 8");
 
-		commands.execute(printStream, "alias -n end " + parameter + " \"eod -h 9\"");
+		commands.execute(printStream, "alias -n end --update \"eod -h 9\"");
 		commands.execute(printStream, "alias --list");
 
 		assertOutput(
@@ -250,8 +245,8 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .", false);
-		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"", false);
+		order.verify(osInterface).runGitCommand("git add .");
+		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"");
 	}
 
 	@Test
@@ -332,10 +327,9 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void alias_command_help(String parameter) {
-		commands.execute(printStream, "alias " + parameter);
+	@Test
+	void alias_command_help() {
+		commands.execute(printStream, "alias --help");
 
 		assertOutput(
 				"Usage:  alias (-c=<command> | -u=<update> | -r | -l) [-h] [-n=<name>]",

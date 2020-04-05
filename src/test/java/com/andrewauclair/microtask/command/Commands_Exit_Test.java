@@ -3,12 +3,8 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.StatusConsole;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-
-import java.io.IOException;
 
 class Commands_Exit_Test extends CommandsBaseTestCase {
 	@Test
@@ -21,10 +17,9 @@ class Commands_Exit_Test extends CommandsBaseTestCase {
 		inOrder.verify(osInterface).exit();
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void exit_command_help(String parameter) {
-		commands.execute(printStream, "exit " + parameter);
+	@Test
+	void exit_command_help() {
+		commands.execute(printStream, "exit --help");
 
 		assertOutput(
 				"Usage:  exit [-h]",

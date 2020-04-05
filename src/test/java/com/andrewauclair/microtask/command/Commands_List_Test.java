@@ -4,12 +4,9 @@ package com.andrewauclair.microtask.command;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import picocli.CommandLine;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class Commands_List_Test extends CommandsBaseTestCase {
 	@Test
@@ -117,52 +114,20 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "set-list", "times"})
-	void command_list_option_has_list_completer(String command) {
-		CommandLine cmd = commands.buildCommandLineWithAllCommands();
-
-		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
-
-		assertNotNull(spec.optionsMap().get("--list").completionCandidates());
-		assertEquals("/default", spec.optionsMap().get("--list").completionCandidates().iterator().next());
-	}
-	
 	@Test
-	void move_command_dest_list_option_has_list_completer() {
-		CommandLine cmd = commands.buildCommandLineWithAllCommands();
-		
-		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
-		
-		assertNotNull(spec.optionsMap().get("--dest-list").completionCandidates());
-		assertEquals("/default", spec.optionsMap().get("--dest-list").completionCandidates().iterator().next());
-	}
-	
-	@Test
-	void invalid_list_path() {
-		commands.execute(printStream, "ch -l /project/test/");
-		
-		assertOutput(
-				"'/project/test/' is not a valid list path",
-				""
-		);
-	}
-	
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void list_command_help(String parameter) {
-		commands.execute(printStream, "list " + parameter);
+	void list_command_help() {
+		commands.execute(printStream, "list --help");
 
 		assertOutput(
 				"Usage:  list [-h] [--all] [--finished] [--group] [--recursive] [--tasks]",
-						"             [--list=<list>]",
-						"      --all",
-						"      --finished",
-						"      --group",
-						"  -h, --help          Show this help message.",
-						"      --list=<list>",
-						"      --recursive",
-						"      --tasks"
+				"             [--list=<list>]",
+				"      --all",
+				"      --finished",
+				"      --group",
+				"  -h, --help          Show this help message.",
+				"      --list=<list>",
+				"      --recursive",
+				"      --tasks"
 		);
 	}
 }

@@ -55,7 +55,7 @@ public class StatusConsole {
 		}
 
 		@Override
-		public boolean runGitCommand(String command, boolean print) {
+		public boolean runGitCommand(String command) {
 			return false;
 		}
 	};

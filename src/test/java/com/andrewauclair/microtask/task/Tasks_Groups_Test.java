@@ -166,7 +166,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		
 		assertTrue(tasks.hasGroupPath("/one/two/"));
 		
-		Mockito.verifyZeroInteractions(osInterface);
+		Mockito.verifyNoInteractions(osInterface);
 	}
 	
 	@Test
@@ -181,6 +181,6 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 		tasks.addList("/one/three", true);
 		
-		Mockito.verify(osInterface, never()).runGitCommand("git commit -m \"Created group '/one/'\"", false);
+		Mockito.verify(osInterface, never()).runGitCommand("git commit -m \"Created group '/one/'\"");
 	}
 }

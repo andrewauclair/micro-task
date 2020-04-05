@@ -154,8 +154,8 @@ final class UpdateCommand implements Runnable {
 
 			String currentVersion = Utils.writeCurrentVersion(osInterface);
 
-			osInterface.runGitCommand("git add .", false);
-			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"", false);
+			osInterface.runGitCommand("git add .");
+			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"");
 
 			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
 
@@ -165,12 +165,12 @@ final class UpdateCommand implements Runnable {
 			updatedToNewRelease = updateToVersion(release, proxy);
 		}
 		else if (to_remote) {
-			osInterface.runGitCommand("git push", false);
+			osInterface.runGitCommand("git push");
 
 			System.out.println("Pushed changes to remote");
 		}
 		else if (from_remote) {
-			osInterface.runGitCommand("git pull", false);
+			osInterface.runGitCommand("git pull");
 
 			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
 
@@ -195,7 +195,8 @@ final class UpdateCommand implements Runnable {
 				System.out.println();
 				System.out.println("Press any key to shutdown. Please restart with the new version.");
 
-				// force a restart
+				// force a restart, but wait for the user to respond first
+				//noinspection ResultOfMethodCallIgnored
 				System.in.read();
 
 				return true;

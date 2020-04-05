@@ -167,7 +167,7 @@ public final class TaskGroup implements TaskContainer {
 				.filter(list -> list.getFullPath().equals(path))
 				.findFirst();
 
-		if (!optionalList.isPresent()) {
+		if (optionalList.isEmpty()) {
 			throw new TaskException("List '" + path + "' does not exist.");
 		}
 		return optionalList.get();
@@ -232,8 +232,8 @@ public final class TaskGroup implements TaskContainer {
 			throw new TaskException("Failed to move group folder.");
 		}
 
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"", false);
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"");
 
 		return newGroup;
 	}
@@ -253,8 +253,8 @@ public final class TaskGroup implements TaskContainer {
 			throw new TaskException("Failed to move list folder.");
 		}
 
-		osInterface.runGitCommand("git add .", false);
-		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"", false);
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"");
 
 		return newList;
 	}

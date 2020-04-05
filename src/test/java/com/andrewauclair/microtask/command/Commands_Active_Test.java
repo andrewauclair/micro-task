@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Active_Test extends CommandsBaseTestCase {
 	@Test
@@ -68,27 +66,10 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
-	@Test
-	void commands_prints_exception_to_System_out_only_once() {
-		System.setOut(printStream);
-		
-		commands.execute(System.out, "active");
-		
-		assertOutput(
-				"Active group is '/'",
-				"",
-				"Active list is '/default'",
-				"",
-				"No active task.",
-				""
-		);
-	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void active_command_help(String parameter) {
-		commands.execute(printStream, "active " + parameter);
+	@Test
+	void active_command_help() {
+		commands.execute(printStream, "active --help");
 
 		assertOutput(
 				"Usage:  active [-h]",

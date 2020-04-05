@@ -1,16 +1,12 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.CommandsBaseTestCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.*;
 import java.util.Collections;
@@ -188,16 +184,16 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 		InOrder inOrder = Mockito.inOrder(osInterface);
 
 		inOrder.verify(osInterface).createFolder("git-data");
-		inOrder.verify(osInterface).runGitCommand("git init", false);
-		inOrder.verify(osInterface).runGitCommand("git config user.name \"Andrew\"", false);
-		inOrder.verify(osInterface).runGitCommand("git config user.email \"Andrew@computer\"", false);
+		inOrder.verify(osInterface).runGitCommand("git init");
+		inOrder.verify(osInterface).runGitCommand("git config user.name \"Andrew\"");
+		inOrder.verify(osInterface).runGitCommand("git config user.email \"Andrew@computer\"");
 		inOrder.verify(osInterface).createOutputStream("git-data/task-data-version.txt");
 		inOrder.verify(osInterface).createOutputStream("git-data/next-id.txt");
-		inOrder.verify(osInterface).runGitCommand("git add .", false);
-		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created new micro task instance.\"", false);
+		inOrder.verify(osInterface).runGitCommand("git add .");
+		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created new micro task instance.\"");
 		inOrder.verify(osInterface).createOutputStream("git-data/tasks/default/list.txt");
-		inOrder.verify(osInterface).runGitCommand("git add .", false);
-		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created list '/default'\"", false);
+		inOrder.verify(osInterface).runGitCommand("git add .");
+		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created list '/default'\"");
 	}
 
 	@Test

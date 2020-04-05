@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 
@@ -63,10 +61,9 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void eod_command_help(String parameter) {
-		commands.execute(printStream, "eod " + parameter);
+	@Test
+	void eod_command_help() {
+		commands.execute(printStream, "eod --help");
 
 		assertOutput(
 				"Usage:  eod [-h] [--hours=<hours>]",

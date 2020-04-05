@@ -99,10 +99,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = {"-h", "--help"})
-	void next_command_help(String parameter) {
-		commands.execute(printStream, "next " + parameter);
+	@Test
+	void next_command_help() {
+		commands.execute(printStream, "next --help");
 
 		assertOutput(
 				"Usage:  next [-h] [-c=<count>]",
