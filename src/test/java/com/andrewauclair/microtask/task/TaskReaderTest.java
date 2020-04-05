@@ -14,6 +14,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// Versions 1-3 have been retired
 // Current file version is 4
 class TaskReaderTest {
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
@@ -28,9 +29,7 @@ class TaskReaderTest {
 				"add 123" + Utils.NL +
 				"start 1234" + Utils.NL +
 				"Project" + Utils.NL +
-				"Feature" + Utils.NL +
-				"stop 4567" + Utils.NL +
-				"start 3333";
+				"Feature";
 		
 		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
 		
@@ -43,8 +42,7 @@ class TaskReaderTest {
 		Task expectedTask = new Task(1, "Test", TaskState.Active,
 				Arrays.asList(
 						new TaskTimes(123),
-						new TaskTimes(1234, 4567, "Project", "Feature"),
-						new TaskTimes(3333)
+						new TaskTimes(1234, "Project", "Feature")
 				),
 				false
 		);
@@ -204,111 +202,10 @@ class TaskReaderTest {
 		assertEquals(expectedTask, task);
 	}
 	
-	@Test
-	void read_legacy_files_with_only_add() throws IOException {
-		String contents = "Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"false" + Utils.NL +
-				"" + Utils.NL +
-				"" + Utils.NL +
-				"" + Utils.NL +
-				"add 1000" + Utils.NL;
-		
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
-		
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
-		
-		TaskReader reader = new TaskReader(osInterface);
-		
-		Task task = reader.readTask(1, "git-data/1.txt");
-		
-		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
-				Collections.singletonList(
-						new TaskTimes(1000)
-				),
-				false
-		);
-		
-		assertEquals(expectedTask, task);
-	}
-	// Version 1 has been retired
-	
 	InputStream createInputStream(String... lines) {
 		String content = String.join(Utils.NL, lines);
 		
 		return new ByteArrayInputStream(content.getBytes());
-	}
-	
-	@Test
-	void task_reader_reads_version_2_file_with_issue() throws IOException {
-		String contents = "Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL +
-				"add 1000" + Utils.NL;
-		
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
-		
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
-		
-		TaskReader reader = new TaskReader(osInterface);
-		
-		Task task = reader.readTask(1, "git-data/1.txt");
-		
-		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
-				Collections.singletonList(new TaskTimes(1000)),
-				false
-		);
-		
-		assertEquals(expectedTask, task);
-	}
-	
-	@Test
-	void task_reader_reads_version_3_file_with_finished_task_and_only_add_time() throws IOException {
-		String contents = "Test" + Utils.NL +
-				"Finished" + Utils.NL +
-				"" + Utils.NL +
-				"" + Utils.NL +
-				"add 1234" + Utils.NL;
-		
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
-		
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
-		
-		TaskReader reader = new TaskReader(osInterface);
-		
-		Task task = reader.readTask(1, "git-data/1.txt");
-		
-		Task expectedTask = new Task(1, "Test", TaskState.Finished,
-				Arrays.asList(new TaskTimes(1234), new TaskTimes(1234))
-		);
-		
-		assertEquals(expectedTask, task);
-	}
-	
-	@Test
-	void task_reader_reads_version_3_file_with_finished_task_and_start_stop_times() throws IOException {
-		String contents = "Test" + Utils.NL +
-				"Finished" + Utils.NL +
-				"" + Utils.NL +
-				"" + Utils.NL +
-				"add 1234" + Utils.NL +
-				"start 2345" + Utils.NL +
-				"stop 4567" + Utils.NL;
-		
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
-		
-		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
-		
-		TaskReader reader = new TaskReader(osInterface);
-		
-		Task task = reader.readTask(1, "git-data/1.txt");
-		
-		Task expectedTask = new Task(1, "Test", TaskState.Finished,
-				Arrays.asList(new TaskTimes(1234), new TaskTimes(2345, 4567), new TaskTimes(4567))
-		);
-		
-		assertEquals(expectedTask, task);
 	}
 	
 	@Test

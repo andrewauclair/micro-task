@@ -6,17 +6,26 @@ import java.util.List;
 
 public final class TaskBuilder {
 	private final long id;
-	private final List<TaskTimes> taskTimes;
+	private final List<TaskTimes> taskTimes = new ArrayList<>();
 	private String task;
 	private TaskState state;
 	private boolean recurring;
+
+	public TaskBuilder(long id) {
+		this.id = id;
+	}
 
 	public TaskBuilder(Task task) {
 		id = task.id;
 		this.task = task.task;
 		state = task.state;
-		taskTimes = new ArrayList<>(task.getAllTimes());
+		taskTimes.addAll(task.getAllTimes());
 		recurring = task.isRecurring();
+	}
+
+	TaskBuilder withName(String name) {
+		task = name;
+		return this;
 	}
 
 	TaskBuilder withState(TaskState state) {
@@ -24,6 +33,11 @@ public final class TaskBuilder {
 			taskTimes.remove(taskTimes.size() - 1);
 		}
 		this.state = state;
+		return this;
+	}
+
+	TaskBuilder withTime(TaskTimes time) {
+		taskTimes.add(time);
 		return this;
 	}
 
@@ -70,5 +84,9 @@ public final class TaskBuilder {
 	public Task rename(String name) {
 		task = name;
 		return build();
+	}
+
+	TaskState getState() {
+		return state;
 	}
 }
