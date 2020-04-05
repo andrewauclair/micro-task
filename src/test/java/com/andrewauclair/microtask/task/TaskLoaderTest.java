@@ -17,9 +17,9 @@ import static com.andrewauclair.microtask.UtilsTest.createFile;
 
 class TaskLoaderTest extends TaskBaseTestCase {
 	Tasks tasks = Mockito.mock(Tasks.class);
-	private TaskReader reader = Mockito.mock(TaskReader.class);
+	private final TaskReader reader = Mockito.mock(TaskReader.class);
 	private final LocalSettings localSettings = Mockito.mock(LocalSettings.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
+	private final TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 	
 	@BeforeEach
 	void setup() throws IOException {

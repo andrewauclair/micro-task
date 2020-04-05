@@ -3,9 +3,11 @@ package com.andrewauclair.microtask.task;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskBuilderTest {
 	@Test
@@ -41,5 +43,19 @@ class TaskBuilderTest {
 				.build();
 		
 		assertThat(finalTask.getAllTimes()).containsOnly(new TaskTimes(0));
+	}
+
+	@Test
+	void build_task_starting_with_only_id() {
+		Task task = new TaskBuilder(1)
+				.withName("Test")
+				.withState(TaskState.Finished)
+				.withTime(new TaskTimes(123))
+				.withTime(new TaskTimes(124, 224))
+				.build();
+
+		Task expectedTask = new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(123), new TaskTimes(124, 224)));
+
+		assertEquals(expectedTask, task);
 	}
 }

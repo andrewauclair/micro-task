@@ -4,8 +4,6 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.os.OSInterface;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings("CanBeFinal")
@@ -18,24 +16,18 @@ public class TaskReader {
 
 	Task readTask(long id, String fileName) throws IOException {
 		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
-//		InputStream inputStream = osInterface.createInputStream(fileName);
-
-//		Scanner scanner = new Scanner(inputStream);
-
-			String task = scanner.nextLine();
-			TaskState state = TaskState.valueOf(scanner.nextLine());
-
-			boolean recurring = Boolean.parseBoolean(scanner.nextLine());
+			TaskBuilder builder = new TaskBuilder(id)
+					.withName(scanner.nextLine())
+					.withState(TaskState.valueOf(scanner.nextLine()))
+					.withRecurring(Boolean.parseBoolean(scanner.nextLine()));
 
 			long start = 0;
 			long stop = TaskTimes.TIME_NOT_SET;
+
 			String timeProject = "";
 			String timeFeature = "";
 
-			boolean readFinish = false;
-			boolean readTimes = false;
-
-			List<TaskTimes> timesList = new ArrayList<>();
+			boolean foundStartTime = false;
 
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
@@ -44,47 +36,34 @@ public class TaskReader {
 					start = Integer.parseInt(line.substring(6));
 					stop = TaskTimes.TIME_NOT_SET;
 
-					readTimes = true;
+					foundStartTime = true;
 				}
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
 
-					timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
-
-					timeProject = "";
-					timeFeature = "";
+					builder.withTime(new TaskTimes(start, stop, timeProject, timeFeature));
 				}
 				else if (line.startsWith("add")) {
 					long add = Integer.parseInt(line.substring(4));
 
-					timesList.add(new TaskTimes(add));
+					builder.withTime(new TaskTimes(add));
 				}
 				else if (line.startsWith("finish")) {
 					long finish = Integer.parseInt(line.substring(7));
 
-					timesList.add(new TaskTimes(finish));
-
-					readFinish = true;
+					builder.withTime(new TaskTimes(finish));
 				}
-				else if (timesList.size() > 0) {
+				else if (foundStartTime) {
 					timeProject = line;
 					timeFeature = scanner.nextLine();
 				}
 			}
 
-			if (readTimes && stop == TaskTimes.TIME_NOT_SET) {
-				timesList.add(new TaskTimes(start, stop, timeProject, timeFeature));
+			if (foundStartTime && stop == TaskTimes.TIME_NOT_SET) {
+				builder.withTime(new TaskTimes(start, stop, timeProject, timeFeature));
 			}
 
-			if (!readFinish && state == TaskState.Finished) {
-				if (stop == TaskTimes.TIME_NOT_SET) {
-					timesList.add(new TaskTimes(timesList.get(0).start));
-				}
-				else {
-					timesList.add(new TaskTimes(stop));
-				}
-			}
-			return new Task(id, task, state, timesList, recurring);
+			return builder.build();
 		}
 	}
 }
