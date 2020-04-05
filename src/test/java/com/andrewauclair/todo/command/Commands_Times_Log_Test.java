@@ -17,9 +17,9 @@ import java.util.List;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-class Commands_Times_Info_Test extends Commands_Times_BaseTestCase {
+class Commands_Times_Log_Test extends Commands_Times_BaseTestCase {
 	@Test
-	void times_info_for_a_day__today() {
+	void times_log_for_a_day__today() {
 		setTime(june17_8_am);
 		
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
