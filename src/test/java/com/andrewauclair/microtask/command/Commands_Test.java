@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +46,16 @@ class Commands_Test extends CommandsBaseTestCase {
 		commandLine.execute("throw-exception");
 
 		assertThat(errorStream).asString().startsWith("java.lang.RuntimeException" + Utils.NL +
-				"\tat com.andrewauclair.microtask.command.Commands_Test$1.run(Commands_Test.java:41)");
+				"\tat com.andrewauclair.microtask.command.Commands_Test$1.run(Commands_Test.java");
+	}
+
+	@Test
+	void when_debug_is_enabled_task_exceptions_print_a_stack_trace() {
+		Mockito.when(localSettings.isDebugEnabled()).thenReturn(true);
+
+		commands.execute(printStream, "ch -l ranDOM");
+
+		assertThat(errorStream).asString().startsWith("com.andrewauclair.microtask.TaskException: List '/random' does not exist." + Utils.NL +
+				"\tat com.andrewauclair.microtask.task.TaskGroup.getListAbsolute(TaskGroup.java");
 	}
 }

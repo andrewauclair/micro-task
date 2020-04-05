@@ -202,7 +202,13 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public int getTerminalWidth() {
-		return terminal.getWidth();
+		int width = terminal.getWidth();
+
+		// must be running in IntelliJ
+		if (width == 0) {
+			width = 80;
+		}
+		return width;
 	}
 
 	@Override
