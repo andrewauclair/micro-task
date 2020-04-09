@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.TaskException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,10 @@ public final class TaskBuilder {
 		recurring = task.isRecurring();
 	}
 
-	TaskBuilder withName(String name) {
+	public TaskBuilder withName(String name) {
+		if (state == TaskState.Finished) {
+			throw new TaskException("Task " + id + " cannot be renamed because it has been finished.");
+		}
 		task = name;
 		return this;
 	}
@@ -52,7 +57,7 @@ public final class TaskBuilder {
 		return build();
 	}
 
-	Task build() {
+	public Task build() {
 		return new Task(id, task, state, taskTimes, recurring);
 	}
 
@@ -81,12 +86,8 @@ public final class TaskBuilder {
 		return build();
 	}
 
-	public Task rename(String name) {
-		task = name;
-		return build();
-	}
-
-	TaskState getState() {
-		return state;
-	}
+//	public Task rename(String name) {
+//		withName(name);
+//		return build();
+//	}
 }

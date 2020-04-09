@@ -310,7 +310,9 @@ public final class Main {
 		TaskWriter writer = new TaskWriter(osInterface);
 
 		for (Task task : list.getTasks()) {
-			Task strippedTask = new TaskBuilder(task).rename("Task " + task.id);
+			Task strippedTask = new TaskBuilder(task)
+					.withName("Task " + task.id)
+					.build();
 
 			writer.writeTask(strippedTask, "git-data-export/tasks" + path + "/" + task.id + ".txt");
 		}

@@ -143,6 +143,29 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void throws_exception_when_creating_group_if_parent_group_has_been_finished() {
+		tasks.addGroup("/test/");
+		tasks.finishGroup("/test/");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addGroup("/test/one/"));
+
+		assertEquals("Group '/test/one/' cannot be created because group '/test/' has been finished.", taskException.getMessage());
+
+		assertFalse(tasks.hasGroupPath("/test/one/"));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void throws_exception_if_list_to_get_group_for_does_not_exist() {
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getGroupForList("/test"));
+
+		assertEquals("List '/test' does not exist.", taskException.getMessage());
+	}
+
+	@Test
 	void group_gets_project_from_parent_if_project_is_an_empty_string() {
 		TaskGroup parent = new TaskGroup("root", null, "Project", "", TaskContainerState.InProgress);
 		TaskGroup child = new TaskGroup("child", parent, "", "", TaskContainerState.InProgress);

@@ -56,6 +56,6 @@ class Commands_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch -l ranDOM");
 
 		assertThat(errorStream).asString().startsWith("com.andrewauclair.microtask.TaskException: List '/random' does not exist." + Utils.NL +
-				"\tat com.andrewauclair.microtask.task.TaskGroup.getListAbsolute(TaskGroup.java");
+				"\tat com.andrewauclair.microtask.task.Tasks.getGroupForList(Tasks.java");
 	}
 }

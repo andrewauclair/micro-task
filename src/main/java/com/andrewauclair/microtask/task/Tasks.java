@@ -67,6 +67,7 @@ public class Tasks {
 		return writer;
 	}
 
+	// TODO This is really only used in the tests, maybe we shouldn't have it
 	public Task addTask(String task) {
 		return addTask(task, activeList);
 	}
@@ -109,7 +110,12 @@ public class Tasks {
 	public TaskGroup getGroupForList(String name) {
 		String groupName = getGroupNameForList(name);
 
-		return getGroup(groupName);
+		TaskGroup group = getGroup(groupName);
+
+		if (!group.containsListAbsolute(name)) {
+			throw new TaskException("List '" + name + "' does not exist.");
+		}
+		return group;
 	}
 
 	private String getGroupNameForList(String name) {
@@ -185,7 +191,12 @@ public class Tasks {
 
 		group = getGroup(groupName);
 
+		if (group.getState() == TaskContainerState.Finished) {
+			throw new TaskException("List '" + absoluteList + "' cannot be created because group '" + group.getFullPath() + "' has been finished.");
+		}
+
 		if (group.containsListAbsolute(absoluteList)) {
+			// TODO This mean the list already exists, should we show a message for that?
 			return false;
 		}
 
@@ -356,6 +367,11 @@ public class Tasks {
 		}
 
 		TaskList oldList = group.getListAbsolute(absoluteOldList);
+
+		if (oldList.getState() == TaskContainerState.Finished) {
+			throw new TaskException("List '" + oldList.getFullPath() + "' has been finished and cannot be renamed.");
+		}
+
 		group.removeChild(oldList);
 		group.addChild(oldList.rename(newName));
 
@@ -378,12 +394,17 @@ public class Tasks {
 		String oldFolder = oldName;
 		String newFolder = newName;
 
+		// TODO This isn't very nice to look at
 		newName = newName.substring(newName.substring(0, newName.length() - 2).lastIndexOf('/') + 1);
 		newName = newName.substring(0, newName.length() - 1);
 
 		TaskGroup group = getGroup(oldName);
 
 		boolean isActiveGroup = activeGroup.equals(group);
+
+		if (group.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Group '" + group.getFullPath() + "' has been finished and cannot be renamed.");
+		}
 
 		TaskGroup parent = getGroup(group.getParent());
 		TaskGroup newGroup = group.rename(newName);
@@ -433,7 +454,12 @@ public class Tasks {
 	public boolean hasListWithName(String name) {
 		String absoluteList = getAbsoluteListName(name);
 
-		return getGroupForList(absoluteList).containsListAbsolute(absoluteList);
+		try {
+			return getGroupForList(absoluteList).containsListAbsolute(absoluteList);
+		}
+		catch (TaskException ignored) {
+		}
+		return false;
 	}
 
 	public TaskGroup addGroup(String groupName) {
@@ -455,6 +481,11 @@ public class Tasks {
 				continue;
 			}
 			TaskGroup parentGroup = getGroup(currentParent);
+
+			if (parentGroup.getState() == TaskContainerState.Finished) {
+				throw new TaskException("Group '" + groupName + "' cannot be created because group '" + parentGroup.getFullPath() + "' has been finished.");
+			}
+
 			newGroup = new TaskGroup(group, parentGroup, "", "", TaskContainerState.InProgress);
 			currentParent += group + "/";
 
@@ -512,8 +543,13 @@ public class Tasks {
 		return activeTaskID;
 	}
 
+	// TODO Could things like this be static somewhere and take a reference to the task data?
 	public Task setRecurring(long id, boolean recurring) {
 		Task optionalTask = getTask(id);
+
+		if (optionalTask.state == TaskState.Finished) {
+			throw new TaskException("Cannot set task " + id + " recurring state. The task has been finished.");
+		}
 
 		Task task = new TaskBuilder(optionalTask)
 				.withRecurring(recurring)
@@ -578,6 +614,10 @@ public class Tasks {
 	}
 
 	public TaskList setProject(TaskList list, String project, boolean createFiles) {
+		if (list.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Cannot set project on list '" + list.getFullPath() + "' because it has been finished.");
+		}
+
 		String listName = list.getFullPath();
 
 		TaskGroup group = getGroupForList(listName);
@@ -612,6 +652,10 @@ public class Tasks {
 	}
 
 	public void setProject(TaskGroup group, String project, boolean createFiles) {
+		if (group.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Cannot set project on group '" + group.getFullPath() + "' because it has been finished.");
+		}
+
 		TaskGroup newGroup;
 		if (group == rootGroup) {
 			rootGroup = group.changeProject(project);
@@ -635,6 +679,10 @@ public class Tasks {
 	}
 
 	public TaskList setFeature(TaskList list, String feature, boolean createFiles) {
+		if (list.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Cannot set feature on list '" + list.getFullPath() + "' because it has been finished.");
+		}
+
 		String listName = list.getFullPath();
 
 		TaskGroup group = getGroupForList(listName);
@@ -655,6 +703,10 @@ public class Tasks {
 	}
 
 	public void setFeature(TaskGroup group, String feature, boolean createFiles) {
+		if (group.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Cannot set feature on group '" + group.getFullPath() + "' because it has been finished.");
+		}
+
 		TaskGroup newGroup;
 		if (group == rootGroup) {
 			rootGroup = group.changeFeature(feature);

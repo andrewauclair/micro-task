@@ -30,7 +30,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Task stoppedTask = tasks.stopTask();
 
-		ActiveTaskAsserts.assertNoActiveTask(tasks);
+		TaskException taskException = assertThrows(TaskException.class, tasks::getActiveTask, "Expected no active task");
+
+		assertEquals("No active task.", taskException.getMessage());
 
 		assertEquals(new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234, 4567))), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
@@ -39,7 +41,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 	@Test
 	void stop_command_throws_exception_if_there_is_no_active_task() {
-		ActiveTaskAsserts.assertThrowsNoActiveTaskException(tasks::stopTask);
+		TaskException taskException = assertThrows(TaskException.class, tasks::stopTask, "Expected no active task");
+
+		assertEquals("No active task.", taskException.getMessage());
 	}
 
 	@Test

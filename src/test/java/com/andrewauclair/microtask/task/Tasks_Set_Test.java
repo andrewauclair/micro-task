@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -183,5 +184,89 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/group.txt");
 		order.verify(osInterface).runGitCommand("git add .");
 		order.verify(osInterface).runGitCommand("git commit -m \"Set feature for group '/test/' to 'Feature'\"");
+	}
+
+	@Test
+	void exception_is_thrown_when_trying_to_set_recurring_on_finished_task() {
+		Task task = tasks.addTask("Test 1");
+		tasks.finishTask(1);
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setRecurring(1, true));
+
+		assertEquals("Cannot set task 1 recurring state. The task has been finished.", taskException.getMessage());
+
+		assertFalse(task.isRecurring());
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void exception_is_thrown_when_setting_feature_on_finished_list() {
+		tasks.addList("/one", true);
+		tasks.setFeature(tasks.getListByName("/one"), "test", true);
+		tasks.finishList("/one");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setFeature(tasks.getListByName("/one"), "new-feature", true));
+
+		assertEquals("Cannot set feature on list '/one' because it has been finished.", taskException.getMessage());
+
+		assertEquals("test", tasks.getListByName("/one").getFeature());
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void exception_is_thrown_when_setting_project_on_finished_list() {
+		tasks.addList("/one", true);
+		tasks.setProject(tasks.getListByName("/one"), "test", true);
+		tasks.finishList("/one");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setProject(tasks.getListByName("/one"), "new-project", true));
+
+		assertEquals("Cannot set project on list '/one' because it has been finished.", taskException.getMessage());
+
+		assertEquals("test", tasks.getListByName("/one").getProject());
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void exception_is_thrown_when_setting_feature_on_finished_group() {
+		tasks.addGroup("/one/");
+		tasks.setFeature(tasks.getGroup("/one/"), "test", true);
+		tasks.finishGroup("/one/");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setFeature(tasks.getGroup("/one/"), "new-project", true));
+
+		assertEquals("Cannot set feature on group '/one/' because it has been finished.", taskException.getMessage());
+
+		assertEquals("test", tasks.getGroup("/one/").getFeature());
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void exception_is_thrown_when_setting_project_on_finished_group() {
+		tasks.addGroup("/one/");
+		tasks.setProject(tasks.getGroup("/one/"), "test", true);
+		tasks.finishGroup("/one/");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setProject(tasks.getGroup("/one/"), "new-feature", true));
+
+		assertEquals("Cannot set project on group '/one/' because it has been finished.", taskException.getMessage());
+
+		assertEquals("test", tasks.getGroup("/one/").getProject());
+
+		Mockito.verifyNoInteractions(writer, osInterface);
 	}
 }
