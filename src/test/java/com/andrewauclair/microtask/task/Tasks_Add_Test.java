@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class Tasks_Add_Test extends TaskBaseTestCase {
@@ -227,6 +226,18 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		assertThat(tasks.getTasksForList("/test/one/two")).containsOnly(
 				new Task(1, "Test", TaskState.Inactive, Collections.emptyList())
 		);
+	}
+
+	@Test
+	void add_throws_exception_if_the_list_has_been_finished() {
+		tasks.addList("one", true);
+		tasks.finishList("one");
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "one"));
+
+		assertEquals("Task 'Test' cannot be created because list '/one' has been finished.", taskException.getMessage());
+
+		assertThat(tasks.getListByName("/one").getTasks()).isEmpty();
 	}
 
 	@Test

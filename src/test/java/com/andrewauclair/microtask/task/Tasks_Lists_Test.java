@@ -107,6 +107,23 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void addList_throws_exception_if_parent_group_is_finished() {
+		tasks.addGroup("/test/");
+		tasks.finishGroup("/test/");
+
+		Mockito.reset(writer, osInterface);
+
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addList("/test/one", true));
+
+		assertEquals("List '/test/one' cannot be created because group '/test/' has been finished.", taskException.getMessage());
+
+		assertFalse(tasks.getGroup("/test/").containsListAbsolute("/test/one"));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one"));
 		

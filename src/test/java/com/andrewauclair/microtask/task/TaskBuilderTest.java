@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.TaskException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskBuilderTest {
 	@Test
@@ -57,5 +59,16 @@ class TaskBuilderTest {
 		Task expectedTask = new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(123), new TaskTimes(124, 224)));
 
 		assertEquals(expectedTask, task);
+	}
+
+	@Test
+	void finished_task_can_not_be_renamed() {
+		TaskBuilder builder = new TaskBuilder(1)
+				.withName("Test")
+				.withState(TaskState.Finished);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> builder.withName("Test 2"));
+
+		assertEquals("Task 1 cannot be renamed because it has been finished.", taskException.getMessage());
 	}
 }

@@ -11,8 +11,7 @@ import org.mockito.Mockito;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
@@ -238,5 +237,56 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/default"));
 		
 		assertEquals("Task 1 is already on list '/default'.", taskException.getMessage());
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_from_finished_list() {
+		tasks.addTask("Test");
+		tasks.addList("/one", true);
+		tasks.finishList("/default");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/one"));
+
+		assertEquals("Task 1 cannot be moved because list '/default' has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName("/default").containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_to_finished_list() {
+		tasks.addTask("Test");
+		tasks.addList("/one", true);
+		tasks.finishList("/one");
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/one"));
+
+		assertEquals("Task 1 cannot be moved because list '/one' has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName("/default").containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_that_has_been_finished() {
+		tasks.addTask("Test");
+		tasks.finishTask(1);
+		tasks.addList("/one", true);
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/one"));
+
+		assertEquals("Task 1 cannot be moved because it has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName("/default").containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
 	}
 }

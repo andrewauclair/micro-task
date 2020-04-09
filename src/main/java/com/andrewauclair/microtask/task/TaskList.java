@@ -161,6 +161,10 @@ public final class TaskList implements TaskContainer {
 	}
 
 	public Task addTask(long id, String name) {
+		if (getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
+		}
+
 		Task task = new Task(id, name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
 
 		tasks.add(task);
@@ -255,6 +259,16 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Task " + id + " is already on list '" + getFullPath() + "'.");
 		}
 
+		if (getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task " + id + " cannot be moved because list '" + getFullPath() + "' has been finished.");
+		}
+		else if (list.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task " + id + " cannot be moved because list '" + list.getFullPath() + "' has been finished.");
+		}
+		else if (task.state == TaskState.Finished) {
+			throw new TaskException("Task " + id + " cannot be moved because it has been finished.");
+		}
+
 		removeTask(task);
 		list.addTask(task);
 
@@ -271,7 +285,9 @@ public final class TaskList implements TaskContainer {
 	Task renameTask(long id, String task) {
 		Task currentTask = getTask(id);
 
-		Task renamedTask = new TaskBuilder(currentTask).rename(task);
+		Task renamedTask = new TaskBuilder(currentTask)
+				.withName(task)
+				.build();
 
 		replaceTask(currentTask, renamedTask);
 
