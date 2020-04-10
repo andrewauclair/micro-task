@@ -16,6 +16,7 @@ import java.util.Date;
 import static com.andrewauclair.microtask.TestUtils.assertOutput;
 import static com.andrewauclair.microtask.UtilsTest.byteInStream;
 import static com.andrewauclair.microtask.UtilsTest.createFile;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalSettings_Test {
@@ -45,16 +46,52 @@ class LocalSettings_Test {
 	}
 
 	@Test
-	void load_settings_from_file() throws IOException {
+	void default_length_of_day_is_8_hours() {
+		assertEquals(8, localSettings.hoursInDay());
+	}
+
+	@Test
+	void load_active_list_from_file() throws IOException {
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("active_list=/test/one", "active_group=/test/", "debug=true"))
+				byteInStream(createFile("active_list=/test/one"))
 		);
 
 		localSettings.load(tasks);
 
 		assertEquals("/test/one", localSettings.getActiveList());
+	}
+
+	@Test
+	void load_active_group_from_file() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
+				byteInStream(createFile("active_group=/test/"))
+		);
+
+		localSettings.load(tasks);
+
 		assertEquals("/test/", localSettings.getActiveGroup());
+	}
+
+	@Test
+	void load_debug_flag_from_file() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
+				byteInStream(createFile("debug=true"))
+		);
+
+		localSettings.load(tasks);
+
 		assertTrue(localSettings.isDebugEnabled());
+	}
+
+	@Test
+	void load_hours_in_day_from_file() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
+				byteInStream(createFile("hours_in_day=6"))
+		);
+
+		localSettings.load(tasks);
+
+		assertEquals(6, localSettings.hoursInDay());
 	}
 
 	@Test
@@ -65,16 +102,7 @@ class LocalSettings_Test {
 
 		localSettings.setActiveList("/test");
 
-		assertOutput(
-				outputStream,
-
-				"#",
-				"#" + new Date().toString(),
-				"active_group=/",
-				"debug=false",
-				"active_list=/test",
-				""
-		);
+		assertThat(outputStream.toString()).contains("active_list=/test");
 	}
 
 	@Test
@@ -85,16 +113,7 @@ class LocalSettings_Test {
 
 		localSettings.setActiveGroup("/test/");
 
-		assertOutput(
-				outputStream,
-
-				"#",
-				"#" + new Date().toString(),
-				"active_group=/test/",
-				"debug=false",
-				"active_list=/default",
-				""
-		);
+		assertThat(outputStream.toString()).contains("active_group=/test/");
 	}
 
 	@Test
@@ -105,16 +124,18 @@ class LocalSettings_Test {
 
 		localSettings.setDebugEnabled(true);
 
-		assertOutput(
-				outputStream,
+		assertThat(outputStream.toString()).contains("debug=true");
+	}
 
-				"#",
-				"#" + new Date().toString(),
-				"active_group=/",
-				"debug=true",
-				"active_list=/default",
-				""
-		);
+	@Test
+	void changing_hours_in_day_saves_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
+
+		localSettings.setHoursInDay(6);
+
+		assertThat(outputStream.toString()).contains("hours_in_day=6");
 	}
 
 	@Test
@@ -156,14 +177,39 @@ class LocalSettings_Test {
 	}
 
 	@Test
-	void failing_to_read_from_the_file_results_in_default_values() throws IOException {
+	void failure_to_read_file_sets_default_active_list() throws IOException {
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
 
 		localSettings.load(tasks);
 
 		assertEquals("/default", localSettings.getActiveList());
+	}
+
+	@Test
+	void failure_to_read_file_sets_default_active_group() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+
+		localSettings.load(tasks);
+
 		assertEquals("/", localSettings.getActiveGroup());
+	}
+
+	@Test
+	void failure_to_read_file_sets_default_debug_flag() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+
+		localSettings.load(tasks);
+
 		assertFalse(localSettings.isDebugEnabled());
+	}
+
+	@Test
+	void failure_to_read_file_sets_default_hours_in_day() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+
+		localSettings.load(tasks);
+
+		assertEquals(8, localSettings.hoursInDay());
 	}
 
 	@Test

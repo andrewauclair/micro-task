@@ -2,8 +2,32 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class Commands_Set_Test extends CommandsBaseTestCase {
+	@Test
+	void set_number_of_hours_in_day() {
+		commands.execute(printStream, "set --hours-in-day=6");
+
+		Mockito.verify(localSettings).setHoursInDay(6);
+		
+		assertOutput(
+				"Set hours in day to 6",
+				""
+		);
+	}
+
+	@Test
+	void set_command_help() {
+		commands.execute(printStream, "set --help");
+
+		assertOutput(
+				"Usage:  set [-h] --hours-in-day=<hours>",
+				"  -h, --help            Show this help message.",
+				"      --hours-in-day=<hours>"
+		);
+	}
+
 	@Test
 	void set_task_command_help() {
 		commands.execute(printStream, "set-task --help");

@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
@@ -17,6 +18,7 @@ import java.util.List;
 @Command(name = "eod")
 final class EndOfDayCommand implements Runnable {
 	private final Tasks tasks;
+	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
@@ -25,8 +27,9 @@ final class EndOfDayCommand implements Runnable {
 	@Option(names = {"--hours"})
 	private Integer hours;
 
-	EndOfDayCommand(Tasks tasks, OSInterface osInterface) {
+	EndOfDayCommand(Tasks tasks, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.localSettings = localSettings;
 		this.osInterface = osInterface;
 	}
 
@@ -49,7 +52,7 @@ final class EndOfDayCommand implements Runnable {
 			totalTime += filterResult.getTotal();
 		}
 
-		int hours = this.hours != null ? this.hours : 8;
+		int hours = this.hours != null ? this.hours : localSettings.hoursInDay();
 		long eod = epochSecond + ((hours * 3600) - totalTime);
 
 		if (eod - epochSecond < 0) {
