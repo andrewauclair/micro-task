@@ -145,6 +145,8 @@ class TaskWriterTest {
 				"",
 				"add 1234",
 				"start 2345",
+				"",
+				"",
 				""
 		);
 
@@ -163,6 +165,8 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				""
 		);
@@ -188,8 +192,12 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"start 3333",
+				"",
+				"",
 				""
 		);
 
@@ -214,8 +222,12 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"start 3333",
+				"",
+				"",
 				"stop 5555",
 				""
 		);
@@ -271,6 +283,8 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"finish 5678",
 				""

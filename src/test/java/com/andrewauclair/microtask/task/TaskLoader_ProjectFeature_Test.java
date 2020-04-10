@@ -33,6 +33,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
 	}
 
+	// TODO We don't need to support this format anymore
 	@Test
 	void load_projects_and_features_for_groups_old_format() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
