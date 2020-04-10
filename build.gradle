@@ -18,8 +18,7 @@ repositories {
 dependencies {
     compile 'net.java.dev.jna:jna:5.5.0'
     compile 'net.java.dev.jna:jna-platform:5.5.0'
-    compile 'org.jline:jline:3.14.0'
-    compile 'org.jline:jline-builtins:3.14.0'
+    compile 'org.jline:jline:3.14.1'
     compile 'org.json:json:20190722'
     compile 'info.picocli:picocli-shell-jline3:4.2.0'
     compile 'org.fusesource.jansi:jansi:1.18'
