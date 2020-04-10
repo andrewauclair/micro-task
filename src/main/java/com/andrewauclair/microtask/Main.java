@@ -318,7 +318,7 @@ public final class Main {
 		}
 	}
 
-	// TODO Find a way to test this
+	// TODO Find a way to test this, build it into the task loader as the last step
 	private boolean requiresTaskUpdate() {
 		String currentVersion = "";
 
@@ -346,7 +346,7 @@ public final class Main {
 	 */
 	@Command(name = "",
 			description = {
-					"TODO Task tracking application. " +
+					"micro task, a CLI based task tracking application. " +
 							"Hit @|magenta <TAB>|@ to see available commands.",
 					""},
 			subcommands = {HelpCommand.class})
