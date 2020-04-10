@@ -13,6 +13,7 @@ public class LocalSettings {
 	private String activeList = "/default";
 	private String activeGroup = "/";
 	private boolean debugEnabled = false;
+	private int hoursInDay = 8;
 
 	public LocalSettings(OSInterface osInterface) {
 		this.osInterface = osInterface;
@@ -48,6 +49,16 @@ public class LocalSettings {
 		save();
 	}
 
+	public int hoursInDay() {
+		return hoursInDay;
+	}
+
+	public void setHoursInDay(int hoursInDay) {
+		this.hoursInDay = hoursInDay;
+
+		save();
+	}
+
 	public void load(Tasks tasks) {
 		Properties properties = new Properties();
 		try {
@@ -60,6 +71,7 @@ public class LocalSettings {
 		activeList = properties.getProperty("active_list", "/default");
 		activeGroup = properties.getProperty("active_group", "/");
 		debugEnabled = Boolean.parseBoolean(properties.getProperty("debug", "false"));
+		hoursInDay = Integer.parseInt(properties.getProperty("hours_in_day", "8"));
 
 		tasks.setActiveList(activeList);
 		tasks.switchGroup(activeGroup);
@@ -70,6 +82,7 @@ public class LocalSettings {
 		properties.setProperty("active_list", activeList);
 		properties.setProperty("active_group", activeGroup);
 		properties.setProperty("debug", String.valueOf(debugEnabled));
+		properties.setProperty("hours_in_day", String.valueOf(hoursInDay));
 
 		try {
 			properties.store(osInterface.createOutputStream("settings.properties"), "");

@@ -66,7 +66,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
 		commands.put("mk", new MakeCommand(tasks));
 		commands.put("ch", new ChangeCommand(tasks, localSettings));
-		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
+		commands.put("eod", new EndOfDayCommand(tasks, localSettings, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
 		commands.put("info", new InfoCommand(tasks, osInterface));
@@ -115,7 +115,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "ch":
 				return new ChangeCommand(tasks, localSettings);
 			case "eod":
-				return new EndOfDayCommand(tasks, osInterface);
+				return new EndOfDayCommand(tasks, localSettings, osInterface);
 			case "alias":
 				return new AliasCommand(this, osInterface);
 			case "next":
