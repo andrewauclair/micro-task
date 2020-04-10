@@ -35,12 +35,10 @@ public class TaskWriter {
 				writeNL(outputStream);
 				writeTime(outputStream, "start", time.start);
 
-				if (!time.project.isEmpty() || !time.feature.isEmpty()) {
-					writeNL(outputStream);
-					outputStream.write(time.project.getBytes());
-					writeNL(outputStream);
-					outputStream.write(time.feature.getBytes());
-				}
+				writeNL(outputStream);
+				outputStream.write(time.project.getBytes());
+				writeNL(outputStream);
+				outputStream.write(time.feature.getBytes());
 
 				if (time.stop != TaskTimes.TIME_NOT_SET) {
 					writeNL(outputStream);

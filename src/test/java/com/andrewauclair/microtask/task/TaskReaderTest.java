@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -21,6 +22,7 @@ class TaskReaderTest {
 	
 	@Test
 	void read_task_with_just_a_start() throws IOException {
+		// TODO I believe we have a better way to set this up so it's easier to read
 		String contents = "Test" + Utils.NL +
 				"Active" + Utils.NL +
 				"false" + Utils.NL +
@@ -199,6 +201,43 @@ class TaskReaderTest {
 				)
 		);
 		
+		assertEquals(expectedTask, task);
+	}
+
+	@Test
+	@Disabled("Disabled until we address issue #305 in release 20.4.19")
+	void read_task_with_project_feature_that_match_other_known_strings() throws IOException {
+		InputStream inputStream = createInputStream(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"",
+				"add 123",
+				"start 1234",
+				"start", // project
+				"stop", // feature
+				"stop 4567",
+				"start 3333",
+				"Project 2",
+				"Feature 2",
+				"stop 5555"
+		);
+
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+
+		TaskReader reader = new TaskReader(osInterface);
+
+		Task task = reader.readTask(1, "git-data/1.txt");
+
+		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+				Arrays.asList(
+						new TaskTimes(123),
+						new TaskTimes(1234, 4567, "start", "stop"),
+						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
+				)
+		);
+
 		assertEquals(expectedTask, task);
 	}
 	

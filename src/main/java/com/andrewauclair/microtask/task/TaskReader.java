@@ -37,6 +37,10 @@ public class TaskReader {
 					stop = TaskTimes.TIME_NOT_SET;
 
 					foundStartTime = true;
+
+					// TODO Enable this in issue #305 for release 20.4.19
+//					timeProject = scanner.nextLine();
+//					timeFeature = scanner.nextLine();
 				}
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
