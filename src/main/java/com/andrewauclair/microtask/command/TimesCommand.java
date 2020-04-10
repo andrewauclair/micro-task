@@ -469,7 +469,7 @@ public final class TimesCommand implements Runnable {
 		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
 
 		long totalTime = 0;
-		int longestProject = 0;
+		int longestProject = 1;
 
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
@@ -495,7 +495,7 @@ public final class TimesCommand implements Runnable {
 			}
 		}
 
-		int longestTime = Utils.formatTime(totalTime, highestTime).length();
+		int longestTime = Math.max(Utils.formatTime(totalTime, highestTime).length(), 1);
 
 		LinkedHashMap<ProjFeatOutput, Long> collect = outputs.entrySet()
 				.stream()
