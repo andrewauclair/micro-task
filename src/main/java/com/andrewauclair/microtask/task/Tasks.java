@@ -191,7 +191,7 @@ public class Tasks {
 
 		group = getGroup(groupName);
 
-		if (group.getState() == TaskContainerState.Finished) {
+		if (group.getState() == TaskContainerState.Finished && createFiles) {
 			throw new TaskException("List '" + absoluteList + "' cannot be created because group '" + group.getFullPath() + "' has been finished.");
 		}
 
@@ -466,7 +466,7 @@ public class Tasks {
 		return createGroup(groupName, false);
 	}
 
-	private TaskGroup createGroup(String groupName, boolean createFiles) {
+	TaskGroup createGroup(String groupName, boolean createFiles) {
 		if (!groupName.startsWith("/")) {
 			groupName = activeGroup.getFullPath() + groupName;
 		}
@@ -482,7 +482,7 @@ public class Tasks {
 			}
 			TaskGroup parentGroup = getGroup(currentParent);
 
-			if (parentGroup.getState() == TaskContainerState.Finished) {
+			if (parentGroup.getState() == TaskContainerState.Finished && createFiles) {
 				throw new TaskException("Group '" + groupName + "' cannot be created because group '" + parentGroup.getFullPath() + "' has been finished.");
 			}
 

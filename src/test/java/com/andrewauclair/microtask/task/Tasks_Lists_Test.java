@@ -124,6 +124,16 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void does_not_throw_exception_for_finished_list_when_not_creating_files() {
+		tasks.addGroup("/test/");
+		tasks.finishGroup("/test/");
+
+		assertDoesNotThrow(() -> tasks.addList("/test/one", false));
+
+		assertTrue(tasks.getGroup("/test/").containsListAbsolute("/test/one"));
+	}
+
+	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one"));
 		

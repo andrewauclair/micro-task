@@ -149,11 +149,25 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addGroup("/test/one/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.createGroup("/test/one/", true));
 
 		assertEquals("Group '/test/one/' cannot be created because group '/test/' has been finished.", taskException.getMessage());
 
 		assertFalse(tasks.hasGroupPath("/test/one/"));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void does_not_throw_exception_for_finished_group_when_not_creating_files() {
+		tasks.addGroup("/test/");
+		tasks.finishGroup("/test/");
+
+		Mockito.reset(writer, osInterface);
+
+		assertDoesNotThrow(() -> tasks.createGroup("/test/one/", false));
+
+		assertTrue(tasks.hasGroupPath("/test/one/"));
 
 		Mockito.verifyNoInteractions(writer, osInterface);
 	}
