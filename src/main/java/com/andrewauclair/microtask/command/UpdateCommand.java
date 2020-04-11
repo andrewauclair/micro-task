@@ -193,6 +193,8 @@ final class UpdateCommand implements Runnable {
 			if (updated) {
 				System.out.println("Updated to version '" + version + "'");
 				System.out.println();
+				System.out.println(gitLabReleases.changelogForRelease(version, proxy));
+				System.out.println();
 				System.out.println("Press any key to shutdown. Please restart with the new version.");
 
 				// force a restart, but wait for the user to respond first
