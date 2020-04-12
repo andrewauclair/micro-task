@@ -8,7 +8,7 @@ import picocli.CommandLine.Command;
 
 import static picocli.CommandLine.Option;
 
-@Command(name = "add")
+@Command(name = "add", description = "Add a new task.")
 final class AddCommand implements Runnable {
 	private final Tasks tasks;
 	private final Commands commands;
@@ -16,16 +16,16 @@ final class AddCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-n", "--name"}, required = true)
+	@Option(names = {"-n", "--name"}, required = true, description = "The name of the new task.")
 	private String name;
 
-	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to add the new task to.")
 	private String list;
 
-	@Option(names = {"-r", "--recurring"})
+	@Option(names = {"-r", "--recurring"}, description = "Set the task to recurring.")
 	private boolean recurring;
 
-	@Option(names = {"-s", "--start"})
+	@Option(names = {"-s", "--start"}, description = "Start the task immediately.")
 	private boolean start;
 
 	AddCommand(Tasks tasks, Commands commands) {

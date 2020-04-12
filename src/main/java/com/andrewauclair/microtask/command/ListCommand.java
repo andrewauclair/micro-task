@@ -19,7 +19,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
-@Command(name = "list")
+@Command(name = "list", description = "List tasks or the content of a group.")
 final class ListCommand implements Runnable {
 	private static final int MAX_DISPLAYED_TASKS = 20;
 	private final Tasks tasksData;
@@ -28,22 +28,22 @@ final class ListCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--tasks"})
+	@Option(names = {"--tasks"}, description = "List tasks on list or in group.")
 	private boolean tasks;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on this list.")
 	private String list;
 
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
 	private boolean group;
 
-	@Option(names = {"--recursive"})
+	@Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")
 	private boolean recursive;
 
-	@Option(names = {"--finished"})
+	@Option(names = {"--finished"}, description = "List finished tasks.")
 	private boolean finished;
 
-	@Option(names = {"--all"})
+	@Option(names = {"--all"}, description = "List all tasks.")
 	private boolean all;
 
 	ListCommand(Tasks tasks, OSInterface osInterface) {

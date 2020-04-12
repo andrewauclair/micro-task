@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Next_Test extends CommandsBaseTestCase {
 	@Test
@@ -105,7 +103,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  next [-h] [-c=<count>]",
-				"  -c, --count=<count>",
+				"Display the next tasks to be completed.",
+				"  -c, --count=<count>   Number of tasks to display.",
 				"  -h, --help            Show this help message."
 		);
 	}

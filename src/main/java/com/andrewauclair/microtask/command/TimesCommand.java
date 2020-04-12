@@ -25,7 +25,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
-@Command(name = "times")
+@Command(name = "times", description = "Display times for tasks, lists or groups.")
 public final class TimesCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -33,40 +33,40 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--proj-feat"})
+	@Option(names = {"--proj-feat"}, description = "Display times grouped as projects and features.")
 	private boolean proj_feat;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "The list to display times for.")
 	private String[] list;
 
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "The group to display times for.")
 	private String[] group;
 
-	@Option(names = {"--today"})
+	@Option(names = {"--today"}, description = "Display times for today.")
 	private boolean today;
 
-	@Option(names = {"--yesterday"})
+	@Option(names = {"--yesterday"}, description = "Display times for yesterday.")
 	private boolean yesterday;
 
-	@Option(names = {"-d", "--day"})
+	@Option(names = {"-d", "--day"}, description = "Day to display times for.")
 	private Integer day;
 
-	@Option(names = {"-m", "--month"})
+	@Option(names = {"-m", "--month"}, description = "Month to display times for.")
 	private Integer month;
 
-	@Option(names = {"-y", "--year"})
+	@Option(names = {"-y", "--year"}, description = "Year to display times for.")
 	private Integer year;
 
-	@Option(names = {"--week"})
+	@Option(names = {"--week"}, description = "Week to display times for.")
 	private boolean week;
 
-	@Option(names = {"--all-month"})
+	@Option(names = {"--all-month"}, description = "Display times for the entire month")
 	private boolean all_month;
 
-	@Option(names = {"--all-time"})
+	@Option(names = {"--all-time"}, description = "Display all task times recorded.")
 	private boolean all_time;
 
-	@Option(names = {"--total"})
+	@Option(names = {"--total"}, description = "Display only the final total.")
 	private boolean total;
 
 	TimesCommand(Tasks tasks, OSInterface osInterface) {

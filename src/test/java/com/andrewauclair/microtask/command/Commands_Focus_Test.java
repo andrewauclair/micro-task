@@ -21,6 +21,7 @@ class Commands_Focus_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  focus [-h]",
+				"Set the status bar to be in focus.",
 				"  -h, --help   Show this help message."
 		);
 	}

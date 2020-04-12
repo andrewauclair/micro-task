@@ -9,7 +9,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "finish")
+@Command(name = "finish", description = "Finish a task, list or group.")
 final class FinishCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -21,16 +21,16 @@ final class FinishCommand implements Runnable {
 	private FinishOptions options;
 
 	private static final class FinishOptions {
-		@Option(required = true, names = {"-t", "--task"}, split = ",")
+		@Option(required = true, names = {"-t", "--task"}, split = ",", description = "Task(s) to finish.")
 		private Integer[] id;
 
-		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to finish.")
 		private String list;
 
-		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to finish.")
 		private String group;
 
-		@Option(required = true, names = {"-a", "--active"})
+		@Option(required = true, names = {"--active-task"}, description = "Finish the active task.")
 		private boolean active;
 	}
 

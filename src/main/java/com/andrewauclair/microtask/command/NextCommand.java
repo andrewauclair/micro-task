@@ -11,14 +11,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Command(name = "next")
+@Command(name = "next", description = "Display the next tasks to be completed.")
 final class NextCommand implements Runnable {
 	private final Tasks tasks;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-c", "--count"})
+	@Option(names = {"-c", "--count"}, description = "Number of tasks to display.")
 	private int count;
 
 	NextCommand(Tasks tasks) {

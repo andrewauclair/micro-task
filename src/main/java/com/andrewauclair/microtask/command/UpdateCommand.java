@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Command(name = "update")
+@Command(name = "update", description = "Update the application, tasks or push/pull changes to/from remote repo.")
 final class UpdateCommand implements Runnable {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	private final GitLabReleases gitLabReleases;
@@ -35,22 +35,22 @@ final class UpdateCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--tasks"})
+	@Option(names = {"--tasks"}, description = "Rewrite the tasks with the current application version.")
 	private boolean tasks;
 
-	@Option(names = {"-r", "--releases"})
+	@Option(names = {"-r", "--releases"}, description = "Display the available releases on GitLab.")
 	private boolean releases;
 
-	@Option(names = {"-l", "--latest"})
+	@Option(names = {"-l", "--latest"}, description = "Update to the latest release.")
 	private boolean latest;
 
-	@Option(names = {"--release"})
+	@Option(names = {"--release"}, description = "Update to a specific release.")
 	private String release;
 
-	@Option(names = {"--to-remote"})
+	@Option(names = {"--to-remote"}, description = "Push local changes to the remote repo.")
 	private boolean to_remote;
 
-	@Option(names = {"--from-remote"})
+	@Option(names = {"--from-remote"}, description = "Pull changes from the remote repo.")
 	private boolean from_remote;
 
 	@ArgGroup(exclusive = false)
@@ -216,10 +216,10 @@ final class UpdateCommand implements Runnable {
 	}
 
 	private static final class ProxySettings {
-		@Option(names = {"--proxy-ip"}, required = true)
+		@Option(names = {"--proxy-ip"}, required = true, description = "Proxy IP address to use for connecting to GitLab.")
 		private InetAddress proxy_ip;
 
-		@Option(names = {"--proxy-port"}, required = true)
+		@Option(names = {"--proxy-port"}, required = true, description = "Proxy port to use for connecting to GitLab.")
 		private int proxy_port;
 	}
 }

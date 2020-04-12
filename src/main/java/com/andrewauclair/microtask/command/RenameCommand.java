@@ -10,7 +10,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "rename")
+@Command(name = "rename", description = "Rename a task, list or group.")
 final class RenameCommand implements Runnable {
 	private final Tasks tasks;
 
@@ -21,17 +21,17 @@ final class RenameCommand implements Runnable {
 	private Args args;
 
 	private static class Args {
-		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to rename.")
 		private String list;
 
-		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to rename.")
 		private String group;
 
-		@Option(names = {"-t", "--task"})
+		@Option(names = {"-t", "--task"}, description = "Task to rename.")
 		private Long id;
 	}
 
-	@Option(names = {"-n", "--name"}, required = true)
+	@Option(names = {"-n", "--name"}, required = true, description = "The new name for the task, list or group.")
 	private String name;
 
 	RenameCommand(Tasks tasks) {

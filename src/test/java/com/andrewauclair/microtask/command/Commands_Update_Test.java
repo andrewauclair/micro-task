@@ -440,16 +440,18 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  update [--proxy-ip=<proxy_ip> --proxy-port=<proxy_port>] [-hlr]",
 				"               [--from-remote] [--tasks] [--to-remote] [--release=<release>]",
-				"      --from-remote",
+				"Update the application, tasks or push/pull changes to/from remote repo.",
+				"      --from-remote         Pull changes from the remote repo.",
 				"  -h, --help                Show this help message.",
-				"  -l, --latest",
-				"      --proxy-ip=<proxy_ip>",
+				"  -l, --latest              Update to the latest release.",
+				"      --proxy-ip=<proxy_ip> Proxy IP address to use for connecting to GitLab.",
 				"      --proxy-port=<proxy_port>",
-				"",
-				"  -r, --releases",
-				"      --release=<release>",
-				"      --tasks",
-				"      --to-remote"
+				"                            Proxy port to use for connecting to GitLab.",
+				"  -r, --releases            Display the available releases on GitLab.",
+				"      --release=<release>   Update to a specific release.",
+				"      --tasks               Rewrite the tasks with the current application",
+				"                              version.",
+				"      --to-remote           Push local changes to the remote repo."
 		);
 	}
 }

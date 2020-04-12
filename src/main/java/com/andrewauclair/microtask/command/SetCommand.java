@@ -14,16 +14,16 @@ abstract class SetCommand implements Runnable {
 	static final class SetTaskCommand extends SetCommand {
 		private final Tasks tasks;
 
-		@Option(required = true, names = {"--task"})
+		@Option(required = true, names = {"--task"}, description = "Task to set.")
 		private Long id;
 
-		@Option(names = {"-r", "--recurring"})
+		@Option(names = {"-r", "--recurring"}, description = "Set task to recurring.")
 		private Boolean recurring;
 
-		@Option(names = {"--not-recurring"})
+		@Option(names = {"--not-recurring"}, description = "Set task to non-recurring.")
 		private Boolean not_recurring;
 
-		@Option(names = {"--inactive"})
+		@Option(names = {"--inactive"}, description = "Set task state to inactive.")
 		private boolean inactive;
 
 		SetTaskCommand(Tasks tasks) {
@@ -61,7 +61,7 @@ abstract class SetCommand implements Runnable {
 	static final class SetListCommand extends SetCommand {
 		private final Tasks tasks;
 
-		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to set.")
 		private String list;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
@@ -71,7 +71,7 @@ abstract class SetCommand implements Runnable {
 			@ArgGroup(exclusive = false)
 			private ProjectFeature projectFeature;
 
-			@Option(names = {"--in-progress"})
+			@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 			private boolean in_progress;
 		}
 
@@ -123,7 +123,7 @@ abstract class SetCommand implements Runnable {
 	static final class SetGroupCommand extends SetCommand {
 		private final Tasks tasks;
 
-		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to set.")
 		private String group;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
@@ -133,7 +133,7 @@ abstract class SetCommand implements Runnable {
 			@ArgGroup(exclusive = false)
 			private ProjectFeature projectFeature;
 
-			@Option(names = {"--in-progress"})
+			@Option(names = {"--in-progress"}, description = "Set the group state to in progress.")
 			private boolean in_progress;
 		}
 
@@ -183,10 +183,10 @@ abstract class SetCommand implements Runnable {
 	}
 
 	static final class ProjectFeature {
-		@Option(names = {"-p", "--project"})
+		@Option(names = {"-p", "--project"}, description = "The project to set.")
 		private String project;
 
-		@Option(names = {"-f", "--feature"})
+		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
 		private String feature;
 	}
 }

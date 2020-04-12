@@ -65,6 +65,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  stop [-h]",
+				"Stop the active task.",
 				"  -h, --help   Show this help message."
 		);
 	}

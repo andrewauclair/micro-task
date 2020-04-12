@@ -13,7 +13,6 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Builtins;
 import org.jline.builtins.Completers;
-import org.jline.builtins.Widgets;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -83,10 +82,6 @@ public final class Main {
 		builtins.setLineReader(lineReader);
 		bindCtrlBackspace(lineReader);
 		bindCtrlV(lineReader);
-
-		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
-		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
-
 	}
 
 	private static final char BACKSPACE_KEY = '\u0008';
@@ -358,34 +353,6 @@ public final class Main {
 
 		public void run() {
 			out.println(new CommandLine(this).getUsageMessage());
-		}
-	}
-
-	/**
-	 * Provide command descriptions for JLine TailTipWidgets
-	 * to be displayed in the status bar.
-	 */
-	private static final class DescriptionGenerator {
-		final Builtins builtins;
-		final PicocliCommands picocli;
-
-		DescriptionGenerator(Builtins builtins, PicocliCommands picocli) {
-			this.builtins = builtins;
-			this.picocli = picocli;
-		}
-
-		Widgets.CmdDesc commandDescription(Widgets.CmdLine line) {
-			Widgets.CmdDesc out = null;
-
-			if (line.getDescriptionType() == Widgets.CmdLine.DescriptionType.COMMAND) {
-				String cmd = new DefaultParser().getCommand(line.getArgs().get(0));
-
-				if (builtins.hasCommand(cmd) || picocli.hasCommand(cmd)) {
-					out = builtins.commandDescription(cmd);
-				}
-			}
-
-			return out;
 		}
 	}
 }

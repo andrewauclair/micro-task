@@ -10,7 +10,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "move")
+@Command(name = "move", description = "Move a task, list or group.")
 final class MoveCommand implements Runnable {
 	private final Tasks tasks;
 
@@ -21,20 +21,20 @@ final class MoveCommand implements Runnable {
 	private Args args;
 
 	private static class Args {
-		@Option(names = {"-t", "--task"}, split = ",")
+		@Option(names = {"-t", "--task"}, split = ",", description = "Tasks to move.")
 		private Integer[] id;
 
-		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to move.")
 		private String list;
 
-		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to move.")
 		private String group;
 	}
 
-	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class, description = "Destination group for list or group.")
 	private String dest_group;
 
-	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class)
+	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class, description = "Destination list for task.")
 	private String dest_list;
 
 	MoveCommand(Tasks tasks) {

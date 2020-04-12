@@ -333,12 +333,13 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  alias (-c=<command> | -u=<update> | -r | -l) [-h] [-n=<name>]",
-				"  -c, --command=<command>",
-				"  -h, --help                Show this help message.",
-				"  -l, --list",
-				"  -n, --name=<name>",
-				"  -r, --remove",
-				"  -u, --update=<update>"
+						"Add, list, update or delete aliases.",
+						"  -c, --command=<command>   The alias command.",
+						"  -h, --help                Show this help message.",
+						"  -l, --list                List alias commands.",
+						"  -n, --name=<name>         The name of the alias.",
+						"  -r, --remove              Remove alias command.",
+						"  -u, --update=<update>     Update alias command."
 		);
 	}
 }

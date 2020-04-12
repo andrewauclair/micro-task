@@ -11,7 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-@Command(name = "alias")
+@Command(name = "alias", description = "Add, list, update or delete aliases.")
 final class AliasCommand implements Runnable {
 	private final Commands commands;
 	private final OSInterface osInterface;
@@ -19,23 +19,23 @@ final class AliasCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-n", "--name"})
+	@Option(names = {"-n", "--name"}, description = "The name of the alias.")
 	private String name;
 
 	@CommandLine.ArgGroup(multiplicity = "1")
 	private Args args;
 
 	private static class Args {
-		@Option(names = {"-c", "--command"})
+		@Option(names = {"-c", "--command"}, description = "The alias command.")
 		private String command;
 
-		@Option(names = {"-u", "--update"})
+		@Option(names = {"-u", "--update"}, description = "Update alias command.")
 		private String update;
 
-		@Option(names = {"-r", "--remove"})
+		@Option(names = {"-r", "--remove"}, description = "Remove alias command.")
 		private boolean remove;
 
-		@Option(names = {"-l", "--list"})
+		@Option(names = {"-l", "--list"}, description = "List alias commands.")
 		private boolean list;
 	}
 

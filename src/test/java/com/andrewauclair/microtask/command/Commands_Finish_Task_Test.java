@@ -16,7 +16,7 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 		setTime(1561078202);
 		tasks.startTask(2, false);
 		setTime(1561079202);
-		commands.execute(printStream, "finish --active");
+		commands.execute(printStream, "finish --active-task");
 
 		assertOutput(
 				"Finished task 2 - 'Task 2'",

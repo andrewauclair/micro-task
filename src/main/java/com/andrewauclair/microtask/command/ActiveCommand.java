@@ -11,7 +11,7 @@ import picocli.CommandLine.Option;
 
 import java.util.List;
 
-@Command(name = "active")
+@Command(name = "active", description = "Display information about the active task, list and group.")
 final class ActiveCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;

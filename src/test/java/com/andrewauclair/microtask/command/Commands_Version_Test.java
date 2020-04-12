@@ -59,6 +59,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  version [-h]",
+				"Display the application version.",
 				"  -h, --help   Show this help message."
 		);
 	}

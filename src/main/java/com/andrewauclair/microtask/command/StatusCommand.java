@@ -7,14 +7,14 @@ import com.andrewauclair.microtask.os.StatusConsole;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 
-@Command(name = "status")
+@Command(name = "status", description = "Send a command to the status console.")
 public class StatusCommand implements Runnable {
 	private final Commands commands;
 	private final OSInterface osInterface;
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-c", "--command"}, required = true)
+	@Option(names = {"-c", "--command"}, required = true, description = "Command to send to the status console.")
 	private String command;
 
 	StatusCommand(Commands commands, OSInterface osInterface) {

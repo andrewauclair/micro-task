@@ -247,11 +247,12 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  search [-fghv] [-t=<text>]",
-				"  -f, --finished",
-				"  -g, --group",
+				"Search for tasks.",
+				"  -f, --finished      Search for finished tasks.",
+				"  -g, --group         Search for tasks in the current group recursively.",
 				"  -h, --help          Show this help message.",
-				"  -t, --text=<text>",
-				"  -v, --verbose"
+				"  -t, --text=<text>   The text to search for in the task names.",
+				"  -v, --verbose       Display list names in results."
 		);
 	}
 }
