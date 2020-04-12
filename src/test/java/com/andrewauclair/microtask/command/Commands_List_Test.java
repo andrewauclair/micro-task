@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
@@ -121,13 +119,14 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  list [-h] [--all] [--finished] [--group] [--recursive] [--tasks]",
 				"             [--list=<list>]",
-				"      --all",
-				"      --finished",
-				"      --group",
+				"List tasks or the content of a group.",
+				"      --all           List all tasks.",
+				"      --finished      List finished tasks.",
+				"      --group         List tasks in this group.",
 				"  -h, --help          Show this help message.",
-				"      --list=<list>",
-				"      --recursive",
-				"      --tasks"
+				"      --list=<list>   List tasks on this list.",
+				"      --recursive     List tasks recursively in all sub-groups.",
+				"      --tasks         List tasks on list or in group."
 		);
 	}
 }

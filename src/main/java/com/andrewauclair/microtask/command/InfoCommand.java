@@ -12,7 +12,7 @@ import picocli.CommandLine.Parameters;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-@Command(name = "info")
+@Command(name = "info", description = "Display info for a task.")
 final class InfoCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -20,10 +20,10 @@ final class InfoCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Parameters(index = "0")
+	@Parameters(index = "0", description = "The task to display information for.")
 	private long id;
 
-	@Option(names = {"--copy-name"})
+	@Option(names = {"--copy-name"}, description = "Copy the name of the task to the clipboard.")
 	private boolean copy_name;
 
 	InfoCommand(Tasks tasks, OSInterface osInterface) {

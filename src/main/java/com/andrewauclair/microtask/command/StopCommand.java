@@ -11,7 +11,7 @@ import picocli.CommandLine.Option;
 
 import java.util.List;
 
-@Command(name = "stop")
+@Command(name = "stop", description = "Stop the active task.")
 final class StopCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;

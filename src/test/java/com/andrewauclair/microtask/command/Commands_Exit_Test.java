@@ -23,6 +23,7 @@ class Commands_Exit_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  exit [-h]",
+				"Exit the application.",
 				"  -h, --help   Show this help message."
 		);
 	}

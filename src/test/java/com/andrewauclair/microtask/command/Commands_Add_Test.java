@@ -95,11 +95,12 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  add [-hrs] [-l=<list>] -n=<name>",
+				"Add a new task.",
 				"  -h, --help          Show this help message.",
-				"  -l, --list=<list>",
-				"  -n, --name=<name>",
-				"  -r, --recurring",
-				"  -s, --start"
+				"  -l, --list=<list>   The list to add the new task to.",
+				"  -n, --name=<name>   The name of the new task.",
+				"  -r, --recurring     Set the task to recurring.",
+				"  -s, --start         Start the task immediately."
 		);
 	}
 }

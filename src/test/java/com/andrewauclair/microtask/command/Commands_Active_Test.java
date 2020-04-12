@@ -73,6 +73,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  active [-h]",
+				"Display information about the active task, list and group.",
 				"  -h, --help   Show this help message."
 		);
 	}

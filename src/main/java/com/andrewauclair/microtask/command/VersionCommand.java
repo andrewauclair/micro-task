@@ -11,7 +11,7 @@ import java.io.IOException;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 
-@Command(name = "version")
+@Command(name = "version", description = "Display the application version.")
 public final class VersionCommand implements Runnable {
 	private final OSInterface osInterface;
 

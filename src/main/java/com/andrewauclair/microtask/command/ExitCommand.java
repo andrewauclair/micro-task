@@ -7,7 +7,7 @@ import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "exit")
+@Command(name = "exit", description = "Exit the application.")
 final class ExitCommand implements Runnable {
 	private final OSInterface osInterface;
 

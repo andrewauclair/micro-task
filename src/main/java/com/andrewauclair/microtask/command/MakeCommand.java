@@ -7,7 +7,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "mk")
+@Command(name = "mk", description = "Make a new list or group.")
 final class MakeCommand implements Runnable {
 	private final Tasks tasks;
 
@@ -48,10 +48,10 @@ final class MakeCommand implements Runnable {
 	}
 
 	private static final class ListGroup {
-		@Option(names = {"-l", "--list"})
+		@Option(names = {"-l", "--list"}, description = "Make a list.")
 		private String list;
 
-		@Option(names = {"-g", "--group"})
+		@Option(names = {"-g", "--group"}, description = "Make a group.")
 		private String group;
 	}
 }

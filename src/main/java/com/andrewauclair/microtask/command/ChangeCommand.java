@@ -11,7 +11,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "ch")
+@Command(name = "ch", description = "Change the current list or group.")
 final class ChangeCommand implements Runnable {
 	private final Tasks tasks;
 	private final LocalSettings localSettings;
@@ -72,10 +72,10 @@ final class ChangeCommand implements Runnable {
 	}
 
 	private static final class ListGroup {
-		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to change to.")
 		private String list;
 
-		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to change to.")
 		private String group;
 	}
 }

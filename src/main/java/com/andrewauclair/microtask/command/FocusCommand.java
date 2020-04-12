@@ -7,7 +7,7 @@ import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 
-@Command(name = "focus")
+@Command(name = "focus", description = "Set the status bar to be in focus.")
 final class FocusCommand implements Runnable {
 	private final OSInterface osInterface;
 

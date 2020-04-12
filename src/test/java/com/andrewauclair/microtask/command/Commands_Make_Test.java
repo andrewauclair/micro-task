@@ -10,9 +10,10 @@ class Commands_Make_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  mk (-l=<list> | -g=<group>) [-h]",
-				"  -g, --group=<group>",
+				"Make a new list or group.",
+				"  -g, --group=<group>   Make a group.",
 				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>"
+				"  -l, --list=<list>     Make a list."
 		);
 	}
 }

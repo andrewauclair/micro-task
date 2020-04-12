@@ -47,17 +47,17 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 	@Test
 	void eod_command_uses_local_settings_when_hours_option_is_missing() {
 		commands.execute(printStream, "eod");
-		
+
 		assertOutput(
 				"End of Day is in 58m  8s at 04:17:15 PM",
 				""
 		);
 	}
-	
+
 	@Test
 	void eod_command_prints_day_complete_when_past_end_of_day() {
 		commands.execute(printStream, "eod --hours 1");
-		
+
 		assertOutput(
 				"Day complete.",
 				""
@@ -70,8 +70,9 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  eod [-h] [--hours=<hours>]",
+				"Print the end of the day time and time remaining.",
 				"  -h, --help            Show this help message.",
-				"      --hours=<hours>"
+				"      --hours=<hours>   Number of hours in the day."
 		);
 	}
 }

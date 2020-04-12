@@ -15,7 +15,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Command(name = "eod")
+@Command(name = "eod", description = "Print the end of the day time and time remaining.")
 final class EndOfDayCommand implements Runnable {
 	private final Tasks tasks;
 	private final LocalSettings localSettings;
@@ -24,7 +24,7 @@ final class EndOfDayCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--hours"})
+	@Option(names = {"--hours"}, description = "Number of hours in the day.")
 	private Integer hours;
 
 	EndOfDayCommand(Tasks tasks, LocalSettings localSettings, OSInterface osInterface) {

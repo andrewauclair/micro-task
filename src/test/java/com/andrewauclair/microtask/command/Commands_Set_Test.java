@@ -26,10 +26,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  set-task [-hr] [--inactive] [--not-recurring] --task=<id>",
 				"  -h, --help            Show this help message.",
-				"      --inactive",
-				"      --not-recurring",
-				"  -r, --recurring",
-				"      --task=<id>"
+				"      --inactive        Set task state to inactive.",
+				"      --not-recurring   Set task to non-recurring.",
+				"  -r, --recurring       Set task to recurring.",
+				"      --task=<id>       Task to set."
 		);
 	}
 
@@ -40,11 +40,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  set-list ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
 				"                 -l=<list>",
-				"  -f, --feature=<feature>",
+				"  -f, --feature=<feature>   The feature to set.",
 				"  -h, --help                Show this help message.",
-				"      --in-progress",
-				"  -l, --list=<list>",
-				"  -p, --project=<project>"
+				"      --in-progress         Set the list state to in progress.",
+				"  -l, --list=<list>         The list to set.",
+				"  -p, --project=<project>   The project to set."
 		);
 	}
 
@@ -55,11 +55,11 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  set-group ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
 				"                  -g=<group>",
-				"  -f, --feature=<feature>",
-				"  -g, --group=<group>",
+				"  -f, --feature=<feature>   The feature to set.",
+				"  -g, --group=<group>       The group to set.",
 				"  -h, --help                Show this help message.",
-				"      --in-progress",
-				"  -p, --project=<project>"
+				"      --in-progress         Set the list state to in progress.",
+				"  -p, --project=<project>   The project to set."
 		);
 	}
 }

@@ -185,8 +185,9 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  start [-fh] <id>",
-				"      <id>",
-				"  -f, --finish",
+				"Start a task.",
+				"      <id>       The task to start.",
+				"  -f, --finish   Finish the active task.",
 				"  -h, --help     Show this help message."
 		);
 	}
