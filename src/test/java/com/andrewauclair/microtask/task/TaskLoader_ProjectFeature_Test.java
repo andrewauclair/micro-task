@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,33 +31,8 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
 	}
 
-	// TODO We don't need to support this format anymore
 	@Test
-	void load_projects_and_features_for_groups_old_format() throws IOException {
-		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
-				)
-		);
-
-		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false)
-				)
-		);
-
-		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				createInputStream("Project X", "Feature Y")
-		);
-
-		loader.load();
-
-		assertEquals("Project X", tasks.getGroup("/one/").getProject());
-		assertEquals("Feature Y", tasks.getGroup("/one/").getFeature());
-	}
-
-	@Test
-	void load_projects_and_features_for_groups_new_format() throws IOException {
+	void load_projects_and_features_for_groups() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
 						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
@@ -117,31 +91,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	void load_projects_and_features_for_lists_old_format() throws IOException {
-		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("two", "git-data/tasks/two", true)
-				)
-		);
-
-		Mockito.when(osInterface.listFiles("git-data/tasks/two")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("list.txt", "git-data/tasks/two/list.txt", false)
-				)
-		);
-
-		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
-				createInputStream("Project X", "Feature Y")
-		);
-
-		loader.load();
-
-		assertEquals("Project X", tasks.getListByName("/two").getProject());
-		assertEquals("Feature Y", tasks.getListByName("/two").getFeature());
-	}
-
-	@Test
-	void load_projects_and_features_for_lists_new_format() throws IOException {
+	void load_projects_and_features_for_lists() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
 						new OSInterface.TaskFileInfo("two", "git-data/tasks/two", true)
@@ -162,30 +112,6 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 
 		assertEquals("Project X", tasks.getListByName("/two").getProject());
 		assertEquals("Feature Y", tasks.getListByName("/two").getFeature());
-	}
-
-	@Test
-	void handles_loading_original_group_txt_files_that_were_empty() throws IOException {
-		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
-				)
-		);
-
-		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
-				Collections.singletonList(
-						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false)
-				)
-		);
-
-		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				createInputStream("")
-		);
-
-		loader.load();
-
-		assertEquals("", tasks.getGroup("/one/").getProject());
-		assertEquals("", tasks.getGroup("/one/").getFeature());
 	}
 
 	@Test
