@@ -3,6 +3,8 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.task.TaskGroup;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -24,7 +26,7 @@ final class MakeCommand implements Runnable {
 	@Override
 	public void run() {
 		if (listGroup.list != null) {
-			String list = this.listGroup.list.toLowerCase();
+			String list = this.listGroup.list.absoluteName().toLowerCase();
 
 			boolean added = tasks.addList(list, true);
 
@@ -40,7 +42,7 @@ final class MakeCommand implements Runnable {
 		}
 
 		if (listGroup.group != null) {
-			TaskGroup group = tasks.createGroup(this.listGroup.group.toLowerCase());
+			TaskGroup group = tasks.createGroup(this.listGroup.group.absoluteName().toLowerCase());
 
 			System.out.println("Created group '" + group.getFullPath() + "'");
 			System.out.println();
@@ -49,9 +51,9 @@ final class MakeCommand implements Runnable {
 
 	private static final class ListGroup {
 		@Option(names = {"-l", "--list"}, description = "Make a list.")
-		private String list;
+		private NewTaskListName list;
 
 		@Option(names = {"-g", "--group"}, description = "Make a group.")
-		private String group;
+		private NewTaskGroupName group;
 	}
 }

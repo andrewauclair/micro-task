@@ -20,13 +20,13 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 		tasks.addList("one", true);
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");
 
 		tasks.addList("/test/two/three/five", true);
-		tasks.setActiveList("/test/two/three/five");
+		tasks.setActiveList(existingList("/test/two/three/five"));
 
 		Task task6 = tasks.addTask("Test");
 
@@ -62,7 +62,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 		tasks.addList("one", true);
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");

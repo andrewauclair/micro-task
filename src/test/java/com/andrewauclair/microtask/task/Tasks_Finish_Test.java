@@ -24,7 +24,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		tasks.startTask(1, false);
 		
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 		
 		tasks.addTask("Test 2");
 		
@@ -42,7 +42,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		tasks.startTask(1, false);
 		
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 		
 		tasks.addTask("Test 2");
 		
@@ -63,7 +63,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 		
 		Task task = tasks.finishTask(1);
 		

@@ -52,7 +52,7 @@ public final class TaskBuilder {
 	}
 
 	Task start(long start, Tasks tasks) {
-		taskTimes.add(new TaskTimes(start, tasks.getProjectForTask(id), tasks.getFeatureForTask(id)));
+		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(id), new TaskFinder(tasks).getFeatureForTask(id)));
 		state = TaskState.Active;
 		return build();
 	}
@@ -85,9 +85,4 @@ public final class TaskBuilder {
 		state = TaskState.Inactive;
 		return build();
 	}
-
-//	public Task rename(String name) {
-//		withName(name);
-//		return build();
-//	}
 }

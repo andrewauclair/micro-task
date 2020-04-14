@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.TestUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -25,13 +26,22 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void does_not_contain_test_list_at_start() {
-		assertFalse(tasks.hasListWithName("test"));
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		TaskListName listName = new TaskListName(tasks, "test") {};
+		
+		assertFalse(finder.hasList(listName));
 	}
 
 	@Test
 	void contains_list_after_creating_it() {
 		tasks.addList("test", true);
-		assertTrue(tasks.hasListWithName("/test"));
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		TaskListName listName = new TaskListName(tasks, "test") {};
+		
+		assertTrue(finder.hasList(listName));
 	}
 
 	@Test
@@ -53,12 +63,12 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		tasks.addTask("default List Task 2");
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("test List Task 1");
 		tasks.addTask("test List Task 2");
 
-		tasks.setActiveList("default");
+		tasks.setActiveList(existingList("default"));
 
 		assertThat(tasks.getTasksForList("default")).containsOnly(
 				new Task(1, "default List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
@@ -135,14 +145,15 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList(existingList("/one")));
 		
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 	
 	@Test
+	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
 	void setCurrentList_throws_exception_when_group_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList("/one/two"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList(existingList("/one/two")));
 		
 		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
 	}

@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskWriter;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -89,7 +90,7 @@ public class CommandsBaseTestCase {
 		assertThat(outputStream.toString()).isEqualTo(output.toString());
 	}
 
-//	protected void assertExceptionOutput(Class<?> e, String message) {
-//		assertThat(outputStream.toString()).startsWith(e.getName() + ": " + message);
-//	}
+	public ExistingTaskListName existingList(String name) {
+		return new ExistingTaskListName(tasks, name);
+	}
 }

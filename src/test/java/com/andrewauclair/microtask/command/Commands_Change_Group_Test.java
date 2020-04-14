@@ -19,7 +19,7 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void switch_to_relative_group() {
 		tasks.createGroup("/one/two/three/");
-		tasks.switchGroup("/one/two/");
+		tasks.setActiveGroup("/one/two/");
 
 		commands.execute(printStream, "ch -g three/");
 
@@ -27,30 +27,6 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 				"Switched to group '/one/two/three/'",
 				""
 		);
-	}
-
-	@Test
-	void move_back_one_group_with_dot_dot_parameter() {
-		tasks.createGroup("/one/two/");
-		tasks.switchGroup("/one/two/");
-
-		commands.execute(printStream, "ch -g ..");
-
-		assertOutput(
-				"Switched to group '/one/'",
-				""
-		);
-
-		assertEquals("/one/", tasks.getActiveGroup().getFullPath());
-	}
-
-	@Test
-	void dot_dot_parameter_does_nothing_in_root_group() {
-		commands.execute(printStream, "ch -g ..");
-
-		assertOutput();
-
-		assertEquals("/", tasks.getActiveGroup().getFullPath());
 	}
 
 	@Test
@@ -67,7 +43,7 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch -g /project/test");
 
 		assertOutput(
-				"'/project/test' is not a valid group path",
+				"Invalid value for option '--group': Group name must end in /",
 				""
 		);
 	}

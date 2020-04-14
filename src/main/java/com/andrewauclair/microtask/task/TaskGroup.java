@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 public final class TaskGroup implements TaskContainer {
-	private static final String ROOT_PATH = "/";
+	public static final String ROOT_PATH = "/";
 
 	private final String name;
 	private final String fullPath;

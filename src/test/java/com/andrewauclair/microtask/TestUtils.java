@@ -1,5 +1,9 @@
 package com.andrewauclair.microtask;
 
+import com.andrewauclair.microtask.picocli.ExistingTaskListNameTypeConverter;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,5 +20,11 @@ public class TestUtils {
 		}
 
 		assertThat(stream.toString()).isEqualTo(output.toString());
+	}
+
+	public static InputStream createInputStream(String... lines) {
+		String content = String.join(Utils.NL, lines);
+
+		return new ByteArrayInputStream(content.getBytes());
 	}
 }

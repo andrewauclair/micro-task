@@ -42,12 +42,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
 		tasks.setFeature(tasks.getGroup("/"), "Short Feat", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
 
@@ -93,7 +93,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.setProject(tasks.getListByName("/default"), "Short Proj", true);
 		tasks.setFeature(tasks.getListByName("/default"), "UI", true);
 
@@ -101,7 +101,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
 
@@ -109,7 +109,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.addTask(task5);
 
 		tasks.addList("/two/three", true);
-		tasks.setActiveList("/two/three");
+		tasks.setActiveList(existingList("/two/three"));
 		tasks.setProject(tasks.getListByName("/two/three"), "Three Proj", true);
 
 		tasks.addTask(task6);
@@ -155,12 +155,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
 		tasks.setFeature(tasks.getGroup("/"), "Impl", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -203,12 +203,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 
@@ -259,12 +259,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 
@@ -318,12 +318,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 
@@ -383,12 +383,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 
@@ -435,12 +435,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
 		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
 
@@ -490,7 +490,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void tasks_with_no_project_or_feature_say_none() {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
@@ -525,12 +525,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -567,12 +567,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList("/one", true);
-		tasks.setActiveList("/one");
+		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);

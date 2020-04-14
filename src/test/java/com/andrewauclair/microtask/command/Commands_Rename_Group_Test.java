@@ -27,7 +27,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_active_group_sets_active_group_to_new_group_name() {
 		tasks.addGroup("/one/");
-		tasks.switchGroup("/one/");
+		tasks.setActiveGroup("/one/");
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
 
@@ -38,7 +38,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 	void renaming_parent_adds_child_list_to_new_parent() {
 		tasks.addList("/one/test", true);
 
-		tasks.setActiveList("/one/test");
+		tasks.setActiveList(existingList("/one/test"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
@@ -50,7 +50,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 	void renaming_parent_adds_child_group_to_new_parent() {
 		tasks.addList("/one/two/three", true);
 
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename --group /one/ -n \"/test/\"");
@@ -67,7 +67,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename --group /one -n \"/two/\"");
 
 		assertOutput(
-				"Old group name should end with /",
+				"Invalid value for option '--group': Group name must end in /",
 				""
 		);
 	}

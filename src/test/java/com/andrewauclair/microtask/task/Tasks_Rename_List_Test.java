@@ -18,7 +18,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
 		tasks.addList("one", true);
 
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -41,7 +41,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	void catch_IOException_from_moveFolder_for_renameList() throws IOException {
 		tasks.addList("one", true);
 
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -66,7 +66,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
 		tasks.addList("one", true);
 
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
@@ -85,7 +85,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	void renaming_current_list_changes_the_name_of_current_list() {
 		tasks.addList("one", true);
 
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 
 		tasks.renameList("one", "two");
 
@@ -96,7 +96,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	void renaming_active_list_changes_the_name_of_active_list() {
 		tasks.addList("one", true);
 
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 
 		tasks.addTask("Test");
 
@@ -104,7 +104,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 		tasks.renameList("one", "two");
 
-		assertEquals("/two", tasks.getActiveTaskList());
+		assertEquals("/two", tasks.getActiveTaskList().absoluteName());
 	}
 
 	@Test
@@ -126,11 +126,11 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 		tasks.addList("/test", true);
 		tasks.finishList("/test");
 
-		TaskGroup originalGroup = tasks.getGroupForList("/test");
+		TaskGroup originalGroup = tasks.getGroupForList(existingList("/test"));
 
 		assertThrows(TaskException.class, () -> tasks.renameList("test", "new"));
 
-		assertEquals(originalGroup, tasks.getGroupForList("/test"));
+		assertEquals(originalGroup, tasks.getGroupForList(existingList("/test")));
 	}
 
 	@Test
@@ -142,8 +142,10 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 	@Test
 	void list_rename_throws_exception_if_old_group_does_not_exist() {
+		tasks.addGroup("/one/");
+		
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("/one/two", "/one/three"));
 
-		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
+		assertEquals("List '/one/two' does not exist.", taskException.getMessage());
 	}
 }

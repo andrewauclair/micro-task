@@ -89,7 +89,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		assertEquals("/test", tasks.getActiveList());
 
@@ -105,7 +105,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		assertEquals("/test", tasks.getActiveList());
 
@@ -165,11 +165,11 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	void starting_task_from_different_group() {
 		tasks.addList("/one/two/three/test", true);
 		
-		tasks.switchGroup("/one/two/three/");
+		tasks.setActiveGroup("/one/two/three/");
 
 		tasks.addTask("Test");
 		
-		tasks.switchGroup("/one/two/");
+		tasks.setActiveGroup("/one/two/");
 
 		Task task = tasks.startTask(1, false);
 

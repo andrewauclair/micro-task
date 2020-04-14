@@ -4,6 +4,8 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
 
@@ -62,7 +64,7 @@ abstract class SetCommand implements Runnable {
 		private final Tasks tasks;
 
 		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to set.")
-		private String list;
+		private ExistingTaskListName list;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
 		SetListArgs args;
@@ -86,7 +88,7 @@ abstract class SetCommand implements Runnable {
 			}
 
 			if (args.in_progress) {
-				TaskList list = tasks.getListByName(this.list);
+				TaskList list = tasks.getListByName(this.list.absoluteName());
 
 				if (list.getState() == TaskContainerState.Finished) {
 					tasks.setListState(list, TaskContainerState.InProgress, true);
@@ -103,7 +105,7 @@ abstract class SetCommand implements Runnable {
 
 		private void handleProjectAndFeature() {
 			if (args.projectFeature.project != null) {
-				TaskList listByName = tasks.getListByName(this.list);
+				TaskList listByName = tasks.getListByName(this.list.absoluteName());
 				String project = this.args.projectFeature.project;
 				tasks.setProject(listByName, project, true);
 
@@ -111,7 +113,7 @@ abstract class SetCommand implements Runnable {
 			}
 
 			if (args.projectFeature.feature != null) {
-				TaskList listByName = tasks.getListByName(this.list);
+				TaskList listByName = tasks.getListByName(this.list.absoluteName());
 				String feature = this.args.projectFeature.feature;
 				tasks.setFeature(listByName, feature, true);
 
@@ -124,7 +126,7 @@ abstract class SetCommand implements Runnable {
 		private final Tasks tasks;
 
 		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to set.")
-		private String group;
+		private ExistingTaskGroupName group;
 
 		@ArgGroup(exclusive = false, multiplicity = "1")
 		SetListCommand.SetListArgs args;
@@ -148,7 +150,7 @@ abstract class SetCommand implements Runnable {
 			}
 
 			if (args.in_progress) {
-				TaskGroup group = tasks.getGroup(this.group);
+				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
 				if (group.getState() == TaskContainerState.Finished) {
 					tasks.setGroupState(group, TaskContainerState.InProgress, true);
@@ -165,7 +167,7 @@ abstract class SetCommand implements Runnable {
 
 		private void handleProjectAndFeature() {
 			if (args.projectFeature.project != null) {
-				TaskGroup group = tasks.getGroup(this.group);
+				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 				String project = this.args.projectFeature.project;
 				tasks.setProject(group, project, true);
 
@@ -173,7 +175,7 @@ abstract class SetCommand implements Runnable {
 			}
 
 			if (args.projectFeature.feature != null) {
-				TaskGroup group = tasks.getGroup(this.group);
+				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 				String feature = this.args.projectFeature.feature;
 				tasks.setFeature(group, feature, true);
 

@@ -6,6 +6,8 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -25,17 +27,17 @@ final class MoveCommand implements Runnable {
 		private Integer[] id;
 
 		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to move.")
-		private String list;
+		private ExistingTaskListName list;
 
 		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to move.")
-		private String group;
+		private ExistingTaskGroupName group;
 	}
 
 	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class, description = "Destination group for list or group.")
-	private String dest_group;
+	private ExistingTaskGroupName dest_group;
 
 	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class, description = "Destination list for task.")
-	private String dest_list;
+	private ExistingTaskListName dest_list;
 
 	MoveCommand(Tasks tasks) {
 		this.tasks = tasks;
@@ -49,7 +51,7 @@ final class MoveCommand implements Runnable {
 			}
 
 			for (Integer taskID : args.id) {
-				moveTask(dest_list, taskID);
+				moveTask(dest_list.absoluteName(), taskID);
 			}
 			System.out.println();
 		}
@@ -68,7 +70,7 @@ final class MoveCommand implements Runnable {
 				throw new TaskException("move --group requires --dest-group");
 			}
 
-			tasks.moveGroup(args.group, dest_group);
+			tasks.moveGroup(args.group.absoluteName(), dest_group.absoluteName());
 
 			System.out.println("Moved group '" + args.group + "' to group '" + dest_group + "'");
 			System.out.println();

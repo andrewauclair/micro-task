@@ -303,13 +303,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 		
 		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 		
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 		
 		tasks.addList("/test/two", true);
-		tasks.setActiveList("/test/two");
+		tasks.setActiveList(existingList("/test/two"));
 		
 		tasks.addTask("Test 5");
 		
@@ -330,13 +330,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 
 		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 
 		tasks.addList("/test/two", true);
-		tasks.setActiveList("/test/two");
+		tasks.setActiveList(existingList("/test/two"));
 
 		Task task5 = tasks.addTask("Test 5");
 
@@ -366,21 +366,21 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		tasks.addList("/two/impl", true);
 		tasks.addList("/two/test", true);
 
-		tasks.setActiveList("/one/impl");
+		tasks.setActiveList(existingList("/one/impl"));
 
 		Task task1 = tasks.addTask("Test 1");
 		Task task2 = tasks.addTask("Test 2");
 
-		tasks.setActiveList("/one/test");
+		tasks.setActiveList(existingList("/one/test"));
 
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 
-		tasks.setActiveList("/two/impl");
+		tasks.setActiveList(existingList("/two/impl"));
 		tasks.addTask("Test 5");
 		tasks.addTask("Test 6");
 
-		tasks.setActiveList("/two/test");
+		tasks.setActiveList(existingList("/two/test"));
 		tasks.addTask("Test 7");
 		tasks.addTask("Test 8");
 

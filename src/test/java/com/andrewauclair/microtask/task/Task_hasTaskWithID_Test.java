@@ -13,6 +13,7 @@ class Task_hasTaskWithID_Test extends TaskBaseTestCase {
 
 		tasks.finishList("/test");
 
-		assertTrue(tasks.hasTaskWithID(1));
+		TaskFinder finder = new TaskFinder(tasks);
+		assertTrue(finder.hasTaskWithID(1));
 	}
 }

@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -31,8 +32,8 @@ final class ListCommand implements Runnable {
 	@Option(names = {"--tasks"}, description = "List tasks on list or in group.")
 	private boolean tasks;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on this list.")
-	private String list;
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
+	private ExistingTaskListName list;
 
 	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
 	private boolean group;
@@ -148,7 +149,7 @@ final class ListCommand implements Runnable {
 		String list = tasksData.getActiveList();
 
 		if (this.list != null) {
-			list = this.list;
+			list = this.list.absoluteName();
 		}
 
 		if (!list.startsWith("/")) {

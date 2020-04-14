@@ -8,16 +8,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Tasks_Load_Test extends TaskBaseTestCase {
-	private TaskLoader loader = Mockito.mock(TaskLoader.class);
-	private Commands commands = Mockito.mock(Commands.class);
+	private final TaskLoader loader = Mockito.mock(TaskLoader.class);
+	private final Commands commands = Mockito.mock(Commands.class);
 
 	@Test
 	void load_tasks_from_disk() throws IOException {
@@ -79,12 +83,13 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	@Test
 	void tasks_clears_all_data_before_loading() {
 		tasks.addList("/test/one/two", true);
-		tasks.setActiveList("/test/one/two");
+		tasks.setActiveList(existingList("/test/one/two"));
 		tasks.addTask("Test");
 
 		tasks.load(loader, commands);
 
-		assertFalse(tasks.hasTaskWithID(1));
+		TaskFinder finder = new TaskFinder(tasks);
+		assertFalse(finder.hasTaskWithID(1));
 		assertFalse(tasks.hasGroupPath("/test/one"));
 	}
 
@@ -97,9 +102,9 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 			tasks.addList("/default", true);
 			tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
 			tasks.addList("/test/data", true);
-			tasks.setActiveList("/test/data");
+			tasks.setActiveList(existingList("/test/data"));
 			tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
-			tasks.setActiveList("/default");
+			tasks.setActiveList(existingList("/default"));
 			return true;
 		}).when(loader).load();
 		
@@ -126,9 +131,7 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 	@Test
 	void tasks_loads_the_next_id_text_file() throws IOException {
-		ByteArrayInputStream inputStream = new ByteArrayInputStream("2".getBytes());
-
-		Mockito.when(osInterface.createInputStream("git-data/next-id.txt")).thenReturn(new DataInputStream(inputStream));
+		Mockito.when(osInterface.createInputStream("git-data/next-id.txt")).thenReturn(createInputStream("2"));
 
 		tasks.load(loader, commands);
 
@@ -138,7 +141,7 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	@Test
 	void tasks_load_resets_active_group() {
 		tasks.createGroup("/one/");
-		tasks.switchGroup("/one/");
+		tasks.setActiveGroup("/one/");
 
 		tasks.load(loader, commands);
 

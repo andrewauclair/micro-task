@@ -6,13 +6,25 @@ import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.TaskListFileWriter;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
+
+// TODO Maybe this file becomes TasksData and really only contains the rootGroup, activeGroup, activeTaskID, activeList and nextID variables
+// TODO Find good names for the classes that will take over most of the methods in this class, there might be a few of them
+// TODO If we split the classes up enough, we could maybe add a list and group subpackage for task where we store those classes
 
 @SuppressWarnings("CanBeFinal")
 public class Tasks {
@@ -22,7 +34,7 @@ public class Tasks {
 	private final PrintStream output;
 	private final TaskWriter writer;
 
-	private TaskGroup rootGroup = new TaskGroup("/");
+	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
 	private TaskGroup activeGroup = rootGroup;
 	private long activeTaskID = NO_ACTIVE_TASK;
@@ -37,22 +49,30 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 
-		if (!osInterface.fileExists("git-data")) {
-			String username = osInterface.getEnvVar("username");
-
-			osInterface.createFolder("git-data");
-			osInterface.runGitCommand("git init");
-			osInterface.runGitCommand("git config user.name \"" + username + "\"");
-			osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"");
-
-			Utils.writeCurrentVersion(osInterface);
-			writeNextID();
-
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Created new micro task instance.\"");
-
-			addList("default", true);
+		if (hasRepo()) {
+			createNewRepo(osInterface);
 		}
+	}
+
+	private boolean hasRepo() {
+		return !osInterface.fileExists("git-data");
+	}
+
+	private void createNewRepo(OSInterface osInterface) {
+		String username = osInterface.getEnvVar("username");
+
+		osInterface.createFolder("git-data");
+		osInterface.runGitCommand("git init");
+		osInterface.runGitCommand("git config user.name \"" + username + "\"");
+		osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"");
+
+		Utils.writeCurrentVersion(osInterface);
+		writeNextID();
+
+		new GitHelper(osInterface)
+				.commit("Created new micro task instance.");
+
+		addList("default", true);
 	}
 
 	public TaskFilterBuilder getFilterBuilder() {
@@ -68,18 +88,17 @@ public class Tasks {
 	}
 
 	// TODO This is really only used in the tests, maybe we shouldn't have it
+	// TODO I'd like to convert as many tests as possible over to using the /default list, they don't need to be making so many lists
 	public Task addTask(String task) {
 		return addTask(task, activeList);
 	}
 
 	public Task addTask(String task, String list) {
-		return getList(list).addTask(incrementID(), task);
+		return getList(new ExistingTaskListName(this, list)).addTask(incrementID(), task);
 	}
 
-	private TaskList getList(String name) {
-		String absoluteList = getAbsoluteListName(name);
-
-		return getGroupForList(absoluteList).getListAbsolute(absoluteList);
+	TaskList getList(ExistingTaskListName listName) {
+		return getGroupForList(listName).getListAbsolute(listName.absoluteName());
 	}
 
 	private long incrementID() {
@@ -92,8 +111,8 @@ public class Tasks {
 	}
 
 	private void writeNextID() {
-		try (OutputStream outputStream = osInterface.createOutputStream("git-data/next-id.txt")) {
-			outputStream.write(String.valueOf(this.nextID).getBytes());
+		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/next-id.txt"))) {
+			outputStream.print(this.nextID);
 		}
 		catch (IOException e) {
 			e.printStackTrace(output);
@@ -101,16 +120,17 @@ public class Tasks {
 	}
 
 	public String getAbsoluteListName(String name) {
-		if (!name.startsWith("/")) {
+		if (!name.startsWith(ROOT_PATH)) {
 			return activeGroup.getFullPath() + name;
 		}
 		return name;
 	}
 
-	public TaskGroup getGroupForList(String name) {
-		String groupName = getGroupNameForList(name);
+	// TODO Remove this, we still need it right now for hasListWithName
+	private TaskGroup groupForList(String name) {
+		TaskListName groupName = new TaskListName(this, name);
 
-		TaskGroup group = getGroup(groupName);
+		TaskGroup group = getGroup(groupName.parentGroupName());
 
 		if (!group.containsListAbsolute(name)) {
 			throw new TaskException("List '" + name + "' does not exist.");
@@ -118,19 +138,22 @@ public class Tasks {
 		return group;
 	}
 
-	private String getGroupNameForList(String name) {
-		String absoluteList = getAbsoluteListName(name);
+	public TaskGroup getGroupForList(ExistingTaskListName list) {
+		TaskGroup group = getGroup(list.parentGroupName());
 
-		return absoluteList.substring(0, absoluteList.lastIndexOf('/') + 1);
+		if (!group.containsListAbsolute(list.absoluteName())) {
+			throw new TaskException("List '" + list.absoluteName() + "' does not exist.");
+		}
+		return group;
 	}
 
 	public TaskGroup getGroup(String name) {
-		name = getAbsoluteGroupName(name);
+		TaskGroupName groupName = new TaskGroupName(this, name);
 
-		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(name);
+		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(groupName.absoluteName());
 
 		if (optionalGroup.isEmpty()) {
-			throw new TaskException("Group '" + name + "' does not exist.");
+			throw new TaskException("Group '" + groupName + "' does not exist.");
 		}
 		return optionalGroup.get();
 	}
@@ -146,9 +169,9 @@ public class Tasks {
 		return nextID;
 	}
 
-	public void moveList(String list, String group) {
+	public void moveList(ExistingTaskListName list, ExistingTaskGroupName group) {
 		TaskList currentList = getList(list);
-		TaskList newList = getGroupForList(list).moveList(currentList, getGroup(group), output, osInterface);
+		TaskList newList = getGroupForList(list).moveList(currentList, getGroup(group.absoluteName()), output, osInterface);
 
 		if (activeList.equals(currentList.getFullPath())) {
 			activeList = newList.getFullPath();
@@ -165,12 +188,13 @@ public class Tasks {
 		}
 	}
 
-	public Task moveTask(long id, String list) {
-		return getListForTask(id).moveTask(id, getList(list));
+	public Task moveTask(long id, ExistingTaskListName listName) {
+		return getListForTask(id).moveTask(id, getList(listName));
 	}
 
 	public TaskList getListForTask(long id) {
-		if (!hasTaskWithID(id)) {
+		TaskFinder finder = new TaskFinder(this);
+		if (!finder.hasTaskWithID(id)) {
 			throw new TaskException("Task " + id + " does not exist.");
 		}
 		return findListForTask(id);
@@ -183,8 +207,10 @@ public class Tasks {
 	public boolean addList(String name, boolean createFiles) {
 		TaskGroup group;
 
-		String absoluteList = getAbsoluteListName(name);
-		String groupName = getGroupNameForList(absoluteList);
+		TaskListName listName = new TaskListName(this, name);
+		String absoluteList = listName.absoluteName();
+
+		String groupName = listName.parentGroupName();
 
 		// create any groups in the path that don't exist
 		createGroup(groupName, createFiles);
@@ -200,17 +226,17 @@ public class Tasks {
 			return false;
 		}
 
-		TaskList newList = new TaskList(absoluteList.substring(absoluteList.lastIndexOf('/') + 1), group, osInterface, writer, "", "", TaskContainerState.InProgress);
+		TaskList newList = new TaskList(listName.shortName(), group, osInterface, writer, "", "", TaskContainerState.InProgress);
 
 		group.addChild(newList);
 
 		osInterface.createFolder("git-data/tasks" + newList.getFullPath());
 
 		if (createFiles) {
-			writeListInfoFile(newList, "git-data");
+			new TaskListFileWriter(newList, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Created list '" + newList.getFullPath() + "'\"");
+			new GitHelper(osInterface)
+					.commit("Created list '" + newList.getFullPath() + "'");
 		}
 
 		return true;
@@ -225,14 +251,14 @@ public class Tasks {
 	}
 
 	public List<Task> getTasksForList(String listName) {
-		return getList(listName).getTasks();
+		return getList(new ExistingTaskListName(this, listName)).getTasks();
 	}
 
 	public TaskList getListByName(String name) {
-		return getList(name);
+		return getList(new ExistingTaskListName(this, name));
 	}
 
-	private Set<String> getAllListNames() {
+	Set<String> getAllListNames() {
 		return getLists(rootGroup).stream()
 				.map(TaskList::getFullPath)
 				.collect(Collectors.toSet());
@@ -303,7 +329,7 @@ public class Tasks {
 		activeTaskID = currentTask.id;
 
 		setActiveList(getActiveTaskList());
-		switchGroup(getGroupNameForList(getActiveTaskList()));
+		setActiveGroup(getActiveTaskList().parentGroupName());
 
 		long startTime = osInterface.currentSeconds();
 
@@ -323,14 +349,14 @@ public class Tasks {
 	}
 
 	public List<Task> getTasks() {
-		return getList(activeList).getTasks();
+		return getList(new ExistingTaskListName(this, activeList)).getTasks();
 	}
 
-	public String getActiveTaskList() {
+	public ExistingTaskListName getActiveTaskList() {
 		if (activeTaskID == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		return getListForTask(activeTaskID).getFullPath();
+		return new ExistingTaskListName(this, getListForTask(activeTaskID).getFullPath());
 	}
 
 	public Task finishTask(long id) {
@@ -356,7 +382,7 @@ public class Tasks {
 		String absoluteOldList = getAbsoluteListName(oldName);
 		String absoluteNewList = getAbsoluteListName(newName);
 
-		TaskGroup group = getGroupForList(absoluteOldList);
+		TaskGroup group = getGroupForList(new ExistingTaskListName(this, absoluteOldList));
 
 		if (!group.containsListAbsolute(absoluteOldList)) {
 			throw new TaskException("List '" + absoluteOldList + "' does not exist.");
@@ -383,8 +409,8 @@ public class Tasks {
 			return;
 		}
 
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'\"");
+		new GitHelper(osInterface)
+				.commit("Renamed list '" + absoluteOldList + "' to '" + absoluteNewList + "'");
 	}
 
 	public void renameGroup(String oldName, String newName) {
@@ -425,11 +451,12 @@ public class Tasks {
 	}
 
 	public void addTask(Task task) {
-		if (hasTaskWithID(task.id)) {
+		TaskFinder finder = new TaskFinder(this);
+		if (finder.hasTaskWithID(task.id)) {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
 		}
 
-		getList(activeList).addTask(task);
+		getList(new ExistingTaskListName(this, activeList)).addTask(task);
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
@@ -441,25 +468,10 @@ public class Tasks {
 		return activeList;
 	}
 
-	public void setActiveList(String name) {
-		TaskList list = getList(name);
-
-//		setListState(getListByName(activeList), TaskContainerState.InProgress, true);
+	public void setActiveList(ExistingTaskListName listName) {
+		TaskList list = getList(listName);
 
 		activeList = list.getFullPath();
-
-//		setListState(list, TaskContainerState.Active, true);
-	}
-
-	public boolean hasListWithName(String name) {
-		String absoluteList = getAbsoluteListName(name);
-
-		try {
-			return getGroupForList(absoluteList).containsListAbsolute(absoluteList);
-		}
-		catch (TaskException ignored) {
-		}
-		return false;
 	}
 
 	public TaskGroup addGroup(String groupName) {
@@ -467,16 +479,19 @@ public class Tasks {
 	}
 
 	TaskGroup createGroup(String groupName, boolean createFiles) {
-		if (!groupName.startsWith("/")) {
+		if (!groupName.startsWith(ROOT_PATH)) {
 			groupName = activeGroup.getFullPath() + groupName;
 		}
 
-		boolean hasGroup = hasGroupPath(groupName);
+		if (hasGroupPath(groupName)) {
+			return getGroup(groupName);
+		}
 
-		String currentParent = "/";
+		String currentParent = ROOT_PATH;
 		TaskGroup newGroup = null;
 
 		for (String group : groupName.substring(1).split("/")) {
+			// TODO I think this should be an invalid path
 			if (group.isEmpty()) {
 				continue;
 			}
@@ -487,19 +502,19 @@ public class Tasks {
 			}
 
 			newGroup = new TaskGroup(group, parentGroup, "", "", TaskContainerState.InProgress);
-			currentParent += group + "/";
+			currentParent = newGroup.getFullPath();
 
 			if (!parentGroup.containsGroup(newGroup)) {
 				if (createFiles) {
-					writeGroupInfoFile(newGroup, "git-data");
+					new TaskGroupFileWriter(newGroup, osInterface).write();
 				}
 				parentGroup.addChild(newGroup);
 			}
 		}
 
-		if (createFiles && !hasGroup) {
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Created group '" + groupName + "'\"");
+		if (createFiles) {
+			new GitHelper(osInterface)
+					.commit("Created group '" + groupName + "'");
 		}
 
 		return newGroup;
@@ -512,31 +527,8 @@ public class Tasks {
 		return rootGroup.getGroupAbsolute(groupName).isPresent();
 	}
 
-	public void writeGroupInfoFile(TaskGroup group, String folder) {
-		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + group.getFullPath() + "group.txt")) {
-			outputStream.write(group.getProject().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(group.getFeature().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(group.getState().toString().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-		}
-	}
-
 	public TaskGroup createGroup(String groupName) {
 		return createGroup(groupName, true);
-	}
-
-	public boolean hasTaskWithID(long id) {
-		for (String listName : getAllListNames()) {
-			if (getList(listName).containsTask(id)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public long getActiveTaskID() {
@@ -560,8 +552,9 @@ public class Tasks {
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set recurring for task " + task.id + " to " + recurring + "\"");
+		new GitHelper(osInterface)
+				.withFile("tasks" + list + "/" + task.id + ".txt")
+				.commit("Set recurring for task " + task.id + " to " + recurring);
 
 		return task;
 	}
@@ -586,7 +579,7 @@ public class Tasks {
 	}
 
 	private void replaceTask(String listName, Task oldTask, Task newTask) {
-		TaskList list = getList(listName);
+		TaskList list = getList(new ExistingTaskListName(this, listName));
 		list.removeTask(oldTask);
 		list.addTask(newTask);
 	}
@@ -607,8 +600,9 @@ public class Tasks {
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		osInterface.runGitCommand("git add tasks" + list + "/" + task.id + ".txt");
-		osInterface.runGitCommand("git commit -m \"Set state for task " + task.id + " to " + state + "\"");
+		new GitHelper(osInterface)
+				.withFile("tasks" + list + "/" + task.id + ".txt")
+				.commit("Set state for task " + task.id + " to " + state);
 
 		return task;
 	}
@@ -620,7 +614,7 @@ public class Tasks {
 
 		String listName = list.getFullPath();
 
-		TaskGroup group = getGroupForList(listName);
+		TaskGroup group = getGroupForList(new ExistingTaskListName(this, listName));
 
 		group.removeChild(list);
 
@@ -628,27 +622,13 @@ public class Tasks {
 		group.addChild(newList);
 
 		if (createFiles) {
-			writeListInfoFile(newList, "git-data");
+			new TaskListFileWriter(newList, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set project for list '" + listName + "' to '" + project + "'\"");
+			new GitHelper(osInterface)
+					.commit("Set project for list '" + listName + "' to '" + project + "'");
 		}
 
 		return newList;
-	}
-
-	public void writeListInfoFile(TaskList list, String folder) {
-		try (DataOutputStream outputStream = osInterface.createOutputStream(folder + "/tasks" + list.getFullPath() + "/list.txt")) {
-			outputStream.write(list.getProject().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(list.getFeature().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-			outputStream.write(list.getState().toString().getBytes());
-			outputStream.write(Utils.NL.getBytes());
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-		}
 	}
 
 	public void setProject(TaskGroup group, String project, boolean createFiles) {
@@ -671,10 +651,10 @@ public class Tasks {
 		}
 
 		if (createFiles) {
-			writeGroupInfoFile(newGroup, "git-data");
+			new TaskGroupFileWriter(newGroup, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set project for group '" + group.getFullPath() + "' to '" + project + "'\"");
+			new GitHelper(osInterface)
+					.commit("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
 		}
 	}
 
@@ -685,7 +665,7 @@ public class Tasks {
 
 		String listName = list.getFullPath();
 
-		TaskGroup group = getGroupForList(listName);
+		TaskGroup group = getGroupForList(new ExistingTaskListName(this, listName));
 
 		group.removeChild(list);
 
@@ -693,10 +673,10 @@ public class Tasks {
 		group.addChild(newList);
 
 		if (createFiles) {
-			writeListInfoFile(newList, "git-data");
+			new TaskListFileWriter(newList, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set feature for list '" + listName + "' to '" + feature + "'\"");
+			new GitHelper(osInterface)
+					.commit("Set feature for list '" + listName + "' to '" + feature + "'");
 		}
 
 		return newList;
@@ -722,10 +702,10 @@ public class Tasks {
 		}
 
 		if (createFiles) {
-			writeGroupInfoFile(newGroup, "git-data");
+			new TaskGroupFileWriter(newGroup, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'\"");
+			new GitHelper(osInterface)
+					.commit("Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'");
 		}
 	}
 
@@ -739,15 +719,15 @@ public class Tasks {
 		parent.addChild(taskGroup);
 
 		if (createFiles) {
-			writeGroupInfoFile(taskGroup, "git-data");
+			new TaskGroupFileWriter(taskGroup, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set state for group '" + taskGroup.getFullPath() + "' to " + state + "\"");
+			new GitHelper(osInterface)
+					.commit("Set state for group '" + taskGroup.getFullPath() + "' to " + state);
 		}
 	}
 
 	public void setListState(TaskList list, TaskContainerState state, boolean createFiles) {
-		TaskGroup parent = getGroupForList(list.getFullPath());
+		TaskGroup parent = getGroupForList(new ExistingTaskListName(this, list.getFullPath()));
 
 		parent.removeChild(list);
 
@@ -755,56 +735,15 @@ public class Tasks {
 
 		parent.addChild(newList);
 
-
 		if (createFiles) {
-			writeListInfoFile(newList, "git-data");
+			new TaskListFileWriter(newList, osInterface).write();
 
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Set state for list '" + newList.getFullPath() + "' to " + state + "\"");
+			new GitHelper(osInterface)
+					.commit("Set state for list '" + newList.getFullPath() + "' to " + state);
 		}
 	}
 
-	public String getProjectForTask(long taskID) {
-		TaskList listForTask = findListForTask(taskID);
-
-		String project = listForTask.getProject();
-
-		TaskGroup group = getGroupForList(listForTask.getFullPath());
-
-		while (project.isEmpty()) {
-			project = group.getProject();
-
-			if (group.getFullPath().equals("/")) {
-				break;
-			}
-			group = getGroup(group.getParent());
-		}
-		return project;
-	}
-
-	public String getFeatureForTask(long taskID) {
-		TaskList listForTask = findListForTask(taskID);
-
-		String feature = listForTask.getFeature();
-
-		TaskGroup group = getGroupForList(listForTask.getFullPath());
-
-		while (feature.isEmpty()) {
-			feature = group.getFeature();
-
-			if (group.getFullPath().equals("/")) {
-				break;
-			}
-			group = getGroup(group.getParent());
-		}
-		return feature;
-	}
-
-	String getGroupPath() {
-		return activeGroup.getFullPath();
-	}
-
-	public TaskGroup switchGroup(String groupName) {
+	public TaskGroup setActiveGroup(String groupName) {
 		activeGroup = getGroup(groupName);
 
 		return activeGroup;
@@ -819,21 +758,20 @@ public class Tasks {
 	}
 
 	public TaskList finishList(String list) {
-		String absoluteName = getAbsoluteListName(list);
+		TaskList taskList = getList(new ExistingTaskListName(this, list));
 
-		TaskList taskList = getList(absoluteName);
-
-		TaskGroup parent = getGroupForList(taskList.getFullPath());
+		TaskGroup parent = getGroupForList(new ExistingTaskListName(this, taskList.getFullPath()));
 
 		TaskList newList = taskList.changeState(TaskContainerState.Finished);
 
 		parent.removeChild(taskList);
 		parent.addChild(newList);
 
-		writeListInfoFile(newList, "git-data");
+		new TaskListFileWriter(newList, osInterface).write();
 
-		osInterface.runGitCommand("git add tasks" + newList.getFullPath() + "/list.txt");
-		osInterface.runGitCommand("git commit -m \"Finished list '" + newList.getFullPath() + "'\"");
+		new GitHelper(osInterface)
+				.withFile("tasks" + newList.getFullPath() + "/list.txt")
+				.commit("Finished list '" + newList.getFullPath() + "'");
 
 		return newList;
 	}
@@ -848,16 +786,17 @@ public class Tasks {
 		parent.removeChild(origGroup);
 		parent.addChild(taskGroup);
 
-		writeGroupInfoFile(taskGroup, "git-data");
+		new TaskGroupFileWriter(taskGroup, osInterface).write();
 
-		osInterface.runGitCommand("git add tasks" + taskGroup.getFullPath() + "group.txt");
-		osInterface.runGitCommand("git commit -m \"Finished group '" + taskGroup.getFullPath() + "'\"");
+		new GitHelper(osInterface)
+				.withFile("tasks" + taskGroup.getFullPath() + "group.txt")
+				.commit("Finished group '" + taskGroup.getFullPath() + "'");
 
 		return taskGroup;
 	}
 
 	public boolean load(TaskLoader loader, Commands commands) {
-		rootGroup = new TaskGroup("/");
+		rootGroup = TaskGroupBuilder.createRootGroup();
 		activeGroup = rootGroup;
 		activeTaskID = NO_ACTIVE_TASK;
 
@@ -873,7 +812,7 @@ public class Tasks {
 			if (activeTask.isPresent()) {
 				activeTaskID = activeTask.get().id;
 				activeList = findListForTask(activeTaskID).getFullPath();
-				activeGroup = getGroupForList(activeList);
+				activeGroup = getGroupForList(new ExistingTaskListName(this, activeList));
 			}
 		}
 		catch (Exception e) {

@@ -1,19 +1,17 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.TaskFinder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.andrewauclair.microtask.UtilsTest.byteInStream;
-import static com.andrewauclair.microtask.UtilsTest.createFile;
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Commands_Update_Remote_Test extends CommandsBaseTestCase {
@@ -57,22 +55,23 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "InProgress"))
+				createInputStream("Project X", "Feature Y", "InProgress")
 		);
 
-		String contents = "Test" + Utils.NL +
-				"Inactive" + Utils.NL +
-				"-1" + Utils.NL +
-				"" + Utils.NL + Utils.NL +
-				"add 1000" + Utils.NL;
-
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		InputStream inputStream = createInputStream(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"add 1000"
+		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/1.txt")).thenReturn(inputStream);
 
 		commands.execute(printStream, "update --from-remote");
 
-		assertTrue(tasks.hasTaskWithID(1));
+		TaskFinder finder = new TaskFinder(tasks);
+		assertTrue(finder.hasTaskWithID(1));
 	}
 
 	@Test

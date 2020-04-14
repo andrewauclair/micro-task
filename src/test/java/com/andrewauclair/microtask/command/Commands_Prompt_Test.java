@@ -31,9 +31,9 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 	void changing_to_group_other_than_the_active_lists_group_changes_prompt() {
 		tasks.addList("/test/one/two", true);
 		tasks.addList("/test/three", true);
-		tasks.setActiveList("/test/three");
+		tasks.setActiveList(existingList("/test/three"));
 		
-		tasks.switchGroup("/test/one/");
+		tasks.setActiveGroup("/test/one/");
 		
 		assertEquals("/test/one/ - none>", commands.getPrompt());
 	}

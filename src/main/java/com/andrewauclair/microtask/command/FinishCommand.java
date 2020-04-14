@@ -5,6 +5,8 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -25,10 +27,10 @@ final class FinishCommand implements Runnable {
 		private Integer[] id;
 
 		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to finish.")
-		private String list;
+		private ExistingTaskListName list;
 
 		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to finish.")
-		private String group;
+		private ExistingTaskGroupName group;
 
 		@Option(required = true, names = {"--active-task"}, description = "Finish the active task.")
 		private boolean active;
@@ -66,15 +68,15 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishGroup() {
-		if (tasks.getGroup(this.options.group).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
+		if (tasks.getGroup(this.options.group.absoluteName()).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
 			System.out.println("Group to finish must not be active.");
 		}
-		else if (tasks.getGroup(this.options.group).getTasks().stream()
+		else if (tasks.getGroup(this.options.group.absoluteName()).getTasks().stream()
 				.anyMatch(task -> task.state != TaskState.Finished)) {
 			System.out.println("Group to finish still has tasks to complete.");
 		}
 		else {
-			TaskGroup taskGroup = tasks.finishGroup(this.options.group);
+			TaskGroup taskGroup = tasks.finishGroup(this.options.group.absoluteName());
 
 			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
 		}
@@ -83,15 +85,15 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishList() {
-		if (tasks.getListByName(this.options.list).getFullPath().equals(tasks.getActiveList())) {
+		if (tasks.getListByName(this.options.list.absoluteName()).getFullPath().equals(tasks.getActiveList())) {
 			System.out.println("List to finish must not be active.");
 		}
-		else if (tasks.getListByName(this.options.list).getTasks().stream()
+		else if (tasks.getListByName(this.options.list.absoluteName()).getTasks().stream()
 				.anyMatch(task -> task.state != TaskState.Finished)) {
 			System.out.println("List to finish still has tasks to complete.");
 		}
 		else {
-			TaskList taskList = tasks.finishList(this.options.list);
+			TaskList taskList = tasks.finishList(this.options.list.absoluteName());
 
 			System.out.println("Finished list '" + taskList.getFullPath() + "'");
 		}

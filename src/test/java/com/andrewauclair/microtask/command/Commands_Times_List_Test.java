@@ -69,6 +69,8 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
+		tasks.addList("/testing", true);
+		
 		commands.execute(printStream, "times --list default --list /testing");
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
@@ -108,6 +110,8 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
+		tasks.addList("/testing", true);
+		
 		commands.execute(printStream, "times --total --list default --list /testing");
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);

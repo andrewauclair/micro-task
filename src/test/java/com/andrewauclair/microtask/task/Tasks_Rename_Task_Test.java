@@ -2,13 +2,10 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.Utils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -85,7 +82,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");
 		tasks.addList("testing-rename", true);
-		tasks.setActiveList("testing-rename");
+		tasks.setActiveList(existingList("testing-rename"));
 		
 		Task renameTask = tasks.renameTask(1, "Renamed this task");
 

@@ -29,8 +29,8 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	@Test
 	void print_active_group_and_active_list() {
 		tasks.addList("/test/one/two/three", true);
-		tasks.setActiveList("/test/one/two/three");
-		tasks.switchGroup("/test/one/");
+		tasks.setActiveList(existingList("/test/one/two/three"));
+		tasks.setActiveGroup("/test/one/");
 		
 		tasks.addTask("Test");
 		

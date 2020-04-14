@@ -1,14 +1,13 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Map;
 
 @Command(name = "alias", description = "Add, list, update or delete aliases.")
@@ -149,17 +148,16 @@ final class AliasCommand implements Runnable {
 	}
 
 	private void writeAliasesFile() {
-		try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/aliases.txt")) {
+		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/aliases.txt"))) {
 			Map<String, String> aliases = commands.getAliases();
 
 			for (String name : aliases.keySet()) {
 				String aliasCommand = aliases.get(name);
 
-				outputStream.write(name.getBytes());
-				outputStream.write("=\"".getBytes());
-				outputStream.write(aliasCommand.getBytes());
-				outputStream.write("\"".getBytes());
-				outputStream.write(Utils.NL.getBytes());
+				outputStream.print(name);
+				outputStream.print("=\"");
+				outputStream.print(aliasCommand);
+				outputStream.println("\"");
 			}
 		}
 		catch (IOException e) {

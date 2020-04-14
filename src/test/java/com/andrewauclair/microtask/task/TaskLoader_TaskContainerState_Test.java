@@ -10,16 +10,15 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.Collections;
 
-import static com.andrewauclair.microtask.UtilsTest.byteInStream;
-import static com.andrewauclair.microtask.UtilsTest.createFile;
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
-	private TaskReader reader = Mockito.mock(TaskReader.class);
+	private final TaskReader reader = Mockito.mock(TaskReader.class);
 	private TaskLoader loader;
 
 	@BeforeEach
-	void setup() throws IOException {
+	protected void setup() throws IOException {
 		super.setup();
 
 		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
@@ -46,7 +45,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				byteInStream(createFile("", "", "InProgress"))
+				createInputStream("", "", "InProgress")
 		);
 
 		loader.load();
@@ -70,7 +69,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
-				byteInStream(createFile("", "", "InProgress"))
+				createInputStream("", "", "InProgress")
 		);
 
 		loader.load();

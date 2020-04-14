@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskFinder;
 import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine.Command;
@@ -79,8 +80,8 @@ final class InfoCommand implements Runnable {
 		System.out.println("on list '" + tasks.findListForTask(task.id).getFullPath() + "'");
 		System.out.println();
 
-		System.out.println("Project '" + tasks.getProjectForTask(task.id) + "'");
-		System.out.println("Feature '" + tasks.getFeatureForTask(task.id) + "'");
+		System.out.println("Project '" + new TaskFinder(tasks).getProjectForTask(task.id) + "'");
+		System.out.println("Feature '" + new TaskFinder(tasks).getFeatureForTask(task.id) + "'");
 		System.out.println();
 	}
 }

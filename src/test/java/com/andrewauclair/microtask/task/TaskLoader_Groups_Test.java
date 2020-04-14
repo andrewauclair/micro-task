@@ -11,13 +11,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
+
 class TaskLoader_Groups_Test extends TaskBaseTestCase {
 	private TaskReader reader = Mockito.mock(TaskReader.class);
 	private LocalSettings localSettings = Mockito.mock(LocalSettings.class);
 	private TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
 
 	@BeforeEach
-	void setup() throws IOException {
+	protected void setup() throws IOException {
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.when(osInterface.runGitCommand(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
@@ -38,7 +40,7 @@ class TaskLoader_Groups_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				new ByteArrayInputStream("".getBytes())
+				createInputStream("")
 		);
 
 		Mockito.reset(osInterface);

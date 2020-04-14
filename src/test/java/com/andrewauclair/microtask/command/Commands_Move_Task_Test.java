@@ -24,7 +24,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertOutput(
-				"Moved task 1 to list 'one'",
+				"Moved task 1 to list '/one'",
 				""
 		);
 	}
@@ -33,7 +33,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 	void move_task_between_lists_in_different_groups() {
 		tasks.addList("/one/two/three", true);
 		tasks.addList("/one/test/five", true);
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 
@@ -53,7 +53,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 	void move_multiple_tasks_at_once() {
 		tasks.addList("/one/two/three", true);
 		tasks.addList("/one/test/five", true);
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");

@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -51,7 +52,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		Task task = tasks.addTask("Testing task");
 
@@ -80,7 +81,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Testing task add command 1");
 		
@@ -99,10 +100,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void write_next_id_prints_exception_to_output() throws IOException {
-		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
-		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
-
-		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 
 		tasks.addTask("Test");
 		
@@ -116,7 +114,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
@@ -132,13 +130,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
 		Task finishedTask = tasks.finishTask();
 
-		tasks.setActiveList("default");
+		tasks.setActiveList(existingList("default"));
 
 		assertThat(tasks.getTasks()).containsOnly(finishedTask);
 	}
@@ -146,7 +144,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_task_that_is_active_sets_it_as_the_active_task() {
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
@@ -217,9 +215,9 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void add_task_to_nested_list() {
 		tasks.createGroup("/test/one/");
-		tasks.switchGroup("/test/one/");
+		tasks.setActiveGroup("/test/one/");
 		tasks.addList("two", true);
-		tasks.setActiveList("two");
+		tasks.setActiveList(existingList("two"));
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 
@@ -260,7 +258,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
 		tasks.addTask("Test");
 		tasks.addList("one", true);
-		tasks.setActiveList("one");
+		tasks.setActiveList(existingList("one"));
 		
 		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 
@@ -268,6 +266,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	}
 	
 	@Test
+	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
 	void add_throws_exception_if_group_does_not_exist() {
 		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "/one/two"));
 		

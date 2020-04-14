@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -140,8 +141,8 @@ public class StatusConsole {
 						break;
 					}
 
-					tasks.switchGroup(currentGroup);
-					tasks.setActiveList(currentList);
+					tasks.setActiveGroup(currentGroup);
+					tasks.setActiveList(new ExistingTaskListName(tasks, currentList));
 
 					try {
 						commands.execute(System.out, currentCommand);
