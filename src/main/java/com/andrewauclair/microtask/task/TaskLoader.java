@@ -84,10 +84,7 @@ public class TaskLoader {
 
 			list = tasks.setProject(list, scanner.nextLine(), false);
 			list = tasks.setFeature(list, scanner.nextLine(), false);
-
-			if (scanner.hasNextLine()) {
-				tasks.setListState(list, TaskContainerState.valueOf(scanner.nextLine()), false);
-			}
+			tasks.setListState(list, TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException ignored) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
@@ -105,14 +102,9 @@ public class TaskLoader {
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			if (scanner.hasNextLine()) {
-				tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-				tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-
-				if (scanner.hasNextLine()) {
-					tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
-				}
-			}
+			tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
+			tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
+			tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException ignored) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
