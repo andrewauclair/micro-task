@@ -38,7 +38,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 	@Test
 	void switch_to_nested_list() {
 		tasks.addList("/test/one", true);
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		commands.execute(printStream, "ch -l one");
 
@@ -62,7 +62,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch -l test");
 
 		assertOutput(
-				"List '/test' does not exist.",
+				"Invalid value for option '--list': List '/test' does not exist.",
 				""
 		);
 		assertEquals("/default", tasks.getActiveList());
@@ -86,7 +86,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch -l ranDOM");
 
 		assertOutput(
-				"List '/random' does not exist.",
+				"Invalid value for option '--list': List '/random' does not exist.",
 				""
 		);
 	}
@@ -97,7 +97,8 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "ch -l test/one");
 
-		Mockito.verify(localSettings).setActiveList("/test/one");
+		Mockito.verify(localSettings).setActiveList(existingList("/test/one"));
+		Mockito.verify(localSettings).setActiveGroup("/test/");
 	}
 
 	@Test
@@ -105,7 +106,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch -l /project/test/");
 
 		assertOutput(
-				"'/project/test/' is not a valid list path",
+				"Invalid value for option '--list': List name must not end in /",
 				""
 		);
 	}

@@ -8,6 +8,8 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.OSInterfaceImpl;
 import com.andrewauclair.microtask.os.StatusConsole;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
@@ -25,10 +27,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,7 +123,7 @@ public final class Main {
 			tasks.setActiveList(tasks.getActiveTaskList());
 
 			// set active group to the group of the active task
-			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
+			tasks.setActiveGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
 		}
 
 		sendCurrentStatus();
@@ -256,7 +255,7 @@ public final class Main {
 			newTimes.add(task.getAllTimes().get(0));
 
 			for (TaskTimes time : oldTimes) {
-				newTimes.add(new TaskTimes(time.start, time.stop, tasks.getProjectForTask(task.id), tasks.getFeatureForTask(task.id)));
+				newTimes.add(new TaskTimes(time.start, time.stop, new TaskFinder(tasks).getProjectForTask(task.id), new TaskFinder(tasks).getFeatureForTask(task.id)));
 			}
 
 			Task newTask = new Task(task.id, task.task, task.state, newTimes, task.isRecurring());
@@ -273,8 +272,8 @@ public final class Main {
 	private void exportData(Tasks tasks) {
 		exportGroup(tasks, tasks.getRootGroup(), "/", 1, 1, Main.osInterface);
 
-		try (OutputStream outputStream = ((OSInterface) Main.osInterface).createOutputStream("git-data-export/next-id.txt")) {
-			outputStream.write(String.valueOf(tasks.nextID()).getBytes());
+		try (PrintStream outputStream = new PrintStream(Main.osInterface.createOutputStream("git-data-export/next-id.txt"))) {
+			outputStream.print(tasks.nextID());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -282,7 +281,9 @@ public final class Main {
 	}
 
 	private void exportGroup(Tasks tasks, TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
-		tasks.writeGroupInfoFile(group, "git-data-export");
+		new TaskGroupFileWriter(group, osInterface)
+				.inFolder("git-data-export")
+				.write();
 
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskGroup) {
@@ -300,7 +301,11 @@ public final class Main {
 	}
 
 	private void exportList(Tasks tasks, TaskList list, String path, OSInterface osInterface) {
-		tasks.writeListInfoFile(list, "git-data-export");
+//		tasks.writeListInfoFile(list, "git-data-export");
+
+		new TaskListFileWriter(list, osInterface)
+				.inFolder("git-data-export")
+				.write();
 
 		TaskWriter writer = new TaskWriter(osInterface);
 

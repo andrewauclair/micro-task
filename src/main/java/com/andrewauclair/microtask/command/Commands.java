@@ -8,6 +8,14 @@ import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.PicocliFactory;
+import com.andrewauclair.microtask.picocli.ExistingTaskGroupNameTypeConverter;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.picocli.ExistingTaskListNameTypeConverter;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.picocli.NewTaskListNameTypeConverter;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
+import com.andrewauclair.microtask.picocli.NewTaskGroupNameTypeConverter;
 import com.andrewauclair.microtask.task.Tasks;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
@@ -58,7 +66,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
@@ -99,7 +107,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "version":
 				return new VersionCommand(osInterface);
 			case "update":
-				return new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface);
+				return new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
 			case "move":
@@ -181,6 +189,11 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		setHandlers(cmdLine);
 
+		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
+
 		return cmdLine;
 	}
 
@@ -212,6 +225,11 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.setTrimQuotes(true);
 
 		setHandlers(cmdLine);
+
+		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 
 		return cmdLine;
 	}
@@ -245,7 +263,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public String getPrompt() {
 		String prompt = "";
 
-		if (tasks.getGroupForList(tasks.getActiveList()).equals(tasks.getActiveGroup())) {
+		if (tasks.getGroupForList(new ExistingTaskListName(tasks, tasks.getActiveList())).equals(tasks.getActiveGroup())) {
 			prompt += tasks.getActiveList();
 		}
 		else {

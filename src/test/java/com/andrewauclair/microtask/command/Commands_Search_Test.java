@@ -122,7 +122,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 	@Test
 	void search_on_nested_list() {
 		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 
 		tasks.addTask("do this task on monday");
 		tasks.addTask("tuesdays are ignored");
@@ -151,19 +151,19 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addList("/test/two", true);
 		tasks.addList("/three", true);
 
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("do this task on monday");
 		tasks.addTask("do this task on tuesday");
 
-		tasks.setActiveList("/test/two");
+		tasks.setActiveList(existingList("/test/two"));
 		tasks.addTask("monday is the worst");
 		tasks.addTask("tuesday's gone with the wind");
 
-		tasks.setActiveList("/three");
+		tasks.setActiveList(existingList("/three"));
 		tasks.addTask("mondays are the longest days");
 		tasks.addTask("wednesday isn't that great either");
 
-		tasks.switchGroup("/");
+		tasks.setActiveGroup("/");
 
 		commands.execute(printStream, "search -t \"monday\" --group");
 
@@ -188,7 +188,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("some days are long, mondays are the longest days");
 
 		tasks.createGroup("/test/");
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		commands.execute(printStream, "search -t \"monday\"");
 
@@ -208,19 +208,19 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addList("/oranges", true);
 		tasks.addList("/apples", true);
 
-		tasks.setActiveList("/oranges");
+		tasks.setActiveList(existingList("/oranges"));
 		tasks.addTask("do this task on monday");
 		tasks.addTask("tuesdays are ignored");
 
-		tasks.setActiveList("/apples");
+		tasks.setActiveList(existingList("/apples"));
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.setActiveList("/oranges");
+		tasks.setActiveList(existingList("/oranges"));
 
 		tasks.addTask("wednesdays too");
 		tasks.addTask("monday is a holiday, don't forget");
 
-		tasks.setActiveList("/apples");
+		tasks.setActiveList(existingList("/apples"));
 
 		tasks.addTask("The Beatles?");
 		tasks.addTask("finish this task by monday");

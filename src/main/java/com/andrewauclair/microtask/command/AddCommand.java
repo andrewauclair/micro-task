@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 
 import static picocli.CommandLine.Option;
@@ -20,7 +21,7 @@ final class AddCommand implements Runnable {
 	private String name;
 
 	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to add the new task to.")
-	private String list;
+	private ExistingTaskListName list;
 
 	@Option(names = {"-r", "--recurring"}, description = "Set the task to recurring.")
 	private boolean recurring;
@@ -38,7 +39,7 @@ final class AddCommand implements Runnable {
 		String list = tasks.getActiveList();
 
 		if (this.list != null) {
-			list = this.list;
+			list = this.list.absoluteName();
 		}
 
 		Task task = tasks.addTask(name, list);
@@ -50,7 +51,7 @@ final class AddCommand implements Runnable {
 		System.out.println("Added task " + task.description());
 
 		if (this.list != null) {
-			System.out.println("to list '" + tasks.getAbsoluteListName(this.list) + "'");
+			System.out.println("to list '" + this.list + "'");
 		}
 
 		System.out.println();

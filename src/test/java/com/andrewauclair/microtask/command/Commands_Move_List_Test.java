@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.task.TaskListFinder;
+import com.andrewauclair.microtask.task.TaskListName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,14 +13,16 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 	void move_list_from_one_group_to_another() {
 		tasks.addList("/one/two/three", true);
 		tasks.addList("/one/test/five", true);
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "move --list /one/two/three --dest-group /one/test/");
-
-		assertFalse(tasks.hasListWithName("/one/two/three"));
-		assertTrue(tasks.hasListWithName("/one/test/three"));
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		assertFalse(finder.hasList(new TaskListName(tasks, "/one/two/two") {}));
+		assertTrue(finder.hasList(new TaskListName(tasks, "/one/test/three") {}));
 
 		assertOutput(
 				"Moved list /one/two/three to group '/one/test/'",
@@ -30,14 +34,16 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 	void move_list_to_root_group() {
 		tasks.addList("/one/two/three", true);
 		tasks.addList("/one/test/five", true);
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "move --list /one/two/three --dest-group /");
-
-		assertFalse(tasks.hasListWithName("/one/two/three"));
-		assertTrue(tasks.hasListWithName("/three"));
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		assertFalse(finder.hasList(new TaskListName(tasks, "/one/two/three") {}));
+		assertTrue(finder.hasList(new TaskListName(tasks, "/three") {}));
 
 		assertOutput(
 				"Moved list /one/two/three to group '/'",
@@ -47,6 +53,8 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_requires_dest_group_not_group_option() {
+		tasks.addGroup("/one/");
+
 		commands.execute(printStream, "move --list /default --group /one/");
 
 		assertOutput(
@@ -57,6 +65,8 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_requires_dest_group() {
+		tasks.addList("/one", true);
+
 		commands.execute(printStream, "move --list /one");
 
 		assertOutput(

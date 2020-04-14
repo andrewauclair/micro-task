@@ -19,13 +19,18 @@ import static org.mockito.Mockito.never;
 
 class Tasks_Groups_Test extends CommandsBaseTestCase {
 	@Test
+	void const_root_path() {
+		assertEquals(TaskGroup.ROOT_PATH, TaskGroup.ROOT_PATH);
+	}
+	
+	@Test
 	void starting_group_path_is_root() {
-		assertEquals("/", tasks.getGroupPath());
+		assertEquals(TaskGroup.ROOT_PATH, tasks.getActiveGroup().getFullPath());
 	}
 	
 	@Test
 	void has_root_path() {
-		assertTrue(tasks.hasGroupPath("/"));
+		assertTrue(tasks.hasGroupPath(TaskGroup.ROOT_PATH));
 	}
 	
 	@Test
@@ -51,33 +56,33 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	void switch_groups() {
 		tasks.createGroup("/test/");
 		
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 		
-		assertEquals("/test/", tasks.getGroupPath());
+		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 	
 	@Test
 	void active_group_is_root_by_default() {
 		TaskGroup group = tasks.getActiveGroup();
 		
-		assertEquals("/", group.getName());
+		assertEquals(TaskGroup.ROOT_PATH, group.getName());
 	}
 	
 	@Test
 	void new_active_group_has_root_as_parent() {
 		tasks.createGroup("/test/");
 		
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 		
 		TaskGroup group = tasks.getActiveGroup();
 
 		assertEquals("test", group.getName());
-		assertEquals("/", group.getParent());
+		assertEquals(TaskGroup.ROOT_PATH, group.getParent());
 
-		TaskGroup parent = new TaskGroup("/");
+		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, "", "", TaskContainerState.InProgress),
 				new TaskGroup("test", parent, "", "", TaskContainerState.InProgress)
 		);
 	}
@@ -88,8 +93,8 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		tasks.createGroup("/test/one/");
 		tasks.createGroup("/test/one/two/");
 
-		TaskGroup parent = new TaskGroup("/");
-		parent.addChild(new TaskList("default", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress));
+		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
+		parent.addChild(new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, "", "", TaskContainerState.InProgress));
 		
 		TaskGroup expected = new TaskGroup("test", parent, "", "", TaskContainerState.InProgress);
 		parent.addChild(expected);
@@ -100,7 +105,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		one.addChild(new TaskGroup("two", one, "", "", TaskContainerState.InProgress));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, "", "", TaskContainerState.InProgress),
 				expected
 		);
 	}
@@ -109,7 +114,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	void nested_groups_have_a_parent_that_is_not_root() {
 		tasks.createGroup("/test/two/");
 		
-		tasks.switchGroup("/test/two/");
+		tasks.setActiveGroup("/test/two/");
 		
 		TaskGroup group = tasks.getActiveGroup();
 		
@@ -118,12 +123,12 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void switch_group_fails_if_group_path_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.switchGroup("/test/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveGroup("/test/"));
 		
 		assertEquals("Group '/test/' does not exist.", taskException.getMessage());
 		
 		// path should not have changed
-		assertEquals("/", tasks.getGroupPath());
+		assertEquals(TaskGroup.ROOT_PATH, tasks.getActiveGroup().getFullPath());
 	}
 	
 	@Test
@@ -137,7 +142,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void group_for_list_root() {
-		TaskGroup groupForList = tasks.getGroupForList("/default");
+		TaskGroup groupForList = tasks.getGroupForList(existingList("/default"));
 		
 		assertEquals(tasks.getRootGroup(), groupForList);
 	}
@@ -174,7 +179,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 	@Test
 	void throws_exception_if_list_to_get_group_for_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getGroupForList("/test"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getGroupForList(existingList("/test")));
 
 		assertEquals("List '/test' does not exist.", taskException.getMessage());
 	}

@@ -40,6 +40,8 @@ class Commands_Move_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_group_requires_dest_group() {
+		tasks.createGroup("/one/");
+
 		commands.execute(printStream, "move --group /one/");
 
 		assertOutput(

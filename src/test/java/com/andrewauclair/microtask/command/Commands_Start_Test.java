@@ -127,13 +127,13 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 
 		tasks.addList("/one/two", true);
-		tasks.setActiveList("/one/two");
+		tasks.setActiveList(existingList("/one/two"));
 
 		tasks.addTask("Test 2");
 
 		tasks.startTask(2, false);
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
@@ -154,10 +154,10 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addList("/one/two", true);
 
-		tasks.setActiveList("/one/two");
+		tasks.setActiveList(existingList("/one/two"));
 		tasks.addTask("Test 2");
 
-		tasks.switchGroup("/");
+		tasks.setActiveGroup("/");
 		tasks.startTask(2, false);
 
 		assertEquals("/one/", tasks.getActiveGroup().getFullPath());

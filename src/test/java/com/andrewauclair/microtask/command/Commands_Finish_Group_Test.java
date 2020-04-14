@@ -30,7 +30,7 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 	void not_allowed_to_finish_active_group() {
 		tasks.addList("/test/one", true);
 
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		commands.execute(printStream, "finish --group /test/");
 
@@ -46,10 +46,10 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 	void groups_with_tasks_that_are_not_finished_cannot_be_finished() {
 		tasks.addList("/test/one", true);
 
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
-		tasks.setActiveList("/default");
+		tasks.setActiveList(existingList("/default"));
 
 		commands.execute(printStream, "finish --group /test/");
 

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	@BeforeEach
-	void setup() throws IOException {
+	protected void setup() throws IOException {
 		super.setup();
 		tasks.addTask("Testing tasks");
 		tasks.addTask("Testing tasks 2");

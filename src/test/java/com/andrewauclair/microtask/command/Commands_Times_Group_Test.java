@@ -21,12 +21,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList("/one/test", true);
 		tasks.addList("/two/data", true);
 
-		tasks.setActiveList("/one/impl");
+		tasks.setActiveList(existingList("/one/impl"));
 		tasks.addTask("Test 1");
 		tasks.startTask(1, false);
 
-		tasks.setActiveList("/default");
-		tasks.switchGroup("/");
+		tasks.setActiveList(existingList("/default"));
+		tasks.setActiveGroup("/");
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -69,12 +69,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList("/one/data", true);
 		tasks.addList("/two/data", true);
 
-		tasks.setActiveList("/one/data");
+		tasks.setActiveList(existingList("/one/data"));
 		tasks.addTask("Test 1");
 		tasks.startTask(1, false);
 
-		tasks.setActiveList("/default");
-		tasks.switchGroup("/");
+		tasks.setActiveList(existingList("/default"));
+		tasks.setActiveGroup("/");
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -118,12 +118,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList("/one/data", true);
 		tasks.addList("/two/data", true);
 
-		tasks.setActiveList("/one/data");
+		tasks.setActiveList(existingList("/one/data"));
 		tasks.addTask("Test 1");
 		tasks.startTask(1, false);
 
-		tasks.setActiveList("/default");
-		tasks.switchGroup("/");
+		tasks.setActiveList(existingList("/default"));
+		tasks.setActiveGroup("/");
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 

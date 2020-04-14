@@ -2,7 +2,8 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,23 +12,40 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Date;
 
 import static com.andrewauclair.microtask.TestUtils.assertOutput;
-import static com.andrewauclair.microtask.UtilsTest.byteInStream;
-import static com.andrewauclair.microtask.UtilsTest.createFile;
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 class LocalSettings_Test {
 	private LocalSettings localSettings;
-
-	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
-	private final Tasks tasks = Mockito.mock(Tasks.class);
+	
+	final TaskWriter writer = Mockito.mock(TaskWriter.class);
+	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
+	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected Tasks tasks;
+	
+//	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+//	private final Tasks tasks = Mockito.mock(Tasks.class);
 
 	@BeforeEach
-	void setup() {
+	public void setup() throws IOException {
 		localSettings = new LocalSettings(osInterface);
+		
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
+		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
+		
+		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
+		
+//		Mockito.when(osInterface.createInputStream("settings.properties")).thenThrow(IOException.class);
+		
+		PrintStream output = new PrintStream(outputStream);
+		System.setOut(output);
+		
+		tasks = new Tasks(writer, output, osInterface);
+		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 	}
 
 	@Test
@@ -52,8 +70,11 @@ class LocalSettings_Test {
 
 	@Test
 	void load_active_list_from_file() throws IOException {
+//		Mockito.when(tasks.hasListWithName("/test/one")).thenReturn(true);
+		tasks.addList("/test/one", true);
+
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("active_list=/test/one"))
+				createInputStream("active_list=/test/one")
 		);
 
 		localSettings.load(tasks);
@@ -63,8 +84,10 @@ class LocalSettings_Test {
 
 	@Test
 	void load_active_group_from_file() throws IOException {
+		tasks.addGroup("/test/");
+		
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("active_group=/test/"))
+				createInputStream("active_group=/test/")
 		);
 
 		localSettings.load(tasks);
@@ -75,7 +98,7 @@ class LocalSettings_Test {
 	@Test
 	void load_debug_flag_from_file() throws IOException {
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("debug=true"))
+				createInputStream("debug=true")
 		);
 
 		localSettings.load(tasks);
@@ -86,7 +109,7 @@ class LocalSettings_Test {
 	@Test
 	void load_hours_in_day_from_file() throws IOException {
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("hours_in_day=6"))
+				createInputStream("hours_in_day=6")
 		);
 
 		localSettings.load(tasks);
@@ -96,13 +119,15 @@ class LocalSettings_Test {
 
 	@Test
 	void changing_active_list_saves_file() throws IOException {
+		tasks.addList("/test/one", true);
+
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
 
-		localSettings.setActiveList("/test");
+		localSettings.setActiveList(new ExistingTaskListName(tasks, "/test/one"));
 
-		assertThat(outputStream.toString()).contains("active_list=/test");
+		assertThat(outputStream.toString()).contains("active_list=/test/one");
 	}
 
 	@Test
@@ -214,13 +239,15 @@ class LocalSettings_Test {
 
 	@Test
 	void local_settings_sets_list_and_group_in_tasks() throws IOException {
+		tasks.addList("/test/one", true);
+
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
-				byteInStream(createFile("active_list=/test/one", "active_group=/test/"))
+				createInputStream("active_list=/test/one", "active_group=/test/")
 		);
 
 		localSettings.load(tasks);
 
-		Mockito.verify(tasks).setActiveList("/test/one");
-		Mockito.verify(tasks).switchGroup("/test/");
+		assertEquals("/test/one", tasks.getActiveList());
+		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 }

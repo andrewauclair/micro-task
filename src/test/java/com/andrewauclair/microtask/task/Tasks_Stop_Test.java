@@ -134,7 +134,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
@@ -151,7 +151,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		Mockito.reset(writer);
 
@@ -168,7 +168,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(2, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		Mockito.reset(osInterface);
 
@@ -187,13 +187,13 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(1, false);
 		
 		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
 		Task stoppedTask = tasks.stopTask();
 
-		tasks.setActiveList("default");
+		tasks.setActiveList(existingList("default"));
 
 		assertThat(tasks.getTasks()).containsOnly(stoppedTask);
 	}
@@ -204,7 +204,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		tasks.startTask(1, false);
 
-		assertEquals("/default", tasks.getActiveTaskList());
+		assertEquals("/default", tasks.getActiveTaskList().absoluteName());
 
 		tasks.stopTask();
 		

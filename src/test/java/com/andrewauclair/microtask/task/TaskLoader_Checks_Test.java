@@ -12,17 +12,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.andrewauclair.microtask.UtilsTest.byteInStream;
-import static com.andrewauclair.microtask.UtilsTest.createFile;
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskLoader_Checks_Test extends TaskBaseTestCase {
-	private TaskReader reader = Mockito.mock(TaskReader.class);
+	private final TaskReader reader = Mockito.mock(TaskReader.class);
 	private TaskLoader loader;
 
 	@BeforeEach
-	void setup() throws IOException {
+	protected void setup() throws IOException {
 		super.setup();
 
 		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
@@ -47,7 +46,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "InProgress"))
+				createInputStream("Project X", "Feature Y", "InProgress")
 		);
 
 		TaskException taskException = assertThrows(TaskException.class, () -> loader.load());
@@ -71,7 +70,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/group.txt")).thenReturn(
-				byteInStream(createFile("Project X", "Feature Y", "Finished"))
+				createInputStream("Project X", "Feature Y", "Finished")
 		);
 
 		TaskException taskException = assertThrows(TaskException.class, () -> loader.load());

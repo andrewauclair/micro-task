@@ -6,10 +6,7 @@ import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskLoader;
-import com.andrewauclair.microtask.task.TaskReader;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -28,6 +25,7 @@ final class UpdateCommand implements Runnable {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
+	private final TaskWriter taskWriter;
 	private final Commands commands;
 	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
@@ -56,9 +54,10 @@ final class UpdateCommand implements Runnable {
 	@ArgGroup(exclusive = false)
 	private ProxySettings proxy;
 
-	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
+	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, TaskWriter taskWriter, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasksData = tasks;
+		this.taskWriter = taskWriter;
 		this.commands = commands;
 		this.localSettings = localSettings;
 		this.osInterface = osInterface;
@@ -149,7 +148,7 @@ final class UpdateCommand implements Runnable {
 
 			for (Task task : taskList) {
 				String list = tasksData.findListForTask(task.id).getFullPath();
-				tasksData.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
+				taskWriter.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 			}
 
 			String currentVersion = Utils.writeCurrentVersion(osInterface);

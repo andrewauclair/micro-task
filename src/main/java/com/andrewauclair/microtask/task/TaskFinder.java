@@ -1,0 +1,70 @@
+// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.microtask.task;
+
+import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+
+import java.util.Optional;
+
+public class TaskFinder {
+	private final Tasks tasks;
+
+	public TaskFinder(Tasks tasks) {
+
+		this.tasks = tasks;
+	}
+
+	public boolean hasTaskWithID(long id) {
+		for (String listName : tasks.getAllListNames()) {
+			if (tasks.getList(new ExistingTaskListName(tasks, listName)).containsTask(id)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// TODO Is there a way that we could create a custom stream to do stuff like this where we loop through everything?
+	public TaskList findListForTask(long id) {
+		Optional<TaskList> listForTask = tasks.getRootGroup().findListForTask(id);
+		if (listForTask.isEmpty()) {
+			throw new TaskException("List for task " + id + " was not found.");
+		}
+		return listForTask.get();
+	}
+
+	public String getProjectForTask(long taskID) {
+		TaskList listForTask = findListForTask(taskID);
+
+		String project = listForTask.getProject();
+
+		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
+
+		while (project.isEmpty()) {
+			project = group.getProject();
+
+			if (group.getFullPath().equals("/")) {
+				break;
+			}
+			group = tasks.getGroup(group.getParent());
+		}
+		return project;
+	}
+
+	public String getFeatureForTask(long taskID) {
+		TaskList listForTask = findListForTask(taskID);
+
+		String feature = listForTask.getFeature();
+
+		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
+
+		while (feature.isEmpty()) {
+			feature = group.getFeature();
+
+			if (group.getFullPath().equals("/")) {
+				break;
+			}
+			group = tasks.getGroup(group.getParent());
+		}
+		return feature;
+	}
+}

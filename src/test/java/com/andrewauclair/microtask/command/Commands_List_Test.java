@@ -34,7 +34,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 		tasks.createGroup("/one/two/");
 		tasks.createGroup("/one/three/");
-		tasks.switchGroup("/one/two/");
+		tasks.setActiveGroup("/one/two/");
 		tasks.addList("charlie", true);
 		tasks.addList("bravo", true);
 		tasks.addList("alpha", true);
@@ -58,7 +58,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 		tasks.finishList("/test/two");
 
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		commands.execute(printStream, "list");
 
@@ -75,7 +75,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		tasks.addGroup("/test/one/");
 		tasks.addGroup("/test/two/");
 
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		tasks.finishGroup("/test/two/");
 
@@ -96,7 +96,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		tasks.addList("/test/three", true);
 		tasks.addList("/test/four", true);
 
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		tasks.finishGroup("/test/two/");
 		tasks.finishList("/test/four");
@@ -124,7 +124,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 				"      --finished      List finished tasks.",
 				"      --group         List tasks in this group.",
 				"  -h, --help          Show this help message.",
-				"      --list=<list>   List tasks on this list.",
+				"      --list=<list>   List tasks on list.",
 				"      --recursive     List tasks recursively in all sub-groups.",
 				"      --tasks         List tasks on list or in group."
 		);

@@ -63,18 +63,14 @@ public class UtilsTest {
 		assertEquals(highestTime, Utils.fromTimestamp(time));
 	}
 
-	public static String createFile(String... lines) {
-		StringBuilder buffer = new StringBuilder();
-
-		for (String line : lines) {
-			buffer.append(line);
-			buffer.append(NL);
-		}
-
-		return buffer.toString();
-	}
-
-	public static ByteArrayInputStream byteInStream(String data) {
-		return new ByteArrayInputStream(data.getBytes());
-	}
+//	public static String createFile(String... lines) {
+//		StringBuilder buffer = new StringBuilder();
+//
+//		for (String line : lines) {
+//			buffer.append(line);
+//			buffer.append(NL);
+//		}
+//
+//		return buffer.toString();
+//	}
 }

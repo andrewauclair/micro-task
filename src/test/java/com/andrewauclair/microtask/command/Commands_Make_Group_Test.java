@@ -49,7 +49,7 @@ class Commands_Make_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void create_relative_group() {
 		tasks.createGroup("one/");
-		tasks.switchGroup("one/");
+		tasks.setActiveGroup("one/");
 
 
 		commands.execute(printStream, "mk -g two/three/");

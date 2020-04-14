@@ -24,7 +24,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 	void list_renames_are_always_relative() {
 		tasks.addList("/test/one", true);
 		tasks.addList("/test/new/two", true);
-		tasks.switchGroup("/test/");
+		tasks.setActiveGroup("/test/");
 
 		commands.execute(printStream, "rename --list /test/one -n \"two\"");
 
@@ -32,7 +32,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "rename --list new/two -n \"three\"");
 
-		commands.execute(printStream, "rename --list two -n \"new/three\"");
+		commands.execute(printStream, "rename --list one -n \"test/two\"");
 
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/one", "/test/new/two");
 

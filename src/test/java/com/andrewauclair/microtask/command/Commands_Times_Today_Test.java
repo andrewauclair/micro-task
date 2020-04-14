@@ -70,6 +70,8 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 		
+		tasks.addList("/one/design", true);
+		
 		commands.execute(printStream, "times --today --list /one/design");
 		
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
@@ -101,6 +103,8 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/design")
 				)
 		);
+		
+		tasks.addList("/one/design", true);
 		
 		commands.execute(printStream, "times -d 17 --list /one/design");
 		
@@ -166,6 +170,8 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
+		tasks.addList("/one/design", true);
+		
 		commands.execute(printStream, "times --total --today --list /one/design");
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);

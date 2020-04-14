@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,7 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		tasks.addList(name, false);
-		tasks.setActiveList(name);
+		tasks.setActiveList(new ExistingTaskListName(tasks, name));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
@@ -99,7 +100,7 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		TaskGroup group = tasks.addGroup(name + "/");
-		tasks.switchGroup(name + "/");
+		tasks.setActiveGroup(name + "/");
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
@@ -118,7 +119,7 @@ public class TaskLoader {
 		}
 
 		loadTasks(fileInfo.getPath(), true);
-		tasks.switchGroup(tasks.getActiveGroup().getParent());
+		tasks.setActiveGroup(tasks.getActiveGroup().getParent());
 	}
 
 	private boolean isGroupFolder(String folder) {
