@@ -38,9 +38,8 @@ public class TaskReader {
 
 					foundStartTime = true;
 
-					// TODO Enable this in issue #305 for release 20.4.19
-//					timeProject = scanner.nextLine();
-//					timeFeature = scanner.nextLine();
+					timeProject = scanner.nextLine();
+					timeFeature = scanner.nextLine();
 				}
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
@@ -56,10 +55,6 @@ public class TaskReader {
 					long finish = Integer.parseInt(line.substring(7));
 
 					builder.withTime(new TaskTimes(finish));
-				}
-				else if (foundStartTime) {
-					timeProject = line;
-					timeFeature = scanner.nextLine();
 				}
 			}
 
