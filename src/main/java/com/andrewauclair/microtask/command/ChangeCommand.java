@@ -39,9 +39,9 @@ final class ChangeCommand implements Runnable {
 			System.out.println("Switched to list '" + listGroup.list + "'");
 		}
 		else {
-			tasks.setActiveGroup(listGroup.group.absoluteName());
+			tasks.setActiveGroup(listGroup.group);
 
-			localSettings.setActiveGroup(listGroup.group.absoluteName());
+			localSettings.setActiveGroup(listGroup.group);
 
 			System.out.println("Switched to group '" + listGroup.group + "'");
 		}

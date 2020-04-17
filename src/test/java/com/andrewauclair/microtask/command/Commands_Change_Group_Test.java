@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Change_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void switch_group_command() {
-		tasks.createGroup("/test/one/two/three/");
+		tasks.createGroup(newGroup("/test/one/two/three/"));
 
 		commands.execute(printStream, "ch -g /test/one/two/three/");
 
@@ -18,8 +18,8 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switch_to_relative_group() {
-		tasks.createGroup("/one/two/three/");
-		tasks.setActiveGroup("/one/two/");
+		tasks.createGroup(newGroup("/one/two/three/"));
+		tasks.setActiveGroup(existingGroup("/one/two/"));
 
 		commands.execute(printStream, "ch -g three/");
 
@@ -31,11 +31,11 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void set_active_group_in_local_settings_when_changing_groups() {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
 		commands.execute(printStream, "ch -g test/");
 
-		Mockito.verify(localSettings).setActiveGroup("/test/");
+		Mockito.verify(localSettings).setActiveGroup(existingGroup("/test/"));
 	}
 
 	@Test

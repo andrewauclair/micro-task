@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.io.IOException;
 import java.util.Scanner;

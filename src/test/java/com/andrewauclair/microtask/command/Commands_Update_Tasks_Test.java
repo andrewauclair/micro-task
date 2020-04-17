@@ -19,13 +19,14 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 	void update_commands_on_all_lists() throws IOException {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 		tasks.setActiveList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");
 
-		tasks.addList("/test/two/three/five", true);
+		tasks.createGroup(newGroup("/test/two/three/"));
+		tasks.addList(newList("/test/two/three/five"), true);
 		tasks.setActiveList(existingList("/test/two/three/five"));
 
 		Task task6 = tasks.addTask("Test");
@@ -61,7 +62,7 @@ class Commands_Update_Tasks_Test extends CommandsBaseTestCase {
 	void update_commands_on_all_lists_for_unknown_version() throws IOException {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 		tasks.setActiveList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");

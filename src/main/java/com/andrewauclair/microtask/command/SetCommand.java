@@ -17,7 +17,7 @@ abstract class SetCommand implements Runnable {
 		private final Tasks tasks;
 
 		@Option(required = true, names = {"--task"}, description = "Task to set.")
-		private Long id;
+		private ExistingID id;
 
 		@Option(names = {"-r", "--recurring"}, description = "Set task to recurring.")
 		private Boolean recurring;
@@ -88,10 +88,10 @@ abstract class SetCommand implements Runnable {
 			}
 
 			if (args.in_progress) {
-				TaskList list = tasks.getListByName(this.list.absoluteName());
+				TaskList list = tasks.getListByName(this.list);
 
 				if (list.getState() == TaskContainerState.Finished) {
-					tasks.setListState(list, TaskContainerState.InProgress, true);
+					tasks.setListState(this.list, TaskContainerState.InProgress, true);
 
 					System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
 				}
@@ -105,19 +105,17 @@ abstract class SetCommand implements Runnable {
 
 		private void handleProjectAndFeature() {
 			if (args.projectFeature.project != null) {
-				TaskList listByName = tasks.getListByName(this.list.absoluteName());
 				String project = this.args.projectFeature.project;
-				tasks.setProject(listByName, project, true);
+				tasks.setProject(list, project, true);
 
-				System.out.println("Set project for list '" + listByName.getFullPath() + "' to '" + project + "'");
+				System.out.println("Set project for list '" + list + "' to '" + project + "'");
 			}
 
 			if (args.projectFeature.feature != null) {
-				TaskList listByName = tasks.getListByName(this.list.absoluteName());
 				String feature = this.args.projectFeature.feature;
-				tasks.setFeature(listByName, feature, true);
+				tasks.setFeature(list, feature, true);
 
-				System.out.println("Set feature for list '" + listByName.getFullPath() + "' to '" + feature + "'");
+				System.out.println("Set feature for list '" + list + "' to '" + feature + "'");
 			}
 		}
 	}
@@ -153,7 +151,7 @@ abstract class SetCommand implements Runnable {
 				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
 				if (group.getState() == TaskContainerState.Finished) {
-					tasks.setGroupState(group, TaskContainerState.InProgress, true);
+					tasks.setGroupState(this.group, TaskContainerState.InProgress, true);
 
 					System.out.println("Set state of group '" + group.getFullPath() + "' to In Progress");
 				}
@@ -167,19 +165,17 @@ abstract class SetCommand implements Runnable {
 
 		private void handleProjectAndFeature() {
 			if (args.projectFeature.project != null) {
-				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 				String project = this.args.projectFeature.project;
 				tasks.setProject(group, project, true);
 
-				System.out.println("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
+				System.out.println("Set project for group '" + group + "' to '" + project + "'");
 			}
 
 			if (args.projectFeature.feature != null) {
-				TaskGroup group = tasks.getGroup(this.group.absoluteName());
 				String feature = this.args.projectFeature.feature;
 				tasks.setFeature(group, feature, true);
 
-				System.out.println("Set feature for group '" + group.getFullPath() + "' to '" + feature + "'");
+				System.out.println("Set feature for group '" + group + "' to '" + feature + "'");
 			}
 		}
 	}

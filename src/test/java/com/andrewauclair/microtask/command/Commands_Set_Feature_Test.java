@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Set_Feature_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_set_feature_command_for_list() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 		tasks.setActiveList(existingList("/test"));
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set-list --list /test --feature \"Feature\"");
 
-		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(1));
+		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(existingID(1)));
 
 		assertOutput(
 				"Set feature for list '/test' to 'Feature'",
@@ -25,13 +25,14 @@ class Commands_Set_Feature_Test extends CommandsBaseTestCase {
 
 	@Test
 	void execute_set_feature_command_for_group() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set-group --group /test/ --feature \"Feature\"");
 
-		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(1));
+		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(existingID(1)));
 
 		assertOutput(
 				"Set feature for group '/test/' to 'Feature'",

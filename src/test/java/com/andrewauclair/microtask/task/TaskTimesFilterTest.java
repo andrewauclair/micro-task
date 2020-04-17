@@ -78,7 +78,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 //		tasks.createGroup("/one");
 //		tasks.switchGroup("/one");
 //
-//		tasks.addList("test", true);
+//		tasks.addList(newList("test", true);
 //		tasks.setActiveList("test");
 //
 //		tasks.addTask(new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false));
@@ -94,7 +94,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 //		tasks.createGroup("/two/three");
 //		tasks.switchGroup("/two/three");
 //
-//		tasks.addList("stuff", true);
+//		tasks.addList(newList("stuff", true);
 //		tasks.setActiveList("stuff");
 //
 //		tasks.addTask(new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false));
@@ -168,7 +168,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	//	@Test
 	void verify_setup_data() {
 		// there's so much data here that I want to verify that we've configured it all correctly before trusting it
-		assertThat(tasks.getTasksForList("/default")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("/default"))).containsOnly(
 				new Task(1, "Test 1", TaskState.Inactive, createTaskTimes(1), false),
 				new Task(2, "Test 2", TaskState.Inactive, createTaskTimes(2), false),
 				new Task(3, "Test 3", TaskState.Inactive, createTaskTimes(3), false),
@@ -180,7 +180,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 				new Task(9, "Test 9", TaskState.Inactive, createTaskTimes(9), false)
 		);
 		
-		assertThat(tasks.getTasksForList("/one/test")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("/one/test"))).containsOnly(
 				new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false),
 				new Task(11, "Test 11", TaskState.Inactive, createTaskTimes(11), false),
 				new Task(12, "Test 12", TaskState.Inactive, createTaskTimes(12), false),
@@ -192,7 +192,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 				new Task(18, "Test 18", TaskState.Inactive, createTaskTimes(18), false)
 		);
 		
-		assertThat(tasks.getTasksForList("/two/three/stuff")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("/two/three/stuff"))).containsOnly(
 				new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false),
 				new Task(20, "Test 20", TaskState.Inactive, createTaskTimes(20), false),
 				new Task(21, "Test 21", TaskState.Inactive, createTaskTimes(21), false),
@@ -301,14 +301,15 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
-		
-		tasks.addList("/test/one", true);
+
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		tasks.setActiveList(existingList("/test/one"));
 		
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 		
-		tasks.addList("/test/two", true);
+		tasks.addList(newList("/test/two"), true);
 		tasks.setActiveList(existingList("/test/two"));
 		
 		tasks.addTask("Test 5");
@@ -329,13 +330,14 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		tasks.setActiveList(existingList("/test/one"));
 
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 
-		tasks.addList("/test/two", true);
+		tasks.addList(newList("/test/two"), true);
 		tasks.setActiveList(existingList("/test/two"));
 
 		Task task5 = tasks.addTask("Test 5");
@@ -360,11 +362,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	void filter_by_group() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 
-		tasks.addList("/one/impl", true);
-		tasks.addList("/one/test", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/impl"), true);
+		tasks.addList(newList("/one/test"), true);
 
-		tasks.addList("/two/impl", true);
-		tasks.addList("/two/test", true);
+		tasks.addGroup(newGroup("/two/"));
+		tasks.addList(newList("/two/impl"), true);
+		tasks.addList(newList("/two/test"), true);
 
 		tasks.setActiveList(existingList("/one/impl"));
 

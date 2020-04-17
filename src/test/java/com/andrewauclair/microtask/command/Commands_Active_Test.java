@@ -8,7 +8,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	void execute_active_command() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		setTime(1561079202);
 		commands.execute(printStream, "active");
 
@@ -28,14 +28,15 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void print_active_group_and_active_list() {
-		tasks.addList("/test/one/two/three", true);
+		tasks.addGroup(newGroup("/test/one/two/"));
+		tasks.addList(newList("/test/one/two/three"), true);
 		tasks.setActiveList(existingList("/test/one/two/three"));
-		tasks.setActiveGroup("/test/one/");
+		tasks.setActiveGroup(existingGroup("/test/one/"));
 		
 		tasks.addTask("Test");
 		
 		setTime(1561078202);
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		setTime(1561079202);
 		commands.execute(printStream, "active");
 		

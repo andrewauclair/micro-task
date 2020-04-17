@@ -24,7 +24,7 @@ public class TaskFinder {
 	}
 	
 	// TODO Is there a way that we could create a custom stream to do stuff like this where we loop through everything?
-	public TaskList findListForTask(long id) {
+	public TaskList findListForTask(ExistingID id) {
 		Optional<TaskList> listForTask = tasks.getRootGroup().findListForTask(id);
 		if (listForTask.isEmpty()) {
 			throw new TaskException("List for task " + id + " was not found.");
@@ -32,7 +32,7 @@ public class TaskFinder {
 		return listForTask.get();
 	}
 
-	public String getProjectForTask(long taskID) {
+	public String getProjectForTask(ExistingID taskID) {
 		TaskList listForTask = findListForTask(taskID);
 
 		String project = listForTask.getProject();
@@ -50,7 +50,7 @@ public class TaskFinder {
 		return project;
 	}
 
-	public String getFeatureForTask(long taskID) {
+	public String getFeatureForTask(ExistingID taskID) {
 		TaskList listForTask = findListForTask(taskID);
 
 		String feature = listForTask.getFeature();

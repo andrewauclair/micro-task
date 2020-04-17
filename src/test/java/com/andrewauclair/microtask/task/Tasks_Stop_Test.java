@@ -20,7 +20,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task oldTask = tasks.startTask(2, false);
+		Task oldTask = tasks.startTask(existingID(2), false);
 
 		Task expectedOldTask = new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
 		assertEquals(expectedOldTask, tasks.getActiveTask());
@@ -51,7 +51,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.reset(writer);
 
@@ -65,7 +65,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		Mockito.reset(osInterface);
 
@@ -83,7 +83,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
@@ -101,7 +101,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(2345L);
 
@@ -109,7 +109,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(3456L);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
@@ -131,9 +131,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 	void user_can_stop_the_active_task_when_it_is_on_a_different_list() {
 		tasks.addTask("Task 1");
 
-		Task task = tasks.startTask(1, false);
+		Task task = tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
@@ -148,9 +148,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
 		Mockito.reset(writer);
@@ -165,9 +165,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
 		Mockito.reset(osInterface);
@@ -184,9 +184,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 	void on_stop_the_active_task_is_stopped_on_the_correct_list() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
@@ -202,7 +202,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 	void active_task_list_is_empty_string_after_stopping_task() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		assertEquals("/default", tasks.getActiveTaskList().absoluteName());
 

@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

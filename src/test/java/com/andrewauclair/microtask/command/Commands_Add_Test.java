@@ -43,7 +43,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 	@Test
 	void add_task_to_specific_list() {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 		commands.execute(printStream, "add --list one -n \"Test\"");
 
 		assertOutput(
@@ -52,14 +52,15 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertThat(tasks.getTasksForList("one")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("one"))).containsOnly(
 				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		);
 	}
 
 	@Test
 	void add_task_to_a_list_in_a_group() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		tasks.setActiveList(existingList("/test/one"));
 
@@ -77,7 +78,7 @@ class Commands_Add_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "add -s -n \"Test\"");
 
-		assertEquals(TaskState.Active, tasks.getTask(1).state);
+		assertEquals(TaskState.Active, tasks.getTask(existingID(1)).state);
 
 		assertOutput(
 				"Added task 1 - 'Test'",

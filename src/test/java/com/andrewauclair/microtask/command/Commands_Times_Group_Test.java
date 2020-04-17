@@ -17,16 +17,18 @@ import static org.mockito.Mockito.when;
 class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 	@Test
 	void times_on_single_group() {
-		tasks.addList("/one/impl", true);
-		tasks.addList("/one/test", true);
-		tasks.addList("/two/data", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addGroup(newGroup("/two/"));
+		tasks.addList(newList("/one/impl"), true);
+		tasks.addList(newList("/one/test"), true);
+		tasks.addList(newList("/two/data"), true);
 
 		tasks.setActiveList(existingList("/one/impl"));
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup("/");
+		tasks.setActiveGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -66,15 +68,17 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void times_on_multiple_groups() {
-		tasks.addList("/one/data", true);
-		tasks.addList("/two/data", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addGroup(newGroup("/two/"));
+		tasks.addList(newList("/one/data"), true);
+		tasks.addList(newList("/two/data"), true);
 
 		tasks.setActiveList(existingList("/one/data"));
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup("/");
+		tasks.setActiveGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -115,15 +119,17 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void times_on_multiple_groups__total_only() {
-		tasks.addList("/one/data", true);
-		tasks.addList("/two/data", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addGroup(newGroup("/two/"));
+		tasks.addList(newList("/one/data"), true);
+		tasks.addList(newList("/two/data"), true);
 
 		tasks.setActiveList(existingList("/one/data"));
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup("/");
+		tasks.setActiveGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 

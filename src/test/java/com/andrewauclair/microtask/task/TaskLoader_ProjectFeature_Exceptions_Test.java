@@ -13,7 +13,7 @@ class TaskLoader_ProjectFeature_Exceptions_Test extends TaskBaseTestCase {
 	void catch_write_list_info_io_exception() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 		
-		tasks.setProject(tasks.getListByName("/default"), "Test", true);
+		tasks.setProject(existingList("/default"), "Test", true);
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
@@ -22,8 +22,8 @@ class TaskLoader_ProjectFeature_Exceptions_Test extends TaskBaseTestCase {
 	void catch_write_group_info_io_exception() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 		
-		tasks.addGroup("/test/");
-		tasks.setProject(tasks.getGroup("/test/"), "Test", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.setProject(existingGroup("/test/"), "Test", true);
 		
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}

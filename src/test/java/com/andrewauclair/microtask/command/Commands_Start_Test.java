@@ -29,7 +29,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		Assertions.assertEquals(TaskState.Active, task.state);
 	}
@@ -38,7 +38,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	void multiple_starts_prints_the_correct_start_time() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		Task stopTask = tasks.stopTask();
 
 		assertThat(stopTask.getAllTimes()).containsOnly(
@@ -57,7 +57,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		assertEquals(TaskState.Active, task.state);
 	}
@@ -69,7 +69,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		long time = 1561078202L;
 		Mockito.when(osInterface.currentSeconds()).thenReturn(time, time + 1000);
@@ -99,7 +99,7 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
@@ -126,12 +126,13 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	void start_new_task_when_active_task_is_on_nested_list() {
 		tasks.addTask("Test 1");
 
-		tasks.addList("/one/two", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/two"), true);
 		tasks.setActiveList(existingList("/one/two"));
 
 		tasks.addTask("Test 2");
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		tasks.setActiveList(existingList("/default"));
 
@@ -152,13 +153,14 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 	@Test
 	void starting_task_on_different_group_switches_active_group() {
 		tasks.addTask("Test 1");
-		tasks.addList("/one/two", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/two"), true);
 
 		tasks.setActiveList(existingList("/one/two"));
 		tasks.addTask("Test 2");
 
-		tasks.setActiveGroup("/");
-		tasks.startTask(2, false);
+		tasks.setActiveGroup(existingGroup("/"));
+		tasks.startTask(existingID(2), false);
 
 		assertEquals("/one/", tasks.getActiveGroup().getFullPath());
 	}
@@ -168,8 +170,8 @@ class Commands_Start_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test");
 		tasks.addTask("Test");
 
-		tasks.setRecurring(1, true);
-		tasks.startTask(1, false);
+		tasks.setRecurring(existingID(1), true);
+		tasks.startTask(existingID(1), false);
 
 		commands.execute(printStream, "start 2 -f");
 

@@ -1,7 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import java.util.Objects;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
@@ -10,6 +10,8 @@ public class TaskListName {
 	private final String absoluteName;
 	private final String shortName;
 
+	private final ExistingTaskGroupName parent;
+
 	public TaskListName(Tasks tasks, String name) {
 		if (name.endsWith("/")) {
 			throw new RuntimeException("List name must not end in /");
@@ -17,6 +19,10 @@ public class TaskListName {
 
 		this.absoluteName = absoluteName(tasks, name).toLowerCase();
 		this.shortName = absoluteName.substring(absoluteName.lastIndexOf('/') + 1);
+
+		String parent = absoluteName.substring(0, absoluteName.lastIndexOf('/') + 1);
+
+		this.parent = new ExistingTaskGroupName(tasks, parent);
 	}
 
 	private String absoluteName(Tasks tasks, String name) {
@@ -35,8 +41,8 @@ public class TaskListName {
 		return shortName;
 	}
 
-	public String parentGroupName() {
-		return absoluteName.substring(0, absoluteName.lastIndexOf('/') + 1);
+	public ExistingTaskGroupName parentGroupName() {
+		return parent;
 	}
 
 	@Override

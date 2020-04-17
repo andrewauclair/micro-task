@@ -16,13 +16,13 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_set_task_to_inactive() {
 		tasks.addTask("Test");
-		tasks.finishTask(1);
+		tasks.finishTask(existingID(1));
 
-		assertEquals(TaskState.Finished, tasks.getTask(1).state);
+		assertEquals(TaskState.Finished, tasks.getTask(existingID(1)).state);
 
 		commands.execute(printStream, "set-task --task 1 --inactive");
 
-		assertEquals(TaskState.Inactive, tasks.getTask(1).state);
+		assertEquals(TaskState.Inactive, tasks.getTask(existingID(1)).state);
 
 		assertOutput(
 				"Set state of task 1 - 'Test' to Inactive",
@@ -33,7 +33,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void write_task_when_setting_inactive() {
 		tasks.addTask("Test");
-		tasks.finishTask(1);
+		tasks.finishTask(existingID(1));
 
 		Mockito.reset(writer);
 
@@ -45,7 +45,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void write_git_commit_when_setting_inactive() {
 		tasks.addTask("Test");
-		tasks.finishTask(1);
+		tasks.finishTask(existingID(1));
 
 		Mockito.reset(osInterface);
 

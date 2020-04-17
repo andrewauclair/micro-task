@@ -24,7 +24,7 @@ final class FinishCommand implements Runnable {
 
 	private static final class FinishOptions {
 		@Option(required = true, names = {"-t", "--task"}, split = ",", description = "Task(s) to finish.")
-		private Integer[] id;
+		private ExistingID[] id;
 
 		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to finish.")
 		private ExistingTaskListName list;
@@ -53,7 +53,7 @@ final class FinishCommand implements Runnable {
 			finishTask(tasks.finishTask());
 		}
 		else {
-			for (final Integer id : options.id) {
+			for (final ExistingID id : options.id) {
 				finishTask(tasks.finishTask(id));
 			}
 		}
@@ -76,7 +76,7 @@ final class FinishCommand implements Runnable {
 			System.out.println("Group to finish still has tasks to complete.");
 		}
 		else {
-			TaskGroup taskGroup = tasks.finishGroup(this.options.group.absoluteName());
+			TaskGroup taskGroup = tasks.finishGroup(this.options.group);
 
 			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
 		}
@@ -85,15 +85,15 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishList() {
-		if (tasks.getListByName(this.options.list.absoluteName()).getFullPath().equals(tasks.getActiveList())) {
+		if (this.options.list.equals(tasks.getActiveList())) {
 			System.out.println("List to finish must not be active.");
 		}
-		else if (tasks.getListByName(this.options.list.absoluteName()).getTasks().stream()
+		else if (tasks.getListByName(this.options.list).getTasks().stream()
 				.anyMatch(task -> task.state != TaskState.Finished)) {
 			System.out.println("List to finish still has tasks to complete.");
 		}
 		else {
-			TaskList taskList = tasks.finishList(this.options.list.absoluteName());
+			TaskList taskList = tasks.finishList(this.options.list);
 
 			System.out.println("Finished list '" + taskList.getFullPath() + "'");
 		}

@@ -110,8 +110,8 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 
 		loader.load();
 
-		assertEquals("Project X", tasks.getListByName("/two").getProject());
-		assertEquals("Feature Y", tasks.getListByName("/two").getFeature());
+		assertEquals("Project X", tasks.getListByName(existingList("/two")).getProject());
+		assertEquals("Feature Y", tasks.getListByName(existingList("/two")).getFeature());
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 
 		loader.load();
 
-		assertEquals("", tasks.getListByName("/one").getProject());
-		assertEquals("", tasks.getListByName("/one").getFeature());
+		assertEquals("", tasks.getListByName(existingList("/one")).getProject());
+		assertEquals("", tasks.getListByName(existingList("/one")).getFeature());
 	}
 }

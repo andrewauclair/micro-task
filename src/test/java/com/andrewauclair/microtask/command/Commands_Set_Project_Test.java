@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Set_Project_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_set_project_command_for_list() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 		tasks.setActiveList(existingList("/test"));
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set-list --list /test --project=\"Issues\"");
 
-		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(1));
+		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(existingID(1)));
 
 		assertOutput(
 				"Set project for list '/test' to 'Issues'",
@@ -25,13 +25,14 @@ class Commands_Set_Project_Test extends CommandsBaseTestCase {
 
 	@Test
 	void execute_set_project_command_for_group() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
 		commands.execute(printStream, "set-group --group /test/ --project \"Issues\"");
 
-		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(1));
+		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(existingID(1)));
 
 		assertOutput(
 				"Set project for group '/test/' to 'Issues'",

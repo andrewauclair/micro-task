@@ -71,9 +71,9 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		addTaskWithTimes("Test 7", 1561678202, 1561678202 + 1000);
 		addTaskWithTimes("Test 8", 1561778202, 1561778202 + 1000);
 
-		tasks.startTask(1, false);
-		tasks.startTask(2, true);
-		tasks.setRecurring(3, true);
+		tasks.startTask(existingID(1), false);
+		tasks.startTask(existingID(2), true);
+		tasks.setRecurring(existingID(3), true);
 		
 		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
 		

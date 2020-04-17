@@ -8,14 +8,13 @@ import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.PicocliFactory;
-import com.andrewauclair.microtask.picocli.ExistingTaskGroupNameTypeConverter;
+import com.andrewauclair.microtask.picocli.*;
+import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.NewID;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.picocli.ExistingTaskListNameTypeConverter;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.picocli.NewTaskListNameTypeConverter;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
-import com.andrewauclair.microtask.picocli.NewTaskGroupNameTypeConverter;
 import com.andrewauclair.microtask.task.Tasks;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
@@ -193,6 +192,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 
 		return cmdLine;
 	}
@@ -230,6 +231,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 
 		return cmdLine;
 	}
@@ -263,7 +266,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public String getPrompt() {
 		String prompt = "";
 
-		if (tasks.getGroupForList(new ExistingTaskListName(tasks, tasks.getActiveList())).equals(tasks.getActiveGroup())) {
+		if (tasks.getGroupForList(tasks.getActiveList()).equals(tasks.getActiveGroup())) {
 			prompt += tasks.getActiveList();
 		}
 		else {

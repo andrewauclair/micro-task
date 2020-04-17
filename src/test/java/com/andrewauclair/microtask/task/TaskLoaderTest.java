@@ -53,7 +53,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 				createInputStream("Project X", "Feature Y", "InProgress")
 		);
 
-		tasks.addList("/test", false);
+		tasks.addList(newList("/test"), false);
 		
 		ExistingTaskListName expectedList = new ExistingTaskListName(tasks, "/test");
 
@@ -63,7 +63,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 
 		Mockito.verify(reader).readTask(1, "git-data/tasks/test/1.txt");
 
-		order.verify(tasks).addList("test", false);
+		order.verify(tasks).addList(newList("test"), false);
 		order.verify(tasks).setActiveList(expectedList);
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(localSettings).load(tasks);
@@ -123,8 +123,8 @@ class TaskLoaderTest extends TaskBaseTestCase {
 
 //		Mockito.when(tasks.addGroup("one/")).thenReturn(new TaskGroup("one/", new TaskGroup("/"), "", "", TaskContainerState.InProgress));
 
-		tasks.addList("/two", false);
-		tasks.addList("/test", false);
+		tasks.addList(newList("/two"), false);
+		tasks.addList(newList("/test"), false);
 		
 		ExistingTaskListName expectedList = new ExistingTaskListName(tasks, "two");
 		ExistingTaskListName expectedList2 = new ExistingTaskListName(tasks, "test");
@@ -138,14 +138,14 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		Mockito.verify(reader).readTask(3, "git-data/tasks/one/two/3.txt");
 		Mockito.verify(reader).readTask(4, "git-data/tasks/one/two/4.txt");
 
-		order.verify(tasks).addGroup("one/");
-		order.verify(tasks).setActiveGroup("one/");
-		order.verify(tasks).addList("two", false);
+		order.verify(tasks).addGroup(newGroup("one/"));
+		order.verify(tasks).setActiveGroup(existingGroup("one/"));
+		order.verify(tasks).addList(newList("two"), false);
 		order.verify(tasks).setActiveList(expectedList);
 		order.verify(tasks).addTask(new Task(3, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).addTask(new Task(4, "Test", TaskState.Inactive, Collections.emptyList()));
-		order.verify(tasks).setActiveGroup("/");
-		order.verify(tasks).addList("test", false);
+		order.verify(tasks).setActiveGroup(existingGroup("/"));
+		order.verify(tasks).addList(newList("test"), false);
 		order.verify(tasks).setActiveList(expectedList2);
 		order.verify(tasks).addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 		order.verify(tasks).addTask(new Task(2, "Test", TaskState.Inactive, Collections.emptyList()));

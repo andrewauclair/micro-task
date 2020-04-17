@@ -74,6 +74,6 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 
 		loader.load();
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/two").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/two")).getState());
 	}
 }

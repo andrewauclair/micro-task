@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
@@ -36,16 +37,16 @@ final class AddCommand implements Runnable {
 
 	@Override
 	public void run() {
-		String list = tasks.getActiveList();
+		ExistingTaskListName list = tasks.getActiveList();
 
 		if (this.list != null) {
-			list = this.list.absoluteName();
+			list = this.list;
 		}
 
 		Task task = tasks.addTask(name, list);
 
 		if (recurring) {
-			task = tasks.setRecurring(task.id, true);
+			task = tasks.setRecurring(new ExistingID(tasks, task.id), true);
 		}
 
 		System.out.println("Added task " + task.description());

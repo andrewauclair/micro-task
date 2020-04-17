@@ -440,7 +440,7 @@ public final class TimesCommand implements Runnable {
 		}
 	}
 
-	public String getFeatureForTask(long taskID) {
+	public String getFeatureForTask(ExistingID taskID) {
 		TaskList listForTask = tasks.findListForTask(taskID);
 
 		String feature = listForTask.getFeature();
@@ -477,8 +477,8 @@ public final class TimesCommand implements Runnable {
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = new TaskFinder(tasks).getProjectForTask(task.task.id);
-			String feature = getFeatureForTask(task.task.id);
+			String project = new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.task.id));
+			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
 
 			if (project.isEmpty()) {
 				project = "None";

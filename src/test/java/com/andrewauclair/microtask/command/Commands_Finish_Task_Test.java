@@ -14,7 +14,7 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 		setTime(1561078202);
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 		setTime(1561079202);
 		commands.execute(printStream, "finish --active-task");
 
@@ -25,7 +25,7 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(2);
+		Task task = tasks.getTask(existingID(2));
 
 		Assertions.assertEquals(TaskState.Finished, task.state);
 	}
@@ -35,7 +35,7 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 1");
 		tasks.addTask("Task 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		commands.execute(printStream, "finish --task 2");
 
@@ -46,11 +46,11 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		assertEquals(TaskState.Active, task.state);
 
-		task = tasks.getTask(2);
+		task = tasks.getTask(existingID(2));
 
 		assertEquals(TaskState.Finished, task.state);
 	}
@@ -78,8 +78,8 @@ class Commands_Finish_Task_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertEquals(TaskState.Finished, tasks.getTask(1).state);
-		assertEquals(TaskState.Finished, tasks.getTask(2).state);
-		assertEquals(TaskState.Finished, tasks.getTask(3).state);
+		assertEquals(TaskState.Finished, tasks.getTask(existingID(1)).state);
+		assertEquals(TaskState.Finished, tasks.getTask(existingID(2)).state);
+		assertEquals(TaskState.Finished, tasks.getTask(existingID(3)).state);
 	}
 }

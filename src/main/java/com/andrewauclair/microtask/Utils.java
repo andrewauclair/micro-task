@@ -3,7 +3,6 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 

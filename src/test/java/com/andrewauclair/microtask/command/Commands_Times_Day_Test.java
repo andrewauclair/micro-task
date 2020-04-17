@@ -26,7 +26,7 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 		setTime(june18_8_am);
 		
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 		
@@ -63,7 +63,7 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 		setTime(june18_8_am);
 
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 

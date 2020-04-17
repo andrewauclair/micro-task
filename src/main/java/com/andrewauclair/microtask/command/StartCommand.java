@@ -2,10 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskDuration;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -22,7 +19,7 @@ final class StartCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(index = "0", description = "The task to start.")
-	private long id;
+	private ExistingID id;
 
 	@Option(names = {"-f", "--finish"}, description = "Finish the active task.")
 	private boolean finish;

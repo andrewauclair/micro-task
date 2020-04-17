@@ -82,7 +82,8 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 	@Test
 	void tasks_clears_all_data_before_loading() {
-		tasks.addList("/test/one/two", true);
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addList(newList("/test/one/two"), true);
 		tasks.setActiveList(existingList("/test/one/two"));
 		tasks.addTask("Test");
 
@@ -90,18 +91,21 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		TaskFinder finder = new TaskFinder(tasks);
 		assertFalse(finder.hasTaskWithID(1));
-		assertFalse(tasks.hasGroupPath("/test/one"));
+
+		TaskGroupFinder groupFinder = new TaskGroupFinder(tasks);
+		assertFalse(groupFinder.hasGroupPath(new TaskGroupName(tasks, "/test/one/")));
 	}
 
 	@Test
 	void tasks_sets_active_task_id_list_group() throws IOException {
 		tasks.addTask("Test");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
 		Mockito.doAnswer(invocationOnMock -> {
-			tasks.addList("/default", true);
+			tasks.addList(newList("/default"), true);
 			tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
-			tasks.addList("/test/data", true);
+			tasks.addGroup(newGroup("/test/"));
+			tasks.addList(newList("/test/data"), true);
 			tasks.setActiveList(existingList("/test/data"));
 			tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
 			tasks.setActiveList(existingList("/default"));
@@ -111,7 +115,7 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 		tasks.load(loader, commands);
 		
 		assertEquals(2, tasks.getActiveTaskID());
-		assertEquals("/test/data", tasks.getActiveList());
+		assertEquals(existingList("/test/data"), tasks.getActiveList());
 		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 	
@@ -140,8 +144,8 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 	@Test
 	void tasks_load_resets_active_group() {
-		tasks.createGroup("/one/");
-		tasks.setActiveGroup("/one/");
+		tasks.createGroup(newGroup("/one/"));
+		tasks.setActiveGroup(existingGroup("/one/"));
 
 		tasks.load(loader, commands);
 
@@ -151,12 +155,14 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	@Test
 	void tasks_load_resets_active_task() {
 		tasks.addTask("Test");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		tasks.load(loader, commands);
 
+		tasks.addList(newList("/default"), true);
+
 		assertFalse(tasks.hasActiveTask());
-		assertEquals("/default", tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getActiveList());
 	}
 
 	@Test

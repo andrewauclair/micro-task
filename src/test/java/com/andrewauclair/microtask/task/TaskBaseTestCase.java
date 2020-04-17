@@ -3,7 +3,9 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -35,14 +37,30 @@ class TaskBaseTestCase {
 		System.setOut(output);
 		
 		tasks = new Tasks(writer, output, osInterface);
-		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
+//		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 	}
 
 	public ExistingTaskListName existingList(String name) {
 		return new ExistingTaskListName(tasks, name);
 	}
 
+	public NewTaskListName newList(String name) {
+		return new NewTaskListName(tasks, name);
+	}
+
 	public ExistingTaskGroupName existingGroup(String name) {
 		return new ExistingTaskGroupName(tasks, name);
+	}
+
+	public NewTaskGroupName newGroup(String name) {
+		return new NewTaskGroupName(tasks, name);
+	}
+
+	public ExistingID existingID(long id) {
+		return new ExistingID(tasks, id);
+	}
+
+	public NewID newID(long id) {
+		return new NewID(tasks, id);
 	}
 }

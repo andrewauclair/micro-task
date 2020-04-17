@@ -147,7 +147,7 @@ final class UpdateCommand implements Runnable {
 			taskList.sort(Comparator.comparingLong(o -> o.id));
 
 			for (Task task : taskList) {
-				String list = tasksData.findListForTask(task.id).getFullPath();
+				String list = tasksData.findListForTask(new ExistingID(tasksData, task.id)).getFullPath();
 				taskWriter.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 			}
 

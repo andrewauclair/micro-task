@@ -64,7 +64,7 @@ final class ListCommand implements Runnable {
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
-		if (list.getFullPath().equals(tasksData.getActiveList())) {
+		if (list.getFullPath().equals(tasksData.getActiveList().absoluteName())) {
 			System.out.print("* ");
 			ConsoleColors.println(System.out, ANSI_FG_GREEN, list.getName());
 		}
@@ -141,19 +141,14 @@ final class ListCommand implements Runnable {
 	public void run() {
 		boolean all = this.all;
 		boolean showTasks = this.tasks;
-//		boolean showLists = this.lists;
 		boolean useGroup = this.group;
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
 
-		String list = tasksData.getActiveList();
+		ExistingTaskListName list = tasksData.getActiveList();
 
 		if (this.list != null) {
-			list = this.list.absoluteName();
-		}
-
-		if (!list.startsWith("/")) {
-			list = "/" + list;
+			list = this.list;
 		}
 
 		if (showTasks) {
@@ -203,7 +198,6 @@ final class ListCommand implements Runnable {
 				System.out.print(ANSI_RESET);
 				System.out.println();
 			}
-			System.out.println();
 		}
 		else {
 			TaskGroup activeGroup = tasksData.getActiveGroup();
@@ -224,7 +218,7 @@ final class ListCommand implements Runnable {
 					System.out.println(child.getName() + "/");
 				}
 			}
-			System.out.println();
 		}
+		System.out.println();
 	}
 }

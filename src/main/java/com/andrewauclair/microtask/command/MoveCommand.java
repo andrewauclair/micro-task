@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
@@ -24,7 +25,7 @@ final class MoveCommand implements Runnable {
 
 	private static class Args {
 		@Option(names = {"-t", "--task"}, split = ",", description = "Tasks to move.")
-		private Integer[] id;
+		private ExistingID[] id;
 
 		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to move.")
 		private ExistingTaskListName list;
@@ -50,8 +51,8 @@ final class MoveCommand implements Runnable {
 				throw new TaskException("move --task requires --dest-list");
 			}
 
-			for (Integer taskID : args.id) {
-				moveTask(dest_list.absoluteName(), taskID);
+			for (ExistingID taskID : args.id) {
+				moveTask(dest_list, taskID);
 			}
 			System.out.println();
 		}
@@ -70,17 +71,17 @@ final class MoveCommand implements Runnable {
 				throw new TaskException("move --group requires --dest-group");
 			}
 
-			tasks.moveGroup(args.group.absoluteName(), dest_group.absoluteName());
+			tasks.moveGroup(args.group, dest_group);
 
 			System.out.println("Moved group '" + args.group + "' to group '" + dest_group + "'");
 			System.out.println();
 		}
 	}
 
-	private void moveTask(String list, long taskID) {
+	private void moveTask(ExistingTaskListName list, ExistingID taskID) {
 		TaskList taskList = tasks.getListForTask(taskID);
 		taskList.moveTask(taskID, tasks.getListByName(list));
 
-		System.out.println("Moved task " + taskID + " to list '" + list + "'");
+		System.out.println("Moved task " + taskID.get() + " to list '" + list + "'");
 	}
 }
