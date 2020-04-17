@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Change_List_Test extends CommandsBaseTestCase {
 	@Test
 	void switch_to_another_list() {
-		tasks.addList("test-tasks", true);
+		tasks.addList(newList("test-tasks"), true);
 
 		commands.execute(printStream, "ch -l test-tasks");
 
-		assertEquals("/test-tasks", tasks.getActiveList());
+		assertEquals(existingList("/test-tasks"), tasks.getActiveList());
 
 		assertOutput(
 				"Switched to list '/test-tasks'",
@@ -23,11 +23,12 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switch_to_absolute_path_list() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		commands.execute(printStream, "ch -l /test/one");
 
-		assertEquals("/test/one", tasks.getActiveList());
+		assertEquals(existingList("/test/one"), tasks.getActiveList());
 
 		assertOutput(
 				"Switched to list '/test/one'",
@@ -37,8 +38,9 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switch_to_nested_list() {
-		tasks.addList("/test/one", true);
-		tasks.setActiveGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.setActiveGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "ch -l one");
 
@@ -50,7 +52,8 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switching_lists_switches_to_group_of_active_list() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		commands.execute(printStream, "ch -l /test/one");
 
@@ -65,13 +68,13 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 				"Invalid value for option '--list': List '/test' does not exist.",
 				""
 		);
-		assertEquals("/default", tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getActiveList());
 		assertEquals("/", tasks.getActiveGroup().getFullPath());
 	}
 
 	@Test
 	void switch_list_is_always_lower_case() {
-		tasks.addList("random", true);
+		tasks.addList(newList("random"), true);
 
 		commands.execute(printStream, "ch -l ranDOM");
 
@@ -93,12 +96,13 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void set_active_list_in_local_settings_when_changing_lists() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		commands.execute(printStream, "ch -l test/one");
 
 		Mockito.verify(localSettings).setActiveList(existingList("/test/one"));
-		Mockito.verify(localSettings).setActiveGroup("/test/");
+		Mockito.verify(localSettings).setActiveGroup(existingGroup("/test/"));
 	}
 
 	@Test

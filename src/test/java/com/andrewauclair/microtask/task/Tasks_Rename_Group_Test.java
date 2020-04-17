@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -16,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class Tasks_Rename_Group_Test extends TaskBaseTestCase {
 	@Test
 	void catch_IOException_from_moveFolder_for_renameGroup() throws IOException {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 
 		Mockito.reset(osInterface, writer);
 
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
 
-		tasks.renameGroup("/one/", "/two/");
+		tasks.renameGroup(existingGroup("/one/"), new NewTaskGroupName(tasks, "/two/"));
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -36,12 +37,12 @@ class Tasks_Rename_Group_Test extends TaskBaseTestCase {
 
 	@Test
 	void finished_group_cannot_be_renamed() {
-		tasks.addGroup("/test/");
-		tasks.finishGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
+		tasks.finishGroup(existingGroup("/test/"));
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameGroup("test/", "new/"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameGroup(existingGroup("test/"), new NewTaskGroupName(tasks, "new/")));
 
 		assertEquals("Group '/test/' has been finished and cannot be renamed.", taskException.getMessage());
 
@@ -50,10 +51,10 @@ class Tasks_Rename_Group_Test extends TaskBaseTestCase {
 
 	@Test
 	void does_not_change_parent_group_when_attempting_to_rename_finished_group() {
-		tasks.addGroup("/test/");
-		tasks.finishGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
+		tasks.finishGroup(existingGroup("/test/"));
 
-		assertThrows(TaskException.class, () -> tasks.renameGroup("test/", "new/"));
+		assertThrows(TaskException.class, () -> tasks.renameGroup(existingGroup("test/"), new NewTaskGroupName(tasks, "new/")));
 
 		assertDoesNotThrow(() -> tasks.getGroup("/test/"));
 	}

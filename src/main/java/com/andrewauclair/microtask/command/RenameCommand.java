@@ -4,10 +4,13 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -30,9 +33,10 @@ final class RenameCommand implements Runnable {
 		private ExistingTaskGroupName group;
 
 		@Option(names = {"-t", "--task"}, description = "Task to rename.")
-		private Long id;
+		private ExistingID id;
 	}
 
+	// TODO This needs to be a NewTaskListName (list), NewTaskGroupName (group) or String (task)
 	@Option(names = {"-n", "--name"}, required = true, description = "The new name for the task, list or group.")
 	private String name;
 
@@ -51,9 +55,10 @@ final class RenameCommand implements Runnable {
 				throw new TaskException("Lists must be renamed with name, not paths.");
 			}
 
-			tasks.renameList(args.list.absoluteName(), name);
+			NewTaskListName newName = new NewTaskListName(tasks, name);
+			tasks.renameList(args.list, newName);
 
-			System.out.println("Renamed list '" + tasks.getAbsoluteListName(args.list.absoluteName()) + "' to '" + tasks.getAbsoluteListName(name) + "'");
+			System.out.println("Renamed list '" + args.list + "' to '" + newName + "'");
 			System.out.println();
 		}
 		else if (args.group != null) {
@@ -68,7 +73,7 @@ final class RenameCommand implements Runnable {
 			else {
 				String oldGroupPath = tasks.getGroup(args.group.absoluteName()).getFullPath();
 
-				tasks.renameGroup(args.group.absoluteName(), name);
+				tasks.renameGroup(args.group, new NewTaskGroupName(tasks, name));
 
 				System.out.println("Renamed group '" + oldGroupPath + "' to '" + tasks.getGroup(name).getFullPath() + "'");
 				System.out.println();

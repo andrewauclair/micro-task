@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Finish_List_Test extends CommandsBaseTestCase {
 	@Test
 	void finish_a_list() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
 		commands.execute(printStream, "finish --list /test");
 
@@ -18,7 +18,7 @@ class Commands_Finish_List_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertEquals(TaskContainerState.Finished, tasks.getListByName("/test").getState());
+		assertEquals(TaskContainerState.Finished, tasks.getListByName(existingList("/test")).getState());
 	}
 
 	@Test
@@ -32,12 +32,12 @@ class Commands_Finish_List_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/default").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/default")).getState());
 	}
 
 	@Test
 	void lists_with_tasks_that_are_not_finished_cannot_be_finished() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
 		tasks.setActiveList(existingList("/test"));
 		tasks.addTask("Test 1");
@@ -51,6 +51,6 @@ class Commands_Finish_List_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test")).getState());
 	}
 }

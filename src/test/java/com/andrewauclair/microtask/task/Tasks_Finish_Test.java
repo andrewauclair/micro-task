@@ -20,9 +20,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_writes_file_on_correct_list() {
 		tasks.addTask("Test");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 		
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
 		tasks.setActiveList(existingList("one"));
 		
@@ -38,9 +38,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_tells_git_control_to_add_correct_files() {
 		tasks.addTask("Test");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 		
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
 		tasks.setActiveList(existingList("one"));
 		
@@ -60,12 +60,12 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finish_task_when_on_different_list() {
 		tasks.addTask("Test");
 		
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 		
-		Task task = tasks.finishTask(1);
+		Task task = tasks.finishTask(existingID(1));
 		
 		assertEquals(
 				new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000, 3000), new TaskTimes(3000))),
@@ -76,9 +76,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void recurring_tasks_cannot_be_finished() {
 		tasks.addTask("Test");
-		tasks.setRecurring(1, true);
+		tasks.setRecurring(existingID(1), true);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
 		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
 		
@@ -87,13 +87,14 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finish_list_writes_file() throws IOException {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/one/list.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		tasks.finishList("/test/one");
+		tasks.finishList(existingList("/test/one"));
 		
 		assertThat(outputStream.toString()).isEqualTo(
 				"" + NL + NL + "Finished" + NL
@@ -102,9 +103,10 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finish_list_commits_files_to_git() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 		
-		tasks.finishList("/test/one");
+		tasks.finishList(existingList("/test/one"));
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
@@ -114,13 +116,13 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finish_group_writes_file() throws IOException {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/group.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 		
 		assertThat(outputStream.toString()).isEqualTo(
 				"" + NL + NL + "Finished" + NL
@@ -129,9 +131,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finish_group_commits_files_to_git() {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 		
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		

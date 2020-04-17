@@ -1,7 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
-package com.andrewauclair.microtask.task;
+package com.andrewauclair.microtask.task.build;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.task.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public final class TaskBuilder {
 		return this;
 	}
 
-	TaskBuilder withState(TaskState state) {
+	public TaskBuilder withState(TaskState state) {
 		if (this.state == TaskState.Finished && state != TaskState.Finished) {
 			taskTimes.remove(taskTimes.size() - 1);
 		}
@@ -41,18 +42,18 @@ public final class TaskBuilder {
 		return this;
 	}
 
-	TaskBuilder withTime(TaskTimes time) {
+	public TaskBuilder withTime(TaskTimes time) {
 		taskTimes.add(time);
 		return this;
 	}
 
-	TaskBuilder withRecurring(boolean recurring) {
+	public TaskBuilder withRecurring(boolean recurring) {
 		this.recurring = recurring;
 		return this;
 	}
 
-	Task start(long start, Tasks tasks) {
-		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(id), new TaskFinder(tasks).getFeatureForTask(id)));
+	public Task start(long start, Tasks tasks) {
+		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, id)), new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, id))));
 		state = TaskState.Active;
 		return build();
 	}
@@ -61,7 +62,7 @@ public final class TaskBuilder {
 		return new Task(id, task, state, taskTimes, recurring);
 	}
 
-	Task finish(long stop) {
+	public Task finish(long stop) {
 		if (state == TaskState.Active) {
 			addStopTime(stop);
 		}
@@ -80,7 +81,7 @@ public final class TaskBuilder {
 		taskTimes.add(stopTime);
 	}
 
-	Task stop(long stop) {
+	public Task stop(long stop) {
 		addStopTime(stop);
 		state = TaskState.Inactive;
 		return build();

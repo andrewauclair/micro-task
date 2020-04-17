@@ -11,8 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Commands_Move_List_Test extends CommandsBaseTestCase {
 	@Test
 	void move_list_from_one_group_to_another() {
-		tasks.addList("/one/two/three", true);
-		tasks.addList("/one/test/five", true);
+		tasks.addGroup(newGroup("/one/two/"));
+		tasks.addGroup(newGroup("/one/test/"));
+		tasks.addList(newList("/one/two/three"), true);
+		tasks.addList(newList("/one/test/five"), true);
 		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
@@ -32,8 +34,11 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_to_root_group() {
-		tasks.addList("/one/two/three", true);
-		tasks.addList("/one/test/five", true);
+		tasks.addGroup(newGroup("/one/two/"));
+		tasks.addGroup(newGroup("/one/test/"));
+
+		tasks.addList(newList("/one/two/three"), true);
+		tasks.addList(newList("/one/test/five"), true);
 		tasks.setActiveList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
@@ -53,7 +58,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_requires_dest_group_not_group_option() {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 
 		commands.execute(printStream, "move --list /default --group /one/");
 
@@ -65,7 +70,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void move_list_requires_dest_group() {
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 
 		commands.execute(printStream, "move --list /one");
 

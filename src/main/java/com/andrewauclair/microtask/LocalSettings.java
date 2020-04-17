@@ -3,6 +3,7 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ public class LocalSettings {
 		return activeGroup;
 	}
 
-	public void setActiveGroup(String activeGroup) {
-		this.activeGroup = activeGroup;
+	public void setActiveGroup(ExistingTaskGroupName activeGroup) {
+		this.activeGroup = activeGroup.absoluteName();
 
 		save();
 	}
@@ -76,7 +77,7 @@ public class LocalSettings {
 
 //		tasks.setActiveList(new TaskListName(tasks, activeList));
 		tasks.setActiveList(new ExistingTaskListName(tasks, activeList));
-		tasks.setActiveGroup(activeGroup);
+		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, activeGroup));
 	}
 
 	private void save() {

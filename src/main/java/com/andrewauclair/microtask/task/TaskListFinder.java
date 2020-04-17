@@ -18,7 +18,7 @@ public class TaskListFinder {
 		String name = list.shortName();
 
 		// strip root off path
-		String path = list.parentGroupName().substring(1);
+		String path = list.parentGroupName().absoluteName().substring(1);
 
 		TaskGroup group = rootGroup;
 

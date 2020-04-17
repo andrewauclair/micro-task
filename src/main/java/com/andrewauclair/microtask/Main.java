@@ -8,7 +8,9 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.OSInterfaceImpl;
 import com.andrewauclair.microtask.os.StatusConsole;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
@@ -123,7 +125,7 @@ public final class Main {
 			tasks.setActiveList(tasks.getActiveTaskList());
 
 			// set active group to the group of the active task
-			tasks.setActiveGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
+			tasks.setActiveGroup(new ExistingTaskGroupName(tasks, tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath()));
 		}
 
 		sendCurrentStatus();
@@ -159,7 +161,7 @@ public final class Main {
 
 	private void sendCurrentStatus() {
 		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentGroup, tasks.getActiveGroup().getFullPath());
-		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentList, tasks.getActiveList());
+		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentList, tasks.getActiveList().absoluteName());
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -255,12 +257,12 @@ public final class Main {
 			newTimes.add(task.getAllTimes().get(0));
 
 			for (TaskTimes time : oldTimes) {
-				newTimes.add(new TaskTimes(time.start, time.stop, new TaskFinder(tasks).getProjectForTask(task.id), new TaskFinder(tasks).getFeatureForTask(task.id)));
+				newTimes.add(new TaskTimes(time.start, time.stop, new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.id)), new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, task.id))));
 			}
 
 			Task newTask = new Task(task.id, task.task, task.state, newTimes, task.isRecurring());
 
-			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(task.id).getFullPath() + "/" + task.id + ".txt");
+			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath() + "/" + task.id + ".txt");
 		}
 		System.exit(0);
 	}

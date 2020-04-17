@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_set_group_to_in_progress() {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "set-group --group /test/ --in-progress");
 
@@ -31,9 +31,9 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void prints_full_path_when_using_relative_name_to_set_state_to_in_progress() {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "set-group --group test/ --in-progress");
 
@@ -47,9 +47,9 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_group_file_when_setting_group_to_in_progress() throws IOException {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -68,9 +68,9 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_git_commit_when_setting_in_progress() throws IOException {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
-		tasks.finishGroup("/test/");
+		tasks.finishGroup(existingGroup("/test/"));
 
 		Mockito.reset(osInterface);
 
@@ -88,7 +88,7 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void group_needs_to_be_finished_before_it_can_be_set_back_to_in_progress() {
-		tasks.addGroup("/test/");
+		tasks.addGroup(newGroup("/test/"));
 
 		Mockito.reset(osInterface);
 

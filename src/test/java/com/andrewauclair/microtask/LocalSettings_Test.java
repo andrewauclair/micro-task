@@ -3,7 +3,10 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,7 +48,7 @@ class LocalSettings_Test {
 		System.setOut(output);
 		
 		tasks = new Tasks(writer, output, osInterface);
-		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
+//		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 	}
 
 	@Test
@@ -70,8 +73,8 @@ class LocalSettings_Test {
 
 	@Test
 	void load_active_list_from_file() throws IOException {
-//		Mockito.when(tasks.hasListWithName("/test/one")).thenReturn(true);
-		tasks.addList("/test/one", true);
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
+		tasks.addList(new NewTaskListName(tasks, "/test/one"), true);
 
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
 				createInputStream("active_list=/test/one")
@@ -84,7 +87,7 @@ class LocalSettings_Test {
 
 	@Test
 	void load_active_group_from_file() throws IOException {
-		tasks.addGroup("/test/");
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
 		
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
 				createInputStream("active_group=/test/")
@@ -119,7 +122,8 @@ class LocalSettings_Test {
 
 	@Test
 	void changing_active_list_saves_file() throws IOException {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
+		tasks.addList(new NewTaskListName(tasks, "/test/one"), true);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -136,7 +140,8 @@ class LocalSettings_Test {
 
 		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
 
-		localSettings.setActiveGroup("/test/");
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
+		localSettings.setActiveGroup(new ExistingTaskGroupName(tasks, "/test/"));
 
 		assertThat(outputStream.toString()).contains("active_group=/test/");
 	}
@@ -191,7 +196,8 @@ class LocalSettings_Test {
 
 		System.setOut(printStream);
 
-		localSettings.setActiveGroup("/test/");
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
+		localSettings.setActiveGroup(new ExistingTaskGroupName(tasks, "/test/"));
 
 		assertOutput(
 				outputStream,
@@ -239,7 +245,8 @@ class LocalSettings_Test {
 
 	@Test
 	void local_settings_sets_list_and_group_in_tasks() throws IOException {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
+		tasks.addList(new NewTaskListName(tasks, "/test/one"), true);
 
 		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
 				createInputStream("active_list=/test/one", "active_group=/test/")
@@ -247,7 +254,7 @@ class LocalSettings_Test {
 
 		localSettings.load(tasks);
 
-		assertEquals("/test/one", tasks.getActiveList());
+		assertEquals(new ExistingTaskListName(tasks, "/test/one"), tasks.getActiveList());
 		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 }

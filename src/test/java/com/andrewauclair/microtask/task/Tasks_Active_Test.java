@@ -18,7 +18,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		Task activeTask = new Task(2, "Testing 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
 
@@ -29,9 +29,9 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 	void active_task_returns_correct_task_when_its_on_a_different_list() {
 		tasks.addTask("Task 1");
 
-		Task task = tasks.startTask(1, false);
+		Task task = tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
 		Task activeTask = tasks.getActiveTask();

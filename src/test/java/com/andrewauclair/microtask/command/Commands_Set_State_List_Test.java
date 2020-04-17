@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_set_list_to_in_progress() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
-		tasks.finishList("/test");
+		tasks.finishList(existingList("/test"));
 
 		commands.execute(printStream, "set-list --list /test --in-progress");
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test")).getState());
 
 		assertOutput(
 				"Set state of list '/test' to In Progress",
@@ -31,13 +31,13 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void prints_full_path_when_using_relative_name_to_set_state_to_in_progress() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
-		tasks.finishList("/test");
+		tasks.finishList(existingList("/test"));
 
 		commands.execute(printStream, "set-list --list test --in-progress");
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test")).getState());
 
 		assertOutput(
 				"Set state of list '/test' to In Progress",
@@ -47,9 +47,9 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_list_file_when_setting_list_to_in_progress() throws IOException {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
-		tasks.finishList("/test");
+		tasks.finishList(existingList("/test"));
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -68,9 +68,9 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_git_commit_when_setting_in_progress() throws IOException {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
-		tasks.finishList("/test");
+		tasks.finishList(existingList("/test"));
 
 		Mockito.reset(osInterface);
 
@@ -88,7 +88,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_needs_to_be_finished_before_it_can_be_set_back_to_in_progress() {
-		tasks.addList("/test", true);
+		tasks.addList(newList("/test"), true);
 
 		Mockito.reset(osInterface);
 

@@ -9,10 +9,11 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 class Commands_List_Test extends CommandsBaseTestCase {
 	@Test
 	void list_command_lists_groups_and_lists_in_the_current_group() {
-		tasks.addList("charlie", true);
-		tasks.addList("bravo", true);
-		tasks.addList("alpha", true);
-		tasks.addList("/test/one/two", true);
+		tasks.addList(newList("charlie"), true);
+		tasks.addList(newList("bravo"), true);
+		tasks.addList(newList("alpha"), true);
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addList(newList("/test/one/two"), true);
 
 		commands.execute(printStream, "list");
 
@@ -30,14 +31,14 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_groups_and_lists_for_nested_group() {
-		tasks.addList("none", true);
+		tasks.addList(newList("none"), true);
 
-		tasks.createGroup("/one/two/");
-		tasks.createGroup("/one/three/");
-		tasks.setActiveGroup("/one/two/");
-		tasks.addList("charlie", true);
-		tasks.addList("bravo", true);
-		tasks.addList("alpha", true);
+		tasks.createGroup(newGroup("/one/two/"));
+		tasks.createGroup(newGroup("/one/three/"));
+		tasks.setActiveGroup(existingGroup("/one/two/"));
+		tasks.addList(newList("charlie"), true);
+		tasks.addList(newList("bravo"), true);
+		tasks.addList(newList("alpha"), true);
 
 		commands.execute(printStream, "list");
 
@@ -53,12 +54,13 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_command_hides_finished_lists() {
-		tasks.addList("/test/one", true);
-		tasks.addList("/test/two", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.addList(newList("/test/two"), true);
 
-		tasks.finishList("/test/two");
+		tasks.finishList(existingList("/test/two"));
 
-		tasks.setActiveGroup("/test/");
+		tasks.setActiveGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "list");
 
@@ -72,12 +74,12 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_command_hides_finished_groups() {
-		tasks.addGroup("/test/one/");
-		tasks.addGroup("/test/two/");
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addGroup(newGroup("/test/two/"));
 
-		tasks.setActiveGroup("/test/");
+		tasks.setActiveGroup(existingGroup("/test/"));
 
-		tasks.finishGroup("/test/two/");
+		tasks.finishGroup(existingGroup("/test/two/"));
 
 		commands.execute(printStream, "list");
 
@@ -91,15 +93,15 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_command_with_finished_parameter_displays_finished_lists_and_groups() {
-		tasks.addGroup("/test/one/");
-		tasks.addGroup("/test/two/");
-		tasks.addList("/test/three", true);
-		tasks.addList("/test/four", true);
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addGroup(newGroup("/test/two/"));
+		tasks.addList(newList("/test/three"), true);
+		tasks.addList(newList("/test/four"), true);
 
-		tasks.setActiveGroup("/test/");
+		tasks.setActiveGroup(existingGroup("/test/"));
 
-		tasks.finishGroup("/test/two/");
-		tasks.finishList("/test/four");
+		tasks.finishGroup(existingGroup("/test/two/"));
+		tasks.finishList(existingList("/test/four"));
 
 		commands.execute(printStream, "list --finished");
 

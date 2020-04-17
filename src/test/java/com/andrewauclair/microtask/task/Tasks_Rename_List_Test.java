@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class Tasks_Rename_List_Test extends TaskBaseTestCase {
 	@Test
 	void renaming_list_moves_folder_to_new_folder_name() throws IOException {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		tasks.setActiveList(existingList("one"));
 
@@ -25,7 +25,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 		Mockito.reset(osInterface, writer);
 
-		tasks.renameList("one", "test");
+		tasks.renameList(existingList("one"), newList("test"));
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -39,7 +39,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 	@Test
 	void catch_IOException_from_moveFolder_for_renameList() throws IOException {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		tasks.setActiveList(existingList("one"));
 
@@ -50,7 +50,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
 
-		tasks.renameList("one", "test");
+		tasks.renameList(existingList("one"), newList("test"));
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -64,7 +64,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_list_tells_git_control_to_add_new_task_files_and_commit() {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		tasks.setActiveList(existingList("one"));
 
@@ -73,7 +73,7 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 		Mockito.reset(osInterface); // reset the os interface after it does all the git adds and commits above
 
-		tasks.renameList("one", "test");
+		tasks.renameList(existingList("one"), newList("test"));
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -83,38 +83,38 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 	@Test
 	void renaming_current_list_changes_the_name_of_current_list() {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		tasks.setActiveList(existingList("one"));
 
-		tasks.renameList("one", "two");
+		tasks.renameList(existingList("one"), newList("two"));
 
-		assertEquals("/two", tasks.getActiveList());
+		assertEquals(existingList("/two"), tasks.getActiveList());
 	}
 
 	@Test
 	void renaming_active_list_changes_the_name_of_active_list() {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		tasks.setActiveList(existingList("one"));
 
 		tasks.addTask("Test");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
-		tasks.renameList("one", "two");
+		tasks.renameList(existingList("one"), newList("two"));
 
 		assertEquals("/two", tasks.getActiveTaskList().absoluteName());
 	}
 
 	@Test
 	void finished_list_cannot_be_renamed() {
-		tasks.addList("/test", true);
-		tasks.finishList("/test");
+		tasks.addList(newList("/test"), true);
+		tasks.finishList(existingList("/test"));
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("test", "new"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList(existingList("test"), newList("new")));
 
 		assertEquals("List '/test' has been finished and cannot be renamed.", taskException.getMessage());
 
@@ -123,28 +123,28 @@ class Tasks_Rename_List_Test extends TaskBaseTestCase {
 
 	@Test
 	void does_not_change_parent_group_when_attempting_to_rename_finished_list() {
-		tasks.addList("/test", true);
-		tasks.finishList("/test");
+		tasks.addList(newList("/test"), true);
+		tasks.finishList(existingList("/test"));
 
 		TaskGroup originalGroup = tasks.getGroupForList(existingList("/test"));
 
-		assertThrows(TaskException.class, () -> tasks.renameList("test", "new"));
+		assertThrows(TaskException.class, () -> tasks.renameList(existingList("test"), newList("new")));
 
 		assertEquals(originalGroup, tasks.getGroupForList(existingList("/test")));
 	}
 
 	@Test
 	void list_rename_throws_exception_if_old_list_is_not_found() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("old", "new"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList(existingList("old"), newList("new")));
 
 		assertEquals("List '/old' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void list_rename_throws_exception_if_old_group_does_not_exist() {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList("/one/two", "/one/three"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.renameList(existingList("/one/two"), newList("/one/three")));
 
 		assertEquals("List '/one/two' does not exist.", taskException.getMessage());
 	}

@@ -22,18 +22,19 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 	@Test
 	void activating_a_task_displays_the_active_task_number_in_prompt() {
 		tasks.addTask("Test");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		assertEquals("/default - 1>", commands.getPrompt());
 	}
 	
 	@Test
 	void changing_to_group_other_than_the_active_lists_group_changes_prompt() {
-		tasks.addList("/test/one/two", true);
-		tasks.addList("/test/three", true);
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addList(newList("/test/one/two"), true);
+		tasks.addList(newList("/test/three"), true);
 		tasks.setActiveList(existingList("/test/three"));
 		
-		tasks.setActiveGroup("/test/one/");
+		tasks.setActiveGroup(existingGroup("/test/one/"));
 		
 		assertEquals("/test/one/ - none>", commands.getPrompt());
 	}

@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -39,17 +40,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
-		tasks.setFeature(tasks.getGroup("/"), "Short Feat", true);
+		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
+		tasks.setFeature(existingGroup("/"), "Short Feat", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
+		tasks.setProject(existingList("/one"), "Short Proj", true);
+		tasks.setFeature(existingList("/one"), "Longer Feature Name", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -91,26 +92,27 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 		Task task6 = new Task(6, "Test 5", TaskState.Inactive, addTime);
 
-		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
+		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
 
 		tasks.setActiveList(existingList("/default"));
-		tasks.setProject(tasks.getListByName("/default"), "Short Proj", true);
-		tasks.setFeature(tasks.getListByName("/default"), "UI", true);
+		tasks.setProject(existingList("/default"), "Short Proj", true);
+		tasks.setFeature(existingList("/default"), "UI", true);
 
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Short Proj", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Longer Feature Name", true);
+		tasks.setProject(existingList("/one"), "Short Proj", true);
+		tasks.setFeature(existingList("/one"), "Longer Feature Name", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
-		tasks.addList("/two/three", true);
+		tasks.addGroup(newGroup("/two/"));
+		tasks.addList(newList("/two/three"), true);
 		tasks.setActiveList(existingList("/two/three"));
-		tasks.setProject(tasks.getListByName("/two/three"), "Three Proj", true);
+		tasks.setProject(existingList("/two/three"), "Three Proj", true);
 
 		tasks.addTask(task6);
 
@@ -152,14 +154,14 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Longer Project Name", true);
-		tasks.setFeature(tasks.getGroup("/"), "Impl", true);
+		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
+		tasks.setFeature(existingGroup("/"), "Impl", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
@@ -200,17 +202,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -256,17 +258,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -315,17 +317,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -380,17 +382,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -432,17 +434,17 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(tasks.getListByName("/one"), "Project 2", true);
-		tasks.setFeature(tasks.getListByName("/one"), "Feature 2", true);
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -523,13 +525,13 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setFeature(tasks.getGroup("/"), "Feature 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
@@ -565,13 +567,13 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
 		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
 
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
 
 		tasks.setActiveList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList("/one", true);
+		tasks.addList(newList("/one"), true);
 		tasks.setActiveList(existingList("/one"));
 
 		tasks.addTask(task3);
@@ -600,7 +602,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void prints_0_total_when_no_tasks_are_found() {
-		tasks.setProject(tasks.getGroup("/"), "Project 1", true);
+		tasks.setProject(existingGroup("/"), "Project 1", true);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(Collections.emptyList());
 

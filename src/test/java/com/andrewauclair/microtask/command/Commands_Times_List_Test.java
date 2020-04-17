@@ -21,7 +21,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 	@Test
 	void times_on_default_list() {
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -56,7 +56,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 	@Test
 	void times_command_filtering_for_multiple_lists() {
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -69,7 +69,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
-		tasks.addList("/testing", true);
+		tasks.addList(newList("/testing"), true);
 		
 		commands.execute(printStream, "times --list default --list /testing");
 
@@ -97,7 +97,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 	@Test
 	void times_command_filtering_for_multiple_lists__total_only() {
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -110,7 +110,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
-		tasks.addList("/testing", true);
+		tasks.addList(newList("/testing"), true);
 		
 		commands.execute(printStream, "times --total --list default --list /testing");
 

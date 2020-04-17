@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void finish_a_group() {
-		tasks.addGroup("/test/");
-		tasks.addList("/test/one", true);
-		tasks.addTask("Test", "/test/one");
-		tasks.finishTask(1);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.addTask("Test", existingList("/test/one"));
+		tasks.finishTask(existingID(1));
 
 		commands.execute(printStream, "finish --group /test/");
 
@@ -23,14 +23,15 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		);
 
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
-		assertNotNull(tasks.getTask(1));
+		assertNotNull(tasks.getTask(existingID(1)));
 	}
 
 	@Test
 	void not_allowed_to_finish_active_group() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
-		tasks.setActiveGroup("/test/");
+		tasks.setActiveGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "finish --group /test/");
 
@@ -44,7 +45,8 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void groups_with_tasks_that_are_not_finished_cannot_be_finished() {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
@@ -58,6 +60,6 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		assertEquals(TaskContainerState.InProgress, tasks.getListByName("/test/one").getState());
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test/one")).getState());
 	}
 }

@@ -25,11 +25,12 @@ public class ExistingTaskListName extends TaskListName {
 			return false;
 		}
 		return Objects.equals(absoluteName(), that.absoluteName()) &&
-				Objects.equals(shortName(), that.shortName());
+				Objects.equals(shortName(), that.shortName()) &&
+				Objects.equals(parentGroupName(), that.parentGroupName());
 	}
 
 	@Override
 	public final int hashCode() {
-		return Objects.hash(absoluteName(), shortName());
+		return Objects.hash(absoluteName(), shortName(), parentGroupName());
 	}
 }

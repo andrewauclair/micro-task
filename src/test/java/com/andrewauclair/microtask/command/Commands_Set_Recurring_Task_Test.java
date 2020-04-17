@@ -14,7 +14,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set-task --task 1 --recurring");
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		assertTrue(task.isRecurring());
 
@@ -30,7 +30,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set-task --task 1 --not-recurring");
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		assertFalse(task.isRecurring());
 

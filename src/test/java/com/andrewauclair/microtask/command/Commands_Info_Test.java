@@ -12,8 +12,8 @@ import java.util.Arrays;
 class Commands_Info_Test extends CommandsBaseTestCase {
 	@Test
 	void info_command_prints_data_related_to_a_task() {
-		tasks.setProject(tasks.getListByName("/default"), "Project", true);
-		tasks.setFeature(tasks.getListByName("/default"), "Feature", true);
+		tasks.setProject(existingList("/default"), "Project", true);
+		tasks.setFeature(existingList("/default"), "Feature", true);
 
 		tasks.addTask(new Task(1, "Test", TaskState.Finished, Arrays.asList(
 				new TaskTimes(1000), // add
@@ -44,8 +44,8 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void inactive_tasks_do_not_print_a_finish_time() {
-		tasks.setProject(tasks.getListByName("/default"), "Project", true);
-		tasks.setFeature(tasks.getListByName("/default"), "Feature", true);
+		tasks.setProject(existingList("/default"), "Project", true);
+		tasks.setFeature(existingList("/default"), "Feature", true);
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Arrays.asList(
 				new TaskTimes(1000), // add
@@ -73,8 +73,8 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_task_displays_no_stop_time() {
-		tasks.setProject(tasks.getListByName("/default"), "Project", true);
-		tasks.setFeature(tasks.getListByName("/default"), "Feature", true);
+		tasks.setProject(existingList("/default"), "Project", true);
+		tasks.setFeature(existingList("/default"), "Feature", true);
 
 		tasks.addTask(new Task(1, "Test", TaskState.Active, Arrays.asList(
 				new TaskTimes(1000), // add

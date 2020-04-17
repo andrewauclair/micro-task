@@ -26,23 +26,14 @@ final class MakeCommand implements Runnable {
 	@Override
 	public void run() {
 		if (listGroup.list != null) {
-			String list = this.listGroup.list.absoluteName().toLowerCase();
+			tasks.addList(listGroup.list, true);
 
-			boolean added = tasks.addList(list, true);
-
-			String actualList = tasks.getAbsoluteListName(list);
-
-			if (added) {
-				System.out.println("Created new list '" + actualList + "'");
-			}
-			else {
-				System.out.println("List '" + actualList + "' already exists.");
-			}
+			System.out.println("Created new list '" + listGroup.list + "'");
 			System.out.println();
 		}
 
 		if (listGroup.group != null) {
-			TaskGroup group = tasks.createGroup(this.listGroup.group.absoluteName().toLowerCase());
+			TaskGroup group = tasks.createGroup(this.listGroup.group);
 
 			System.out.println("Created group '" + group.getFullPath() + "'");
 			System.out.println();

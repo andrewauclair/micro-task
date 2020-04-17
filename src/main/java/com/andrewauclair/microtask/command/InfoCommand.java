@@ -2,10 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskFinder;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -22,7 +19,7 @@ final class InfoCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(index = "0", description = "The task to display information for.")
-	private long id;
+	private ExistingID id;
 
 	@Option(names = {"--copy-name"}, description = "Copy the name of the task to the clipboard.")
 	private boolean copy_name;
@@ -77,11 +74,11 @@ final class InfoCommand implements Runnable {
 			System.out.println();
 		}
 
-		System.out.println("on list '" + tasks.findListForTask(task.id).getFullPath() + "'");
+		System.out.println("on list '" + tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath() + "'");
 		System.out.println();
 
-		System.out.println("Project '" + new TaskFinder(tasks).getProjectForTask(task.id) + "'");
-		System.out.println("Feature '" + new TaskFinder(tasks).getFeatureForTask(task.id) + "'");
+		System.out.println("Project '" + new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.id)) + "'");
+		System.out.println("Feature '" + new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, task.id)) + "'");
 		System.out.println();
 	}
 }

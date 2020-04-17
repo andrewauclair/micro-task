@@ -3,10 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskList;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -57,7 +54,7 @@ final class SearchCommand implements Runnable {
 				.collect(Collectors.toList());
 
 		if (verbose) {
-			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(o.id).getFullPath()));
+			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.id)).getFullPath()));
 		}
 
 		System.out.println("Search Results (" + searchResults.size() + "):");
@@ -66,7 +63,7 @@ final class SearchCommand implements Runnable {
 		String currentList = "";
 
 		for (Task task : searchResults) {
-			TaskList listForTask = tasks.findListForTask(task.id);
+			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks, task.id));
 
 			if (verbose && !listForTask.getFullPath().equals(currentList)) {
 				if (!currentList.isEmpty()) {

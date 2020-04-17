@@ -15,7 +15,14 @@ public class TaskGroupName {
 		}
 
 		this.absoluteName = absoluteName(tasks, name);
-		this.shortName = absoluteName.substring(absoluteName.lastIndexOf('/') + 1);
+
+		if (!Objects.equals(absoluteName, ROOT_PATH)) {
+			// TODO This isn't very nice to look at
+			this.shortName = absoluteName.substring(0, absoluteName.length() - 1).substring(absoluteName.substring(0, absoluteName.length() - 1).lastIndexOf('/') + 1);
+		}
+		else {
+			this.shortName = "";
+		}
 	}
 
 	private String absoluteName(Tasks tasks, String name) {
@@ -25,7 +32,6 @@ public class TaskGroupName {
 		return name;
 	}
 
-	// TODO Not sure how long we might need to keep this around
 	public String absoluteName() {
 		return absoluteName;
 	}

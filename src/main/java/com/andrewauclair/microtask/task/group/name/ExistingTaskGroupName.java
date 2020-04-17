@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task.group.name;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.task.TaskGroupFinder;
 import com.andrewauclair.microtask.task.TaskGroupName;
 import com.andrewauclair.microtask.task.Tasks;
 
@@ -11,7 +12,9 @@ public class ExistingTaskGroupName extends TaskGroupName {
 	public ExistingTaskGroupName(Tasks tasks, String name) {
 		super(tasks, name);
 
-		if (!tasks.hasGroupPath(absoluteName())) {
+		TaskGroupFinder finder = new TaskGroupFinder(tasks);
+
+		if (!finder.hasGroupPath(this)) {
 			throw new TaskException("Group '" + absoluteName() + "' does not exist.");
 		}
 	}

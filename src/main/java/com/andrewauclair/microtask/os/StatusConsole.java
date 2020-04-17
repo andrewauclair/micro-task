@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
@@ -108,7 +109,7 @@ public class StatusConsole {
 		timer.schedule(timerTask, 1000, 1000);
 
 		currentGroup = tasks.getActiveGroup().getFullPath();
-		currentList = tasks.getActiveList();
+		currentList = tasks.getActiveList().absoluteName();
 
 		final Kernel32 kernel32 = Kernel32.INSTANCE;
 
@@ -141,7 +142,7 @@ public class StatusConsole {
 						break;
 					}
 
-					tasks.setActiveGroup(currentGroup);
+					tasks.setActiveGroup(new ExistingTaskGroupName(tasks, currentGroup));
 					tasks.setActiveList(new ExistingTaskListName(tasks, currentList));
 
 					try {
