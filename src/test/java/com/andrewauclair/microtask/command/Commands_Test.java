@@ -15,7 +15,7 @@ class Commands_Test extends CommandsBaseTestCase {
 	void creates_command_line_with_aliases() {
 		commands.addAlias("tt", "times --today");
 
-		CommandLine commandLine = commands.buildCommandLineWithAllCommands();
+		CommandLine commandLine = commands.buildCommandLine("tt");
 
 		commandLine.execute("tt");
 
