@@ -424,6 +424,58 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	}
 
 	@Test
+	void project_feature_output_for_entire_month() {
+		setTime(june17_8_am);
+
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+
+		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+
+		tasks.setProject(existingGroup("/"), "Project 1", true);
+		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+
+		tasks.setActiveList(existingList("/default"));
+		tasks.addTask(task1);
+		tasks.addTask(task2);
+
+		tasks.addList(newList("/one"), true);
+		tasks.setActiveList(existingList("/one"));
+		tasks.setProject(existingList("/one"), "Project 2", true);
+		tasks.setFeature(existingList("/one"), "Feature 2", true);
+
+		tasks.addTask(task3);
+		tasks.addTask(task5);
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+				)
+		);
+
+		commands.execute(printStream, "times --proj-feat --all-month");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForMonth(6);
+
+		assertOutput(
+				"Time         Project     Feature",
+				"",
+				"2h 21m 35s   Project 2   Feature 1 Feature 2",
+				"1h 12m  0s   Project 1   Feature 1",
+				"",
+				"3h 33m 35s   Total",
+				""
+		);
+	}
+
+	@Test
 	void times_projects_for_a_previous_time_week() {
 		setTime(june18_8_am);
 
