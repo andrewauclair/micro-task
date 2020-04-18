@@ -317,6 +317,9 @@ public final class TimesCommand implements Runnable {
 		else if (this.day != null) {
 			filter.filterForDay(month, day, year);
 		}
+		else if (all_month) {
+			filter.filterForMonth(month);
+		}
 
 		if ((list != null || group != null) && this.day == null && !today) {
 			List<ExistingTaskListName> lists = new ArrayList<>();
@@ -395,7 +398,7 @@ public final class TimesCommand implements Runnable {
 			displayTimes(filter, false);
 		}
 		else if (proj_feat) {
-			if (all_time || today || yesterday || week || this.day != null) {
+			if (all_time || all_month || today || yesterday || week || this.day != null) {
 				displayProjectsFeatures(filter);
 			}
 			else {
@@ -417,7 +420,7 @@ public final class TimesCommand implements Runnable {
 			else if (all_month) {
 				String title = Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
 
-				filter.filterForMonth(month);
+//				filter.filterForMonth(month);
 
 				if (total) {
 					System.out.print("Total times for month of ");
