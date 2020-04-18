@@ -7,6 +7,8 @@ import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -21,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Command(name = "update", description = "Update the application, tasks or push/pull changes to/from remote repo.")
-final class UpdateCommand implements Runnable {
+public final class UpdateCommand implements Runnable {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
@@ -32,9 +34,6 @@ final class UpdateCommand implements Runnable {
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
-
-	@Option(names = {"--tasks"}, description = "Rewrite the tasks with the current application version.")
-	private boolean tasks;
 
 	@Option(names = {"-r", "--releases"}, description = "Display the available releases on GitLab.")
 	private boolean releases;
@@ -141,25 +140,6 @@ final class UpdateCommand implements Runnable {
 		else if (latest) {
 			updatedToNewRelease = updateToVersion(versions.get(versions.size() - 1), proxy);
 		}
-		else if (tasks) {
-			List<Task> taskList = new ArrayList<>(tasksData.getAllTasks());
-
-			taskList.sort(Comparator.comparingLong(o -> o.id));
-
-			for (Task task : taskList) {
-				String list = tasksData.findListForTask(new ExistingID(tasksData, task.id)).getFullPath();
-				taskWriter.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-			}
-
-			String currentVersion = Utils.writeCurrentVersion(osInterface);
-
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"");
-
-			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
-
-			System.out.println("Updated all tasks.");
-		}
 		else if (release != null) {
 			updatedToNewRelease = updateToVersion(release, proxy);
 		}
@@ -220,5 +200,41 @@ final class UpdateCommand implements Runnable {
 
 		@Option(names = {"--proxy-port"}, required = true, description = "Proxy port to use for connecting to GitLab.")
 		private int proxy_port;
+	}
+
+	public static void updateFiles(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Commands commands) {
+
+		updateGroupFiles(tasks, tasks.getRootGroup(), osInterface);
+
+		String currentVersion = Utils.writeCurrentVersion(osInterface);
+
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Updating files to version '" + currentVersion + "'\"");
+
+		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
+
+		System.out.println("Updated all files.");
+		System.out.println();
+	}
+
+	private static void updateGroupFiles(Tasks tasks, TaskGroup group, OSInterface osInterface) {
+		for (TaskContainer child : group.getChildren()) {
+			if (child instanceof TaskGroup childGroup) {
+				TaskGroupFileWriter writer = new TaskGroupFileWriter(childGroup, osInterface);
+				writer.write();
+
+				updateGroupFiles(tasks, childGroup, osInterface);
+			}
+			else {
+				TaskList list = (TaskList) child;
+
+				TaskListFileWriter writer = new TaskListFileWriter(list, osInterface);
+				writer.write();
+
+				for (final Task task : list.getTasks()) {
+					tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+				}
+			}
+		}
 	}
 }

@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.command.Commands;
+import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
@@ -110,14 +111,15 @@ public final class Main {
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
-			commands.execute(System.out, "update --tasks");
+//			commands.execute(System.out, "update --tasks");
+			UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
 		}
 
 		osInterface.setMain(this);
 		osInterface.createTerminal();
 
 		if (loadSuccessful) {
-			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
