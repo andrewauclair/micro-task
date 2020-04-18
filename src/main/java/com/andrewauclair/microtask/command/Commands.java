@@ -157,31 +157,39 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		return null;
 	}
 
+	public CommandLine buildCommandLineWithoutAliases() {
+		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+
+		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
+
+		return cmdLine;
+	}
+
 	public CommandLine buildCommandLineWithAllCommands() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
-		aliases.keySet().forEach(name -> {
-
-			Runnable cmd = new Runnable() {
-				@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
-				private boolean help;
-
-				@Override
-				public void run() {
-					System.out.print(ConsoleColors.ANSI_BOLD);
-					System.out.print(aliases.get(name));
-					System.out.print(ConsoleColors.ANSI_RESET);
-					System.out.println();
-
-					Commands.this.execute(System.out, aliases.get(name));
-
-				}
-			};
-
-			cmdLine.addSubcommand(name, cmd);
-		});
+//		aliases.keySet().forEach(name -> {
+//
+//			Runnable cmd = new Runnable() {
+//				@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+//				private boolean help;
+//
+//				@Override
+//				public void run() {
+//					System.out.print(ConsoleColors.ANSI_BOLD);
+//					System.out.print(aliases.get(name));
+//					System.out.print(ConsoleColors.ANSI_RESET);
+//					System.out.println();
+//
+//					Commands.this.execute(System.out, aliases.get(name));
+//
+//				}
+//			};
+//
+//			cmdLine.addSubcommand(name, cmd);
+//		});
 
 		// has to be done after we add the subcommands
 		cmdLine.setTrimQuotes(true);
@@ -243,6 +251,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		ParsedLine parse = defaultParser.parse(command, 0, Parser.ParseContext.UNSPECIFIED);
 		String[] strings = parse.words().toArray(new String[0]);
 
+		if (strings.length == 1 && strings[0].isEmpty()) {
+			strings[0] = "help";
+		}
 		CommandLine commandLine = buildCommandLine(strings[0]); // rebuild
 		commandLine.execute(strings);
 	}
@@ -315,7 +326,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		aliases.remove(name);
 	}
 
-	Map<String, String> getAliases() {
+	public Map<String, String> getAliases() {
 		return aliases;
 	}
 

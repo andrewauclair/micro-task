@@ -29,21 +29,21 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Comparator.comparingLong;
 import static picocli.CommandLine.Command;
-import static picocli.CommandLine.HelpCommand;
 
 
 public final class Main {
 	private static final String CONSOLE_TITLE = "micro task main";
 
-	private final Commands commands;
+	private static Commands commands;
 	private LineReader lineReader;
 
 	public void newTerminal(Terminal terminal) {
@@ -348,18 +348,57 @@ public final class Main {
 	 */
 	@Command(name = "",
 			description = {
-					"micro task, a CLI based task tracking application. " +
-							"Hit @|magenta <TAB>|@ to see available commands.",
-					""},
-			subcommands = {HelpCommand.class})
-	public static final class CliCommands implements Runnable {
-		PrintWriter out;
+					"",
+					"micro task, a CLI based task tracking application."},
+			synopsisSubcommandLabel = "COMMAND",
+			subcommands = {MicroTaskHelpCommand.class}
+	)
+	public static final class CliCommands implements Runnable {//}, CommandLine.IHelpCommandInitializable2 {
+//		PrintWriter out;
 
 		public CliCommands() {
 		}
 
 		public void run() {
-			out.println(new CommandLine(this).getUsageMessage());
+			System.out.println("Help output!");
+			System.out.println(new CommandLine(this).getUsageMessage());
+		}
+
+//		@Override
+//		public void init(CommandLine helpCommandLine, CommandLine.Help.ColorScheme colorScheme, PrintWriter outWriter, PrintWriter errWriter) {
+//			outWriter.write("Test output");
+//		}
+	}
+
+	@Command(name = "help", helpCommand = true)
+	public static final class MicroTaskHelpCommand implements Runnable {//}, CommandLine.IHelpCommandInitializable2 {
+
+//		@Override
+//		public void init(CommandLine helpCommandLine, CommandLine.Help.ColorScheme colorScheme, PrintWriter outWriter, PrintWriter errWriter) {
+//			helpCommandLine.usage(outWriter, colorScheme);
+//		}
+
+		@Override
+		public void run() {
+			VersionCommand.printLogo(osInterface);
+			System.out.println();
+
+			commands.buildCommandLineWithAllCommands().usage(System.out);
+
+			System.out.println();
+			System.out.println("Aliases:");
+			System.out.println();
+
+			Map<String, String> aliases = commands.getAliases();
+
+			Optional<String> max = aliases.keySet().stream()
+					.max(comparingLong(String::length));
+
+			for (final String alias : aliases.keySet()) {
+				System.out.print("  ");
+				System.out.println(String.format("%-" + max.get().length() + "s  %s", alias, aliases.get(alias)));
+			}
+			System.out.println();
 		}
 	}
 }
