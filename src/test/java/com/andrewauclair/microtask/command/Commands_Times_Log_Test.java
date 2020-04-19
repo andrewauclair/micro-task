@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -18,6 +19,89 @@ import static org.mockito.Mockito.when;
 
 class Commands_Times_Log_Test extends Commands_Times_BaseTestCase {
 	@Test
+	void times_log_for_today_filters_for_today() {
+		setTime(june17_8_am);
+
+		commands.execute(printStream, "times --log --today");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+	}
+
+	@Test
+	void times_log_for_today_with_one_task() {
+		setTime(june17_8_am);
+
+		String list = "/default";
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Collections.singletonList(
+						new TaskTimesFilter.TaskTimeFilterResult(0, new Task(1, "Test 1", TaskState.Finished,
+								Arrays.asList(
+										new TaskTimes(1560772955), // add 07:02:35 AM
+										new TaskTimes(1560772985, 1560775080), // start - stop 07:03:05 AM - 07:38:00 AM
+										new TaskTimes(1560777314, 1560781631), // start - stop 08:15:14 AM - 09:27:11 AM
+										new TaskTimes(1560781631) // finish 09:27:11 AM
+								)
+						), list)
+				)
+		);
+
+		commands.execute(printStream, "times --log --today");
+
+		assertOutput(
+				"Times log for day 06/17/2019",
+				"",
+				"07:02:35 AM   Added 1 - 'Test 1'",
+				"07:03:05 AM   Started 1 - 'Test 1'",
+				"07:38:00 AM   Stopped 1 - 'Test 1'",
+				"08:15:14 AM   Started 1 - 'Test 1'",
+				"09:27:11 AM   Stopped 1 - 'Test 1'",
+				"09:27:11 AM   Finished 1 - 'Test 1'",
+				"",
+				"1 added",
+				"2 started",
+				"1 finished"
+		);
+	}
+
+	@Test
+	void times_from_previous_day_are_not_shown() {
+		setTime(june17_8_am);
+
+		String list = "/default";
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Collections.singletonList(
+						new TaskTimesFilter.TaskTimeFilterResult(0, new Task(1, "Test 1", TaskState.Finished,
+								Arrays.asList(
+										new TaskTimes(1560772955 - 86400), // add 07:02:35 AM 06/16/2019
+										new TaskTimes(1560772985 - 86400, 1560775080 - 86400), // start - stop 07:03:05 AM - 07:38:00 AM
+										new TaskTimes(1560777314, 1560781631), // start - stop 08:15:14 AM - 09:27:11 AM
+										new TaskTimes(1560781631) // finish 09:27:11 AM
+								)
+						), list)
+				)
+		);
+
+		commands.execute(printStream, "times --log --today");
+
+		assertOutput(
+				"Times log for day 06/17/2019",
+				"",
+				"08:15:14 AM   Started 1 - 'Test 1'",
+				"09:27:11 AM   Stopped 1 - 'Test 1'",
+				"09:27:11 AM   Finished 1 - 'Test 1'",
+				"",
+				"0 added",
+				"1 started",
+				"1 finished"
+		);
+	}
+
+	@Test
+	@Disabled
 	void times_log_for_a_day__today() {
 		setTime(june17_8_am);
 

@@ -13,7 +13,6 @@ import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
@@ -376,6 +375,14 @@ public final class TimesCommand implements Runnable {
 			}
 		}
 		else if (log) {
+			if (today) {
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+				ZoneId zoneId = osInterface.getZoneId();
+
+				System.out.println("Times log for day " + instant.atZone(zoneId).format(dateTimeFormatter));
+				System.out.println();
+			}
 			displayLog(filter);
 		}
 		else if (today && !proj_feat) {
@@ -489,6 +496,7 @@ public final class TimesCommand implements Runnable {
 			Stop,
 			Finish
 		}
+
 		private InfoData(long time, Type type, String message) {
 			this.time = time;
 			this.type = type;
@@ -497,8 +505,12 @@ public final class TimesCommand implements Runnable {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
 			InfoData infoData = (InfoData) o;
 			return time == infoData.time &&
 					type == infoData.type &&
@@ -551,6 +563,26 @@ public final class TimesCommand implements Runnable {
 			System.out.print("   ");
 			System.out.println(infoData.message);
 		}
+
+		System.out.println();
+
+		System.out.print(data.stream()
+				.filter(infoData -> infoData.type == InfoData.Type.Add)
+				.count()
+		);
+		System.out.println(" added");
+
+		System.out.print(data.stream()
+				.filter(infoData -> infoData.type == InfoData.Type.Start)
+				.count()
+		);
+		System.out.println(" started");
+
+		System.out.print(data.stream()
+				.filter(infoData -> infoData.type == InfoData.Type.Finish)
+				.count()
+		);
+		System.out.println(" finished");
 	}
 
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
