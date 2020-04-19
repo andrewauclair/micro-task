@@ -376,6 +376,10 @@ public final class TimesCommand implements Runnable {
 //			this.timeModifiers.specificTime.dmy = new DayMonthYear();
 //		}
 
+		if (this.group1 == null) {
+			this.group1 = new Group1();
+		}
+
 		if (this.group1.group2 == null) {
 			this.group1.group2 = new Group2();
 		}
