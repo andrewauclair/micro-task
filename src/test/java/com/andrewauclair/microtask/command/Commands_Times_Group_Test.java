@@ -41,7 +41,7 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
-		commands.execute(printStream, "times --group one/");
+		commands.execute(printStream, "times --group one/ --all-time");
 
 		TaskGroup group = new TaskGroup("/one/");
 		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));

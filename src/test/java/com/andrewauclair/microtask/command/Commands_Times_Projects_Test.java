@@ -21,6 +21,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static org.mockito.Mockito.*;
 
 class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
+	// TODO I think this style, along with all others, should default to d/m/y with current d/m/y values
 	@Test
 	void times_with_only_proj_feat_is_invalid() {
 		commands.execute(printStream, "times --proj-feat");

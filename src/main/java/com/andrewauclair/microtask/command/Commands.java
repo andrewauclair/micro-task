@@ -24,6 +24,7 @@ import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -167,6 +168,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 	public CommandLine buildCommandLineWithAllCommands() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+		cmdLine.setOut(new PrintWriter(System.out));
+		cmdLine.setErr(new PrintWriter(System.err));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
@@ -255,6 +258,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			strings[0] = "help";
 		}
 		CommandLine commandLine = buildCommandLine(strings[0]); // rebuild
+		commandLine.setOut(new PrintWriter(output));
+		commandLine.setErr(new PrintWriter(System.err));
 		commandLine.execute(strings);
 	}
 
