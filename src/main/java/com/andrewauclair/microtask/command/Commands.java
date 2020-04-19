@@ -50,7 +50,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		this.gitLabReleases = gitLabReleases;
 		this.localSettings = localSettings;
 		this.osInterface = osInterface;
-		factory = new PicocliFactory(this, tasks);
+		factory = new PicocliFactory(this, tasks, osInterface);
 		setCommands(tasks, this.gitLabReleases, this.osInterface);
 	}
 
@@ -159,7 +159,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLineWithoutAliases() {
-		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks, osInterface));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
@@ -167,7 +167,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLineWithAllCommands() {
-		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks, osInterface));
 		cmdLine.setOut(new PrintWriter(System.out));
 		cmdLine.setErr(new PrintWriter(System.err));
 

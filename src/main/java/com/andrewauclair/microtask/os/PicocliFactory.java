@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.command.Commands;
+import com.andrewauclair.microtask.command.TimesCommand;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.Tasks;
@@ -12,10 +13,12 @@ import java.lang.reflect.Constructor;
 public final class PicocliFactory implements CommandLine.IFactory {
 	private final Commands commands;
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
-	public PicocliFactory(Commands commands, Tasks tasks) {
+	public PicocliFactory(Commands commands, Tasks tasks, OSInterface osInterface) {
 		this.commands = commands;
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 
 	@Override

@@ -3,6 +3,10 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
+import com.andrewauclair.microtask.command.time.DayMonthYear;
+import com.andrewauclair.microtask.command.time.SpecificModifiers;
+import com.andrewauclair.microtask.command.time.TimeModifiers;
+import com.andrewauclair.microtask.command.time.WeekAllTime;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -10,7 +14,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
-import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -45,124 +49,11 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "The group to display times for.")
 	private ExistingTaskGroupName[] group;
 
-
-
 	@Option(names = {"--total"}, description = "Display only the final total.")
 	private boolean total;
 
-//	@CommandLine.ArgGroup(multiplicity = "1")
-//	private TimeModifiers timeModifiers;
-
-	// combos
-	// (day/month/year) week
-	// (day/month/year) all-month
-	// today
-	// yesterday
-	// week
-	// all-month
-	// all-time
-
-	// group1 (week | all-month)
-	// group2 (day/month/year (group1))
-	// group3 (today/yesterday/week/all-month/all-time)
-	// mutually exclusive (group1 | group2 | group3)
-
-	// today yesterday all-month all-time
-	// day month year
-
-	// group1 (today yesterday group2) exclusive=true
-	// group2 (group3 group4) exclusive=false
-	// group3 (all-month all-time) exclusive=true
-	// group4 (day month year) exclusive=false
-
-
-	// today yesterday all-time
-	// week all-month
-	// day month year
-
-	// group1 (today yesterday all-time group2) exclusive = true
-	// group2 (group3 group4) exclusive = false
-	// group3 (day month year) exclusive = false
-	// group4 (week all-month) exclusive = true
-
-	@CommandLine.ArgGroup()
-	private Group1 group1;
-
-	private static class Group1 {
-				@Option(names = {"--today"}, description = "Display times for today.")
-		private boolean today;
-
-		@Option(names = {"--yesterday"}, description = "Display times for yesterday.")
-		private boolean yesterday;
-
-				@Option(names = {"--all-time"}, description = "Display all task times recorded.")
-		private boolean all_time;
-
-		@CommandLine.ArgGroup(exclusive = false)
-		private Group2 group2;
-	}
-
-	private static class Group2 {
-		@CommandLine.ArgGroup(exclusive = false)
-		private Group3 group3;
-
-		@CommandLine.ArgGroup()
-		private Group4 group4;
-	}
-
-	private static class Group3 {
-				@Option(names = {"-d", "--day"}, description = "Day to display times for.")
-		private Integer day;
-
-		@Option(names = {"-m", "--month"}, description = "Month to display times for.")
-		private Integer month;
-
-		@Option(names = {"-y", "--year"}, description = "Year to display times for.")
-		private Integer year;
-	}
-
-	private static class Group4 {
-		@Option(names = {"--week"}, description = "Week to display times for.")
-		private boolean week;
-
-		@Option(names = {"--all-month"}, description = "Display times for the entire month")
-		private boolean all_month;
-	}
-//	private static class TimeModifiers {
-//		@CommandLine.ArgGroup(multiplicity = "1")
-//		private TodayYestDMY specificTime;
-//
-//		@Option(names = {"--week"}, description = "Week to display times for.")
-//		private boolean week;
-//
-//		@Option(names = {"--all-month"}, description = "Display times for the entire month")
-//		private boolean all_month;
-//
-//		@Option(names = {"--all-time"}, description = "Display all task times recorded.")
-//		private boolean all_time;
-//	}
-//
-//	private static class TodayYestDMY {
-//		@Option(names = {"--today"}, description = "Display times for today.")
-//		private boolean today;
-//
-//		@Option(names = {"--yesterday"}, description = "Display times for yesterday.")
-//		private boolean yesterday;
-//
-//		@CommandLine.ArgGroup(exclusive = false)
-//		private DayMonthYear dmy;
-//	}
-//
-//	private static class DayMonthYear {
-//		@Option(names = {"-d", "--day"}, description = "Day to display times for.")
-//		private Integer day;
-//
-//		@Option(names = {"-m", "--month"}, description = "Month to display times for.")
-//		private Integer month;
-//
-//		@Option(names = {"-y", "--year"}, description = "Year to display times for.")
-//		private Integer year;
-//	}
+	@ArgGroup()
+	private TimeModifiers timeModifiers;
 
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -368,61 +259,53 @@ public final class TimesCommand implements Runnable {
 		int month = currentDate.getMonth().getValue();
 		int year = currentDate.getYear();
 
-//		if (this.timeModifiers.specificTime == null) {
-//			this.timeModifiers.specificTime = new TodayYestDMY();
-//		}
-//
-//		if (this.timeModifiers.specificTime.dmy == null) {
-//			this.timeModifiers.specificTime.dmy = new DayMonthYear();
-//		}
-
-		if (this.group1 == null) {
-			this.group1 = new Group1();
+		if (this.timeModifiers == null) {
+			this.timeModifiers = new TimeModifiers();
 		}
 
-		if (this.group1.group2 == null) {
-			this.group1.group2 = new Group2();
+		if (this.timeModifiers.specificModifiers == null) {
+			this.timeModifiers.specificModifiers = new SpecificModifiers();
 		}
 
-		if (this.group1.group2.group3 == null) {
-			this.group1.group2.group3 = new Group3();
+		if (this.timeModifiers.specificModifiers.dmy == null) {
+			this.timeModifiers.specificModifiers.dmy = new DayMonthYear();
 		}
 
-		if (this.group1.group2.group4 == null) {
-			this.group1.group2.group4 = new Group4();
+		if (this.timeModifiers.specificModifiers.weekAllTime == null) {
+			this.timeModifiers.specificModifiers.weekAllTime = new WeekAllTime();
 		}
 
-		if (this.group1.group2.group3.day != null) {
+		if (this.timeModifiers.specificModifiers.dmy.day != null) {
 			ZoneId zoneId = osInterface.getZoneId();
 
-			if (this.group1.group2.group3.day < 1 || this.group1.group2.group3.day > 31) {
+			if (this.timeModifiers.specificModifiers.dmy.day < 1 || this.timeModifiers.specificModifiers.dmy.day > 31) {
 				throw new TaskException("Day option must be 1 - 31");
 			}
 
-			if (this.group1.group2.group3.month != null && (this.group1.group2.group3.month < 1 || this.group1.group2.group3.month > 12)) {
+			if (this.timeModifiers.specificModifiers.dmy.month != null && (this.timeModifiers.specificModifiers.dmy.month < 1 || this.timeModifiers.specificModifiers.dmy.month > 12)) {
 				throw new TaskException("Month option must be 1 - 12");
 			}
 
-			day = this.group1.group2.group3.day;
-			month = this.group1.group2.group3.month != null ? this.group1.group2.group3.month : instant.atZone(zoneId).getMonthValue();
-			year = this.group1.group2.group3.year != null ? this.group1.group2.group3.year : instant.atZone(zoneId).getYear();
+			day = this.timeModifiers.specificModifiers.dmy.day;
+			month = this.timeModifiers.specificModifiers.dmy.month != null ? this.timeModifiers.specificModifiers.dmy.month : instant.atZone(zoneId).getMonthValue();
+			year = this.timeModifiers.specificModifiers.dmy.year != null ? this.timeModifiers.specificModifiers.dmy.year : instant.atZone(zoneId).getYear();
 
 			LocalDate of = LocalDate.of(year, month, day);
 
 			instant = of.atStartOfDay(zoneId).toInstant();
 		}
 
-		if (group1.group2.group4.week) {
+		if (timeModifiers.specificModifiers.weekAllTime.week) {
 			LocalDate weekDay = LocalDate.ofInstant(instant, osInterface.getZoneId());
 
 			instant = weekDay.minusDays(weekDay.getDayOfWeek().getValue()).atStartOfDay(osInterface.getZoneId()).toInstant();
 
 			filter.filterForWeek(month, day, year);
 		}
-		else if (group1.today) {
+		else if (timeModifiers.today) {
 			filter.filterForDay(currentDate.getMonth().getValue(), currentDate.getDayOfMonth(), currentDate.getYear());
 		}
-		else if (group1.yesterday) {
+		else if (timeModifiers.yesterday) {
 			long epochSecond = osInterface.currentSeconds() - (60 * 60 * 24);
 
 			instant = Instant.ofEpochSecond(epochSecond);
@@ -431,14 +314,14 @@ public final class TimesCommand implements Runnable {
 
 			filter.filterForDay(yesterday.getMonth().getValue(), yesterday.getDayOfMonth(), yesterday.getYear());
 		}
-		else if (this.group1.group2.group3.day != null) {
+		else if (this.timeModifiers.specificModifiers.dmy.day != null) {
 			filter.filterForDay(month, day, year);
 		}
-		else if (group1.group2.group4.all_month) {
+		else if (timeModifiers.specificModifiers.weekAllTime.all_month) {
 			filter.filterForMonth(month);
 		}
 
-		if ((list != null || group != null) && this.group1.group2.group3.day == null && !group1.today) {
+		if ((list != null || group != null) && this.timeModifiers.specificModifiers.dmy.day == null && !timeModifiers.today) {
 			List<ExistingTaskListName> lists = new ArrayList<>();
 
 			if (list != null) {
@@ -488,13 +371,13 @@ public final class TimesCommand implements Runnable {
 				displayTimes(filter, lists.size() > 1);
 			}
 		}
-		else if (group1.today && !proj_feat) {
+		else if (timeModifiers.today && !proj_feat) {
 			displayTimesForDay(Instant.ofEpochSecond(osInterface.currentSeconds()), filter);
 		}
-		else if (group1.yesterday && !proj_feat) {
+		else if (timeModifiers.yesterday && !proj_feat) {
 			displayTimesForDay(instant, filter);
 		}
-		else if (group1.group2.group4.week && !proj_feat) {
+		else if (timeModifiers.specificModifiers.weekAllTime.week && !proj_feat) {
 			if (total) {
 				System.out.print("Total times for week of ");
 			}
@@ -515,7 +398,7 @@ public final class TimesCommand implements Runnable {
 			displayTimes(filter, false);
 		}
 		else if (proj_feat) {
-			if (group1.all_time || group1.group2.group4.all_month || group1.today || group1.yesterday || group1.group2.group4.week || this.group1.group2.group3.day != null) {
+			if (timeModifiers.all_time || timeModifiers.specificModifiers.weekAllTime.all_month || timeModifiers.today || timeModifiers.yesterday || timeModifiers.specificModifiers.weekAllTime.week || this.timeModifiers.specificModifiers.dmy.day != null) {
 				displayProjectsFeatures(filter);
 			}
 			else {
@@ -524,7 +407,7 @@ public final class TimesCommand implements Runnable {
 			}
 		}
 		else {
-			if (group1.all_time) {
+			if (timeModifiers.all_time) {
 				if (total) {
 					System.out.println("Total times");
 				}
@@ -534,7 +417,7 @@ public final class TimesCommand implements Runnable {
 				}
 				printTasks(new TaskTimesFilter(tasks));
 			}
-			else if (group1.group2.group4.all_month) {
+			else if (timeModifiers.specificModifiers.weekAllTime.all_month) {
 				String title = Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
 
 //				filter.filterForMonth(month);
@@ -550,7 +433,7 @@ public final class TimesCommand implements Runnable {
 				}
 				printTasks(filter);
 			}
-			else if (this.group1.group2.group3.day != null) {
+			else if (this.timeModifiers.specificModifiers.dmy.day != null) {
 				displayTimesForDay(instant, filter);
 			}
 			else {
