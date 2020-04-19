@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -15,12 +16,12 @@ import java.util.Arrays;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
 class Commands_Update_Test extends CommandsBaseTestCase {
-
-	private Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.90.0.50", 8080));
+	private final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.90.0.50", 8080));
 
 	@Test
 	void execute_update_command() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease("version-1", Proxy.NO_PROXY)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -28,6 +29,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		Mockito.when(in.read()).then(invocationOnMock -> {
 			assertOutput(
 					"Updated to version 'version-1'",
+					"",
+					"This is a",
+					"multiline",
+					"changelog",
 					"",
 					"Press any key to shutdown. Please restart with the new version."
 			);
@@ -45,6 +50,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Updated to version 'version-1'",
+				"",
+				"This is a",
+				"multiline",
+				"changelog",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
 				""
@@ -78,6 +87,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	@Test
 	void update_to_release_with_proxy_settings() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", proxy)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease("version-1", proxy)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -85,6 +95,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		Mockito.when(in.read()).then(invocationOnMock -> {
 			assertOutput(
 					"Updated to version 'version-1'",
+					"",
+					"This is a",
+					"multiline",
+					"changelog",
 					"",
 					"Press any key to shutdown. Please restart with the new version."
 			);
@@ -102,6 +116,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Updated to version 'version-1'",
+				"",
+				"This is a",
+				"multiline",
+				"changelog",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
 				""
@@ -205,6 +223,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_to_latest_release() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 		Mockito.when(gitLabReleases.updateToRelease("version-3", Proxy.NO_PROXY)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease("version-3", Proxy.NO_PROXY)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -212,6 +231,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		Mockito.when(in.read()).then(invocationOnMock -> {
 			assertOutput(
 					"Updated to version 'version-3'",
+					"",
+					"This is a",
+					"multiline",
+					"changelog",
 					"",
 					"Press any key to shutdown. Please restart with the new version."
 			);
@@ -230,6 +253,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Updated to version 'version-3'",
 				"",
+				"This is a",
+				"multiline",
+				"changelog",
+				"",
 				"Press any key to shutdown. Please restart with the new version.",
 				""
 		);
@@ -239,6 +266,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_to_latest_with_proxy_settings() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(proxy)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 		Mockito.when(gitLabReleases.updateToRelease("version-3", proxy)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease("version-3", proxy)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -246,6 +274,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		Mockito.when(in.read()).then(invocationOnMock -> {
 			assertOutput(
 					"Updated to version 'version-3'",
+					"",
+					"This is a",
+					"multiline",
+					"changelog",
 					"",
 					"Press any key to shutdown. Please restart with the new version."
 			);
@@ -263,6 +295,10 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Updated to version 'version-3'",
+				"",
+				"This is a",
+				"multiline",
+				"changelog",
 				"",
 				"Press any key to shutdown. Please restart with the new version.",
 				""
@@ -403,17 +439,17 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  update [--proxy-ip=<proxy_ip> --proxy-port=<proxy_port>] [-hlr]",
-				"               [--from-remote] [--tasks] [--to-remote] [--release=<release>]",
-				"      --from-remote",
+				"               [--from-remote] [--to-remote] [--release=<release>]",
+				"Update the application, tasks or push/pull changes to/from remote repo.",
+				"      --from-remote         Pull changes from the remote repo.",
 				"  -h, --help                Show this help message.",
-				"  -l, --latest",
-				"      --proxy-ip=<proxy_ip>",
+				"  -l, --latest              Update to the latest release.",
+				"      --proxy-ip=<proxy_ip> Proxy IP address to use for connecting to GitLab.",
 				"      --proxy-port=<proxy_port>",
-				"",
-				"  -r, --releases",
-				"      --release=<release>",
-				"      --tasks",
-				"      --to-remote"
+				"                            Proxy port to use for connecting to GitLab.",
+				"  -r, --releases            Display the available releases on GitLab.",
+				"      --release=<release>   Update to a specific release.",
+				"      --to-remote           Push local changes to the remote repo."
 		);
 	}
 }

@@ -8,6 +8,13 @@ import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.PicocliFactory;
+import com.andrewauclair.microtask.picocli.*;
+import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.NewID;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import com.andrewauclair.microtask.task.Tasks;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
@@ -58,7 +65,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface));
+		commands.put("update", new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
@@ -66,7 +73,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
 		commands.put("mk", new MakeCommand(tasks));
 		commands.put("ch", new ChangeCommand(tasks, localSettings));
-		commands.put("eod", new EndOfDayCommand(tasks, osInterface));
+		commands.put("eod", new EndOfDayCommand(tasks, localSettings, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
 		commands.put("info", new InfoCommand(tasks, osInterface));
@@ -99,7 +106,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "version":
 				return new VersionCommand(osInterface);
 			case "update":
-				return new UpdateCommand(gitLabReleases, tasks, this, localSettings, osInterface);
+				return new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
 			case "move":
@@ -115,7 +122,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "ch":
 				return new ChangeCommand(tasks, localSettings);
 			case "eod":
-				return new EndOfDayCommand(tasks, osInterface);
+				return new EndOfDayCommand(tasks, localSettings, osInterface);
 			case "alias":
 				return new AliasCommand(this, osInterface);
 			case "next":
@@ -150,36 +157,51 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		return null;
 	}
 
+	public CommandLine buildCommandLineWithoutAliases() {
+		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+
+		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
+
+		return cmdLine;
+	}
+
 	public CommandLine buildCommandLineWithAllCommands() {
 		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
-		aliases.keySet().forEach(name -> {
-
-			Runnable cmd = new Runnable() {
-				@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
-				private boolean help;
-
-				@Override
-				public void run() {
-					System.out.print(ConsoleColors.ANSI_BOLD);
-					System.out.print(aliases.get(name));
-					System.out.print(ConsoleColors.ANSI_RESET);
-					System.out.println();
-
-					Commands.this.execute(System.out, aliases.get(name));
-
-				}
-			};
-
-			cmdLine.addSubcommand(name, cmd);
-		});
+//		aliases.keySet().forEach(name -> {
+//
+//			Runnable cmd = new Runnable() {
+//				@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
+//				private boolean help;
+//
+//				@Override
+//				public void run() {
+//					System.out.print(ConsoleColors.ANSI_BOLD);
+//					System.out.print(aliases.get(name));
+//					System.out.print(ConsoleColors.ANSI_RESET);
+//					System.out.println();
+//
+//					Commands.this.execute(System.out, aliases.get(name));
+//
+//				}
+//			};
+//
+//			cmdLine.addSubcommand(name, cmd);
+//		});
 
 		// has to be done after we add the subcommands
 		cmdLine.setTrimQuotes(true);
 
 		setHandlers(cmdLine);
+
+		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 
 		return cmdLine;
 	}
@@ -213,6 +235,13 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		setHandlers(cmdLine);
 
+		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+
 		return cmdLine;
 	}
 
@@ -222,6 +251,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		ParsedLine parse = defaultParser.parse(command, 0, Parser.ParseContext.UNSPECIFIED);
 		String[] strings = parse.words().toArray(new String[0]);
 
+		if (strings.length == 1 && strings[0].isEmpty()) {
+			strings[0] = "help";
+		}
 		CommandLine commandLine = buildCommandLine(strings[0]); // rebuild
 		commandLine.execute(strings);
 	}
@@ -294,7 +326,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		aliases.remove(name);
 	}
 
-	Map<String, String> getAliases() {
+	public Map<String, String> getAliases() {
 		return aliases;
 	}
 
@@ -302,7 +334,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public int handleExecutionException(Exception ex, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
 		System.out.println(ex.getMessage());
 		System.out.println();
-		if (!(ex instanceof TaskException)) {
+
+		if (!(ex instanceof TaskException) || localSettings.isDebugEnabled()) {
 			return defaultHandler.handleExecutionException(ex, commandLine, parseResult);
 		}
 		return 0;

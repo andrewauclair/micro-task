@@ -3,8 +3,8 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public final class Utils {
 	public static final String NL = System.lineSeparator();
@@ -91,8 +91,8 @@ public final class Utils {
 		catch (IOException ignored) {
 		}
 
-		try (DataOutputStream output = osInterface.createOutputStream("git-data/task-data-version.txt")) {
-			output.write(currentVersion.getBytes());
+		try (PrintStream output = new PrintStream(osInterface.createOutputStream("git-data/task-data-version.txt"))) {
+			output.print(currentVersion);
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);

@@ -5,11 +5,13 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "finish")
+@Command(name = "finish", description = "Finish a task, list or group.")
 final class FinishCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -21,16 +23,16 @@ final class FinishCommand implements Runnable {
 	private FinishOptions options;
 
 	private static final class FinishOptions {
-		@Option(required = true, names = {"-t", "--task"}, split = ",")
-		private Integer[] id;
+		@Option(required = true, names = {"-t", "--task"}, split = ",", description = "Task(s) to finish.")
+		private ExistingID[] id;
 
-		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-		private String list;
+		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to finish.")
+		private ExistingTaskListName list;
 
-		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-		private String group;
+		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to finish.")
+		private ExistingTaskGroupName group;
 
-		@Option(required = true, names = {"-a", "--active"})
+		@Option(required = true, names = {"--active-task"}, description = "Finish the active task.")
 		private boolean active;
 	}
 
@@ -51,7 +53,7 @@ final class FinishCommand implements Runnable {
 			finishTask(tasks.finishTask());
 		}
 		else {
-			for (final Integer id : options.id) {
+			for (final ExistingID id : options.id) {
 				finishTask(tasks.finishTask(id));
 			}
 		}
@@ -66,10 +68,10 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishGroup() {
-		if (tasks.getGroup(this.options.group).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
+		if (tasks.getGroup(this.options.group.absoluteName()).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
 			System.out.println("Group to finish must not be active.");
 		}
-		else if (tasks.getGroup(this.options.group).getTasks().stream()
+		else if (tasks.getGroup(this.options.group.absoluteName()).getTasks().stream()
 				.anyMatch(task -> task.state != TaskState.Finished)) {
 			System.out.println("Group to finish still has tasks to complete.");
 		}
@@ -83,7 +85,7 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishList() {
-		if (tasks.getListByName(this.options.list).getFullPath().equals(tasks.getActiveList())) {
+		if (this.options.list.equals(tasks.getActiveList())) {
 			System.out.println("List to finish must not be active.");
 		}
 		else if (tasks.getListByName(this.options.list).getTasks().stream()

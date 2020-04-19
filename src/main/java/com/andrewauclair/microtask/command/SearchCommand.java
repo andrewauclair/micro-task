@@ -3,10 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskList;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -15,23 +12,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Command(name = "search")
+@Command(name = "search", description = "Search for tasks.")
 final class SearchCommand implements Runnable {
 	private final Tasks tasks;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-t", "--text"})
+	@Option(names = {"-t", "--text"}, description = "The text to search for in the task names.")
 	private String text;
 
-	@Option(names = {"-f", "--finished"})
+	@Option(names = {"-f", "--finished"}, description = "Search for finished tasks.")
 	private boolean finished;
 
-	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
+	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Search for tasks in the current group recursively.")
 	private boolean group;
 
-	@Option(names = {"-v", "--verbose"})
+	@Option(names = {"-v", "--verbose"}, description = "Display list names in results.")
 	private boolean verbose;
 
 	SearchCommand(Tasks tasks) {
@@ -57,7 +54,7 @@ final class SearchCommand implements Runnable {
 				.collect(Collectors.toList());
 
 		if (verbose) {
-			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(o.id).getFullPath()));
+			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.id)).getFullPath()));
 		}
 
 		System.out.println("Search Results (" + searchResults.size() + "):");
@@ -66,7 +63,7 @@ final class SearchCommand implements Runnable {
 		String currentList = "";
 
 		for (Task task : searchResults) {
-			TaskList listForTask = tasks.findListForTask(task.id);
+			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks, task.id));
 
 			if (verbose && !listForTask.getFullPath().equals(currentList)) {
 				if (!currentList.isEmpty()) {

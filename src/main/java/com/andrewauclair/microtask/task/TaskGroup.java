@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 public final class TaskGroup implements TaskContainer {
-	private static final String ROOT_PATH = "/";
+	public static final String ROOT_PATH = "/";
 
 	private final String name;
 	private final String fullPath;
@@ -77,7 +77,7 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	@Override
-	public Optional<TaskList> findListForTask(long id) {
+	public Optional<TaskList> findListForTask(ExistingID id) {
 		for (TaskContainer child : getChildren()) {
 			Optional<TaskList> list = child.findListForTask(id);
 
@@ -152,7 +152,7 @@ public final class TaskGroup implements TaskContainer {
 		return parent.getFullPath();
 	}
 
-	boolean containsListAbsolute(String name) {
+	public boolean containsListAbsolute(String name) {
 		return children.stream()
 				.filter(child -> child instanceof TaskList)
 				.map(child -> (TaskList) child)
@@ -216,7 +216,7 @@ public final class TaskGroup implements TaskContainer {
 				.anyMatch(group -> group.getFullPath().equals(newGroup.getFullPath()));
 	}
 
-	TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
+	public TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
 		removeChild(group);
 
 		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.getProject(), group.getFeature(), group.state);
@@ -238,7 +238,7 @@ public final class TaskGroup implements TaskContainer {
 		return newGroup;
 	}
 
-	TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
+	public TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
 		removeChild(list);
 
 		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), list.getProject(), list.getFeature(), TaskContainerState.InProgress);

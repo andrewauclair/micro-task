@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class TaskTimesFilter {
 				totalTime += time.getDuration(osInterface);
 			}
 
-			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
+			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()));
 		}
 	}
 
@@ -48,7 +49,7 @@ public class TaskTimesFilter {
 		lists.add(list);
 
 		allTasks.clear();
-		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(name)));
+		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(new ExistingTaskListName(tasks, name))));
 
 		buildResults();
 	}
@@ -86,7 +87,7 @@ public class TaskTimesFilter {
 
 			if (totalTime > 0) {
 				newTasks.add(task);
-				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.id).getFullPath()));
+				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()));
 			}
 		}
 

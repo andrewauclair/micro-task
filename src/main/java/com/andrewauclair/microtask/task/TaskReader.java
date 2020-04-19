@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -37,6 +38,9 @@ public class TaskReader {
 					stop = TaskTimes.TIME_NOT_SET;
 
 					foundStartTime = true;
+
+					timeProject = scanner.nextLine();
+					timeFeature = scanner.nextLine();
 				}
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
@@ -52,10 +56,6 @@ public class TaskReader {
 					long finish = Integer.parseInt(line.substring(7));
 
 					builder.withTime(new TaskTimes(finish));
-				}
-				else if (foundStartTime) {
-					timeProject = line;
-					timeFeature = scanner.nextLine();
 				}
 			}
 

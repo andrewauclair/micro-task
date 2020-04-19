@@ -11,7 +11,7 @@ import java.io.IOException;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 
-@Command(name = "version")
+@Command(name = "version", description = "Display the application version.")
 public final class VersionCommand implements Runnable {
 	private final OSInterface osInterface;
 
@@ -40,7 +40,7 @@ public final class VersionCommand implements Runnable {
 		}
 
 		System.out.println(micro + "               _                    " + task + "   __                __  " + ANSI_RESET);
-		System.out.println(micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__" + ANSI_RESET);
+		System.out.println(micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__ " + System.getProperty("java.runtime.version") + ANSI_RESET);
 		System.out.println(micro + "  / __ `__ \\ / // ___// ___// __ \\  " + task + " / __// __ `// ___// //_/" + ANSI_RESET);
 		System.out.println(micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + version + ANSI_RESET);
 		System.out.println(micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET);

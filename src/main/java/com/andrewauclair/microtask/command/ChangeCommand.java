@@ -2,16 +2,16 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.LocalSettings;
-import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
-import com.andrewauclair.microtask.task.TaskGroup;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "ch")
+@Command(name = "ch", description = "Change the current list or group.")
 final class ChangeCommand implements Runnable {
 	private final Tasks tasks;
 	private final LocalSettings localSettings;
@@ -30,52 +30,29 @@ final class ChangeCommand implements Runnable {
 	@Override
 	public void run() {
 		if (listGroup.list != null) {
-			if (listGroup.list.endsWith("/")) {
-				throw new TaskException("'" + listGroup.list + "' is not a valid list path");
-			}
+			tasks.setActiveList(listGroup.list);
+			tasks.setActiveGroup(listGroup.list.parentGroupName());
 
-			String list = this.listGroup.list.toLowerCase();
+			localSettings.setActiveList(listGroup.list);
+			localSettings.setActiveGroup(listGroup.list.parentGroupName());
 
-			tasks.setActiveList(list);
-
-			String actualList = tasks.getAbsoluteListName(list);
-
-			String group = tasks.getGroupForList(actualList).getFullPath();
-
-			tasks.switchGroup(group);
-
-			localSettings.setActiveList(actualList);
-
-			System.out.println("Switched to list '" + actualList + "'");
+			System.out.println("Switched to list '" + listGroup.list + "'");
 		}
 		else {
-			if (!listGroup.group.endsWith("/") && !listGroup.group.equals("..")) {
-				throw new TaskException("'" + listGroup.group + "' is not a valid group path");
-			}
+			tasks.setActiveGroup(listGroup.group);
 
-			String group = this.listGroup.group;
+			localSettings.setActiveGroup(listGroup.group);
 
-			if (group.equals("..")) {
-				if (tasks.getActiveGroup().getFullPath().equals("/")) {
-					return;
-				}
-				group = tasks.getActiveGroup().getParent();
-			}
-
-			TaskGroup group1 = tasks.switchGroup(group);
-
-			localSettings.setActiveGroup(group1.getFullPath());
-
-			System.out.println("Switched to group '" + group1.getFullPath() + "'");
+			System.out.println("Switched to group '" + listGroup.group + "'");
 		}
 		System.out.println();
 	}
 
 	private static final class ListGroup {
-		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-		private String list;
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to change to.")
+		private ExistingTaskListName list;
 
-		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-		private String group;
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to change to.")
+		private ExistingTaskGroupName group;
 	}
 }

@@ -4,13 +4,16 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "move")
+@Command(name = "move", description = "Move a task, list or group.")
 final class MoveCommand implements Runnable {
 	private final Tasks tasks;
 
@@ -21,21 +24,21 @@ final class MoveCommand implements Runnable {
 	private Args args;
 
 	private static class Args {
-		@Option(names = {"-t", "--task"}, split = ",")
-		private Integer[] id;
+		@Option(names = {"-t", "--task"}, split = ",", description = "Tasks to move.")
+		private ExistingID[] id;
 
-		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-		private String list;
+		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to move.")
+		private ExistingTaskListName list;
 
-		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class)
-		private String group;
+		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to move.")
+		private ExistingTaskGroupName group;
 	}
 
-	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class)
-	private String dest_group;
+	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class, description = "Destination group for list or group.")
+	private ExistingTaskGroupName dest_group;
 
-	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class)
-	private String dest_list;
+	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class, description = "Destination list for task.")
+	private ExistingTaskListName dest_list;
 
 	MoveCommand(Tasks tasks) {
 		this.tasks = tasks;
@@ -48,7 +51,7 @@ final class MoveCommand implements Runnable {
 				throw new TaskException("move --task requires --dest-list");
 			}
 
-			for (Integer taskID : args.id) {
+			for (ExistingID taskID : args.id) {
 				moveTask(dest_list, taskID);
 			}
 			System.out.println();
@@ -75,10 +78,10 @@ final class MoveCommand implements Runnable {
 		}
 	}
 
-	private void moveTask(String list, long taskID) {
+	private void moveTask(ExistingTaskListName list, ExistingID taskID) {
 		TaskList taskList = tasks.getListForTask(taskID);
 		taskList.moveTask(taskID, tasks.getListByName(list));
 
-		System.out.println("Moved task " + taskID + " to list '" + list + "'");
+		System.out.println("Moved task " + taskID.get() + " to list '" + list + "'");
 	}
 }

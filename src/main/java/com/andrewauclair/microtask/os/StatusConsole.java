@@ -5,6 +5,8 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -107,7 +109,7 @@ public class StatusConsole {
 		timer.schedule(timerTask, 1000, 1000);
 
 		currentGroup = tasks.getActiveGroup().getFullPath();
-		currentList = tasks.getActiveList();
+		currentList = tasks.getActiveList().absoluteName();
 
 		final Kernel32 kernel32 = Kernel32.INSTANCE;
 
@@ -140,8 +142,8 @@ public class StatusConsole {
 						break;
 					}
 
-					tasks.switchGroup(currentGroup);
-					tasks.setActiveList(currentList);
+					tasks.setActiveGroup(new ExistingTaskGroupName(tasks, currentGroup));
+					tasks.setActiveList(new ExistingTaskListName(tasks, currentList));
 
 					try {
 						commands.execute(System.out, currentCommand);
@@ -262,6 +264,10 @@ public class StatusConsole {
 
 	private String padString(Terminal terminal, String str) {
 		int width = terminal.getSize().getColumns();
+
+		if (width == 0) {
+			width = 80;
+		}
 		return padString(str, width);
 	}
 

@@ -4,6 +4,10 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,20 +77,15 @@ public class TaskLoader {
 	private void loadList(String folder, OSInterface.TaskFileInfo fileInfo) throws IOException {
 		String name = fileInfo.getFileName();
 
-		tasks.addList(name, false);
-		tasks.setActiveList(name);
+		tasks.addList(new NewTaskListName(tasks, name), false);
+		tasks.setActiveList(new ExistingTaskListName(tasks, name));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			TaskList list = tasks.getListByName(tasks.getActiveList());
-
-			list = tasks.setProject(list, scanner.nextLine(), false);
-			list = tasks.setFeature(list, scanner.nextLine(), false);
-
-			if (scanner.hasNextLine()) {
-				tasks.setListState(list, TaskContainerState.valueOf(scanner.nextLine()), false);
-			}
+			tasks.setProject(tasks.getActiveList(), scanner.nextLine(), false);
+			tasks.setFeature(tasks.getActiveList(), scanner.nextLine(), false);
+			tasks.setListState(tasks.getActiveList(), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException ignored) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
@@ -98,27 +97,22 @@ public class TaskLoader {
 	private void loadGroup(String folder, OSInterface.TaskFileInfo fileInfo) throws IOException {
 		String name = fileInfo.getFileName();
 
-		TaskGroup group = tasks.addGroup(name + "/");
-		tasks.switchGroup(name + "/");
+		TaskGroup group = tasks.addGroup(new NewTaskGroupName(tasks, name + "/"));
+		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, name + "/"));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			if (scanner.hasNextLine()) {
-				tasks.setProject(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-				tasks.setFeature(tasks.getGroup(group.getFullPath()), scanner.nextLine(), false);
-
-				if (scanner.hasNextLine()) {
-					tasks.setGroupState(tasks.getGroup(group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
-				}
-			}
+			tasks.setProject(new ExistingTaskGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
+			tasks.setFeature(new ExistingTaskGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
+			tasks.setGroupState(new ExistingTaskGroupName(tasks, group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException ignored) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
 		}
 
 		loadTasks(fileInfo.getPath(), true);
-		tasks.switchGroup(tasks.getActiveGroup().getParent());
+		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, tasks.getActiveGroup().getParent()));
 	}
 
 	private boolean isGroupFolder(String folder) {

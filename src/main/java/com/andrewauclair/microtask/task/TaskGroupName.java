@@ -1,0 +1,51 @@
+// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
+package com.andrewauclair.microtask.task;
+
+import java.util.Objects;
+
+import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
+
+public class TaskGroupName {
+	private final String absoluteName;
+	private final String shortName;
+
+	public TaskGroupName(Tasks tasks, String name) {
+		if (!name.endsWith("/")) {
+			throw new RuntimeException("Group name must end in /");
+		}
+
+		this.absoluteName = absoluteName(tasks, name);
+
+		if (!Objects.equals(absoluteName, ROOT_PATH)) {
+			// TODO This isn't very nice to look at
+			this.shortName = absoluteName.substring(0, absoluteName.length() - 1).substring(absoluteName.substring(0, absoluteName.length() - 1).lastIndexOf('/') + 1);
+		}
+		else {
+			this.shortName = "";
+		}
+	}
+
+	private String absoluteName(Tasks tasks, String name) {
+		if (!name.startsWith(ROOT_PATH)) {
+			return tasks.getActiveGroup().getFullPath() + name;
+		}
+		return name;
+	}
+
+	public String absoluteName() {
+		return absoluteName;
+	}
+
+	public String shortName() {
+		return shortName;
+	}
+
+	public String parentGroupName() {
+		return absoluteName.substring(0, absoluteName.lastIndexOf('/') + 1);
+	}
+
+	@Override
+	public String toString() {
+		return absoluteName;
+	}
+}

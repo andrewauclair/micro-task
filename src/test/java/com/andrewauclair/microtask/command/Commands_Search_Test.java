@@ -57,8 +57,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.finishTask(1);
-		tasks.finishTask(5);
+		tasks.finishTask(existingID(1));
+		tasks.finishTask(existingID(5));
 
 		commands.execute(printStream, "search -t \"monday\"");
 
@@ -81,8 +81,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.finishTask(1);
-		tasks.finishTask(5);
+		tasks.finishTask(existingID(1));
+		tasks.finishTask(existingID(5));
 
 		commands.execute(printStream, "search -t \"monday\" --finished");
 
@@ -105,8 +105,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.finishTask(1);
-		tasks.finishTask(5);
+		tasks.finishTask(existingID(1));
+		tasks.finishTask(existingID(5));
 
 		commands.execute(printStream, "search --finished --text \"monday\"");
 
@@ -121,8 +121,9 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 	@Test
 	void search_on_nested_list() {
-		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.setActiveList(existingList("/test/one"));
 
 		tasks.addTask("do this task on monday");
 		tasks.addTask("tuesdays are ignored");
@@ -147,23 +148,24 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 	@Test
 	void search_for_tasks_in_a_group_displays_all_tasks_recursively() {
-		tasks.addList("/test/one", true);
-		tasks.addList("/test/two", true);
-		tasks.addList("/three", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.addList(newList("/test/two"), true);
+		tasks.addList(newList("/three"), true);
 
-		tasks.setActiveList("/test/one");
+		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("do this task on monday");
 		tasks.addTask("do this task on tuesday");
 
-		tasks.setActiveList("/test/two");
+		tasks.setActiveList(existingList("/test/two"));
 		tasks.addTask("monday is the worst");
 		tasks.addTask("tuesday's gone with the wind");
 
-		tasks.setActiveList("/three");
+		tasks.setActiveList(existingList("/three"));
 		tasks.addTask("mondays are the longest days");
 		tasks.addTask("wednesday isn't that great either");
 
-		tasks.switchGroup("/");
+		tasks.setActiveGroup(existingGroup("/"));
 
 		commands.execute(printStream, "search -t \"monday\" --group");
 
@@ -187,8 +189,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		tasks.addTask("The Beatles?");
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.createGroup("/test/");
-		tasks.switchGroup("/test/");
+		tasks.createGroup(newGroup("/test/"));
+		tasks.setActiveGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "search -t \"monday\"");
 
@@ -205,22 +207,22 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 	@Test
 	void verbose_search_displays_what_list_each_task_is_on() {
-		tasks.addList("/oranges", true);
-		tasks.addList("/apples", true);
+		tasks.addList(newList("/oranges"), true);
+		tasks.addList(newList("/apples"), true);
 
-		tasks.setActiveList("/oranges");
+		tasks.setActiveList(existingList("/oranges"));
 		tasks.addTask("do this task on monday");
 		tasks.addTask("tuesdays are ignored");
 
-		tasks.setActiveList("/apples");
+		tasks.setActiveList(existingList("/apples"));
 		tasks.addTask("some days are long, mondays are the longest days");
 
-		tasks.setActiveList("/oranges");
+		tasks.setActiveList(existingList("/oranges"));
 
 		tasks.addTask("wednesdays too");
 		tasks.addTask("monday is a holiday, don't forget");
 
-		tasks.setActiveList("/apples");
+		tasks.setActiveList(existingList("/apples"));
 
 		tasks.addTask("The Beatles?");
 		tasks.addTask("finish this task by monday");
@@ -247,11 +249,12 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  search [-fghv] [-t=<text>]",
-				"  -f, --finished",
-				"  -g, --group",
+				"Search for tasks.",
+				"  -f, --finished      Search for finished tasks.",
+				"  -g, --group         Search for tasks in the current group recursively.",
 				"  -h, --help          Show this help message.",
-				"  -t, --text=<text>",
-				"  -v, --verbose"
+				"  -t, --text=<text>   The text to search for in the task names.",
+				"  -v, --verbose       Display list names in results."
 		);
 	}
 }

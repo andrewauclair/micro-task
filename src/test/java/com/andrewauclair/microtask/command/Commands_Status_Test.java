@@ -39,7 +39,8 @@ class Commands_Status_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  status [-h] -c=<command>",
-				"  -c, --command=<command>",
+				"Send a command to the status console.",
+				"  -c, --command=<command>   Command to send to the status console.",
 				"  -h, --help                Show this help message."
 		);
 	}

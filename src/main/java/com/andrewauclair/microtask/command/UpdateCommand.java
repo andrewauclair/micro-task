@@ -6,10 +6,9 @@ import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskLoader;
-import com.andrewauclair.microtask.task.TaskReader;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -23,11 +22,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Command(name = "update")
-final class UpdateCommand implements Runnable {
+@Command(name = "update", description = "Update the application, tasks or push/pull changes to/from remote repo.")
+public final class UpdateCommand implements Runnable {
 	private static final int MAX_DISPLAYED_VERSIONS = 5;
 	private final GitLabReleases gitLabReleases;
 	private final Tasks tasksData;
+	private final TaskWriter taskWriter;
 	private final Commands commands;
 	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
@@ -35,30 +35,28 @@ final class UpdateCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--tasks"})
-	private boolean tasks;
-
-	@Option(names = {"-r", "--releases"})
+	@Option(names = {"-r", "--releases"}, description = "Display the available releases on GitLab.")
 	private boolean releases;
 
-	@Option(names = {"-l", "--latest"})
+	@Option(names = {"-l", "--latest"}, description = "Update to the latest release.")
 	private boolean latest;
 
-	@Option(names = {"--release"})
+	@Option(names = {"--release"}, description = "Update to a specific release.")
 	private String release;
 
-	@Option(names = {"--to-remote"})
+	@Option(names = {"--to-remote"}, description = "Push local changes to the remote repo.")
 	private boolean to_remote;
 
-	@Option(names = {"--from-remote"})
+	@Option(names = {"--from-remote"}, description = "Pull changes from the remote repo.")
 	private boolean from_remote;
 
 	@ArgGroup(exclusive = false)
 	private ProxySettings proxy;
 
-	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
+	UpdateCommand(GitLabReleases gitLabReleases, Tasks tasks, TaskWriter taskWriter, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
 		this.gitLabReleases = gitLabReleases;
 		this.tasksData = tasks;
+		this.taskWriter = taskWriter;
 		this.commands = commands;
 		this.localSettings = localSettings;
 		this.osInterface = osInterface;
@@ -142,25 +140,6 @@ final class UpdateCommand implements Runnable {
 		else if (latest) {
 			updatedToNewRelease = updateToVersion(versions.get(versions.size() - 1), proxy);
 		}
-		else if (tasks) {
-			List<Task> taskList = new ArrayList<>(tasksData.getAllTasks());
-
-			taskList.sort(Comparator.comparingLong(o -> o.id));
-
-			for (Task task : taskList) {
-				String list = tasksData.findListForTask(task.id).getFullPath();
-				tasksData.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
-			}
-
-			String currentVersion = Utils.writeCurrentVersion(osInterface);
-
-			osInterface.runGitCommand("git add .");
-			osInterface.runGitCommand("git commit -m \"Updating task files to version '" + currentVersion + "'\"");
-
-			tasksData.load(new TaskLoader(tasksData, new TaskReader(osInterface), localSettings, osInterface), commands);
-
-			System.out.println("Updated all tasks.");
-		}
 		else if (release != null) {
 			updatedToNewRelease = updateToVersion(release, proxy);
 		}
@@ -193,6 +172,8 @@ final class UpdateCommand implements Runnable {
 			if (updated) {
 				System.out.println("Updated to version '" + version + "'");
 				System.out.println();
+				System.out.println(gitLabReleases.changelogForRelease(version, proxy));
+				System.out.println();
 				System.out.println("Press any key to shutdown. Please restart with the new version.");
 
 				// force a restart, but wait for the user to respond first
@@ -214,10 +195,46 @@ final class UpdateCommand implements Runnable {
 	}
 
 	private static final class ProxySettings {
-		@Option(names = {"--proxy-ip"}, required = true)
+		@Option(names = {"--proxy-ip"}, required = true, description = "Proxy IP address to use for connecting to GitLab.")
 		private InetAddress proxy_ip;
 
-		@Option(names = {"--proxy-port"}, required = true)
+		@Option(names = {"--proxy-port"}, required = true, description = "Proxy port to use for connecting to GitLab.")
 		private int proxy_port;
+	}
+
+	public static void updateFiles(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Commands commands) {
+
+		updateGroupFiles(tasks, tasks.getRootGroup(), osInterface);
+
+		String currentVersion = Utils.writeCurrentVersion(osInterface);
+
+		osInterface.runGitCommand("git add .");
+		osInterface.runGitCommand("git commit -m \"Updating files to version '" + currentVersion + "'\"");
+
+		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
+
+		System.out.println("Updated all files.");
+		System.out.println();
+	}
+
+	private static void updateGroupFiles(Tasks tasks, TaskGroup group, OSInterface osInterface) {
+		for (TaskContainer child : group.getChildren()) {
+			if (child instanceof TaskGroup childGroup) {
+				TaskGroupFileWriter writer = new TaskGroupFileWriter(childGroup, osInterface);
+				writer.write();
+
+				updateGroupFiles(tasks, childGroup, osInterface);
+			}
+			else {
+				TaskList list = (TaskList) child;
+
+				TaskListFileWriter writer = new TaskListFileWriter(list, osInterface);
+				writer.write();
+
+				for (final Task task : list.getTasks()) {
+					tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+				}
+			}
+		}
 	}
 }

@@ -2,13 +2,15 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 
 import static picocli.CommandLine.Option;
 
-@Command(name = "add")
+@Command(name = "add", description = "Add a new task.")
 final class AddCommand implements Runnable {
 	private final Tasks tasks;
 	private final Commands commands;
@@ -16,16 +18,16 @@ final class AddCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"-n", "--name"}, required = true)
+	@Option(names = {"-n", "--name"}, required = true, description = "The name of the new task.")
 	private String name;
 
-	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class)
-	private String list;
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to add the new task to.")
+	private ExistingTaskListName list;
 
-	@Option(names = {"-r", "--recurring"})
+	@Option(names = {"-r", "--recurring"}, description = "Set the task to recurring.")
 	private boolean recurring;
 
-	@Option(names = {"-s", "--start"})
+	@Option(names = {"-s", "--start"}, description = "Start the task immediately.")
 	private boolean start;
 
 	AddCommand(Tasks tasks, Commands commands) {
@@ -35,7 +37,7 @@ final class AddCommand implements Runnable {
 
 	@Override
 	public void run() {
-		String list = tasks.getActiveList();
+		ExistingTaskListName list = tasks.getActiveList();
 
 		if (this.list != null) {
 			list = this.list;
@@ -44,13 +46,13 @@ final class AddCommand implements Runnable {
 		Task task = tasks.addTask(name, list);
 
 		if (recurring) {
-			task = tasks.setRecurring(task.id, true);
+			task = tasks.setRecurring(new ExistingID(tasks, task.id), true);
 		}
 
 		System.out.println("Added task " + task.description());
 
 		if (this.list != null) {
-			System.out.println("to list '" + tasks.getAbsoluteListName(this.list) + "'");
+			System.out.println("to list '" + this.list + "'");
 		}
 
 		System.out.println();

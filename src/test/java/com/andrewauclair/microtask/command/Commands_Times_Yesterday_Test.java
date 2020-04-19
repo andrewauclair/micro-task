@@ -25,7 +25,7 @@ class Commands_Times_Yesterday_Test extends Commands_Times_BaseTestCase {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -62,7 +62,7 @@ class Commands_Times_Yesterday_Test extends Commands_Times_BaseTestCase {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
 		tasks.addTask("Test 1");
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(

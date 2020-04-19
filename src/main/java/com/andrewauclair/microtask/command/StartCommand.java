@@ -2,10 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskDuration;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -13,7 +10,7 @@ import picocli.CommandLine.Parameters;
 import java.util.List;
 import java.util.Optional;
 
-@Command(name = "start")
+@Command(name = "start", description = "Start a task.")
 final class StartCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -21,10 +18,10 @@ final class StartCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Parameters(index = "0")
-	private long id;
+	@Parameters(index = "0", description = "The task to start.")
+	private ExistingID id;
 
-	@Option(names = {"-f", "--finish"})
+	@Option(names = {"-f", "--finish"}, description = "Finish the active task.")
 	private boolean finish;
 
 	StartCommand(Tasks tasks, OSInterface osInterface) {

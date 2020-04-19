@@ -18,14 +18,13 @@ repositories {
 dependencies {
     compile 'net.java.dev.jna:jna:5.5.0'
     compile 'net.java.dev.jna:jna-platform:5.5.0'
-    compile 'org.jline:jline:3.14.0'
-    compile 'org.jline:jline-builtins:3.14.0'
+    compile 'org.jline:jline:3.14.1'
     compile 'org.json:json:20190722'
     compile 'info.picocli:picocli-shell-jline3:4.2.0'
     compile 'org.fusesource.jansi:jansi:1.18'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.6.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.6.2'
     testCompile 'org.assertj:assertj-core:3.15.0'
     testCompile 'nl.jqno.equalsverifier:equalsverifier:3.1.13'
     testCompile 'org.mockito:mockito-core:3.3.3'
@@ -41,7 +40,7 @@ test {
     jvmArgs("--enable-preview")
 }
 
-description = 'TODO App'
+description = 'micro task'
 sourceCompatibility = '14'
 
 jar {

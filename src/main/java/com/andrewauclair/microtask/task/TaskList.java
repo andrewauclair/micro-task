@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.util.*;
 
@@ -58,8 +59,8 @@ public final class TaskList implements TaskContainer {
 	}
 
 	@Override
-	public Optional<TaskList> findListForTask(long id) {
-		if (containsTask(id)) {
+	public Optional<TaskList> findListForTask(ExistingID id) {
+		if (containsTask(id.get())) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
@@ -160,8 +161,12 @@ public final class TaskList implements TaskContainer {
 				'}';
 	}
 
-	public Task addTask(long id, String name) {
-		Task task = new Task(id, name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
+	public Task addTask(NewID id, String name) {
+		if (getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
+		}
+
+		Task task = new Task(id.get(), name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
 
 		tasks.add(task);
 
@@ -180,7 +185,7 @@ public final class TaskList implements TaskContainer {
 		osInterface.runGitCommand("git commit -m \"" + comment + " " + task.description().replace("\"", "\\\"") + "\"");
 	}
 
-	public Task startTask(long id, long startTime, Tasks tasks) {
+	public Task startTask(ExistingID id, long startTime, Tasks tasks) {
 		Task currentTask = getTask(id);
 
 		Task newActiveTask = new TaskBuilder(currentTask)
@@ -194,9 +199,9 @@ public final class TaskList implements TaskContainer {
 		return newActiveTask;
 	}
 
-	Task getTask(long id) {
+	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.id == id)
+				.filter(task -> task.id == id.get())
 				.findFirst();
 
 		if (optionalTask.isPresent()) {
@@ -218,10 +223,11 @@ public final class TaskList implements TaskContainer {
 		tasks.add(task);
 	}
 
-	public Task stopTask(long id) {
+	public Task stopTask(ExistingID id) {
 		Task currentTask = getTask(id);
 
-		Task stoppedTask = new TaskBuilder(currentTask).stop(osInterface.currentSeconds());
+		Task stoppedTask = new TaskBuilder(currentTask)
+				.stop(osInterface.currentSeconds());
 
 		replaceTask(currentTask, stoppedTask);
 
@@ -231,7 +237,7 @@ public final class TaskList implements TaskContainer {
 		return stoppedTask;
 	}
 
-	public Task finishTask(long id) {
+	public Task finishTask(ExistingID id) {
 		Task currentTask = getTask(id);
 
 		if (currentTask.isRecurring()) {
@@ -248,11 +254,21 @@ public final class TaskList implements TaskContainer {
 		return finishedTask;
 	}
 
-	public Task moveTask(long id, TaskList list) {
+	public Task moveTask(ExistingID id, TaskList list) {
 		Task task = getTask(id);
 
 		if (list.equals(this)) {
-			throw new TaskException("Task " + id + " is already on list '" + getFullPath() + "'.");
+			throw new TaskException("Task " + id.get() + " is already on list '" + getFullPath() + "'.");
+		}
+
+		if (getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task " + id.get() + " cannot be moved because list '" + getFullPath() + "' has been finished.");
+		}
+		else if (list.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task " + id.get() + " cannot be moved because list '" + list.getFullPath() + "' has been finished.");
+		}
+		else if (task.state == TaskState.Finished) {
+			throw new TaskException("Task " + id.get() + " cannot be moved because it has been finished.");
 		}
 
 		removeTask(task);
@@ -268,10 +284,12 @@ public final class TaskList implements TaskContainer {
 		return task;
 	}
 
-	Task renameTask(long id, String task) {
+	Task renameTask(ExistingID id, String task) {
 		Task currentTask = getTask(id);
 
-		Task renamedTask = new TaskBuilder(currentTask).rename(task);
+		Task renamedTask = new TaskBuilder(currentTask)
+				.withName(task)
+				.build();
 
 		replaceTask(currentTask, renamedTask);
 

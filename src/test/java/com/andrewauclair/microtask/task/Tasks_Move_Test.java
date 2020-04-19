@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -11,30 +12,29 @@ import org.mockito.Mockito;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_moves_it_to_the_new_list() {
 		Task task = tasks.addTask("Task to move");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		tasks.moveTask(1, "one");
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
 
-		assertThat(tasks.getTasksForList("default"))
+		assertThat(tasks.getTasksForList(existingList("default")))
 				.isEmpty();
 
-		assertThat(tasks.getTasksForList("one"))
+		assertThat(tasks.getTasksForList(existingList("one")))
 				.containsOnly(task);
 	}
 
 	@Test
 	void moving_task_deletes_the_current_task_files_in_the_folder() {
 		tasks.addTask("Test 1");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		tasks.moveTask(1, "one");
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
 
 		Mockito.verify(osInterface).removeFile("git-data/tasks/default/1.txt");
 
@@ -43,9 +43,9 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_writes_new_task_files_into_new_folder() {
 		tasks.addTask("Test 1");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		Task task = tasks.moveTask(1, "one");
+		Task task = tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
 
 		Mockito.verify(writer).writeTask(task, "git-data/tasks/one/1.txt");
 	}
@@ -53,12 +53,12 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void moving_task_tells_git_control_to_add_new_task_file_and_commit() {
 		tasks.addTask("Test 1");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		tasks.moveTask(1, "one");
-		
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+
 		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Moved task 1 - 'Test 1' to list '/one'\"");
@@ -67,50 +67,51 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	@Test
 	void can_move_task_on_different_list() {
 		Task task = tasks.addTask("Task to move");
-		tasks.addList("one", true);
-		tasks.setActiveList("one");
+		tasks.addList(newList("one"), true);
+		tasks.setActiveList(existingList("one"));
 
-		tasks.moveTask(1, "one");
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
 
-		assertThat(tasks.getTasksForList("default"))
+		assertThat(tasks.getTasksForList(existingList("default")))
 				.isEmpty();
 
-		assertThat(tasks.getTasksForList("one"))
+		assertThat(tasks.getTasksForList(existingList("one")))
 				.containsOnly(task);
 	}
-	
+
 	@Test
 	void moving_the_active_task_changes_active_list() {
 		tasks.addTask("Test 1");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		tasks.startTask(1, false);
-		
-		tasks.moveTask(1, "one");
+		tasks.startTask(existingID(1), false);
 
-		assertEquals("/one", tasks.getActiveTaskList());
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+
+		assertEquals("/one", tasks.getActiveTaskList().absoluteName());
 	}
-	
+
 	@Test
 	void moving_inactive_task_does_not_change_active_task_list() {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		tasks.startTask(2, false);
-		
-		tasks.moveTask(1, "one");
+		tasks.startTask(existingID(2), false);
 
-		assertEquals("/default", tasks.getActiveTaskList());
+		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+
+		assertEquals("/default", tasks.getActiveTaskList().absoluteName());
 	}
 
 	@Test
 	void moving_list_moves_folder_of_files() throws IOException {
-		tasks.addList("/test/one", true);
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		tasks.moveList("/test/one", "/");
+		tasks.moveList(existingList("/test/one"), existingGroup("/"));
 
 		order.verify(osInterface).moveFolder("/test/one", "/one");
 		order.verify(osInterface).runGitCommand("git add .");
@@ -119,15 +120,15 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void moving_group_moves_folder_of_files() throws IOException {
-		tasks.createGroup("/one");
-		tasks.createGroup("/two");
+		tasks.createGroup(newGroup("/one/"));
+		tasks.createGroup(newGroup("/two/"));
 
 		Mockito.reset(osInterface);
 
 		InOrder order = Mockito.inOrder(osInterface);
-		
-		tasks.moveGroup("/one/", "/two/");
-		
+
+		tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/"));
+
 		order.verify(osInterface).moveFolder("/one/", "/two/one/");
 		order.verify(osInterface).runGitCommand("git add .");
 		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one/' to group '/two/'\"");
@@ -135,108 +136,163 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 	@Test
 	void moving_active_list_changes_active_list_name() {
-		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.setActiveList(existingList("/test/one"));
 
-		tasks.moveList("/test/one", "/");
+		tasks.moveList(existingList("/test/one"), existingGroup("/"));
 
-		assertEquals("/one", tasks.getActiveList());
+		assertEquals(existingList("/one"), tasks.getActiveList());
 	}
 
 	@Test
 	void moving_active_group_changes_active_group_name() {
-		tasks.createGroup("/one/");
-		tasks.createGroup("/two/");
-		
-		tasks.switchGroup("/one/");
-		
-		tasks.moveGroup("/one/", "/two/");
-		
+		tasks.createGroup(newGroup("/one/"));
+		tasks.createGroup(newGroup("/two/"));
+
+		tasks.setActiveGroup(existingGroup("/one/"));
+
+		tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/"));
+
 		assertEquals("/two/one/", tasks.getActiveGroup().getFullPath());
 	}
 
 	@Test
 	void throws_exception_trying_to_move_list_that_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/one", "/"));
-		
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList(existingList("/one"), existingGroup("/")));
+
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_when_destination_group_does_not_exist() {
-		tasks.addList("one", true);
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/one", "/test"));
-		
-		assertEquals("Group '/test' does not exist.", taskException.getMessage());
+		tasks.addList(newList("one"), true);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList(existingList("/one"), existingGroup("/test/")));
+
+		assertEquals("Group '/test/' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_trying_to_move_group_that_does_not_exist() {
-		tasks.createGroup("/two");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/one", "/two"));
-		
-		assertEquals("Group '/one' does not exist.", taskException.getMessage());
+		tasks.createGroup(newGroup("/two/"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/")));
+
+		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void throws_exception_trying_to_move_to_group_that_does_not_exist() {
-		tasks.createGroup("/one/");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/one/", "/two/"));
-		
+		tasks.createGroup(newGroup("/one/"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/")));
+
 		assertEquals("Group '/two/' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void catch_moveFolder_io_exception_in_moveList() throws IOException {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
-		
-		tasks.addList("/test/one", true);
-		tasks.setActiveList("/test/one");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList("/test/one", "/"));
-		
+
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.setActiveList(existingList("/test/one"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList(existingList("/test/one"), existingGroup("/")));
+
 		assertEquals("Failed to move list folder.", taskException.getMessage());
-		
+
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
-	
+
 	@Test
 	void catch_moveFolder_io_exception_in_moveGroup() throws IOException {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
-		
-		tasks.createGroup("/test/one/");
-		tasks.switchGroup("/test/one/");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup("/test/one/", "/"));
-		
+
+		tasks.createGroup(newGroup("/test/one/"));
+		tasks.setActiveGroup(existingGroup("/test/one/"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup(existingGroup("/test/one/"), existingGroup("/")));
+
 		assertEquals("Failed to move group folder.", taskException.getMessage());
-		
+
 		Assertions.assertEquals("java.io.IOException" + Utils.NL, this.outputStream.toString());
 	}
-	
+
 	@Test
 	void throws_exception_if_task_was_not_found() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(5, "one"));
+		tasks.addList(newList("one"), true);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(5), new ExistingTaskListName(tasks, "one")));
 		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void moving_task_throws_exception_if_move_to_list_is_not_found() {
 		tasks.addTask("Test 1");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "one"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one")));
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
 	@Test
 	void task_already_on_list() {
 		tasks.addTask("Test");
-		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(1, "/default"));
-		
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/default")));
+
 		assertEquals("Task 1 is already on list '/default'.", taskException.getMessage());
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_from_finished_list() {
+		tasks.addTask("Test");
+		tasks.addList(newList("/one"), true);
+		tasks.finishList(existingList("/default"));
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+
+		assertEquals("Task 1 cannot be moved because list '/default' has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_to_finished_list() {
+		tasks.addTask("Test");
+		tasks.addList(newList("/one"), true);
+		tasks.finishList(existingList("/one"));
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+
+		assertEquals("Task 1 cannot be moved because list '/one' has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
+	}
+
+	@Test
+	void throws_exception_if_attempting_to_move_task_that_has_been_finished() {
+		tasks.addTask("Test");
+		tasks.finishTask(existingID(1));
+		tasks.addList(newList("/one"), true);
+
+		Mockito.reset(writer, osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+
+		assertEquals("Task 1 cannot be moved because it has been finished.", taskException.getMessage());
+
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+
+		Mockito.verifyNoInteractions(writer, osInterface);
 	}
 }

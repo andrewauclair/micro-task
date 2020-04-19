@@ -1,14 +1,13 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.Utils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -17,10 +16,10 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 	void load_alias() throws IOException {
 		Mockito.when(osInterface.fileExists("git-data/aliases.txt")).thenReturn(true);
 
-		String contents = "t=\"times --today\"" + Utils.NL +
-				"end=\"eod -h 8\"" + Utils.NL;
-
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		InputStream inputStream = createInputStream(
+				"t=\"times --today\"",
+				"end=\"eod -h 8\""
+		);
 
 		Mockito.when(osInterface.createInputStream("git-data/aliases.txt")).thenReturn(inputStream);
 
@@ -36,10 +35,10 @@ class Commands_Alias_Load_Test extends CommandsBaseTestCase {
 	void loading_aliases_removes_existing_aliases() throws IOException {
 		Mockito.when(osInterface.fileExists("git-data/aliases.txt")).thenReturn(true);
 
-		String contents = "tt=\"times --today\"" + Utils.NL +
-				"end=\"eod -h 8\"" + Utils.NL;
-
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+		InputStream inputStream = createInputStream(
+				"tt=\"times --today\"",
+				"end=\"eod -h 8\""
+		);
 
 		Mockito.when(osInterface.createInputStream("git-data/aliases.txt")).thenReturn(inputStream);
 

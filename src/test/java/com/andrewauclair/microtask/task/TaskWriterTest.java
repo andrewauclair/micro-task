@@ -2,7 +2,6 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TestUtils;
-import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,8 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskWriterTest {
 	private final OutputStream outputStream = new ByteArrayOutputStream();
@@ -145,6 +145,8 @@ class TaskWriterTest {
 				"",
 				"add 1234",
 				"start 2345",
+				"",
+				"",
 				""
 		);
 
@@ -163,6 +165,8 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				""
 		);
@@ -188,8 +192,12 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"start 3333",
+				"",
+				"",
 				""
 		);
 
@@ -214,8 +222,12 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"start 3333",
+				"",
+				"",
 				"stop 5555",
 				""
 		);
@@ -271,6 +283,8 @@ class TaskWriterTest {
 				"",
 				"add 123",
 				"start 1234",
+				"",
+				"",
 				"stop 4567",
 				"finish 5678",
 				""
@@ -280,24 +294,20 @@ class TaskWriterTest {
 	
 	@Test
 	void thrown_exception_makes_writeTask_return_false() throws IOException {
-		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
-		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 
-		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
-
-		ByteArrayOutputStream consoleOutput = new ByteArrayOutputStream();
-
-		System.setErr(new PrintStream(consoleOutput));
-
-		TaskWriter writer = new TaskWriter(osInterface);
+		System.setOut(new PrintStream(outputStream));
 
 		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		assertFalse(writer.writeTask(task, "test.txt"));
 
-		assertEquals("java.io.IOException" + Utils.NL, consoleOutput.toString());
+		assertOutput(
+				"java.io.IOException",
+				""
+		);
 	}
 
-	protected void assertOutput(String... lines) {
+	private void assertOutput(String... lines) {
 		TestUtils.assertOutput(outputStream, lines);
 	}
 }

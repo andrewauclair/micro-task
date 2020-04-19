@@ -21,7 +21,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task newActiveTask = tasks.startTask(task.id, false);
+		Task newActiveTask = tasks.startTask(existingID(task.id), false);
 
 		Task oldTask = new Task(2, "Testing task start command", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
 		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
@@ -34,7 +34,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_non_existent_id_throws_exception_with_message() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(5, false));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(existingID(5), false));
 		
 		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
@@ -46,7 +46,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.reset(writer);
 
-		Task task2 = tasks.startTask(1, false);
+		Task task2 = tasks.startTask(existingID(1), false);
 
 		Mockito.verify(writer).writeTask(task2, "git-data/tasks/default/1.txt");
 	}
@@ -58,7 +58,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.reset(osInterface);
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
@@ -72,7 +72,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task task = tasks.startTask(1, false);
+		Task task = tasks.startTask(existingID(1), false);
 		
 		assertThat(task.getAllTimes()).containsOnly(
 				new TaskTimes(1000),
@@ -88,30 +88,30 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	void starting_a_task_on_a_different_list_automatically_switches_to_that_list() {
 		tasks.addTask("Test 1");
 		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
-		assertEquals("/test", tasks.getActiveList());
+		assertEquals(existingList("/test"), tasks.getActiveList());
 
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
-		assertEquals("/default", tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getActiveList());
 	}
 
 	@Test
 	void when_auto_switching_to_new_list_the_new_active_list_changes() {
 		tasks.addTask("Test 1");
 		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
-		assertEquals("/test", tasks.getActiveList());
+		assertEquals(existingList("/test"), tasks.getActiveList());
 
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Task task = tasks.stopTask();
 
@@ -122,9 +122,9 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	void attempting_to_start_task_twice_throws_exception() {
 		tasks.addTask("Test 1");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(1, false));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(existingID(1), false));
 		
 		assertEquals("Task is already active.", taskException.getMessage());
 	}
@@ -134,11 +134,11 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		assertThat(tasks.getTasks().stream()
 				.filter(task -> task.state == TaskState.Active)).hasSize(1);
@@ -149,11 +149,11 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
-		tasks.startTask(2, true);
+		tasks.startTask(existingID(2), true);
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(3000, 1561078202L), new TaskTimes(1561078202L))),
@@ -163,15 +163,16 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_task_from_different_group() {
-		tasks.addList("/one/two/three/test", true);
+		tasks.addGroup(newGroup("/one/two/three/"));
+		tasks.addList(newList("/one/two/three/test"), true);
 		
-		tasks.switchGroup("/one/two/three/");
+		tasks.setActiveGroup(existingGroup("/one/two/three/"));
 
 		tasks.addTask("Test");
 		
-		tasks.switchGroup("/one/two/");
+		tasks.setActiveGroup(existingGroup("/one/two/"));
 
-		Task task = tasks.startTask(1, false);
+		Task task = tasks.startTask(existingID(1), false);
 
 		assertEquals(new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000))), task);
 	}
@@ -179,17 +180,17 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	@Test
 	void starting_time_adds_times_with_project_and_feature_of_task() {
 		tasks.addTask("Test");
-		tasks.setProject(tasks.findListForTask(1), "Project", true);
-		tasks.setFeature(tasks.findListForTask(1), "Feature", true);
+		tasks.setProject(existingList("/default"), "Project", true);
+		tasks.setFeature(existingList("/default"), "Feature", true);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		tasks.stopTask();
 		
-		tasks.setProject(tasks.findListForTask(1), "Project 2", true);
-		tasks.setFeature(tasks.findListForTask(1), "Feature 2", true);
+		tasks.setProject(existingList("/default"), "Project 2", true);
+		tasks.setFeature(existingList("/default"), "Feature 2", true);
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 
 		assertThat(tasks.getTasks()).containsOnly(
 				new Task(1, "Test", TaskState.Active,
@@ -207,7 +208,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	void finished_tasks_cannot_be_started() {
 		tasks.addTask(new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345))));
 		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(1, false));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(existingID(1), false));
 		
 		assertEquals("Task has already been finished.", taskException.getMessage());
 	}

@@ -8,6 +8,8 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -26,7 +28,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
-@Command(name = "times")
+@Command(name = "times", description = "Display times for tasks, lists or groups.")
 public final class TimesCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -37,40 +39,40 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"--log"})
 	private boolean log;
 
-	@Option(names = {"--proj-feat"})
+	@Option(names = {"--proj-feat"}, description = "Display times grouped as projects and features.")
 	private boolean proj_feat;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
-	private String[] list;
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "The list to display times for.")
+	private ExistingTaskListName[] list;
 
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
-	private String[] group;
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "The group to display times for.")
+	private ExistingTaskGroupName[] group;
 
-	@Option(names = {"--today"})
+	@Option(names = {"--today"}, description = "Display times for today.")
 	private boolean today;
 
-	@Option(names = {"--yesterday"})
+	@Option(names = {"--yesterday"}, description = "Display times for yesterday.")
 	private boolean yesterday;
 
-	@Option(names = {"-d", "--day"})
+	@Option(names = {"-d", "--day"}, description = "Day to display times for.")
 	private Integer day;
 
-	@Option(names = {"-m", "--month"})
+	@Option(names = {"-m", "--month"}, description = "Month to display times for.")
 	private Integer month;
 
-	@Option(names = {"-y", "--year"})
+	@Option(names = {"-y", "--year"}, description = "Year to display times for.")
 	private Integer year;
 
-	@Option(names = {"--week"})
+	@Option(names = {"--week"}, description = "Week to display times for.")
 	private boolean week;
 
-	@Option(names = {"--all-month"})
+	@Option(names = {"--all-month"}, description = "Display times for the entire month")
 	private boolean all_month;
 
-	@Option(names = {"--all-time"})
+	@Option(names = {"--all-time"}, description = "Display all task times recorded.")
 	private boolean all_time;
 
-	@Option(names = {"--total"})
+	@Option(names = {"--total"}, description = "Display only the final total.")
 	private boolean total;
 
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
@@ -262,11 +264,11 @@ public final class TimesCommand implements Runnable {
 		TaskTimesFilter filter = tasks.getFilterBuilder().createFilter(tasks);
 
 		if (list != null) {
-			Arrays.stream(list).forEach(list -> filter.filterForList(tasks.getAbsoluteListName(list)));
+			Arrays.stream(list).forEach(list -> filter.filterForList(list.absoluteName()));
 		}
 
 		if (group != null) {
-			Arrays.stream(group).forEach(group -> filter.filterForGroup(tasks.getGroup(group)));
+			Arrays.stream(group).forEach(group -> filter.filterForGroup(tasks.getGroup(group.absoluteName())));
 		}
 
 		Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
@@ -319,19 +321,23 @@ public final class TimesCommand implements Runnable {
 		else if (this.day != null) {
 			filter.filterForDay(month, day, year);
 		}
+		else if (all_month) {
+			filter.filterForMonth(month);
+		}
 
 		if ((list != null || group != null) && this.day == null && !today) {
-			List<String> lists = new ArrayList<>();
+			List<ExistingTaskListName> lists = new ArrayList<>();
 
 			if (list != null) {
 				lists.addAll(Arrays.asList(list));
 			}
 
 			if (group != null) {
-				for (String group : group) {
-					lists.addAll(tasks.getGroup(group).getChildren().stream()
+				for (ExistingTaskGroupName group : group) {
+					lists.addAll(tasks.getGroup(group.absoluteName()).getChildren().stream()
 							.filter(child -> child instanceof TaskList)
 							.map(TaskContainer::getFullPath)
+							.map(path -> new ExistingTaskListName(tasks, path))
 							.collect(Collectors.toSet()));
 				}
 			}
@@ -353,10 +359,10 @@ public final class TimesCommand implements Runnable {
 				}
 			}
 			else if (group != null) {
-				System.out.println("Times for group '" + tasks.getAbsoluteGroupName(group[0]) + "'");
+				System.out.println("Times for group '" + group[0] + "'");
 			}
 			else {
-				String list = tasks.getAbsoluteListName(lists.get(0));
+				String list = lists.get(0).absoluteName();//tasks.getAbsoluteListName(lists.get(0));
 
 				System.out.println("Times for list '" + list + "'");
 				System.out.println();
@@ -399,7 +405,7 @@ public final class TimesCommand implements Runnable {
 			displayTimes(filter, false);
 		}
 		else if (proj_feat) {
-			if (all_time || today || yesterday || week || this.day != null) {
+			if (all_time || all_month || today || yesterday || week || this.day != null) {
 				displayProjectsFeatures(filter);
 			}
 			else {
@@ -421,7 +427,7 @@ public final class TimesCommand implements Runnable {
 			else if (all_month) {
 				String title = Month.of(month).getDisplayName(TextStyle.FULL, Locale.getDefault()) + " " + year;
 
-				filter.filterForMonth(month);
+//				filter.filterForMonth(month);
 
 				if (total) {
 					System.out.print("Total times for month of ");
@@ -444,12 +450,12 @@ public final class TimesCommand implements Runnable {
 		}
 	}
 
-	public String getFeatureForTask(long taskID) {
+	public String getFeatureForTask(ExistingID taskID) {
 		TaskList listForTask = tasks.findListForTask(taskID);
 
 		String feature = listForTask.getFeature();
 
-		TaskGroup group = tasks.getGroupForList(listForTask.getFullPath());
+		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
 
 		while (group != null) {
 			if (feature.isEmpty()) {
@@ -551,13 +557,13 @@ public final class TimesCommand implements Runnable {
 		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
 
 		long totalTime = 0;
-		int longestProject = 0;
+		int longestProject = 1;
 
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = tasks.getProjectForTask(task.task.id);
-			String feature = getFeatureForTask(task.task.id);
+			String project = new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.task.id));
+			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
 
 			if (project.isEmpty()) {
 				project = "None";
@@ -577,7 +583,7 @@ public final class TimesCommand implements Runnable {
 			}
 		}
 
-		int longestTime = Utils.formatTime(totalTime, highestTime).length();
+		int longestTime = Math.max(Utils.formatTime(totalTime, highestTime).length(), 1);
 
 		LinkedHashMap<ProjFeatOutput, Long> collect = outputs.entrySet()
 				.stream()

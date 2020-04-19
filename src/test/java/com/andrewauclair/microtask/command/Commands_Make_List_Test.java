@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.task.TaskListFinder;
+import com.andrewauclair.microtask.task.TaskListName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,8 +11,12 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 	@Test
 	void create_new_list_of_tasks() {
 		commands.execute(printStream, "mk -l test-tasks");
-
-		assertTrue(tasks.hasListWithName("/test-tasks"));
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		TaskListName listName = new TaskListName(tasks, "/test-tasks") {};
+		
+		assertTrue(finder.hasList(listName));
 
 		assertOutput(
 				"Created new list '/test-tasks'",
@@ -20,9 +26,15 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void create_absolute_path_list() {
+		tasks.addGroup(newGroup("/test/"));
+		
 		commands.execute(printStream, "mk -l /test/one");
-
-		assertTrue(tasks.hasListWithName("/test/one"));
+		
+		TaskListName listName = new TaskListName(tasks, "/test/one") {};
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		assertTrue(finder.hasList(listName));
 
 		assertOutput(
 				"Created new list '/test/one'",
@@ -34,7 +46,7 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 	void create_nested_relative_list() {
 		commands.execute(printStream, "mk -g /test/one/");
 
-		tasks.switchGroup("/test/one/");
+		tasks.setActiveGroup(existingGroup("/test/one/"));
 
 		outputStream.reset();
 
@@ -48,12 +60,12 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void can_not_create_a_new_list_with_a_name_that_already_exists() {
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 
 		commands.execute(printStream, "mk -l test");
 
 		assertOutput(
-				"List '/test' already exists.",
+				"Invalid value for option '--list': List '/test' already exists.",
 				""
 		);
 	}
@@ -61,8 +73,12 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 	@Test
 	void create_list_is_always_lower_case() {
 		commands.execute(printStream, "mk -l RaNDOm");
-
-		assertTrue(tasks.hasListWithName("/random"));
+		
+		TaskListName listName = new TaskListName(tasks, "/random") {};
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		assertTrue(finder.hasList(listName));
 
 		assertOutput(
 				"Created new list '/random'",
@@ -72,14 +88,18 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void create_list_already_exists_is_always_lower_case() {
-		tasks.addList("random", true);
+		tasks.addList(newList("random"), true);
 
 		commands.execute(printStream, "mk -l RaNDOm");
-
-		assertTrue(tasks.hasListWithName("/random"));
+		
+		TaskListName listName = new TaskListName(tasks, "/random") {};
+		
+		TaskListFinder finder = new TaskListFinder(tasks);
+		
+		assertTrue(finder.hasList(listName));
 
 		assertOutput(
-				"List '/random' already exists.",
+				"Invalid value for option '--list': List '/random' already exists.",
 				""
 		);
 	}

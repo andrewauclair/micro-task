@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class GroupCompleterTest extends CommandsBaseTestCase {
 	@Test
 	void candidates_list_contains_all_groups() {
-		tasks.addGroup("/test/one/two/");
-		tasks.addGroup("/last/");
-		tasks.addGroup("/three/five/");
+		tasks.addGroup(newGroup("/test/one/two/"));
+		tasks.addGroup(newGroup("/last/"));
+		tasks.addGroup(newGroup("/three/five/"));
 
 		final GroupCompleter completer = new GroupCompleter(tasks);
 
@@ -32,11 +32,11 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 
 	@Test
 	void candidates_list_contains_only_in_progress_groups() {
-		tasks.addGroup("/test/one/");
-		tasks.addGroup("/test/two/");
-		tasks.addGroup("/test/three/");
+		tasks.addGroup(newGroup("/test/one/"));
+		tasks.addGroup(newGroup("/test/two/"));
+		tasks.addGroup(newGroup("/test/three/"));
 
-		tasks.finishGroup("/test/two/");
+		tasks.finishGroup(existingGroup("/test/two/"));
 
 		final GroupCompleter completer = new GroupCompleter(tasks);
 

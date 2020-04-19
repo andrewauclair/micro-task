@@ -181,4 +181,24 @@ public class GitLabReleases {
 
 		return false;
 	}
+
+	public String changelogForRelease(String release, Proxy proxy) throws IOException {
+		JSONArray array = getReleasesJSON(proxy);
+
+		for (int i = 0; i < array.length() - 1; i++) {
+			JSONObject obj = array.getJSONObject(i);
+
+			String releaseName = obj.getString("name");
+			String description = obj.getString("description");
+
+			String uploads = description.substring(description.indexOf("(/uploads/") + 1);
+
+			String jar = "https://gitlab.com/mightymalakai33/micro-task" + uploads.substring(0, uploads.indexOf(')'));
+
+			if (release.isEmpty() || releaseName.equals(release)) {
+				return description.substring(description.indexOf("Changelog"), description.indexOf("Download this release"));
+			}
+		}
+		return "";
+	}
 }

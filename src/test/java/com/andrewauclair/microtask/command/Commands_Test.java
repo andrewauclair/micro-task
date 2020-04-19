@@ -3,7 +3,9 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +15,7 @@ class Commands_Test extends CommandsBaseTestCase {
 	void creates_command_line_with_aliases() {
 		commands.addAlias("tt", "times --today");
 
-		CommandLine commandLine = commands.buildCommandLineWithAllCommands();
+		CommandLine commandLine = commands.buildCommandLine("tt");
 
 		commandLine.execute("tt");
 
@@ -45,6 +47,17 @@ class Commands_Test extends CommandsBaseTestCase {
 		commandLine.execute("throw-exception");
 
 		assertThat(errorStream).asString().startsWith("java.lang.RuntimeException" + Utils.NL +
-				"\tat com.andrewauclair.microtask.command.Commands_Test$1.run(Commands_Test.java:41)");
+				"\tat com.andrewauclair.microtask.command.Commands_Test$1.run(Commands_Test.java");
+	}
+
+	@Test
+	@Disabled("Our new picocli converts mean this doesn't actually happen. I need to find a TaskException that will always be thrown")
+	void when_debug_is_enabled_task_exceptions_print_a_stack_trace() {
+		Mockito.when(localSettings.isDebugEnabled()).thenReturn(true);
+
+		commands.execute(printStream, "ch -l ranDOM");
+
+		assertThat(errorStream).asString().startsWith("com.andrewauclair.microtask.TaskException: List '/random' does not exist." + Utils.NL +
+				"\tat com.andrewauclair.microtask.task.Tasks.getGroupForList(Tasks.java");
 	}
 }

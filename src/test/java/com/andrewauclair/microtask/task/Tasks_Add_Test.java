@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -14,8 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class Tasks_Add_Test extends TaskBaseTestCase {
@@ -51,8 +51,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
 		Task task = tasks.addTask("Testing task");
 
@@ -80,8 +80,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_tells_git_control_to_add_file_to_current_list_directory() {
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Testing task add command 1");
 		
@@ -100,10 +100,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void write_next_id_prints_exception_to_output() throws IOException {
-		DataOutputStream outputStream = Mockito.mock(DataOutputStream.class);
-		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(outputStream);
-
-		Mockito.doThrow(IOException.class).when(outputStream).write(Mockito.any());
+		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(IOException.class);
 
 		tasks.addTask("Test");
 		
@@ -114,10 +111,10 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void user_can_finish_the_active_task_when_it_is_on_a_different_list() {
 		tasks.addTask("Task 1");
 
-		Task task = tasks.startTask(1, false);
+		Task task = tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
@@ -130,24 +127,24 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void on_finish_the_active_task_is_finished_on_the_correct_list() {
 		tasks.addTask("Task 1");
 
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
 		Task finishedTask = tasks.finishTask();
 
-		tasks.setActiveList("default");
+		tasks.setActiveList(existingList("default"));
 
 		assertThat(tasks.getTasks()).containsOnly(finishedTask);
 	}
 
 	@Test
 	void adding_task_that_is_active_sets_it_as_the_active_task() {
-		tasks.addList("test", true);
-		tasks.setActiveList("test");
+		tasks.addList(newList("test"), true);
+		tasks.setActiveList(existingList("test"));
 
 		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
@@ -165,20 +162,20 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void adding_task_to_a_specific_list() {
-		tasks.addList("one", true);
-		tasks.addTask("Test", "one");
+		tasks.addList(newList("one"), true);
+		tasks.addTask("Test", existingList("one"));
 
-		assertThat(tasks.getTasksForList("one")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("one"))).containsOnly(
 				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		);
 	}
 
 	@Test
 	void adding_task_to_specific_list_tells_task_writer_to_write_file() {
-		tasks.addList("one", true);
+		tasks.addList(newList("one"), true);
 
-		Task task1 = tasks.addTask("Testing task add command 1", "one");
-		Task task2 = tasks.addTask("Testing task add command 2", "one");
+		Task task1 = tasks.addTask("Testing task add command 1", existingList("one"));
+		Task task2 = tasks.addTask("Testing task add command 2", existingList("one"));
 
 		Mockito.verify(writer).writeTask(task1, "git-data/tasks/one/1.txt");
 		Mockito.verify(writer).writeTask(task2, "git-data/tasks/one/2.txt");
@@ -190,25 +187,25 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/next-id.txt")).thenReturn(new DataOutputStream(outputStream));
 		
-		tasks.addList("one", true);
-		tasks.addTask("Test", "one");
+		tasks.addList(newList("one"), true);
+		tasks.addTask("Test", existingList("one"));
 
 		assertEquals("2", outputStream.toString());
 	}
 
 	@Test
 	void adding_task_to_specific_list_tells_git_control_to_add_file_and_commit() {
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		tasks.addTask("Testing task add command 1", "test");
+		tasks.addTask("Testing task add command 1", existingList("test"));
 		
 		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
 		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
 
-		tasks.addTask("Testing task add command 2", "test");
+		tasks.addTask("Testing task add command 2", existingList("test"));
 		
 		order.verify(osInterface).runGitCommand("git add next-id.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
@@ -217,21 +214,33 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void add_task_to_nested_list() {
-		tasks.createGroup("/test/one/");
-		tasks.switchGroup("/test/one/");
-		tasks.addList("two", true);
-		tasks.setActiveList("two");
+		tasks.createGroup(newGroup("/test/one/"));
+		tasks.setActiveGroup(existingGroup("/test/one/"));
+		tasks.addList(newList("two"), true);
+		tasks.setActiveList(existingList("two"));
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 
-		assertThat(tasks.getTasksForList("/test/one/two")).containsOnly(
+		assertThat(tasks.getTasksForList(existingList("/test/one/two"))).containsOnly(
 				new Task(1, "Test", TaskState.Inactive, Collections.emptyList())
 		);
 	}
 
 	@Test
+	void add_throws_exception_if_the_list_has_been_finished() {
+		tasks.addList(newList("one"), true);
+		tasks.finishList(existingList("one"));
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask("Test", existingList("one")));
+
+		assertEquals("Task 'Test' cannot be created because list '/one' has been finished.", taskException.getMessage());
+
+		assertThat(tasks.getListByName(existingList("/one")).getTasks()).isEmpty();
+	}
+
+	@Test
 	void add_to_specific_list_throws_exception_if_list_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "one"));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask("Test", existingList("one")));
 		
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
@@ -248,8 +257,8 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
 		tasks.addTask("Test");
-		tasks.addList("one", true);
-		tasks.setActiveList("one");
+		tasks.addList(newList("one"), true);
+		tasks.setActiveList(existingList("one"));
 		
 		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 
@@ -257,8 +266,9 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	}
 	
 	@Test
+	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
 	void add_throws_exception_if_group_does_not_exist() {
-		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask("Test", "/one/two"));
+		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask("Test", existingList("/one/two")));
 		
 		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
 	}

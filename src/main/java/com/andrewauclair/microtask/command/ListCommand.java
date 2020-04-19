@@ -6,6 +6,8 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -19,7 +21,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
-@Command(name = "list")
+@Command(name = "list", description = "List tasks or the content of a group.")
 final class ListCommand implements Runnable {
 	private static final int MAX_DISPLAYED_TASKS = 20;
 	private final Tasks tasksData;
@@ -28,22 +30,25 @@ final class ListCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Option(names = {"--tasks"})
+	@Option(names = {"--tasks"}, description = "List tasks on list or in group.")
 	private boolean tasks;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class)
-	private String list;
+	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
+	private ExistingTaskListName list;
 
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class)
-	private boolean group;
+	@Option(names = {"--current-group"}, description = "List tasks in the current group.")
+	private boolean current_group;
 
-	@Option(names = {"--recursive"})
+	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
+	private ExistingTaskGroupName group;
+
+	@Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")
 	private boolean recursive;
 
-	@Option(names = {"--finished"})
+	@Option(names = {"--finished"}, description = "List finished tasks.")
 	private boolean finished;
 
-	@Option(names = {"--all"})
+	@Option(names = {"--all"}, description = "List all tasks.")
 	private boolean all;
 
 	ListCommand(Tasks tasks, OSInterface osInterface) {
@@ -63,7 +68,7 @@ final class ListCommand implements Runnable {
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
-		if (list.getFullPath().equals(tasksData.getActiveList())) {
+		if (list.getFullPath().equals(tasksData.getActiveList().absoluteName())) {
 			System.out.print("* ");
 			ConsoleColors.println(System.out, ANSI_FG_GREEN, list.getName());
 		}
@@ -140,19 +145,21 @@ final class ListCommand implements Runnable {
 	public void run() {
 		boolean all = this.all;
 		boolean showTasks = this.tasks;
-//		boolean showLists = this.lists;
-		boolean useGroup = this.group;
+		boolean useGroup = this.current_group;
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
 
-		String list = tasksData.getActiveList();
+		ExistingTaskListName list = tasksData.getActiveList();
 
 		if (this.list != null) {
 			list = this.list;
 		}
 
-		if (!list.startsWith("/")) {
-			list = "/" + list;
+		ExistingTaskGroupName group = new ExistingTaskGroupName(tasksData, tasksData.getActiveGroup().getFullPath());
+
+		if (this.group != null) {
+			group = this.group;
+			useGroup = true;
 		}
 
 		if (showTasks) {
@@ -163,8 +170,11 @@ final class ListCommand implements Runnable {
 				else {
 					System.out.println("Tasks on list '" + list + "'");
 				}
-				System.out.println();
 			}
+			else {
+				System.out.println("Tasks in group '" + group + "'");
+			}
+			System.out.println();
 
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 
@@ -202,7 +212,6 @@ final class ListCommand implements Runnable {
 				System.out.print(ANSI_RESET);
 				System.out.println();
 			}
-			System.out.println();
 		}
 		else {
 			TaskGroup activeGroup = tasksData.getActiveGroup();
@@ -223,7 +232,7 @@ final class ListCommand implements Runnable {
 					System.out.println(child.getName() + "/");
 				}
 			}
-			System.out.println();
 		}
+		System.out.println();
 	}
 }

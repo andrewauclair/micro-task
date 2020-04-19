@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Next_Test extends CommandsBaseTestCase {
 	@Test
@@ -50,8 +48,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 		tasks.addTask("Test 3");
 
-		tasks.finishTask(2);
-		tasks.startTask(1, false);
+		tasks.finishTask(existingID(2));
+		tasks.startTask(existingID(1), false);
 
 		commands.execute(printStream, "next -c 2");
 
@@ -70,7 +68,7 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test 2");
 		tasks.addTask("Test 3");
 
-		tasks.setRecurring(2, true);
+		tasks.setRecurring(existingID(2), true);
 
 		commands.execute(printStream, "next -c 2");
 
@@ -105,7 +103,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  next [-h] [-c=<count>]",
-				"  -c, --count=<count>",
+				"Display the next tasks to be completed.",
+				"  -c, --count=<count>   Number of tasks to display.",
 				"  -h, --help            Show this help message."
 		);
 	}

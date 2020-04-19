@@ -123,11 +123,11 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		outputStream.reset();
 
-		commands.execute(printStream, "alias -n ltg -c \"list --tasks --group\"");
+		commands.execute(printStream, "alias -n ltg -c \"list --tasks --current-group\"");
 
 		assertThat(outputStream.toString()).isEqualTo(
 				"ttt=\"times --today\"" + NL +
-						"ltg=\"list --tasks --group\"" + NL
+						"ltg=\"list --tasks --current-group\"" + NL
 		);
 
 		outputStream.reset();
@@ -135,7 +135,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "alias -r -n ttt");
 
 		assertThat(outputStream.toString()).isEqualTo(
-				"ltg=\"list --tasks --group\"" + NL
+				"ltg=\"list --tasks --current-group\"" + NL
 		);
 	}
 
@@ -333,12 +333,13 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  alias (-c=<command> | -u=<update> | -r | -l) [-h] [-n=<name>]",
-				"  -c, --command=<command>",
-				"  -h, --help                Show this help message.",
-				"  -l, --list",
-				"  -n, --name=<name>",
-				"  -r, --remove",
-				"  -u, --update=<update>"
+						"Add, list, update or delete aliases.",
+						"  -c, --command=<command>   The alias command.",
+						"  -h, --help                Show this help message.",
+						"  -l, --list                List alias commands.",
+						"  -n, --name=<name>         The name of the alias.",
+						"  -r, --remove              Remove alias command.",
+						"  -u, --update=<update>     Update alias command."
 		);
 	}
 }

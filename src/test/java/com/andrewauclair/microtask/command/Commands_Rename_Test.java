@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class Commands_Rename_Test extends CommandsBaseTestCase {
 	@Test
@@ -12,11 +10,12 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  rename (-l=<list> | -g=<group> | -t=<id>) [-h] -n=<name>",
-				"  -g, --group=<group>",
+				"Rename a task, list or group.",
+				"  -g, --group=<group>   Group to rename.",
 				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>",
-				"  -n, --name=<name>",
-				"  -t, --task=<id>"
+				"  -l, --list=<list>     List to rename.",
+				"  -n, --name=<name>     The new name for the task, list or group.",
+				"  -t, --task=<id>       Task to rename."
 		);
 	}
 }

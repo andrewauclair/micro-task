@@ -11,7 +11,7 @@ public interface TaskContainer {
 
 	List<Task> getTasks();
 
-	Optional<TaskList> findListForTask(long id);
+	Optional<TaskList> findListForTask(ExistingID id);
 
 	String getProject();
 

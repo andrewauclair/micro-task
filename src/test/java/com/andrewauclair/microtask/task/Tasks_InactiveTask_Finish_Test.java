@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	@BeforeEach
-	void setup() throws IOException {
+	protected void setup() throws IOException {
 		super.setup();
 		tasks.addTask("Testing tasks");
 		tasks.addTask("Testing tasks 2");
@@ -32,11 +32,11 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		tasks.startTask(2, false);
+		tasks.startTask(existingID(2), false);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
-		Task task = tasks.finishTask(1);
+		Task task = tasks.finishTask(existingID(1));
 		
 		Task finishedTask = new Task(1, "Testing tasks", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(4567)));
 
@@ -50,30 +50,30 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void finishing_a_specific_task_does_not_reset_the_active_task() {
-		Task oldTask = tasks.startTask(1, false);
+		Task oldTask = tasks.startTask(existingID(1), false);
 
-		tasks.finishTask(2);
+		tasks.finishTask(existingID(2));
 
 		assertEquals(oldTask, tasks.getActiveTask());
 	}
 
 	@Test
 	void finish_with_no_active_task_does_not_throw_exception() {
-		Task finishedTask = tasks.finishTask(2);
+		Task finishedTask = tasks.finishTask(existingID(2));
 		
 		assertEquals(new Task(2, "Testing tasks 2", TaskState.Finished, Arrays.asList(new TaskTimes(2000), new TaskTimes(3000))), finishedTask);
 	}
 
 	@Test
 	void finishing_task_tells_task_writer_to_write_file() {
-		Task task = tasks.finishTask(1);
+		Task task = tasks.finishTask(existingID(1));
 
 		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
 	}
 
 	@Test
 	void finishing_task_tells_git_control_to_add_file_and_commit() {
-		tasks.finishTask(2);
+		tasks.finishTask(existingID(2));
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
@@ -83,7 +83,7 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.finishTask(3));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.finishTask(existingID(3)));
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());
 	}

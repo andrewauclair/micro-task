@@ -2,9 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -12,7 +10,7 @@ import picocli.CommandLine.Parameters;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-@Command(name = "info")
+@Command(name = "info", description = "Display info for a task.")
 final class InfoCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
@@ -20,10 +18,10 @@ final class InfoCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Parameters(index = "0")
-	private long id;
+	@Parameters(index = "0", description = "The task to display information for.")
+	private ExistingID id;
 
-	@Option(names = {"--copy-name"})
+	@Option(names = {"--copy-name"}, description = "Copy the name of the task to the clipboard.")
 	private boolean copy_name;
 
 	InfoCommand(Tasks tasks, OSInterface osInterface) {
@@ -76,11 +74,11 @@ final class InfoCommand implements Runnable {
 			System.out.println();
 		}
 
-		System.out.println("on list '" + tasks.findListForTask(task.id).getFullPath() + "'");
+		System.out.println("on list '" + tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath() + "'");
 		System.out.println();
 
-		System.out.println("Project '" + tasks.getProjectForTask(task.id) + "'");
-		System.out.println("Feature '" + tasks.getFeatureForTask(task.id) + "'");
+		System.out.println("Project '" + new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.id)) + "'");
+		System.out.println("Feature '" + new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, task.id)) + "'");
 		System.out.println();
 	}
 }

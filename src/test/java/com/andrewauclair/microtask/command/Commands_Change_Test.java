@@ -10,9 +10,10 @@ class Commands_Change_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  ch (-l=<list> | -g=<group>) [-h]",
-				"  -g, --group=<group>",
+				"Change the current list or group.",
+				"  -g, --group=<group>   The group to change to.",
 				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>"
+				"  -l, --list=<list>     The list to change to."
 		);
 	}
 }

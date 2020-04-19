@@ -30,11 +30,11 @@ class ListCompleterTest extends CommandsBaseTestCase {
 
 	@Test
 	void candidates_list_contains_only_in_progress_lists() {
-		tasks.addList("/alpha", true);
-		tasks.addList("/bravo", true);
-		tasks.addList("/charlie", true);
+		tasks.addList(newList("/alpha"), true);
+		tasks.addList(newList("/bravo"), true);
+		tasks.addList(newList("/charlie"), true);
 
-		tasks.finishList("/bravo");
+		tasks.finishList(existingList("/bravo"));
 
 		final ListCompleter completer = new ListCompleter(tasks);
 

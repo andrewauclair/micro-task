@@ -2,18 +2,22 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.command.Commands;
+import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.OSInterfaceImpl;
 import com.andrewauclair.microtask.os.StatusConsole;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
+import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
 import org.jline.builtins.Builtins;
 import org.jline.builtins.Completers;
-import org.jline.builtins.Widgets;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -28,22 +32,19 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Comparator.comparingLong;
 import static picocli.CommandLine.Command;
-import static picocli.CommandLine.HelpCommand;
 
 
 public final class Main {
 	private static final String CONSOLE_TITLE = "micro task main";
 
-	private final Commands commands;
+	private static Commands commands;
 	private LineReader lineReader;
 
 	public void newTerminal(Terminal terminal) {
@@ -83,10 +84,6 @@ public final class Main {
 		builtins.setLineReader(lineReader);
 		bindCtrlBackspace(lineReader);
 		bindCtrlV(lineReader);
-
-		DescriptionGenerator descriptionGenerator = new DescriptionGenerator(builtins, picocliCommands);
-		new Widgets.TailTipWidgets(lineReader, descriptionGenerator::commandDescription, 5, Widgets.TailTipWidgets.TipType.COMPLETER);
-
 	}
 
 	private static final char BACKSPACE_KEY = '\u0008';
@@ -114,14 +111,15 @@ public final class Main {
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
-			commands.execute(System.out, "update --tasks");
+//			commands.execute(System.out, "update --tasks");
+			UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
 		}
 
 		osInterface.setMain(this);
 		osInterface.createTerminal();
 
 		if (loadSuccessful) {
-			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
@@ -129,7 +127,7 @@ public final class Main {
 			tasks.setActiveList(tasks.getActiveTaskList());
 
 			// set active group to the group of the active task
-			tasks.switchGroup(tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath());
+			tasks.setActiveGroup(new ExistingTaskGroupName(tasks, tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath()));
 		}
 
 		sendCurrentStatus();
@@ -165,7 +163,7 @@ public final class Main {
 
 	private void sendCurrentStatus() {
 		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentGroup, tasks.getActiveGroup().getFullPath());
-		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentList, tasks.getActiveList());
+		osInterface.sendStatusMessage(StatusConsole.TransferType.CurrentList, tasks.getActiveList().absoluteName());
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -261,12 +259,12 @@ public final class Main {
 			newTimes.add(task.getAllTimes().get(0));
 
 			for (TaskTimes time : oldTimes) {
-				newTimes.add(new TaskTimes(time.start, time.stop, tasks.getProjectForTask(task.id), tasks.getFeatureForTask(task.id)));
+				newTimes.add(new TaskTimes(time.start, time.stop, new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.id)), new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, task.id))));
 			}
 
 			Task newTask = new Task(task.id, task.task, task.state, newTimes, task.isRecurring());
 
-			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(task.id).getFullPath() + "/" + task.id + ".txt");
+			writer.writeTask(newTask, "git-data/tasks/" + tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath() + "/" + task.id + ".txt");
 		}
 		System.exit(0);
 	}
@@ -278,8 +276,8 @@ public final class Main {
 	private void exportData(Tasks tasks) {
 		exportGroup(tasks, tasks.getRootGroup(), "/", 1, 1, Main.osInterface);
 
-		try (OutputStream outputStream = ((OSInterface) Main.osInterface).createOutputStream("git-data-export/next-id.txt")) {
-			outputStream.write(String.valueOf(tasks.nextID()).getBytes());
+		try (PrintStream outputStream = new PrintStream(Main.osInterface.createOutputStream("git-data-export/next-id.txt"))) {
+			outputStream.print(tasks.nextID());
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -287,7 +285,9 @@ public final class Main {
 	}
 
 	private void exportGroup(Tasks tasks, TaskGroup group, String path, int groupNum, int listNum, OSInterface osInterface) {
-		tasks.writeGroupInfoFile(group, "git-data-export");
+		new TaskGroupFileWriter(group, osInterface)
+				.inFolder("git-data-export")
+				.write();
 
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskGroup) {
@@ -305,18 +305,24 @@ public final class Main {
 	}
 
 	private void exportList(Tasks tasks, TaskList list, String path, OSInterface osInterface) {
-		tasks.writeListInfoFile(list, "git-data-export");
+//		tasks.writeListInfoFile(list, "git-data-export");
+
+		new TaskListFileWriter(list, osInterface)
+				.inFolder("git-data-export")
+				.write();
 
 		TaskWriter writer = new TaskWriter(osInterface);
 
 		for (Task task : list.getTasks()) {
-			Task strippedTask = new TaskBuilder(task).rename("Task " + task.id);
+			Task strippedTask = new TaskBuilder(task)
+					.withName("Task " + task.id)
+					.build();
 
 			writer.writeTask(strippedTask, "git-data-export/tasks" + path + "/" + task.id + ".txt");
 		}
 	}
 
-	// TODO Find a way to test this
+	// TODO Find a way to test this, build it into the task loader as the last step
 	private boolean requiresTaskUpdate() {
 		String currentVersion = "";
 
@@ -344,46 +350,57 @@ public final class Main {
 	 */
 	@Command(name = "",
 			description = {
-					"TODO Task tracking application. " +
-							"Hit @|magenta <TAB>|@ to see available commands.",
-					""},
-			subcommands = {HelpCommand.class})
-	public static final class CliCommands implements Runnable {
-		PrintWriter out;
+					"",
+					"micro task, a CLI based task tracking application."},
+			synopsisSubcommandLabel = "COMMAND",
+			subcommands = {MicroTaskHelpCommand.class}
+	)
+	public static final class CliCommands implements Runnable {//}, CommandLine.IHelpCommandInitializable2 {
+//		PrintWriter out;
 
 		public CliCommands() {
 		}
 
 		public void run() {
-			out.println(new CommandLine(this).getUsageMessage());
+			System.out.println("Help output!");
+			System.out.println(new CommandLine(this).getUsageMessage());
 		}
+
+//		@Override
+//		public void init(CommandLine helpCommandLine, CommandLine.Help.ColorScheme colorScheme, PrintWriter outWriter, PrintWriter errWriter) {
+//			outWriter.write("Test output");
+//		}
 	}
 
-	/**
-	 * Provide command descriptions for JLine TailTipWidgets
-	 * to be displayed in the status bar.
-	 */
-	private static final class DescriptionGenerator {
-		final Builtins builtins;
-		final PicocliCommands picocli;
+	@Command(name = "help", helpCommand = true)
+	public static final class MicroTaskHelpCommand implements Runnable {//}, CommandLine.IHelpCommandInitializable2 {
 
-		DescriptionGenerator(Builtins builtins, PicocliCommands picocli) {
-			this.builtins = builtins;
-			this.picocli = picocli;
-		}
+//		@Override
+//		public void init(CommandLine helpCommandLine, CommandLine.Help.ColorScheme colorScheme, PrintWriter outWriter, PrintWriter errWriter) {
+//			helpCommandLine.usage(outWriter, colorScheme);
+//		}
 
-		Widgets.CmdDesc commandDescription(Widgets.CmdLine line) {
-			Widgets.CmdDesc out = null;
+		@Override
+		public void run() {
+			VersionCommand.printLogo(osInterface);
+			System.out.println();
 
-			if (line.getDescriptionType() == Widgets.CmdLine.DescriptionType.COMMAND) {
-				String cmd = new DefaultParser().getCommand(line.getArgs().get(0));
+			commands.buildCommandLineWithAllCommands().usage(System.out);
 
-				if (builtins.hasCommand(cmd) || picocli.hasCommand(cmd)) {
-					out = builtins.commandDescription(cmd);
-				}
+			System.out.println();
+			System.out.println("Aliases:");
+			System.out.println();
+
+			Map<String, String> aliases = commands.getAliases();
+
+			Optional<String> max = aliases.keySet().stream()
+					.max(comparingLong(String::length));
+
+			for (final String alias : aliases.keySet()) {
+				System.out.print("  ");
+				System.out.println(String.format("%-" + max.get().length() + "s  %s", alias, aliases.get(alias)));
 			}
-
-			return out;
+			System.out.println();
 		}
 	}
 }

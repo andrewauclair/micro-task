@@ -5,9 +5,14 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.GitLabReleases;
+import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskWriter;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -46,7 +51,7 @@ public class CommandsBaseTestCase {
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
-		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
+//		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
 		commands = new Commands(tasks, gitLabReleases, localSettings, osInterface);
 	}
@@ -58,14 +63,14 @@ public class CommandsBaseTestCase {
 	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);
-		tasks.startTask(task.id, false);
+		tasks.startTask(existingID(task.id), false);
 		setTime(stop);
 		return tasks.stopTask();
 	}
 
 	void addTaskTimes(long id, long start, long stop) {
 		setTime(start);
-		tasks.startTask(id, false);
+		tasks.startTask(existingID(id), false);
 		setTime(stop);
 		tasks.stopTask();
 	}
@@ -89,7 +94,23 @@ public class CommandsBaseTestCase {
 		assertThat(outputStream.toString()).isEqualTo(output.toString());
 	}
 
-//	protected void assertExceptionOutput(Class<?> e, String message) {
-//		assertThat(outputStream.toString()).startsWith(e.getName() + ": " + message);
-//	}
+	public ExistingTaskListName existingList(String name) {
+		return new ExistingTaskListName(tasks, name);
+	}
+
+	public NewTaskListName newList(String name) {
+		return new NewTaskListName(tasks, name);
+	}
+
+	public ExistingTaskGroupName existingGroup(String name) {
+		return new ExistingTaskGroupName(tasks, name);
+	}
+
+	public NewTaskGroupName newGroup(String name) {
+		return new NewTaskGroupName(tasks, name);
+	}
+
+	public ExistingID existingID(long ID) {
+		return new ExistingID(tasks, ID);
+	}
 }

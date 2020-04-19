@@ -22,7 +22,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				micro + "               _                    " + task + "   __                __  " + ANSI_RESET,
-				micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__" + ANSI_RESET,
+				micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__ " + System.getProperty("java.runtime.version") + ANSI_RESET,
 				micro + "  / __ `__ \\ / // ___// ___// __ \\  " + task + " / __// __ `// ___// //_/" + ANSI_RESET,
 				micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + "20.1.1" + ANSI_RESET,
 				micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET,
@@ -43,7 +43,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				micro + "               _                    " + task + "   __                __  " + ANSI_RESET,
-				micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__" + ANSI_RESET,
+				micro + "   ____ ___   (_)_____ _____ ____   " + task + "  / /_ ____ _ _____ / /__ " + System.getProperty("java.runtime.version") + ANSI_RESET,
 				micro + "  / __ `__ \\ / // ___// ___// __ \\  " + task + " / __// __ `// ___// //_/" + ANSI_RESET,
 				micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + "Unknown" + ANSI_RESET,
 				micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET,
@@ -59,6 +59,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  version [-h]",
+				"Display the application version.",
 				"  -h, --help   Show this help message."
 		);
 	}

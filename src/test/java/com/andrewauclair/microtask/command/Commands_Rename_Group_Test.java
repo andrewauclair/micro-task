@@ -1,6 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.task.TaskGroupFinder;
+import com.andrewauclair.microtask.task.TaskGroupName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,14 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void rename_a_group() {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 
-		assertTrue(tasks.hasGroupPath("/one/"));
+		TaskGroupFinder finder = new TaskGroupFinder(tasks);
+
+		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
 
-		assertFalse(tasks.hasGroupPath("/one/"));
-		assertTrue(tasks.hasGroupPath("/two/"));
+		assertFalse(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
+		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/two/")));
 
 		assertOutput(
 				"Renamed group '/one/' to '/two/'",
@@ -26,8 +30,8 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void renaming_active_group_sets_active_group_to_new_group_name() {
-		tasks.addGroup("/one/");
-		tasks.switchGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
+		tasks.setActiveGroup(existingGroup("/one/"));
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
 
@@ -36,47 +40,53 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void renaming_parent_adds_child_list_to_new_parent() {
-		tasks.addList("/one/test", true);
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/test"), true);
 
-		tasks.setActiveList("/one/test");
+		tasks.setActiveList(existingList("/one/test"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
 
-		assertEquals("/two/test", tasks.getListForTask(1).getFullPath());
+		assertEquals("/two/test", tasks.getListForTask(existingID(1)).getFullPath());
 	}
 
 	@Test
 	void renaming_parent_adds_child_group_to_new_parent() {
-		tasks.addList("/one/two/three", true);
+		tasks.addGroup(newGroup("/one/two/"));
+		tasks.addList(newList("/one/two/three"), true);
 
-		tasks.setActiveList("/one/two/three");
+		tasks.setActiveList(existingList("/one/two/three"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename --group /one/ -n \"/test/\"");
 
-		assertEquals("/test/two/three", tasks.getListForTask(1).getFullPath());
+		assertEquals("/test/two/three", tasks.getListForTask(existingID(1)).getFullPath());
 	}
 
 	@Test
 	void rename_group__old_group_name_should_end_in_slash() {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 
-		assertTrue(tasks.hasGroupPath("/one/"));
+		TaskGroupFinder finder = new TaskGroupFinder(tasks);
+
+		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
 		commands.execute(printStream, "rename --group /one -n \"/two/\"");
 
 		assertOutput(
-				"Old group name should end with /",
+				"Invalid value for option '--group': Group name must end in /",
 				""
 		);
 	}
 
 	@Test
 	void rename_group__new_group_name_should_end_in_slash() {
-		tasks.addGroup("/one/");
+		tasks.addGroup(newGroup("/one/"));
 
-		assertTrue(tasks.hasGroupPath("/one/"));
+		TaskGroupFinder finder = new TaskGroupFinder(tasks);
+
+		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
 		commands.execute(printStream, "rename --group /one/ -n \"/two\"");
 

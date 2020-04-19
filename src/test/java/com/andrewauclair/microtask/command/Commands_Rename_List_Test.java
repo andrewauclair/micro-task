@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Commands_Rename_List_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_a_list() {
-		tasks.addList("test", true);
+		tasks.addList(newList("test"), true);
 
 		commands.execute(printStream, "rename --list test -n \"new-name\"");
 
@@ -22,9 +22,10 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_renames_are_always_relative() {
-		tasks.addList("/test/one", true);
-		tasks.addList("/test/new/two", true);
-		tasks.switchGroup("/test/");
+		tasks.addGroup(newGroup("/test/new/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.addList(newList("/test/new/two"), true);
+		tasks.setActiveGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "rename --list /test/one -n \"two\"");
 
@@ -32,7 +33,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "rename --list new/two -n \"three\"");
 
-		commands.execute(printStream, "rename --list two -n \"new/three\"");
+		commands.execute(printStream, "rename --list one -n \"test/two\"");
 
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/one", "/test/new/two");
 

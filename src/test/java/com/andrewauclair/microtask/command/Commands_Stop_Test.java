@@ -13,7 +13,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 	void execute_stop_command() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		setTime(1561079202);
 		commands.execute(printStream, "stop");
 
@@ -26,7 +26,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		Assertions.assertEquals(TaskState.Inactive, task.state);
 	}
@@ -35,11 +35,11 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 	void multiple_starts_and_stops_only_shows_the_latest_time() {
 		tasks.addTask("Task 1");
 		setTime(1561078202);
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		setTime(1561079202);
 		commands.execute(printStream, "stop");
 		setTime(1561080202);
-		tasks.startTask(1, false);
+		tasks.startTask(existingID(1), false);
 		setTime(1561081202);
 		outputStream.reset();
 
@@ -54,7 +54,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 				""
 		);
 
-		Task task = tasks.getTask(1);
+		Task task = tasks.getTask(existingID(1));
 
 		assertEquals(TaskState.Inactive, task.state);
 	}
@@ -65,6 +65,7 @@ class Commands_Stop_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  stop [-h]",
+				"Stop the active task.",
 				"  -h, --help   Show this help message."
 		);
 	}

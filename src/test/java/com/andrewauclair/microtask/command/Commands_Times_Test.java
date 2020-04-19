@@ -55,23 +55,23 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --help");
 
 		assertOutput(
-				"Usage:  times [-h] [--all-month] [--all-time] [--log] [--proj-feat] [--today]",
-				"              [--total] [--week] [--yesterday] [-d=<day>] [-m=<month>]",
-				"              [-y=<year>] [--group=<group>]... [--list=<list>]...",
-				"      --all-month",
-				"      --all-time",
-				"  -d, --day=<day>",
-				"      --group=<group>",
+				"Usage:  times [-h] [--all-month] [--all-time] [--proj-feat] [--today] [--total]",
+				"              [--week] [--yesterday] [-d=<day>] [-m=<month>] [-y=<year>]",
+				"              [--group=<group>]... [--list=<list>]...",
+				"Display times for tasks, lists or groups.",
+				"      --all-month       Display times for the entire month",
+				"      --all-time        Display all task times recorded.",
+				"  -d, --day=<day>       Day to display times for.",
+				"      --group=<group>   The group to display times for.",
 				"  -h, --help            Show this help message.",
-				"      --list=<list>",
-				"      --log",
-				"  -m, --month=<month>",
-				"      --proj-feat",
-				"      --today",
-				"      --total",
-				"      --week",
-				"  -y, --year=<year>",
-				"      --yesterday"
+				"      --list=<list>     The list to display times for.",
+				"  -m, --month=<month>   Month to display times for.",
+				"      --proj-feat       Display times grouped as projects and features.",
+				"      --today           Display times for today.",
+				"      --total           Display only the final total.",
+				"      --week            Week to display times for.",
+				"  -y, --year=<year>     Year to display times for.",
+				"      --yesterday       Display times for yesterday."
 		);
 	}
 }
