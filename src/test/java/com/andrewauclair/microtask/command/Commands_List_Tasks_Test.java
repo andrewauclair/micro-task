@@ -57,6 +57,40 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void display_tasks_in_a_different_group() {
+		tasks.createGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.addList(newList("/test/two"), true);
+
+		tasks.addTask("Task 1", existingList("/test/one"));
+		tasks.addTask("Task 2", existingList("/test/one"));
+		tasks.addTask("Task 3", existingList("/test/one"));
+		tasks.addTask("Task 4", existingList("/test/two"));
+		tasks.addTask("Task 5", existingList("/test/two"));
+
+		tasks.startTask(existingID(3), false);
+
+		commands.execute(printStream, "list --tasks --group /test/");
+
+		assertOutput(
+				"Tasks in group '/test/'",
+				"",
+				ANSI_BOLD + "/test/one" + ANSI_RESET,
+				"  1 - 'Task 1'",
+				"  2 - 'Task 2'",
+				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
+				"",
+				ANSI_BOLD + "/test/two" + ANSI_RESET,
+				"  4 - 'Task 4'",
+				"  5 - 'Task 5'",
+				"",
+				"",
+				ANSI_BOLD + "Total Tasks: 5" + ANSI_RESET,
+				""
+		);
+	}
 	
 	@Test
 	void display_finished_tasks() {
@@ -98,9 +132,11 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		
 		tasks.setActiveGroup(existingGroup("/test/"));
 		
-		commands.execute(printStream, "list --tasks --group --finished");
+		commands.execute(printStream, "list --tasks --current-group --finished");
 		
 		assertOutput(
+				"Tasks in group '/test/'",
+				"",
 				ANSI_BOLD + "/test/one" + ANSI_RESET,
 				"  2 - 'Test 2'",
 				"",
@@ -270,9 +306,11 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		
 //		outputStream.reset();
 		
-		commands.execute(printStream, "list --tasks --group");
+		commands.execute(printStream, "list --tasks --current-group");
 		
 		assertOutput(
+				"Tasks in group '/test/'",
+				"",
 				ANSI_BOLD + "/test/default" + ANSI_RESET,
 				"  1 - 'Task 1'",
 				"* " + ANSI_FG_GREEN + "3 - 'Task 3'" + ANSI_RESET,
@@ -317,9 +355,11 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.setActiveGroup(existingGroup("/one/"));
 		
-		commands.execute(printStream, "list --tasks --group --recursive");
+		commands.execute(printStream, "list --tasks --current-group --recursive");
 		
 		assertOutput(
+				"Tasks in group '/one/'",
+				"",
 				ANSI_BOLD + "/one/two/three" + ANSI_RESET,
 				"  1 - 'Test'",
 				"  2 - 'Test'",
@@ -388,9 +428,11 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 	
 	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
-		commands.execute(printStream, "list --tasks --group");
+		commands.execute(printStream, "list --tasks --current-group");
 		
 		assertOutput(
+				"Tasks in group '/'",
+				"",
 				"No tasks.",
 				""
 		);

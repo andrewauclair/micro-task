@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -35,8 +36,11 @@ final class ListCommand implements Runnable {
 	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
 	private ExistingTaskListName list;
 
+	@Option(names = {"--current-group"}, description = "List tasks in the current group.")
+	private boolean current_group;
+
 	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
-	private boolean group;
+	private ExistingTaskGroupName group;
 
 	@Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")
 	private boolean recursive;
@@ -141,7 +145,7 @@ final class ListCommand implements Runnable {
 	public void run() {
 		boolean all = this.all;
 		boolean showTasks = this.tasks;
-		boolean useGroup = this.group;
+		boolean useGroup = this.current_group;
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
 
@@ -149,6 +153,13 @@ final class ListCommand implements Runnable {
 
 		if (this.list != null) {
 			list = this.list;
+		}
+
+		ExistingTaskGroupName group = new ExistingTaskGroupName(tasksData, tasksData.getActiveGroup().getFullPath());
+
+		if (this.group != null) {
+			group = this.group;
+			useGroup = true;
 		}
 
 		if (showTasks) {
@@ -159,8 +170,11 @@ final class ListCommand implements Runnable {
 				else {
 					System.out.println("Tasks on list '" + list + "'");
 				}
-				System.out.println();
 			}
+			else {
+				System.out.println("Tasks in group '" + group + "'");
+			}
+			System.out.println();
 
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 
