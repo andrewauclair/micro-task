@@ -33,13 +33,13 @@ final class ListCommand implements Runnable {
 	@Option(names = {"--tasks"}, description = "List tasks on list or in group.")
 	private boolean tasks;
 
-	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
+	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
 	private ExistingTaskListName list;
 
 	@Option(names = {"--current-group"}, description = "List tasks in the current group.")
 	private boolean current_group;
 
-	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
+	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
 	private ExistingTaskGroupName group;
 
 	@Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")

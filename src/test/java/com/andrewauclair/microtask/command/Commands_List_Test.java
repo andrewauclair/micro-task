@@ -120,14 +120,14 @@ class Commands_List_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Usage:  list [-h] [--all] [--current-group] [--finished] [--recursive]",
-				"             [--tasks] [--group=<group>] [--list=<list>]",
+				"             [--tasks] [-g=<group>] [-l=<list>]",
 				"List tasks or the content of a group.",
 				"      --all             List all tasks.",
 				"      --current-group   List tasks in the current group.",
 				"      --finished        List finished tasks.",
-				"      --group=<group>   List tasks in this group.",
+				"  -g, --group=<group>   List tasks in this group.",
 				"  -h, --help            Show this help message.",
-				"      --list=<list>     List tasks on list.",
+				"  -l, --list=<list>     List tasks on list.",
 				"      --recursive       List tasks recursively in all sub-groups.",
 				"      --tasks           List tasks on list or in group."
 		);
