@@ -117,6 +117,10 @@ public class CustomPicocliCommands implements CommandRegistry {
 					for (CommandLine s : sub.getSubcommands().values()) {
 						addCandidates(candidates, Arrays.asList(s.getCommandSpec().aliases()));
 					}
+
+					for (CommandLine.Model.OptionSpec option : sub.getCommandSpec().options()) {
+						addCandidates(candidates, Arrays.asList(option.names()));
+					}
 				}
 			}
 		}

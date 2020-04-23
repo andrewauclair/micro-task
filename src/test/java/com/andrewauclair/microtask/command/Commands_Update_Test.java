@@ -39,7 +39,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 			return 0;
 		});
 
-		commands.execute(printStream, "update --release version-1");
+		commands.execute(printStream, "update app --release version-1");
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
@@ -64,7 +64,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_prints_not_found_when_version_is_unknown() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenReturn(false);
 
-		commands.execute(printStream, "update --release version-1");
+		commands.execute(printStream, "update app --release version-1");
 
 		assertOutput(
 				"Version 'version-1' not found on GitLab",
@@ -76,7 +76,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void update_prints_failure_if_updateToRelease_throws_exception() throws IOException {
 		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenThrow(IOException.class);
 
-		commands.execute(printStream, "update --release version-1");
+		commands.execute(printStream, "update app --release version-1");
 
 		assertOutput(
 				"Failed to update to version 'version-1'",
@@ -105,7 +105,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 			return 0;
 		});
 
-		commands.execute(printStream, "update --release version-1 --proxy-ip 10.90.0.50 --proxy-port 8080");
+		commands.execute(printStream, "update app --release version-1 --proxy-ip 10.90.0.50 --proxy-port 8080");
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
@@ -128,7 +128,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void proxy_port_must_be_provided() {
-		commands.execute(printStream, "update --release version-1 --proxy-ip 10.90.0.50");
+		commands.execute(printStream, "update app --release version-1 --proxy-ip 10.90.0.50");
 
 		assertOutput(
 				"Error: Missing required argument(s): --proxy-port=<proxy_port>",
@@ -138,7 +138,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void proxy_ip_must_be_provided() {
-		commands.execute(printStream, "update --release version-1 --proxy-port 8080");
+		commands.execute(printStream, "update app --release version-1 --proxy-port 8080");
 
 		assertOutput(
 				"Error: Missing required argument(s): --proxy-ip=<proxy_ip>",
@@ -150,7 +150,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void print_out_releases() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 
-		commands.execute(printStream, "update --releases");
+		commands.execute(printStream, "update app --releases");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -166,7 +166,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void print_out_releases_with_proxy() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(proxy)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
 
-		commands.execute(printStream, "update -r --proxy-ip 10.90.0.50 --proxy-port 8080");
+		commands.execute(printStream, "update app -r --proxy-ip 10.90.0.50 --proxy-port 8080");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -191,7 +191,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 
-		commands.execute(printStream, "update -r");
+		commands.execute(printStream, "update app -r");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -211,7 +211,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void failure_to_retrieve_releases_from_gitlab() throws IOException {
 		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenThrow(IOException.class);
 
-		commands.execute(printStream, "update --releases");
+		commands.execute(printStream, "update app --releases");
 
 		assertOutput(
 				"Failed to get releases from GitLab",
@@ -241,7 +241,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 			return 0;
 		});
 
-		commands.execute(printStream, "update --latest");
+		commands.execute(printStream, "update app --latest");
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
@@ -284,7 +284,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 			return 0;
 		});
 
-		commands.execute(printStream, "update --latest --proxy-ip 10.90.0.50 --proxy-port 8080");
+		commands.execute(printStream, "update app --latest --proxy-ip 10.90.0.50 --proxy-port 8080");
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
@@ -318,7 +318,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 
-		commands.execute(printStream, "update -r");
+		commands.execute(printStream, "update app -r");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -347,7 +347,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.7");
 
-		commands.execute(printStream, "update -r");
+		commands.execute(printStream, "update app -r");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -376,7 +376,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.1");
 
-		commands.execute(printStream, "update -r");
+		commands.execute(printStream, "update app -r");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -407,7 +407,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				"19.1.7"
 		));
 
-		commands.execute(printStream, "update -r");
+		commands.execute(printStream, "update app -r");
 
 		assertOutput(
 				"Releases found on GitLab",
@@ -428,8 +428,12 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "update");
 
 		assertOutput(
-				"Invalid command.",
-				""
+				"Usage:  update [-h] [COMMAND]",
+				"Update the application or remote repo.",
+				"  -h, --help   Show this help message.",
+				"Commands:",
+				"  app   Update the application.",
+				"  repo  Push/pull changes to/from remote repo."
 		);
 	}
 
@@ -438,18 +442,12 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "update --help");
 
 		assertOutput(
-				"Usage:  update [--proxy-ip=<proxy_ip> --proxy-port=<proxy_port>] [-hlr]",
-				"               [--from-remote] [--to-remote] [--release=<release>]",
-				"Update the application, tasks or push/pull changes to/from remote repo.",
-				"      --from-remote         Pull changes from the remote repo.",
-				"  -h, --help                Show this help message.",
-				"  -l, --latest              Update to the latest release.",
-				"      --proxy-ip=<proxy_ip> Proxy IP address to use for connecting to GitLab.",
-				"      --proxy-port=<proxy_port>",
-				"                            Proxy port to use for connecting to GitLab.",
-				"  -r, --releases            Display the available releases on GitLab.",
-				"      --release=<release>   Update to a specific release.",
-				"      --to-remote           Push local changes to the remote repo."
+				"Usage:  update [-h] [COMMAND]",
+				"Update the application or remote repo.",
+				"  -h, --help   Show this help message.",
+				"Commands:",
+				"  app   Update the application.",
+				"  repo  Push/pull changes to/from remote repo."
 		);
 	}
 }

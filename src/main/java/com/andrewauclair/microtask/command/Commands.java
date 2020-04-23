@@ -11,11 +11,11 @@ import com.andrewauclair.microtask.os.PicocliFactory;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
-import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
 import org.jline.reader.impl.DefaultParser;
@@ -50,10 +50,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		this.localSettings = localSettings;
 		this.osInterface = osInterface;
 		factory = new PicocliFactory(this, tasks);
-		setCommands(tasks, this.gitLabReleases, this.osInterface);
+		setCommands(tasks, this.osInterface);
 	}
 
-	private void setCommands(Tasks tasks, GitLabReleases gitLabReleases, OSInterface osInterface) {
+	private void setCommands(Tasks tasks, OSInterface osInterface) {
 		commands.put("finish", new FinishCommand(tasks, osInterface));
 		commands.put("start", new StartCommand(tasks, osInterface));
 		commands.put("stop", new StopCommand(tasks, osInterface));
@@ -65,7 +65,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface));
+		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
 		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
@@ -81,7 +81,24 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("status", new StatusCommand(this, osInterface));
 	}
 
-	private Runnable createCommand(String command) {
+	private CommandLine createCommand(String command) {
+		CommandLine cmdLine = new CommandLine(cliCommands, factory);
+
+		Runnable runnable;
+		switch (command) {
+			case "update":
+				cmdLine.addSubcommand("update",
+						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface))
+								.addSubcommand("app", new UpdateAppCommand(gitLabReleases, osInterface))
+								.addSubcommand("repo", new UpdateRepoCommand(tasks, osInterface, localSettings, this))
+				);
+				break;
+		}
+
+		return cmdLine;
+	}
+
+	private Runnable createCommandOld(String command) {
 		switch (command) {
 			case "finish":
 				return new FinishCommand(tasks, osInterface);
@@ -106,7 +123,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "version":
 				return new VersionCommand(osInterface);
 			case "update":
-				return new UpdateCommand(gitLabReleases, tasks, tasks.getWriter(), this, localSettings, osInterface);
+				return new UpdateCommand(tasks, this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
 			case "move":
@@ -220,15 +237,22 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLine(String command) {
-		CommandLine cmdLine = new CommandLine(cliCommands, factory);
+		CommandLine cmdLine;
 
-		Runnable realCommand = createCommand(command);
-
-		if (realCommand == null) {
-			return buildCommandLineWithAllCommands();
+		if (command.equals("update")) {
+			cmdLine = createCommand(command);
 		}
+		else {
+			cmdLine = new CommandLine(cliCommands, factory);
 
-		cmdLine.addSubcommand(command, realCommand);
+			Runnable realCommand = createCommandOld(command);
+
+			if (realCommand == null) {
+				return buildCommandLineWithAllCommands();
+			}
+
+			cmdLine.addSubcommand(command, realCommand);
+		}
 
 		// has to be done after we add the subcommands
 		cmdLine.setTrimQuotes(true);
