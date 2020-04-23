@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 	@Test
 	void update_to_remote_runs_git_push() {
-		commands.execute(printStream, "update --to-remote");
+		commands.execute(printStream, "update repo --to-remote");
 
 		Mockito.verify(osInterface).runGitCommand("git push");
 
@@ -29,7 +29,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_from_remote_runs_git_pull() {
-		commands.execute(printStream, "update --from-remote");
+		commands.execute(printStream, "update repo --from-remote");
 
 		Mockito.verify(osInterface).runGitCommand("git pull");
 
@@ -68,7 +68,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/1.txt")).thenReturn(inputStream);
 
-		commands.execute(printStream, "update --from-remote");
+		commands.execute(printStream, "update repo --from-remote");
 
 		TaskFinder finder = new TaskFinder(tasks);
 		assertTrue(finder.hasTaskWithID(1));
@@ -76,14 +76,14 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 	@Test
 	void updating_to_remote_does_not_get_releases() {
-		commands.execute(printStream, "update --to-remote");
+		commands.execute(printStream, "update repo --to-remote");
 
 		Mockito.verifyNoInteractions(gitLabReleases);
 	}
 
 	@Test
 	void updating_from_remote_does_not_get_releases() {
-		commands.execute(printStream, "update --from-remote");
+		commands.execute(printStream, "update repo --from-remote");
 
 		Mockito.verifyNoInteractions(gitLabReleases);
 	}
