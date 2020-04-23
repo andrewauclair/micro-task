@@ -3,25 +3,13 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
-import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
 import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import picocli.CommandLine;
-import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 @Command(name = "update", description = "Update the application or remote repo.")
 public final class UpdateCommand implements Runnable {
@@ -34,7 +22,7 @@ public final class UpdateCommand implements Runnable {
 	private boolean help;
 
 	@CommandLine.Spec
-			private CommandLine.Model.CommandSpec spec;
+	private CommandLine.Model.CommandSpec spec;
 
 	UpdateCommand(Tasks tasks, Commands commands, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasksData = tasks;

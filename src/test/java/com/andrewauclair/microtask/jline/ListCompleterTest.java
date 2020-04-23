@@ -46,7 +46,7 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "set-list", "times"})
+	@ValueSource(strings = {"ch", "add", "finish", "list", "rename", "move", "times"})
 	void command_list_option_has_list_completer(String command) {
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
@@ -54,6 +54,16 @@ class ListCompleterTest extends CommandsBaseTestCase {
 
 		assertNotNull(spec.optionsMap().get("--list").completionCandidates());
 		assertEquals("/default", spec.optionsMap().get("--list").completionCandidates().iterator().next());
+	}
+
+	@Test
+	void set_list_command_list_option_has_list_completer() {
+		CommandLine cmd = commands.buildCommandLine("set");
+
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("set").getSubcommands().get("list").getCommandSpec();
+
+		assertNotNull(spec.positionalParameters().get(0).completionCandidates());
+		assertEquals("/default", spec.positionalParameters().get(0).completionCandidates().iterator().next());
 	}
 
 	@Test

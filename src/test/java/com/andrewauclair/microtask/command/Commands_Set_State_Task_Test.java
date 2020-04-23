@@ -20,7 +20,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		assertEquals(TaskState.Finished, tasks.getTask(existingID(1)).state);
 
-		commands.execute(printStream, "set-task --task 1 --inactive");
+		commands.execute(printStream, "set task 1 --inactive");
 
 		assertEquals(TaskState.Inactive, tasks.getTask(existingID(1)).state);
 
@@ -37,7 +37,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		Mockito.reset(writer);
 
-		commands.execute(printStream, "set-task --task 1 --inactive");
+		commands.execute(printStream, "set task 1 --inactive");
 
 		Mockito.verify(writer).writeTask(new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))), "git-data/tasks/default/1.txt");
 	}
@@ -49,7 +49,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		Mockito.reset(osInterface);
 
-		commands.execute(printStream, "set-task --task 1 --inactive");
+		commands.execute(printStream, "set task 1 --inactive");
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -63,7 +63,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		Mockito.reset(osInterface);
 
-		commands.execute(printStream, "set-task --task 1 --inactive");
+		commands.execute(printStream, "set task 1 --inactive");
 
 		Mockito.verifyNoInteractions(osInterface);
 
