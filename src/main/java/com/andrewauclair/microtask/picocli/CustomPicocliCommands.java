@@ -28,7 +28,7 @@ public class CustomPicocliCommands implements CommandRegistry {
 	private final Supplier<Path> workDir;
 	private final CommandLine cmd;
 	private final Set<String> commands;
-	private final Map<String,String> aliasCommand = new HashMap<>();
+	private final Map<String, String> aliasCommand = new HashMap<>();
 
 	public CustomPicocliCommands(Path workDir, CommandLine cmd) {
 		this(() -> workDir, cmd);
@@ -38,15 +38,14 @@ public class CustomPicocliCommands implements CommandRegistry {
 		this.workDir = workDir;
 		this.cmd = cmd;
 		commands = cmd.getCommandSpec().subcommands().keySet();
-		for (String c: commands) {
-			for (String a: cmd.getSubcommands().get(c).getCommandSpec().aliases()) {
+		for (String c : commands) {
+			for (String a : cmd.getSubcommands().get(c).getCommandSpec().aliases()) {
 				aliasCommand.put(a, c);
 			}
 		}
 	}
 
 	/**
-	 *
 	 * @param command
 	 * @return true if PicocliCommands contains command
 	 */
@@ -66,7 +65,8 @@ public class CustomPicocliCommands implements CommandRegistry {
 
 	private class PicocliCompleter implements Completer {
 
-		public PicocliCompleter() {}
+		public PicocliCompleter() {
+		}
 
 		@Override
 		public void complete(LineReader reader, ParsedLine commandLine, List<Candidate> candidates) {
@@ -75,16 +75,13 @@ public class CustomPicocliCommands implements CommandRegistry {
 			String word = commandLine.word();
 			List<String> words = commandLine.words();
 
-			CommandLine sub = cmd;
+			CommandLine sub = getSubcommand(commandLine, words);
 
-			for (int i = 0; i < commandLine.wordIndex(); i++) {
-				if (!words.get(i).startsWith("-")) {
-					sub = findSubcommandLine(sub,words.get(i));
-					if (sub == null) {
-						return;
-					}
-				}
+			if (sub == null) {
+				return;
 			}
+
+			int paramIndex = calculateNextPositionalParamIndex(sub, commandLine, findSubcommandStartIndex(sub, commandLine, words), words);
 
 			if (word.startsWith("-")) {
 				String buffer = word.substring(0, commandLine.wordCursor());
@@ -92,13 +89,15 @@ public class CustomPicocliCommands implements CommandRegistry {
 				for (CommandLine.Model.OptionSpec option : sub.getCommandSpec().options()) {
 					if (option.arity().max() == 0 && eq < 0) {
 						addCandidates(candidates, Arrays.asList(option.names()));
-					} else {
+					}
+					else {
 						if (eq > 0) {
 							String opt = buffer.substring(0, eq);
 							if (Arrays.asList(option.names()).contains(opt) && option.completionCandidates() != null) {
 								addCandidates(candidates, option.completionCandidates(), buffer.substring(0, eq + 1), "", true);
 							}
-						} else {
+						}
+						else {
 							addCandidates(candidates, Arrays.asList(option.names()), "", "=", false);
 						}
 					}
@@ -113,16 +112,76 @@ public class CustomPicocliCommands implements CommandRegistry {
 					}
 				}
 				else {
+					// add subcommands as completion options
 					addCandidates(candidates, sub.getSubcommands().keySet());
+
+					// add aliases as completion options
 					for (CommandLine s : sub.getSubcommands().values()) {
 						addCandidates(candidates, Arrays.asList(s.getCommandSpec().aliases()));
 					}
 
+					// add options as completion options
 					for (CommandLine.Model.OptionSpec option : sub.getCommandSpec().options()) {
-						addCandidates(candidates, Arrays.asList(option.names()));
+						if (option.isPositional()) {
+							if (option.completionCandidates() != null) {
+								addCandidates(candidates, option.completionCandidates(), "", "", true);
+							}
+						}
+						else {
+							addCandidates(candidates, Arrays.asList(option.names()));
+
+						}
+					}
+
+					for (final CommandLine.Model.PositionalParamSpec positionalParameter : sub.getCommandSpec().positionalParameters()) {
+						if (positionalParameter.completionCandidates() != null) {
+							addCandidates(candidates, positionalParameter.completionCandidates(), "", "", true);
+						}
 					}
 				}
 			}
+		}
+
+		private CommandLine getSubcommand(ParsedLine commandLine, List<String> words) {
+			CommandLine sub = cmd;
+			for (int i = 0; i < commandLine.wordIndex(); i++) {
+				if (!words.get(i).startsWith("-")) {
+					CommandLine newSub = findSubcommandLine(sub, words.get(i));
+					// might be a positional parameter
+					if (newSub == null) {
+						break;
+					}
+					sub = newSub;
+				}
+			}
+			return sub;
+		}
+
+		private int findSubcommandStartIndex(CommandLine cmd, ParsedLine commandLine, List<String> words) {
+			for (int i = 0; i < commandLine.wordIndex(); i++) {
+				if (words.get(i).equals(cmd.getCommandName())) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		private int calculateNextPositionalParamIndex(CommandLine cmd, ParsedLine commandLine, int startIndex, List<String> words) {
+			int index = 0;
+
+			CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
+
+			for (int i = startIndex + 1; i < commandLine.wordIndex(); i++) {
+				for (final CommandLine.Model.OptionSpec option : spec.options()) {
+					if (option.isPositional()) {
+
+					}
+					else {
+
+					}
+				}
+			}
+			return index;
 		}
 
 		private void addCandidates(List<Candidate> candidates, Iterable<String> cands) {
@@ -146,13 +205,12 @@ public class CustomPicocliCommands implements CommandRegistry {
 	}
 
 	/**
-	 *
 	 * @param command
 	 * @return command description for JLine TailTipWidgets to be displayed in terminal status bar.
 	 */
 	public Widgets.CmdDesc commandDescription(String command) {
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
-		CommandLine.Help cmdhelp= new picocli.CommandLine.Help(spec);
+		CommandLine.Help cmdhelp = new picocli.CommandLine.Help(spec);
 		List<AttributedString> main = new ArrayList<>();
 		Map<String, List<AttributedString>> options = new HashMap<>();
 		String synopsis = AttributedString.stripAnsi(spec.usageMessage().sectionMap().get("synopsis").render(cmdhelp).toString());
@@ -162,7 +220,7 @@ public class CustomPicocliCommands implements CommandRegistry {
 		for (CommandLine.Model.OptionSpec o : spec.options()) {
 			String key = Arrays.stream(o.names()).collect(Collectors.joining(" "));
 			List<AttributedString> val = new ArrayList<>();
-			for (String d:  o.description()) {
+			for (String d : o.description()) {
 				val.add(new AttributedString(d));
 			}
 			if (o.arity().max() > 0) {

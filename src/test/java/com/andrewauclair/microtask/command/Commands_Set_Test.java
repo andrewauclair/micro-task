@@ -21,42 +21,40 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 	@Test
 	void set_task_command_help() {
-		commands.execute(printStream, "set-task --help");
+		commands.execute(printStream, "set task --help");
 
 		assertOutput(
-				"Usage:  set-task [-hr] [--inactive] [--not-recurring] --task=<id>",
+				"Usage:  set task [-hr] [--inactive] [--not-recurring] <id>",
+				"      <id>              Task to set.",
 				"  -h, --help            Show this help message.",
 				"      --inactive        Set task state to inactive.",
 				"      --not-recurring   Set task to non-recurring.",
-				"  -r, --recurring       Set task to recurring.",
-				"      --task=<id>       Task to set."
+				"  -r, --recurring       Set task to recurring."
 		);
 	}
 
 	@Test
 	void set_list_command_help() {
-		commands.execute(printStream, "set-list --help");
+		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set-list ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
-				"                 -l=<list>",
+				"Usage:  set list ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h] <list>",
+				"      <list>                The list to set.",
 				"  -f, --feature=<feature>   The feature to set.",
 				"  -h, --help                Show this help message.",
 				"      --in-progress         Set the list state to in progress.",
-				"  -l, --list=<list>         The list to set.",
 				"  -p, --project=<project>   The project to set."
 		);
 	}
 
 	@Test
 	void set_group_command_help() {
-		commands.execute(printStream, "set-group --help");
+		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set-group ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h]",
-				"                  -g=<group>",
+				"Usage:  set group ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h] <group>",
+				"      <group>               The group to set.",
 				"  -f, --feature=<feature>   The feature to set.",
-				"  -g, --group=<group>       The group to set.",
 				"  -h, --help                Show this help message.",
 				"      --in-progress         Set the list state to in progress.",
 				"  -p, --project=<project>   The project to set."

@@ -19,7 +19,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 		tasks.finishList(existingList("/test"));
 
-		commands.execute(printStream, "set-list --list /test --in-progress");
+		commands.execute(printStream, "set list /test --in-progress");
 
 		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test")).getState());
 
@@ -35,7 +35,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 		tasks.finishList(existingList("/test"));
 
-		commands.execute(printStream, "set-list --list test --in-progress");
+		commands.execute(printStream, "set list test --in-progress");
 
 		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test")).getState());
 
@@ -55,7 +55,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(outputStream));
 
-		commands.execute(printStream, "set-list --list /test --in-progress");
+		commands.execute(printStream, "set list /test --in-progress");
 
 		assertOutput(
 				outputStream,
@@ -78,7 +78,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(defaultStream));
 
-		commands.execute(printStream, "set-list --list /test --in-progress");
+		commands.execute(printStream, "set list /test --in-progress");
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -92,7 +92,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 		Mockito.reset(osInterface);
 
-		commands.execute(printStream, "set-list --list /test --in-progress");
+		commands.execute(printStream, "set list /test --in-progress");
 
 		Mockito.verifyNoInteractions(osInterface);
 

@@ -13,7 +13,7 @@ class Commands_Set_Project_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/test"));
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-list --list /test --project=\"Issues\"");
+		commands.execute(printStream, "set list /test --project=\"Issues\"");
 
 		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(existingID(1)));
 
@@ -30,7 +30,7 @@ class Commands_Set_Project_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-group --group /test/ --project \"Issues\"");
+		commands.execute(printStream, "set group /test/ --project \"Issues\"");
 
 		assertEquals("Issues", new TaskFinder(tasks).getProjectForTask(existingID(1)));
 

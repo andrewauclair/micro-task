@@ -12,7 +12,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 	void execute_set_recurring_true_command() {
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-task --task 1 --recurring");
+		commands.execute(printStream, "set task 1 --recurring");
 
 		Task task = tasks.getTask(existingID(1));
 
@@ -28,7 +28,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 	void execute_set_recurring_false_command() {
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-task --task 1 --not-recurring");
+		commands.execute(printStream, "set task 1 --not-recurring");
 
 		Task task = tasks.getTask(existingID(1));
 

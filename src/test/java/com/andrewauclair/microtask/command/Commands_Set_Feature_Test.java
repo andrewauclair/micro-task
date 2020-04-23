@@ -13,7 +13,7 @@ class Commands_Set_Feature_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/test"));
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-list --list /test --feature \"Feature\"");
+		commands.execute(printStream, "set list /test --feature \"Feature\"");
 
 		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(existingID(1)));
 
@@ -30,7 +30,7 @@ class Commands_Set_Feature_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "set-group --group /test/ --feature \"Feature\"");
+		commands.execute(printStream, "set group /test/ --feature \"Feature\"");
 
 		assertEquals("Feature", new TaskFinder(tasks).getFeatureForTask(existingID(1)));
 

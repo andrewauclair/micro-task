@@ -65,12 +65,12 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
+//		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
 		commands.put("move", new MoveCommand(tasks));
-		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
-		commands.put("set-list", new SetCommand.SetListCommand(tasks));
-		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
+//		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
+//		commands.put("set-list", new SetCommand.SetListCommand(tasks));
+//		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
 		commands.put("mk", new MakeCommand(tasks));
 		commands.put("ch", new ChangeCommand(tasks, localSettings));
 		commands.put("eod", new EndOfDayCommand(tasks, localSettings, osInterface));
@@ -81,18 +81,25 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("status", new StatusCommand(this, osInterface));
 	}
 
-	private CommandLine createCommand(String command) {
-		CommandLine cmdLine = new CommandLine(cliCommands, factory);
+	private CommandLine createCommand(CommandLine cmdLine, String command) {
+//		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
 		Runnable runnable;
 		switch (command) {
 			case "update":
 				cmdLine.addSubcommand("update",
-						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface))
+						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface), factory)
 								.addSubcommand("app", new UpdateAppCommand(gitLabReleases, osInterface))
 								.addSubcommand("repo", new UpdateRepoCommand(tasks, osInterface, localSettings, this))
 				);
 				break;
+			case "set":
+				cmdLine.addSubcommand("set",
+						new CommandLine(new SetCommand(), factory)
+								.addSubcommand("task", new SetTaskCommand(tasks))
+								.addSubcommand("list", new SetListCommand(tasks))
+								.addSubcommand("group", new SetGroupCommand(tasks))
+				);
 		}
 
 		return cmdLine;
@@ -128,12 +135,12 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new ExitCommand(osInterface);
 			case "move":
 				return new MoveCommand(tasks);
-			case "set-task":
-				return new SetCommand.SetTaskCommand(tasks);
-			case "set-list":
-				return new SetCommand.SetListCommand(tasks);
-			case "set-group":
-				return new SetCommand.SetGroupCommand(tasks);
+//			case "set-task":
+//				return new SetCommand.SetTaskCommand(tasks);
+//			case "set-list":
+//				return new SetCommand.SetListCommand(tasks);
+//			case "set-group":
+//				return new SetCommand.SetGroupCommand(tasks);
 			case "mk":
 				return new MakeCommand(tasks);
 			case "ch":
@@ -187,6 +194,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
+		createCommand(cmdLine, "update");
+		createCommand(cmdLine, "set");
 //		aliases.keySet().forEach(name -> {
 //
 //			Runnable cmd = new Runnable() {
@@ -237,14 +246,12 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLine(String command) {
-		CommandLine cmdLine;
+		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		if (command.equals("update")) {
-			cmdLine = createCommand(command);
+		if (command.equals("update") || command.equals("set")) {
+			createCommand(cmdLine, command);
 		}
 		else {
-			cmdLine = new CommandLine(cliCommands, factory);
-
 			Runnable realCommand = createCommandOld(command);
 
 			if (realCommand == null) {
