@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.OSInterfaceImpl;
 import com.andrewauclair.microtask.os.StatusConsole;
+import com.andrewauclair.microtask.picocli.CustomPicocliCommands;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
@@ -55,7 +56,7 @@ public final class Main {
 		Completers.SystemCompleter systemCompleter = builtins.compileCompleters();
 
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
-		PicocliCommands picocliCommands = new PicocliCommands(Paths.get(""), cmd);
+		CustomPicocliCommands picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
 
