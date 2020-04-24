@@ -48,10 +48,6 @@ public class StatusConsole {
 
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
 		@Override
-		public void createTerminal() {
-		}
-
-		@Override
 		public DataOutputStream createOutputStream(String fileName) {
 			throw new RuntimeException("The status console can't create files. It is read only");
 		}
@@ -161,7 +157,7 @@ public class StatusConsole {
 
 	private void updateStatus(Status status, Terminal terminal) {
 		synchronized (tasks) {
-			int width = terminal.getSize().getColumns();
+			int width = osInterface.getTerminalWidth();
 
 			List<AttributedString> as = new ArrayList<>();
 

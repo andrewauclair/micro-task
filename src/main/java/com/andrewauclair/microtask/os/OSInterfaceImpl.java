@@ -26,7 +26,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
-	private Terminal terminal = null;
+	public Terminal terminal = null;
 
 	private String lastInputFile = "";
 	private Main main;
@@ -41,23 +41,12 @@ public class OSInterfaceImpl implements OSInterface {
 		this.localSettings = localSettings;
 	}
 
-	public void createTerminal() throws IOException {
-		if (terminal != null) {
-			terminal.close();
-		}
-		terminal = TerminalBuilder.builder()
+	public Terminal terminal() throws IOException {
+		return TerminalBuilder.builder()
 				.system(true)
 				.jna(true)
 				.nativeSignals(true)
-				.streams(System.in, System.out)
 				.build();
-
-		System.setIn(terminal.input());
-		System.setOut(new PrintStream(terminal.output()));
-
-		if (main != null) {
-			main.newTerminal(terminal);
-		}
 	}
 
 	public void openStatusLink() throws IOException {
@@ -79,16 +68,7 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 
-		boolean createdTerminal = false;
-
 		try {
-			// pause doesn't seem to work and we need input with the git commands
-			// calling close and then rebuilding the terminal is the only thing that we can do
-			if (terminal != null) {
-				terminal.close();
-				terminal = null;
-			}
-
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.directory(new File("git-data"));
 			pb.command(command.split(" "));
@@ -101,14 +81,6 @@ public class OSInterfaceImpl implements OSInterface {
 
 			int exitCode = p.waitFor();
 
-			try {
-				createTerminal();
-				createdTerminal = true;
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-
 			if (exitCode != 0) {
 				System.out.println();
 				System.out.println(ANSI_FG_RED + "Error while executing \"" + command + "\"" + ConsoleColors.ANSI_RESET);
@@ -118,17 +90,6 @@ public class OSInterfaceImpl implements OSInterface {
 		catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 			return false;
-		}
-		finally {
-			// rebuild terminal
-			if (!createdTerminal) {
-				try {
-					createTerminal();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 		return true;
