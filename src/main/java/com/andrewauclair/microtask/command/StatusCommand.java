@@ -25,7 +25,7 @@ public class StatusCommand implements Runnable {
 	@Override
 	public void run() {
 		if (commands.isValidCommand(command)) {
-			osInterface.sendStatusMessage(StatusConsole.TransferType.Command, command);
+			osInterface.sendStatusMessage(StatusConsole.TransferType.COMMAND, command);
 		}
 		else {
 			System.out.println();

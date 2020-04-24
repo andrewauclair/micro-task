@@ -13,7 +13,7 @@ class Commands_Exit_Test extends CommandsBaseTestCase {
 
 		InOrder inOrder = Mockito.inOrder(osInterface);
 
-		inOrder.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.Exit);
+		inOrder.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.EXIT);
 		inOrder.verify(osInterface).exit();
 	}
 

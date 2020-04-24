@@ -4,10 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.os.GitLabReleases;
-import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.os.PicocliFactory;
+import com.andrewauclair.microtask.os.*;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
@@ -40,7 +37,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final OSInterface osInterface;
 	private final DefaultParser defaultParser = new DefaultParser();
 	private final PicocliFactory factory;
-	private final Main.CliCommands cliCommands = new Main.CliCommands();
+	private final MainConsole.CliCommands cliCommands = new MainConsole.CliCommands();
 	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
 	public Commands(Tasks tasks, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
@@ -49,7 +46,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		this.gitLabReleases = gitLabReleases;
 		this.localSettings = localSettings;
 		this.osInterface = osInterface;
-		factory = new PicocliFactory(this, tasks);
+		factory = new PicocliFactory(this, tasks, osInterface);
 		setCommands(tasks, this.osInterface);
 	}
 
@@ -182,7 +179,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLineWithoutAliases() {
-		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+		CommandLine cmdLine = new CommandLine(new MainConsole.CliCommands(), new PicocliFactory(this, tasks, osInterface));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 
@@ -190,7 +187,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	}
 
 	public CommandLine buildCommandLineWithAllCommands() {
-		CommandLine cmdLine = new CommandLine(new Main.CliCommands(), new PicocliFactory(this, tasks));
+		CommandLine cmdLine = new CommandLine(new MainConsole.CliCommands(), new PicocliFactory(this, tasks, osInterface));
 
 		commands.keySet().forEach(name -> cmdLine.addSubcommand(name, commands.get(name)));
 

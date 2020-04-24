@@ -5,8 +5,7 @@ import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
-// TODO Make this abstract, I use it in way too many places to do that right away
-public class TaskListName {
+public abstract class TaskListName {
 	private final String absoluteName;
 	private final String shortName;
 
@@ -32,7 +31,6 @@ public class TaskListName {
 		return name;
 	}
 
-	// TODO Not sure how long we might need to keep this around
 	public String absoluteName() {
 		return absoluteName;
 	}

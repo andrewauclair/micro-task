@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.Tasks;
+import com.sun.jna.platform.mac.SystemB;
 import picocli.CommandLine;
 
 import java.lang.reflect.Constructor;
@@ -12,10 +13,12 @@ import java.lang.reflect.Constructor;
 public final class PicocliFactory implements CommandLine.IFactory {
 	private final Commands commands;
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
-	public PicocliFactory(Commands commands, Tasks tasks) {
+	public PicocliFactory(Commands commands, Tasks tasks, OSInterface osInterface) {
 		this.commands = commands;
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 
 	@Override
@@ -25,6 +28,9 @@ public final class PicocliFactory implements CommandLine.IFactory {
 		}
 		else if (cls == GroupCompleter.class) {
 			return cls.cast(new GroupCompleter(tasks));
+		}
+		else if (cls == MainConsole.MicroTaskHelpCommand.class) {
+			return cls.cast(new MainConsole.MicroTaskHelpCommand(commands, osInterface));
 		}
 //		else {
 		Constructor<?>[] constructors = cls.getConstructors();

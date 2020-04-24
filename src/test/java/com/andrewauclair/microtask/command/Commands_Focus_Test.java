@@ -3,8 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.StatusConsole;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 class Commands_Focus_Test extends CommandsBaseTestCase {
@@ -12,7 +10,7 @@ class Commands_Focus_Test extends CommandsBaseTestCase {
 	void focus_command_sends_focus_message_to_status_console() {
 		commands.execute(printStream, "focus");
 
-		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.Focus);
+		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.FOCUS);
 	}
 
 	@Test
