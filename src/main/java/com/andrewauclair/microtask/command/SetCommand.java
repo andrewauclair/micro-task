@@ -2,14 +2,16 @@
 package com.andrewauclair.microtask.command;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Spec;
 
-@CommandLine.Command(name = "set")
+@Command(name = "set")
 public class SetCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@CommandLine.Spec
+	@Spec
 	private CommandLine.Model.CommandSpec spec;
 
 	@Override

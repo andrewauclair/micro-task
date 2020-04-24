@@ -24,7 +24,6 @@ import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import picocli.CommandLine;
-import picocli.shell.jline3.PicocliCommands;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -95,11 +94,7 @@ public final class Main {
 	private final Tasks tasks;
 
 	private Main() throws Exception {
-		final Kernel32 kernel32 = Kernel32.INSTANCE;
-
-		kernel32.SetConsoleTitle(CONSOLE_TITLE);
-
-		osInterface.createTerminal();
+		Kernel32.INSTANCE.SetConsoleTitle(CONSOLE_TITLE);
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
 		osInterface.setLocalSettings(localSettings);
@@ -112,15 +107,7 @@ public final class Main {
 		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
-//			commands.execute(System.out, "update --tasks");
 			UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
-		}
-
-		osInterface.setMain(this);
-		osInterface.createTerminal();
-
-		if (loadSuccessful) {
-//			lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 		}
 
 		if (tasks.getActiveTaskID() != Tasks.NO_ACTIVE_TASK) {
@@ -131,13 +118,35 @@ public final class Main {
 			tasks.setActiveGroup(new ExistingTaskGroupName(tasks, tasks.getGroupForList(tasks.getActiveTaskList()).getFullPath()));
 		}
 
+		osInterface.setMain(this);
+
 		sendCurrentStatus();
 
-		VersionCommand.printLogo(osInterface);
+		try (Terminal terminal = osInterface.terminal()) {
+			newTerminal(terminal);
 
+			if (loadSuccessful) {
+				lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+			}
+
+			VersionCommand.printLogo(osInterface);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		readCommands();
+	}
+
+	private void readCommands() throws IOException {
 		while (true) {
-			try {
-				String command = lineReader.readLine(commands.getPrompt());
+			String command = "";
+			try (Terminal terminal = osInterface.terminal()){
+				newTerminal(terminal);
+
+				osInterface.terminal = terminal;
+
+				command = lineReader.readLine(commands.getPrompt());
 
 				if (command.equals("proj-feat-assign")) {
 					manualProjectFeatureAssign(tasks);
@@ -151,14 +160,16 @@ public final class Main {
 					commands.execute(System.out, command);
 					runningCommand.set(false);
 				}
-
-				sendCurrentStatus();
 			}
 			catch (UserInterruptException ignored) {
 			}
 			catch (EndOfFileException e) {
 				return;
 			}
+
+
+
+			sendCurrentStatus();
 		}
 	}
 
