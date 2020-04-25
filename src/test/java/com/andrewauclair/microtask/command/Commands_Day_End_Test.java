@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 
-class Commands_EOD_Test extends CommandsBaseTestCase {
+class Commands_Day_End_Test extends CommandsBaseTestCase {
 	@BeforeEach
 	public void setup() throws IOException {
 		super.setup();
@@ -26,7 +26,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 	@Test
 	void eight_hour_day() {
-		commands.execute(printStream, "eod --hours 8");
+		commands.execute(printStream, "day --end --hours 8");
 
 		assertOutput(
 				"End of Day is in 2h 58m  8s at 06:17:15 PM",
@@ -36,7 +36,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 	@Test
 	void nine_hour_day() {
-		commands.execute(printStream, "eod --hours 9");
+		commands.execute(printStream, "day --end --hours 9");
 
 		assertOutput(
 				"End of Day is in 3h 58m  8s at 07:17:15 PM",
@@ -46,7 +46,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 	@Test
 	void eod_command_uses_local_settings_when_hours_option_is_missing() {
-		commands.execute(printStream, "eod");
+		commands.execute(printStream, "day --end");
 
 		assertOutput(
 				"End of Day is in 58m  8s at 04:17:15 PM",
@@ -56,7 +56,7 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 
 	@Test
 	void eod_command_prints_day_complete_when_past_end_of_day() {
-		commands.execute(printStream, "eod --hours 1");
+		commands.execute(printStream, "day --end --hours 1");
 
 		assertOutput(
 				"Day complete.",
@@ -65,14 +65,16 @@ class Commands_EOD_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void eod_command_help() {
-		commands.execute(printStream, "eod --help");
+	void day_command_help() {
+		commands.execute(printStream, "day --help");
 
 		assertOutput(
-				"Usage:  eod [-h] [--hours=<hours>]",
-				"Print the end of the day time and time remaining.",
+				"Usage:  day [-h] [--end] [--start] [--hours=<hours>]",
+				"Print the start or end of the day.",
+				"      --end             Display the end of the day.",
 				"  -h, --help            Show this help message.",
-				"      --hours=<hours>   Number of hours in the day."
+				"      --hours=<hours>   Number of hours in the day.",
+				"      --start           Display the start of the day."
 		);
 	}
 }
