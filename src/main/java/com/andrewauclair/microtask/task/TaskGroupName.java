@@ -17,8 +17,8 @@ public class TaskGroupName {
 		this.absoluteName = absoluteName(tasks, name);
 
 		if (!Objects.equals(absoluteName, ROOT_PATH)) {
-			// TODO This isn't very nice to look at
-			this.shortName = absoluteName.substring(0, absoluteName.length() - 1).substring(absoluteName.substring(0, absoluteName.length() - 1).lastIndexOf('/') + 1);
+			String nameWithoutSlash = absoluteName.substring(0, absoluteName.length() - 1);
+			this.shortName = nameWithoutSlash.substring(nameWithoutSlash.lastIndexOf('/') + 1);
 		}
 		else {
 			this.shortName = "";

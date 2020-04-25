@@ -87,8 +87,9 @@ public class TaskLoader {
 			tasks.setFeature(tasks.getActiveList(), scanner.nextLine(), false);
 			tasks.setListState(tasks.getActiveList(), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
-		catch (IOException ignored) {
-			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
+		catch (IOException e) {
+			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
+			e.printStackTrace(System.out);
 		}
 
 		loadTasks(fileInfo.getPath(), false);
@@ -107,8 +108,9 @@ public class TaskLoader {
 			tasks.setFeature(new ExistingTaskGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
 			tasks.setGroupState(new ExistingTaskGroupName(tasks, group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
-		catch (IOException ignored) {
-			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream
+		catch (IOException e) {
+			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
+			e.printStackTrace(System.out);
 		}
 
 		loadTasks(fileInfo.getPath(), true);

@@ -20,6 +20,6 @@ final class FocusCommand implements Runnable {
 
 	@Override
 	public void run() {
-		osInterface.sendStatusMessage(TransferType.Focus);
+		osInterface.sendStatusMessage(TransferType.FOCUS);
 	}
 }

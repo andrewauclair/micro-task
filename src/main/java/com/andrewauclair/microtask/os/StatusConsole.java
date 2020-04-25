@@ -37,11 +37,28 @@ public class StatusConsole {
 	private final Status status;
 
 	public enum TransferType {
-		Command,
-		CurrentGroup,
-		CurrentList,
-		Focus,
-		Exit
+		COMMAND(0),
+		CURRENT_GROUP(1),
+		CURRENT_LIST(2),
+		FOCUS(3),
+		EXIT(4),
+		END_TRANSFER(5);
+
+		private final int value;
+
+		TransferType(int value) {
+
+			this.value = value;
+		}
+
+		public static TransferType valueOf(int value) {
+			for (final TransferType transferType : values()) {
+				if (transferType.value == value) {
+					return transferType;
+				}
+			}
+			return null;
+		}
 	}
 
 	private final Tasks tasks;
@@ -110,6 +127,8 @@ public class StatusConsole {
 		final Kernel32 kernel32 = Kernel32.INSTANCE;
 
 		kernel32.SetConsoleTitle(CONSOLE_TITLE);
+
+		run();
 	}
 
 	public void run() {
@@ -121,21 +140,20 @@ public class StatusConsole {
 
 					lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 
-					if (c == TransferType.Command.ordinal()) {
-						currentCommand = in.readUTF();
-					}
-					else if (c == TransferType.CurrentGroup.ordinal()) {
-						currentGroup = in.readUTF();
-					}
-					else if (c == TransferType.CurrentList.ordinal()) {
-						currentList = in.readUTF();
-					}
-					else if (c == TransferType.Focus.ordinal()) {
-						bringWindowToFront();
-					}
-					else if (c == TransferType.Exit.ordinal()) {
-						client.close();
-						break;
+					TransferType transferType = TransferType.valueOf(c);
+
+					while (transferType != TransferType.END_TRANSFER) {
+						switch (Objects.requireNonNull(transferType)) {
+							case COMMAND -> currentCommand = in.readUTF();
+							case CURRENT_GROUP -> currentGroup = in.readUTF();
+							case CURRENT_LIST -> currentList = in.readUTF();
+							case FOCUS -> bringWindowToFront();
+							case EXIT -> {
+								client.close();
+								return;
+							}
+						}
+						transferType = TransferType.valueOf(in.read());
 					}
 
 					tasks.setActiveGroup(new ExistingTaskGroupName(tasks, currentGroup));

@@ -29,13 +29,8 @@ public class OSInterfaceImpl implements OSInterface {
 	public Terminal terminal = null;
 
 	private String lastInputFile = "";
-	private Main main;
 	private DataOutputStream statusOutput;
 	private LocalSettings localSettings;
-
-	public void setMain(Main main) {
-		this.main = main;
-	}
 
 	public void setLocalSettings(LocalSettings localSettings) {
 		this.localSettings = localSettings;

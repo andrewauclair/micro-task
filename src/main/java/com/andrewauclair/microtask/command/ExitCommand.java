@@ -2,7 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.os.StatusConsole;
 import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -20,7 +19,7 @@ final class ExitCommand implements Runnable {
 
 	@Override
 	public void run() {
-		osInterface.sendStatusMessage(TransferType.Exit);
+		osInterface.sendStatusMessage(TransferType.EXIT);
 		osInterface.exit();
 	}
 }
