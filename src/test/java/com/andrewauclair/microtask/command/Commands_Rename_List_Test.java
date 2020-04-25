@@ -10,7 +10,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 	void renaming_a_list() {
 		tasks.addList(newList("test"), true);
 
-		commands.execute(printStream, "rename --list test -n \"new-name\"");
+		commands.execute(printStream, "rename list test -n \"new-name\"");
 
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/new-name");
 
@@ -27,13 +27,13 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("/test/new/two"), true);
 		tasks.setActiveGroup(existingGroup("/test/"));
 
-		commands.execute(printStream, "rename --list /test/one -n \"two\"");
+		commands.execute(printStream, "rename list /test/one -n \"two\"");
 
-		commands.execute(printStream, "rename --list one -n \"/test/two\"");
+		commands.execute(printStream, "rename list one -n \"/test/two\"");
 
-		commands.execute(printStream, "rename --list new/two -n \"three\"");
+		commands.execute(printStream, "rename list new/two -n \"three\"");
 
-		commands.execute(printStream, "rename --list one -n \"test/two\"");
+		commands.execute(printStream, "rename list one -n \"test/two\"");
 
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/one", "/test/new/two");
 

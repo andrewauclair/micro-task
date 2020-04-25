@@ -48,7 +48,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "finish", "list", "move", "move", "search", "rename"})
+	@ValueSource(strings = {"ch", "finish", "list", "move", "move", "search"})
 	void command_group_option_has_group_completer(String group) {
 		commands.execute(printStream, "mk -g /test/");
 
@@ -58,6 +58,18 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 
 		assertNotNull(spec.optionsMap().get("--group").completionCandidates());
 		assertEquals("/test/", spec.optionsMap().get("--group").completionCandidates().iterator().next());
+	}
+
+	@Test
+	void rename_group_command_group_option_has_group_completer() {
+		tasks.addGroup(newGroup("/test/"));
+
+		CommandLine cmd = commands.buildCommandLine("rename").getSubcommands().get("rename").getSubcommands().get("group");
+
+		CommandLine.Model.PositionalParamSpec positionalParamSpec = cmd.getCommandSpec().positionalParameters().get(0);
+
+		assertNotNull(positionalParamSpec.completionCandidates());
+		assertEquals("/test/", positionalParamSpec.completionCandidates().iterator().next());
 	}
 
 	@Test

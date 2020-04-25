@@ -17,7 +17,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
-		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
+		commands.execute(printStream, "rename group /one/ -n \"/two/\"");
 
 		assertFalse(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/two/")));
@@ -33,7 +33,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/one/"));
 		tasks.setActiveGroup(existingGroup("/one/"));
 
-		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
+		commands.execute(printStream, "rename group /one/ -n \"/two/\"");
 
 		assertEquals("/two/", tasks.getActiveGroup().getFullPath());
 	}
@@ -46,7 +46,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/one/test"));
 		tasks.addTask("Test");
 
-		commands.execute(printStream, "rename --group /one/ -n \"/two/\"");
+		commands.execute(printStream, "rename group /one/ -n \"/two/\"");
 
 		assertEquals("/two/test", tasks.getListForTask(existingID(1)).getFullPath());
 	}
@@ -59,7 +59,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		tasks.setActiveList(existingList("/one/two/three"));
 		tasks.addTask("Test");
 
-		commands.execute(printStream, "rename --group /one/ -n \"/test/\"");
+		commands.execute(printStream, "rename group /one/ -n \"/test/\"");
 
 		assertEquals("/test/two/three", tasks.getListForTask(existingID(1)).getFullPath());
 	}
@@ -72,10 +72,10 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
-		commands.execute(printStream, "rename --group /one -n \"/two/\"");
+		commands.execute(printStream, "rename group /one -n \"/two/\"");
 
 		assertOutput(
-				"Invalid value for option '--group': Group name must end in /",
+				"Invalid value for positional parameter at index 0 (<group>): Group name must end in /",
 				""
 		);
 	}
@@ -88,10 +88,10 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
 
-		commands.execute(printStream, "rename --group /one/ -n \"/two\"");
+		commands.execute(printStream, "rename group /one/ -n \"/two\"");
 
 		assertOutput(
-				"New group name should end with /",
+				"Invalid value for option '--name': Group name must end in /",
 				""
 		);
 	}
