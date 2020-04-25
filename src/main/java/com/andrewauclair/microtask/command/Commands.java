@@ -2,8 +2,13 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.LocalSettings;
-import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.command.group.RenameGroupCommand;
+import com.andrewauclair.microtask.command.group.SetGroupCommand;
+import com.andrewauclair.microtask.command.list.RenameListCommand;
+import com.andrewauclair.microtask.command.list.SetListCommand;
+import com.andrewauclair.microtask.command.task.RenameTaskCommand;
+import com.andrewauclair.microtask.command.task.SetTaskCommand;
 import com.andrewauclair.microtask.os.*;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.task.ExistingID;
@@ -59,7 +64,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("list", new ListCommand(tasks, osInterface));
 		commands.put("times", new TimesCommand(tasks, osInterface));//, new TaskFilterBuilder()));
 		commands.put("debug", new DebugCommand(localSettings));
-		commands.put("rename", new RenameCommand(tasks));
+//		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
 //		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
@@ -86,17 +91,26 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "update":
 				cmdLine.addSubcommand("update",
 						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface), factory)
-								.addSubcommand("app", new UpdateAppCommand(gitLabReleases, osInterface))
-								.addSubcommand("repo", new UpdateRepoCommand(tasks, osInterface, localSettings, this))
+								.addSubcommand(new UpdateAppCommand(gitLabReleases, osInterface))
+								.addSubcommand(new UpdateRepoCommand(tasks, osInterface, localSettings, this))
 				);
 				break;
 			case "set":
 				cmdLine.addSubcommand("set",
 						new CommandLine(new SetCommand(), factory)
-								.addSubcommand("task", new SetTaskCommand(tasks))
-								.addSubcommand("list", new SetListCommand(tasks))
-								.addSubcommand("group", new SetGroupCommand(tasks))
+								.addSubcommand(new SetTaskCommand(tasks))
+								.addSubcommand(new SetListCommand(tasks))
+								.addSubcommand(new SetGroupCommand(tasks))
 				);
+				break;
+			case "rename":
+				cmdLine.addSubcommand("rename",
+						new CommandLine(new RenameCommand(), factory)
+								.addSubcommand(new RenameTaskCommand(tasks))
+								.addSubcommand(new RenameListCommand(tasks))
+								.addSubcommand(new RenameGroupCommand(tasks))
+				);
+				break;
 		}
 
 		return cmdLine;
@@ -120,8 +134,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new TimesCommand(tasks, osInterface);
 			case "debug":
 				return new DebugCommand(localSettings);
-			case "rename":
-				return new RenameCommand(tasks);
+//			case "rename":
+//				return new RenameCommand(tasks);
 			case "search":
 				return new SearchCommand(tasks);
 			case "version":
@@ -193,6 +207,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		createCommand(cmdLine, "update");
 		createCommand(cmdLine, "set");
+		createCommand(cmdLine, "rename");
+
 //		aliases.keySet().forEach(name -> {
 //
 //			Runnable cmd = new Runnable() {
@@ -245,7 +261,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		if (command.equals("update") || command.equals("set")) {
+		if (command.equals("update") || command.equals("set") || command.equals("rename")) {
 			createCommand(cmdLine, command);
 		}
 		else {

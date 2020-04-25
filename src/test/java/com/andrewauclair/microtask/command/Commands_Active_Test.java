@@ -7,9 +7,14 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_active_command() {
 		tasks.addTask("Task 1");
-		setTime(1561078202);
+
+		setTime(0);
+
 		tasks.startTask(existingID(1), false);
-		setTime(1561079202);
+
+		// 16 minutes and 40 seconds later
+		setTime(1000);
+
 		commands.execute(printStream, "active");
 
 		assertOutput(

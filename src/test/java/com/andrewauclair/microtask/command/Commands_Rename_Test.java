@@ -9,13 +9,13 @@ class Commands_Rename_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "rename --help");
 
 		assertOutput(
-				"Usage:  rename (-l=<list> | -g=<group> | -t=<id>) [-h] -n=<name>",
+				"Usage:  rename [-h] COMMAND",
 				"Rename a task, list or group.",
-				"  -g, --group=<group>   Group to rename.",
-				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>     List to rename.",
-				"  -n, --name=<name>     The new name for the task, list or group.",
-				"  -t, --task=<id>       Task to rename."
+				"  -h, --help   Show this help message.",
+				"Commands:",
+				"  task",
+				"  list",
+				"  group"
 		);
 	}
 }
