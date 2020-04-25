@@ -191,15 +191,15 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_alias_command() {
-		commands.addAlias("end", "eod -h 8");
+		commands.addAlias("eod", "day --end -h 8");
 
-		commands.execute(printStream, "alias -n end --update \"eod -h 9\"");
+		commands.execute(printStream, "alias -n eod --update \"day --end -h 9\"");
 		commands.execute(printStream, "alias --list");
 
 		assertOutput(
-				"Updated alias 'end' to command 'eod -h 9'",
+				"Updated alias 'eod' to command 'day --end -h 9'",
 				"",
-				"'end' = 'eod -h 9'",
+				"'eod' = 'day --end -h 9'",
 				""
 		);
 	}
@@ -220,33 +220,33 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
 
-		commands.execute(printStream, "alias -n end -c \"eod -h 8\"");
+		commands.execute(printStream, "alias -n eod -c \"day --end -h 8\"");
 
 		assertThat(outputStream.toString()).isEqualTo(
-				"end=\"eod -h 8\"" + NL
+				"eod=\"day --end -h 8\"" + NL
 		);
 
 		outputStream.reset();
 
-		commands.execute(printStream, "alias -n end --update \"eod -h 9\"");
+		commands.execute(printStream, "alias -n eod --update \"day --end -h 9\"");
 
 		assertThat(outputStream.toString()).isEqualTo(
-				"end=\"eod -h 9\"" + NL
+				"eod=\"day --end -h 9\"" + NL
 		);
 	}
 
 	@Test
 	void updating_alias_commits_new_file() {
-		commands.addAlias("end", "eod -h 8");
+		commands.addAlias("eod", "day --end -h 8");
 
-		assertThat(commands.getAliases()).containsEntry("end", "eod -h 8");
+		assertThat(commands.getAliases()).containsEntry("eod", "day --end -h 8");
 
-		commands.execute(printStream, "alias --name end --update \"eod -h 9\"");
+		commands.execute(printStream, "alias --name eod --update \"day --end -h 9\"");
 
 		InOrder order = Mockito.inOrder(osInterface);
 
 		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'end' to command 'eod -h 9'\"");
+		order.verify(osInterface).runGitCommand("git commit -m \"Updated alias 'eod' to command 'day --end -h 9'\"");
 	}
 
 	@Test

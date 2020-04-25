@@ -81,6 +81,7 @@ public class CustomPicocliCommands implements CommandRegistry {
 				return;
 			}
 
+			// next positional parameter index
 			int paramIndex = calculateNextPositionalParamIndex(sub, commandLine, findSubcommandStartIndex(sub, commandLine, words), words);
 
 			if (word.startsWith("-")) {
