@@ -9,11 +9,12 @@ class Commands_Make_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mk --help");
 
 		assertOutput(
-				"Usage:  mk (-l=<list> | -g=<group>) [-h]",
-				"Make a new list or group.",
-				"  -g, --group=<group>   Make a group.",
-				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>     Make a list."
+				"Usage:  mk (-l=<list> | -g=<group> | -p=<project>) [-h]",
+				"Make a new list, group or project.",
+				"  -g, --group=<group>       Make a group.",
+				"  -h, --help                Show this help message.",
+				"  -l, --list=<list>         Make a list.",
+				"  -p, --project=<project>   Make a project."
 		);
 	}
 }

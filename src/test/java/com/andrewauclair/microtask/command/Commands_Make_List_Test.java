@@ -19,7 +19,7 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 		assertTrue(finder.hasList(listName));
 
 		assertOutput(
-				"Created new list '/test-tasks'",
+				"Created list '/test-tasks'",
 				""
 		);
 	}
@@ -37,7 +37,7 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 		assertTrue(finder.hasList(listName));
 
 		assertOutput(
-				"Created new list '/test/one'",
+				"Created list '/test/one'",
 				""
 		);
 	}
@@ -53,7 +53,7 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "mk -l two");
 
 		assertOutput(
-				"Created new list '/test/one/two'",
+				"Created list '/test/one/two'",
 				""
 		);
 	}
@@ -81,7 +81,7 @@ class Commands_Make_List_Test extends CommandsBaseTestCase {
 		assertTrue(finder.hasList(listName));
 
 		assertOutput(
-				"Created new list '/random'",
+				"Created list '/random'",
 				""
 		);
 	}

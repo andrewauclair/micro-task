@@ -72,6 +72,11 @@ class LocalSettings_Test {
 	}
 
 	@Test
+	void default_estimated_time_per_task_is_30_minutes() {
+		assertEquals(30000, localSettings.getEstimatedTimePerTask());
+	}
+
+	@Test
 	void load_active_list_from_file() throws IOException {
 		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
 		tasks.addList(new NewTaskListName(tasks, "/test/one"), true);
@@ -121,6 +126,17 @@ class LocalSettings_Test {
 	}
 
 	@Test
+	void load_estimated_time_per_Task_from_file() throws IOException {
+		Mockito.when(osInterface.createInputStream("settings.properties")).thenReturn(
+			createInputStream("estimated_time_per_task=25000")
+		);
+
+		localSettings.load(tasks);
+
+		assertEquals(25000, localSettings.getEstimatedTimePerTask());
+	}
+
+	@Test
 	void changing_active_list_saves_file() throws IOException {
 		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
 		tasks.addList(new NewTaskListName(tasks, "/test/one"), true);
@@ -166,6 +182,17 @@ class LocalSettings_Test {
 		localSettings.setHoursInDay(6);
 
 		assertThat(outputStream.toString()).contains("hours_in_day=6");
+	}
+
+	@Test
+	void changing_estimated_time_per_task_saves_file() throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
+
+		localSettings.setEstimatedTimePerTask(40000);
+
+		assertThat(outputStream.toString()).contains("estimated_time_per_task=40000");
 	}
 
 	@Test

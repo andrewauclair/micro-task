@@ -2,16 +2,15 @@
 package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.LocalSettings;
-import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.StatusConsole.TransferType;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.TaskLoader;
 import com.andrewauclair.microtask.task.TaskReader;
 import com.andrewauclair.microtask.task.TaskWriter;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
 import picocli.CommandLine;
@@ -30,6 +29,7 @@ public class MainConsole extends CommonConsole {
 
 	private final Commands commands;
 	private final Tasks tasks;
+	private final Projects projects;
 	private final TaskLoader loader;
 
 	public MainConsole() throws Exception {
@@ -37,7 +37,8 @@ public class MainConsole extends CommonConsole {
 		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		commands = new Commands(tasks, new GitLabReleases(), localSettings, osInterface);
+		projects = new Projects(tasks);
+		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
 		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface);
 

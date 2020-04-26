@@ -10,6 +10,9 @@ import com.andrewauclair.microtask.command.list.SetListCommand;
 import com.andrewauclair.microtask.command.task.RenameTaskCommand;
 import com.andrewauclair.microtask.command.task.SetTaskCommand;
 import com.andrewauclair.microtask.os.*;
+import com.andrewauclair.microtask.project.ExistingProjectName;
+import com.andrewauclair.microtask.project.NewProjectName;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
@@ -33,6 +36,7 @@ import java.util.Scanner;
 @SuppressWarnings("CanBeFinal")
 public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final Tasks tasks;
+	private final Projects projects;
 
 	private final Map<String, Runnable> commands = new HashMap<>();
 
@@ -45,8 +49,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final MainConsole.CliCommands cliCommands = new MainConsole.CliCommands();
 	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
-	public Commands(Tasks tasks, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
+	public Commands(Tasks tasks, Projects projects, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.projects = projects;
 
 		this.gitLabReleases = gitLabReleases;
 		this.localSettings = localSettings;
@@ -73,14 +78,15 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 //		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
 //		commands.put("set-list", new SetCommand.SetListCommand(tasks));
 //		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
-		commands.put("mk", new MakeCommand(tasks));
-		commands.put("ch", new ChangeCommand(tasks, localSettings));
+		commands.put("mk", new MakeCommand(tasks, projects));
+		commands.put("ch", new ChangeCommand(tasks, projects, localSettings));
 		commands.put("day", new DayCommand(tasks, localSettings, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
 		commands.put("next", new NextCommand(tasks));
 		commands.put("info", new InfoCommand(tasks, osInterface));
 		commands.put("focus", new FocusCommand(osInterface));
 		commands.put("status", new StatusCommand(this, osInterface));
+		commands.put("project", new ProjectCommand(tasks, projects, localSettings, osInterface));
 	}
 
 	private CommandLine createCommand(CommandLine cmdLine, String command) {
@@ -153,9 +159,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 //			case "set-group":
 //				return new SetCommand.SetGroupCommand(tasks);
 			case "mk":
-				return new MakeCommand(tasks);
+				return new MakeCommand(tasks, projects);
 			case "ch":
-				return new ChangeCommand(tasks, localSettings);
+				return new ChangeCommand(tasks, projects, localSettings);
 			case "day":
 				return new DayCommand(tasks, localSettings, osInterface);
 			case "alias":
@@ -168,6 +174,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new FocusCommand(osInterface);
 			case "status":
 				return new StatusCommand(this, osInterface);
+			case "project":
+				return new ProjectCommand(tasks, projects, localSettings, osInterface);
+			case "datagen":
+				return new RandomDataGenerator(tasks);
 		}
 
 		for (String alias : aliases.keySet()) {
@@ -241,6 +251,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingProjectName.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
+		cmdLine.registerConverter(NewProjectName.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 
 		return cmdLine;
 	}
@@ -285,6 +297,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingProjectName.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
+		cmdLine.registerConverter(NewProjectName.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 
 		return cmdLine;
 	}
