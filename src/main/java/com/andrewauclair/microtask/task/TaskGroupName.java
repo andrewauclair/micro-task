@@ -14,7 +14,7 @@ public class TaskGroupName {
 			throw new RuntimeException("Group name must end in /");
 		}
 
-		this.absoluteName = absoluteName(tasks, name);
+		this.absoluteName = absoluteName(tasks, name).toLowerCase();
 
 		if (!Objects.equals(absoluteName, ROOT_PATH)) {
 			String nameWithoutSlash = absoluteName.substring(0, absoluteName.length() - 1);

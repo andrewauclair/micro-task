@@ -1,40 +1,8 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask;
 
-import com.andrewauclair.microtask.command.Commands;
-import com.andrewauclair.microtask.command.UpdateCommand;
-import com.andrewauclair.microtask.command.VersionCommand;
-import com.andrewauclair.microtask.os.*;
-import com.andrewauclair.microtask.picocli.CustomPicocliCommands;
-import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.build.TaskBuilder;
-import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.TaskListFileWriter;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinUser;
-import org.jline.builtins.Completers;
-import org.jline.keymap.KeyMap;
-import org.jline.reader.*;
-import org.jline.reader.impl.DefaultParser;
-import org.jline.terminal.Terminal;
-import picocli.CommandLine;
-
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.util.Comparator.comparingLong;
-import static picocli.CommandLine.Command;
+import com.andrewauclair.microtask.os.MainConsole;
+import com.andrewauclair.microtask.os.StatusConsole;
 
 public final class Main {
 	public static void main(String[] args) throws Exception {

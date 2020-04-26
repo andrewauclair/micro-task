@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.os;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
@@ -62,6 +63,7 @@ public class StatusConsole {
 	}
 
 	private final Tasks tasks;
+	private final Projects projects;
 
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
 		@Override
@@ -84,7 +86,8 @@ public class StatusConsole {
 		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		commands = new Commands(tasks, new GitLabReleases(), localSettings, osInterface);
+		projects = new Projects(tasks);
+		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
 		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface);
 

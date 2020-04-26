@@ -16,6 +16,7 @@ public class LocalSettings {
 	private String activeGroup = "/";
 	private boolean debugEnabled = false;
 	private int hoursInDay = 8;
+	private long estimatedTimePerTask = 30000;
 
 	public LocalSettings(OSInterface osInterface) {
 		this.osInterface = osInterface;
@@ -61,6 +62,16 @@ public class LocalSettings {
 		save();
 	}
 
+	public long getEstimatedTimePerTask() {
+		return estimatedTimePerTask;
+	}
+
+	public void setEstimatedTimePerTask(long estimatedTimePerTask) {
+		this.estimatedTimePerTask = estimatedTimePerTask;
+
+		save();
+	}
+
 	public void load(Tasks tasks) {
 		Properties properties = new Properties();
 		try {
@@ -74,8 +85,8 @@ public class LocalSettings {
 		activeGroup = properties.getProperty("active_group", "/");
 		debugEnabled = Boolean.parseBoolean(properties.getProperty("debug", "false"));
 		hoursInDay = Integer.parseInt(properties.getProperty("hours_in_day", "8"));
+		estimatedTimePerTask = Long.parseLong(properties.getProperty("estimated_time_per_task", "30000"));
 
-//		tasks.setActiveList(new TaskListName(tasks, activeList));
 		tasks.setActiveList(new ExistingTaskListName(tasks, activeList));
 		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, activeGroup));
 	}
@@ -86,6 +97,7 @@ public class LocalSettings {
 		properties.setProperty("active_group", activeGroup);
 		properties.setProperty("debug", String.valueOf(debugEnabled));
 		properties.setProperty("hours_in_day", String.valueOf(hoursInDay));
+		properties.setProperty("estimated_time_per_task", String.valueOf(estimatedTimePerTask));
 
 		try {
 			properties.store(osInterface.createOutputStream("settings.properties"), "");

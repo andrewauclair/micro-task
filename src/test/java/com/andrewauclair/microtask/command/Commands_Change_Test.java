@@ -9,11 +9,12 @@ class Commands_Change_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch --help");
 
 		assertOutput(
-				"Usage:  ch (-l=<list> | -g=<group>) [-h]",
+				"Usage:  ch (-l=<list> | -g=<group> | -p=<project>) [-h]",
 				"Change the current list or group.",
-				"  -g, --group=<group>   The group to change to.",
-				"  -h, --help            Show this help message.",
-				"  -l, --list=<list>     The list to change to."
+				"  -g, --group=<group>       The group to change to.",
+				"  -h, --help                Show this help message.",
+				"  -l, --list=<list>         The list to change to.",
+				"  -p, --project=<project>   The project to change to."
 		);
 	}
 }

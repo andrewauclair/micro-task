@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.andrewauclair.microtask.task.Tasks;
@@ -14,45 +15,55 @@ import picocli.CommandLine.Option;
 @Command(name = "ch", description = "Change the current list or group.")
 final class ChangeCommand implements Runnable {
 	private final Tasks tasks;
+	private final Projects projects;
 	private final LocalSettings localSettings;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
 	@ArgGroup(multiplicity = "1")
-	private ListGroup listGroup;
+	private Args args;
 
-	ChangeCommand(Tasks tasks, LocalSettings localSettings) {
+	ChangeCommand(Tasks tasks, Projects projects, LocalSettings localSettings) {
 		this.tasks = tasks;
+		this.projects = projects;
 		this.localSettings = localSettings;
 	}
 
 	@Override
 	public void run() {
-		if (listGroup.list != null) {
-			tasks.setActiveList(listGroup.list);
-			tasks.setActiveGroup(listGroup.list.parentGroupName());
+		if (args.list != null) {
+			tasks.setActiveList(args.list);
+			tasks.setActiveGroup(args.list.parentGroupName());
 
-			localSettings.setActiveList(listGroup.list);
-			localSettings.setActiveGroup(listGroup.list.parentGroupName());
+			localSettings.setActiveList(args.list);
+			localSettings.setActiveGroup(args.list.parentGroupName());
 
-			System.out.println("Switched to list '" + listGroup.list + "'");
+			System.out.println("Switched to list '" + args.list + "'");
+		}
+		else if (args.group != null) {
+			tasks.setActiveGroup(args.group);
+
+			localSettings.setActiveGroup(args.group);
+
+			System.out.println("Switched to group '" + args.group + "'");
 		}
 		else {
-			tasks.setActiveGroup(listGroup.group);
+			projects.setActiveProject(args.project);
 
-			localSettings.setActiveGroup(listGroup.group);
-
-			System.out.println("Switched to group '" + listGroup.group + "'");
+			System.out.println("Switched to project '" + args.project + "'");
 		}
 		System.out.println();
 	}
 
-	private static final class ListGroup {
+	private static final class Args {
 		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to change to.")
 		private ExistingTaskListName list;
 
 		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to change to.")
 		private ExistingTaskGroupName group;
+
+		@Option(names = {"-p", "--project"}, description = "The project to change to.")
+		private String project;
 	}
 }

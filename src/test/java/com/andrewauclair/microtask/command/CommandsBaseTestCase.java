@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.GitLabReleases;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskWriter;
@@ -13,6 +14,7 @@ import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -22,6 +24,7 @@ import java.io.*;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.linesOf;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandsBaseTestCase {
@@ -34,8 +37,12 @@ public class CommandsBaseTestCase {
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
 	protected Tasks tasks;
+	protected Projects projects;
 
 	protected Commands commands;
+
+	private PrintStream originalSystemOut = System.out;
+	private PrintStream originalSystemErr = System.err;
 
 	@BeforeEach
 	public void setup() throws IOException {
@@ -51,9 +58,19 @@ public class CommandsBaseTestCase {
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
+		projects = new Projects(tasks);
 //		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
-		commands = new Commands(tasks, gitLabReleases, localSettings, osInterface);
+		commands = new Commands(tasks, projects, gitLabReleases, localSettings, osInterface);
+	}
+
+	@AfterEach
+	void tearDown() {
+		System.setOut(originalSystemOut);
+		System.setErr(originalSystemErr);
+
+		System.out.print(outputStream.toString());
+		System.err.print(errorStream.toString());
 	}
 
 	void setTime(long time) {
