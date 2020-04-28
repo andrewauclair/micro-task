@@ -32,18 +32,6 @@ public class ProjectCommand implements Runnable {
 	@Option(names = {"-n", "--name"})
 	private ExistingProjectName name;
 
-	@Option(names = {"--feature"})
-	private String feature;
-
-	@Option(names = {"--add-list"}, completionCandidates = ListCompleter.class)
-	private ExistingTaskListName list;
-
-	@Option(names = {"--add-group"}, completionCandidates = GroupCompleter.class)
-	private ExistingTaskGroupName group;
-
-	@Option(names = {"--add-feature"})
-	private String newFeature;
-
 	@Option(names = {"--progress"})
 	private boolean progress;
 
@@ -56,35 +44,14 @@ public class ProjectCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (list != null) {
-//			TaskList list = tasks.getListByName(this.list);
-
-			// TODO Throw exception if the project already contains the list
-			projects.getProject(name.getName()).getFeature(feature).get().addList(list);
-
-			System.out.println("Added list '" + list + "' to project '" + name + "'");
-		}
-		else if (group != null) {
-//			TaskGroup group = tasks.getGroup(this.group);
-
-			// TODO Throw exception if the project already contains the group
-			projects.getProject(name.getName()).getFeature(feature).get().addGroup(group);
-
-			System.out.println("Added group '" + group + "' to project '" + name + "'");
-		}
-		else if (newFeature != null) {
-			projects.getProject(name.getName()).addFeature(newFeature, null);
-
-			System.out.println("Added feature '" + newFeature + "' to project '" + name + "'");
-		}
-		else if (progress) {
+		if (progress) {
 			System.out.println("Project progress for 'test'");
 			System.out.println();
 
 			Project project = projects.getProject(name.getName());
 
-			int taskCount = project.getTaskCount();
-			int finishedTaskCount = project.getFinishedTaskCount();
+			long taskCount = project.getTaskCount();
+			long finishedTaskCount = project.getFinishedTaskCount();
 			int taskPercentComplete = (int) ((finishedTaskCount / (double)taskCount) * 100);
 
 			String taskProgress = "";

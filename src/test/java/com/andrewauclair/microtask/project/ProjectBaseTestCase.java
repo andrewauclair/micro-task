@@ -39,7 +39,8 @@ class ProjectBaseTestCase {
 //		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
 		projects = new Projects(tasks);
-		project = projects.createProject("Test");
+		tasks.addGroup(newGroup("test/"));
+		project = projects.createProject(existingGroup("test/"));
 	}
 
 	public ExistingTaskListName existingList(String name) {

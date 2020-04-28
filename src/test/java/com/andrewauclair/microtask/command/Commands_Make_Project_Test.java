@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class Commands_Make_Project_Test extends CommandsBaseTestCase {
 	@Test
 	void make_new_project() {
-		commands.execute(System.out, "mk -p test");
+		tasks.createGroup(newGroup("/test/"));
+
+		commands.execute(System.out, "mk -p test/");
 
 		assertTrue(projects.hasProject("test"));
 

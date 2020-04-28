@@ -9,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Projects_Create_Test extends ProjectBaseTestCase {
 	@Test
 	void create_a_plan() {
-		projects.createProject("Test");
+		projects.createProject(existingGroup("test/"));
 
-		assertTrue(projects.hasProject("Test"));
+		assertTrue(projects.hasProject("test"));
 	}
 
 	@Test
 	void get_the_new_plan_by_name() {
-		projects.createProject("Test");
+		projects.createProject(existingGroup("test/"));
 
-		Project project = projects.getProject("Test");
+		Project project = projects.getProject("test");
 
-		assertEquals("Test", project.getName());
+		assertEquals("test", project.getName());
 	}
 }
