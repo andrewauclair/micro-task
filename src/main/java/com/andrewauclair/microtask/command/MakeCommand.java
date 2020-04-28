@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.TaskGroup;
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine.ArgGroup;
@@ -45,9 +46,9 @@ final class MakeCommand implements Runnable {
 		}
 
 		if (args.project != null) {
-			Project project = projects.createProject(args.project.getName());
+			Project project = projects.createProject(args.project);
 
-			System.out.println("Created project '" + args.project + "'");
+			System.out.println("Created project '" + project.getName() + "'");
 			System.out.println();
 		}
 	}
@@ -59,7 +60,7 @@ final class MakeCommand implements Runnable {
 		@Option(names = {"-g", "--group"}, description = "Make a group.")
 		private NewTaskGroupName group;
 
-		@Option(names = {"-p", "--project"}, description = "Make a project.")
-		private NewProjectName project;
+		@Option(names = {"-p", "--project"}, description = "Make a project from a group.")
+		private ExistingTaskGroupName project;
 	}
 }

@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Commands_Change_Project_Test extends CommandsBaseTestCase {
 	@Test
 	void change_the_active_project() {
-		projects.createProject("test");
+		tasks.addGroup(newGroup("test/"));
+
+		projects.createProject(existingGroup("test/"));
 
 		commands.execute(System.out, "ch -p test");
 

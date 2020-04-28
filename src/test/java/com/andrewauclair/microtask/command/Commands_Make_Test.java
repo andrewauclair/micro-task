@@ -14,7 +14,7 @@ class Commands_Make_Test extends CommandsBaseTestCase {
 				"  -g, --group=<group>       Make a group.",
 				"  -h, --help                Show this help message.",
 				"  -l, --list=<list>         Make a list.",
-				"  -p, --project=<project>   Make a project."
+				"  -p, --project=<project>   Make a project from a group."
 		);
 	}
 }

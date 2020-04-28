@@ -9,15 +9,8 @@ class Commands_Project_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "project --help");
 
 		assertOutput(
-				"Usage:  project [-h] [--progress] [--add-feature=<newFeature>]",
-				"                [--add-group=<group>] [--add-list=<list>] [--feature=<feature>]",
-				"                [-n=<name>]",
-				"      --add-feature=<newFeature>",
-				"",
-				"      --add-group=<group>",
-				"      --add-list=<list>",
-				"      --feature=<feature>",
-				"  -h, --help                Show this help message.",
+				"Usage:  project [-h] [--progress] [-n=<name>]",
+				"  -h, --help          Show this help message.",
 				"  -n, --name=<name>",
 				"      --progress"
 		);

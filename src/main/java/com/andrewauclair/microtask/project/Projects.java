@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,8 @@ public class Projects {
 				.anyMatch(project -> project.getName().equals(name));
 	}
 
-	public Project createProject(String name) {
-		Project project = new Project(tasks, name);
+	public Project createProject(ExistingTaskGroupName group) {
+		Project project = new Project(tasks, group);
 		projects.add(project);
 
 		return project;
