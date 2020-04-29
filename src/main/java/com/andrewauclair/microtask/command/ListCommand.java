@@ -11,10 +11,7 @@ import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
@@ -119,14 +116,16 @@ final class ListCommand implements Runnable {
 		System.out.println(line);
 	}
 
-	private int printTasks(TaskGroup group, int totalTasks, boolean finished, boolean recursive) {
+	private List<Task> printTasks(TaskGroup group, boolean finished, boolean recursive) {
+		List<Task> tasks = new ArrayList<>();
+
 		for (TaskContainer child : group.getChildren()) {
 			if (child instanceof TaskList list) {
 				List<Task> tasksList = list.getTasks().stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList());
 
-				totalTasks += tasksList.size();
+				tasks.addAll(tasksList);
 
 				if (tasksList.size() > 0) {
 					System.out.println(ANSI_BOLD + list.getFullPath() + ANSI_RESET);
@@ -135,10 +134,10 @@ final class ListCommand implements Runnable {
 				}
 			}
 			else if (recursive) {
-				totalTasks = printTasks((TaskGroup) child, totalTasks, finished, true);
+				tasks.addAll(printTasks((TaskGroup) child, finished, true));
 			}
 		}
-		return totalTasks;
+		return tasks;
 	}
 
 	@Override
@@ -178,20 +177,29 @@ final class ListCommand implements Runnable {
 
 			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
 
-			int totalTasks = 0;
+//			int totalTasks = 0;
+//			int totalRecurring = 0;
+			List<Task> tasks = new ArrayList<>();
 
 			if (useGroup) {
-				totalTasks = printTasks(tasksData.getActiveGroup(), totalTasks, finished, recursive);
+				tasks = printTasks(tasksData.getActiveGroup(), finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasksData.getTasksForList(list).stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList());
 
-				totalTasks += tasksList.size();
+				tasks.addAll(tasksList);
+
+//				totalTasks += tasksList.size();
 
 				printTasks(tasksList, limit);
 			}
+
+			int totalTasks = tasks.size();
+			long totalRecurring = tasks.stream()
+					.filter(Task::isRecurring)
+					.count();
 
 			if (totalTasks > limit) {
 				System.out.println("(" + (totalTasks - MAX_DISPLAYED_TASKS) + " more tasks.)");
@@ -208,6 +216,10 @@ final class ListCommand implements Runnable {
 				}
 				else {
 					System.out.print("Total Tasks: " + totalTasks);
+
+					if (totalRecurring > 0) {
+						System.out.print(" (" + totalRecurring + " Recurring)");
+					}
 				}
 				System.out.print(ANSI_RESET);
 				System.out.println();
