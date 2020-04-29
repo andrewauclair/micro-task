@@ -4,6 +4,8 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Project;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
 import com.andrewauclair.microtask.task.list.TaskListFileWriter;
@@ -36,7 +38,7 @@ public final class UpdateCommand implements Runnable {
 		spec.commandLine().usage(System.out);
 	}
 
-	public static void updateFiles(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Commands commands) {
+	public static void updateFiles(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Projects projects, Commands commands) {
 
 		updateGroupFiles(tasks, tasks.getRootGroup(), osInterface);
 
@@ -45,7 +47,7 @@ public final class UpdateCommand implements Runnable {
 		osInterface.runGitCommand("git add .");
 		osInterface.runGitCommand("git commit -m \"Updating files to version '" + currentVersion + "'\"");
 
-		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
+		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
 		System.out.println("Updated all files.");
 		System.out.println();

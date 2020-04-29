@@ -37,17 +37,17 @@ public class MainConsole extends CommonConsole {
 		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		projects = new Projects(tasks);
+		projects = new Projects(tasks, osInterface);
 		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface);
+		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		osInterface.openStatusLink();
 
-		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface), commands);
+		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
-			UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
+			UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 		}
 
 		sendCurrentStatus();

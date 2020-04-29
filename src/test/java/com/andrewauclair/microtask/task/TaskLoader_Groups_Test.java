@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,9 +15,10 @@ import java.util.Collections;
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
 
 class TaskLoader_Groups_Test extends TaskBaseTestCase {
-	private TaskReader reader = Mockito.mock(TaskReader.class);
-	private LocalSettings localSettings = Mockito.mock(LocalSettings.class);
-	private TaskLoader loader = new TaskLoader(tasks, reader, localSettings, osInterface);
+	private final TaskReader reader = Mockito.mock(TaskReader.class);
+	private final LocalSettings localSettings = Mockito.mock(LocalSettings.class);
+	private final Projects projects = Mockito.mock(Projects.class);
+	private final TaskLoader loader = new TaskLoader(tasks, reader, localSettings, projects, osInterface);
 
 	@BeforeEach
 	protected void setup() throws IOException {

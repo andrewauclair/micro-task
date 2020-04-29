@@ -1,7 +1,6 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.project.NewProjectName;
 import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.TaskGroup;
@@ -46,9 +45,14 @@ final class MakeCommand implements Runnable {
 		}
 
 		if (args.project != null) {
-			Project project = projects.createProject(args.project);
+			if (projects.hasProject(args.project.shortName())) {
+				System.out.println("Project '" + args.project.shortName() + "' already exists.");
+			}
+			else {
+				Project project = projects.createProject(args.project);
 
-			System.out.println("Created project '" + project.getName() + "'");
+				System.out.println("Created project '" + project.getName() + "'");
+			}
 			System.out.println();
 		}
 	}

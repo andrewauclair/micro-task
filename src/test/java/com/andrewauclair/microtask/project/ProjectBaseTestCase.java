@@ -38,7 +38,7 @@ class ProjectBaseTestCase {
 		tasks = new Tasks(writer, new PrintStream(outputStream), osInterface);
 //		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
-		projects = new Projects(tasks);
+		projects = new Projects(tasks, osInterface);
 		tasks.addGroup(newGroup("test/"));
 		project = projects.createProject(existingGroup("test/"));
 	}

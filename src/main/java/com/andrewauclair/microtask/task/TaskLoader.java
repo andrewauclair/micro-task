@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
@@ -18,12 +19,14 @@ public class TaskLoader {
 	private final Tasks tasks;
 	private final TaskReader reader;
 	private final LocalSettings localSettings;
+	private final Projects projects;
 	private final OSInterface osInterface;
 
-	public TaskLoader(Tasks tasks, TaskReader reader, LocalSettings localSettings, OSInterface osInterface) {
+	public TaskLoader(Tasks tasks, TaskReader reader, LocalSettings localSettings, Projects projects, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.reader = reader;
 		this.localSettings = localSettings;
+		this.projects = projects;
 		this.osInterface = osInterface;
 	}
 
@@ -31,6 +34,7 @@ public class TaskLoader {
 		loadTasks("git-data/tasks", true);
 
 		localSettings.load(tasks);
+		projects.load();
 	}
 
 	private void loadTasks(String folder, boolean inGroup) throws IOException {

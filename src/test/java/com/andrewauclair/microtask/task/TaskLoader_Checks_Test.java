@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class TaskLoader_Checks_Test extends TaskBaseTestCase {
 	private final TaskReader reader = Mockito.mock(TaskReader.class);
 	private TaskLoader loader;
+	private final Projects projects = Mockito.mock(Projects.class);
 
 	@BeforeEach
 	protected void setup() throws IOException {
@@ -28,7 +30,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 
 		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
 
-		loader = new TaskLoader(tasks, reader, localSettings, osInterface);
+		loader = new TaskLoader(tasks, reader, localSettings, projects, osInterface);
 	}
 
 	@Test

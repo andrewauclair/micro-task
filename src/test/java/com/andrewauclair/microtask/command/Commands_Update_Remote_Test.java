@@ -28,7 +28,9 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void update_from_remote_runs_git_pull() {
+	void update_from_remote_runs_git_pull() throws IOException {
+		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
 		commands.execute(printStream, "update repo --from-remote");
 
 		Mockito.verify(osInterface).runGitCommand("git pull");

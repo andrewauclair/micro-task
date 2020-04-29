@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -56,7 +57,9 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		ByteArrayOutputStream testTwoThreeGroup = new ByteArrayOutputStream();
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/two/three/group.txt")).thenReturn(new DataOutputStream(testTwoThreeGroup));
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
+		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
 		InOrder order = Mockito.inOrder(writer, osInterface);
 
@@ -139,7 +142,9 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenReturn(new DataOutputStream(output));
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
+		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -156,7 +161,9 @@ class Update_Files_Test extends CommandsBaseTestCase {
 	void update_files_prints_exception_if_task_data_version_txt_fails() throws IOException {
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenThrow(IOException.class);
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
+		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
 		assertOutput(
 				"java.io.IOException",
@@ -173,7 +180,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenThrow(IOException.class);
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, commands);
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
 		Mockito.verify(tasks).load(any(), any());
 	}

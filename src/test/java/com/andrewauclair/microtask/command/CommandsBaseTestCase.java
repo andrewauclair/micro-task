@@ -58,7 +58,7 @@ public class CommandsBaseTestCase {
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
-		projects = new Projects(tasks);
+		projects = new Projects(tasks, osInterface);
 //		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
 		commands = new Commands(tasks, projects, gitLabReleases, localSettings, osInterface);

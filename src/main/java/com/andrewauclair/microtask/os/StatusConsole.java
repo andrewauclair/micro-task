@@ -86,10 +86,10 @@ public class StatusConsole {
 		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		projects = new Projects(tasks);
+		projects = new Projects(tasks, osInterface);
 		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, osInterface);
+		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		terminal = TerminalBuilder.builder()
 				.system(true)

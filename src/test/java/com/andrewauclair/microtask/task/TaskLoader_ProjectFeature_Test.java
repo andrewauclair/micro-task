@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 	private final TaskReader reader = Mockito.mock(TaskReader.class);
+	private final Projects projects = Mockito.mock(Projects.class);
 	private TaskLoader loader;
 
 	@BeforeEach
@@ -24,7 +26,7 @@ class TaskLoader_ProjectFeature_Test extends TaskBaseTestCase {
 
 		LocalSettings localSettings = Mockito.mock(LocalSettings.class);
 
-		loader = new TaskLoader(tasks, reader, localSettings, osInterface);
+		loader = new TaskLoader(tasks, reader, localSettings, projects, osInterface);
 
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));

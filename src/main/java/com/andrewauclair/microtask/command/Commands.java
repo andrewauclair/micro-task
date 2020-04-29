@@ -10,10 +10,9 @@ import com.andrewauclair.microtask.command.list.SetListCommand;
 import com.andrewauclair.microtask.command.task.RenameTaskCommand;
 import com.andrewauclair.microtask.command.task.SetTaskCommand;
 import com.andrewauclair.microtask.os.*;
-import com.andrewauclair.microtask.project.ExistingProjectName;
-import com.andrewauclair.microtask.project.NewProjectName;
-import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.picocli.*;
+import com.andrewauclair.microtask.project.ExistingProjectName;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
 import com.andrewauclair.microtask.task.Tasks;
@@ -98,7 +97,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				cmdLine.addSubcommand("update",
 						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface), factory)
 								.addSubcommand(new UpdateAppCommand(gitLabReleases, osInterface))
-								.addSubcommand(new UpdateRepoCommand(tasks, osInterface, localSettings, this))
+								.addSubcommand(new UpdateRepoCommand(tasks, osInterface, localSettings, projects, this))
 				);
 				break;
 			case "set":
@@ -252,7 +251,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingProjectName.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
-		cmdLine.registerConverter(NewProjectName.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 
 		return cmdLine;
 	}
@@ -298,7 +296,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingProjectName.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
-		cmdLine.registerConverter(NewProjectName.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 
 		return cmdLine;
 	}
