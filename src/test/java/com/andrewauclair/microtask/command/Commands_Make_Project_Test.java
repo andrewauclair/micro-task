@@ -19,4 +19,17 @@ public class Commands_Make_Project_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void provides_error_message_when_project_already_exists() {
+		tasks.createGroup(newGroup("/test/"));
+		projects.createProject(existingGroup("/test/"));
+
+		commands.execute(System.out, "mk -p test/");
+
+		assertOutput(
+				"Project 'test' already exists.",
+				""
+		);
+	}
 }
