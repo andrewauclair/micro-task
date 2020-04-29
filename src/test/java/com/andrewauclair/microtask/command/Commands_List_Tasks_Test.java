@@ -354,7 +354,11 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test");
 
 		tasks.setActiveGroup(existingGroup("/one/"));
-		
+
+		tasks.setRecurring(existingID(2), true);
+		tasks.setRecurring(existingID(5), true);
+		tasks.setRecurring(existingID(8), true);
+
 		commands.execute(printStream, "list --tasks --current-group --recursive");
 		
 		assertOutput(
@@ -362,21 +366,21 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"",
 				ANSI_BOLD + "/one/two/three" + ANSI_RESET,
 				"  1 - 'Test'",
-				"  2 - 'Test'",
+				"R 2 - 'Test'",
 				"  3 - 'Test'",
 				"",
 				ANSI_BOLD + "/one/two/five/nine" + ANSI_RESET,
 				"  7 - 'Test'",
-				"  8 - 'Test'",
+				"R 8 - 'Test'",
 				"  9 - 'Test'",
 				"",
 				ANSI_BOLD + "/one/four" + ANSI_RESET,
 				"  4 - 'Test'",
-				"  5 - 'Test'",
+				"R 5 - 'Test'",
 				"  6 - 'Test'",
 				"",
 				"",
-				ANSI_BOLD + "Total Tasks: 9" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 9 (3 Recurring)" + ANSI_RESET,
 				""
 		);
 	}
@@ -394,7 +398,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"",
 				"R 1 - 'Test'",
 				"",
-				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 1 (1 Recurring)" + ANSI_RESET,
 				""
 		);
 	}
@@ -421,7 +425,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				"* " + ANSI_FG_GREEN + "3 - 'Very long titles will be cut off at the side of t...'" + ANSI_RESET,
 				"  4 - 'Very long titles will be cut off at the side of t...'",
 				"",
-				ANSI_BOLD + "Total Tasks: 3" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 3 (1 Recurring)" + ANSI_RESET,
 				""
 		);
 	}
