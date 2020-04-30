@@ -2,22 +2,21 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.LocalSettings;
-import com.andrewauclair.microtask.Utils;
-import com.andrewauclair.microtask.jline.GroupCompleter;
-import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.ExistingProjectName;
 import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.TaskContainer;
+import com.andrewauclair.microtask.task.TaskGroup;
+import com.andrewauclair.microtask.task.TaskState;
+import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
-import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_PURPLE;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Command(name = "project")
 public class ProjectCommand implements Runnable {
@@ -50,22 +49,96 @@ public class ProjectCommand implements Runnable {
 
 			Project project = projects.getProject(name.getName());
 
-			long taskCount = project.getTaskCount();
-			long finishedTaskCount = project.getFinishedTaskCount();
-			int taskPercentComplete = (int) ((finishedTaskCount / (double)taskCount) * 100);
+			List<List<String>> output = new ArrayList<>();
 
-			String taskProgress = "";
-			for (int i = 0; i < taskPercentComplete / 10; i++) {
-				taskProgress += "=";
-			}
-			for (int i = 0; i < 10 - (taskPercentComplete / 10); i++) {
-				taskProgress += " ";
-			}
+			output.add(Arrays.asList(
+					"Features",
+					String.valueOf(project.getFinishedFeatureCount()),
+					"/",
+					String.valueOf(project.getFeatureCount()),
+					progressBar(project.getFinishedFeatureCount(), project.getFeatureCount()),
+					String.format("%d%%", (int) ((project.getFinishedFeatureCount() / (double) project.getFeatureCount()) * 100))
+			));
+			output.add(Arrays.asList(
+					"Tasks",
+					String.valueOf(project.getFinishedTaskCount()),
+					"/",
+					String.valueOf(project.getTaskCount()),
+					progressBar(project.getFinishedTaskCount(), project.getTaskCount()),
+					String.format("%d%%", (int) ((project.getFinishedTaskCount() / (double) project.getTaskCount()) * 100))
+			));
+			output.add(Collections.emptyList());
 
-			System.out.println(String.format("Features  0 / %d [          ] 0%%", project.getFeatureCount()));
-			System.out.println(String.format("Tasks     %d / %d [%s] %d%%", finishedTaskCount, taskCount, taskProgress, taskPercentComplete));
+			output.addAll(getTaskOutput(project.getGroup()));
 
+			printOutput(output);
 		}
 		System.out.println();
+	}
+
+	private List<List<String>> getTaskOutput(TaskGroup group) {
+		List<List<String>> output = new ArrayList<>();
+
+		for (final TaskContainer child : group.getChildren()) {
+			long finished = child.getTasks().stream()
+					.filter(task -> task.state == TaskState.Finished)
+					.count();
+
+			int percent = (int) ((finished / (double) child.getTasks().size()) * 100);
+
+			output.add(Arrays.asList(
+					child.getFullPath(),
+					String.valueOf(finished),
+					"/",
+					String.valueOf(child.getTasks().size()),
+					progressBar(finished, child.getTasks().size()),
+					String.format("%d%%", percent)
+			));
+
+			if (child instanceof TaskGroup childGroup) {
+				output.addAll(getTaskOutput(childGroup));
+			}
+		}
+		return output;
+	}
+
+	private String progressBar(long finished, long total) {
+		int percent = (int) ((finished / (double) total) * 100);
+
+		return "[" +
+				"=".repeat(Math.max(0, percent / 10)) +
+				" ".repeat(Math.max(0, 10 - (percent / 10))) +
+				"]";
+	}
+
+	private void printOutput(List<List<String>> output) {
+		List<Integer> widths = new ArrayList<>();
+
+		for (final String str : output.get(0)) {
+			widths.add(0);
+		}
+
+		for (final List<String> strings : output) {
+			for (int i = 0; i < strings.size(); i++) {
+				if (widths.size() < i + 1) {
+					widths.add(0);
+				}
+				if (strings.get(i).length() > widths.get(i)) {
+					widths.set(i, strings.get(i).length());
+				}
+			}
+		}
+
+		for (final List<String> strings : output) {
+			for (int i = 0; i < strings.size(); i++) {
+				if (i == 0) {
+					System.out.print(String.format("%-" + widths.get(i) + "s ", strings.get(i)));
+				}
+				else {
+					System.out.print(String.format("%" + widths.get(i) + "s ", strings.get(i)));
+				}
+			}
+			System.out.println();
+		}
 	}
 }

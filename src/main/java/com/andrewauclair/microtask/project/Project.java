@@ -1,10 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.project;
 
-import com.andrewauclair.microtask.task.TaskContainer;
-import com.andrewauclair.microtask.task.TaskGroup;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 
 import java.util.ArrayList;
@@ -21,12 +18,16 @@ public class Project {
 		this.group = group;
 	}
 
+	public TaskGroup getGroup() {
+		return tasks.getGroup(group);
+	}
+
 	public String getName() {
 		return group.shortName();
 	}
 
 	public int getFeatureCount() {
-		return getFeatureCountForGroup(tasks.getGroup(group)) + 1;
+		return getFeatureCountForGroup(tasks.getGroup(group));
 	}
 
 	private int getFeatureCountForGroup(TaskGroup group) {
@@ -35,6 +36,23 @@ public class Project {
 			count++;
 			if (child instanceof TaskGroup childGroup) {
 				count += getFeatureCountForGroup(childGroup);
+			}
+		}
+		return count;
+	}
+
+	public long getFinishedFeatureCount() {
+		return getFinishedFeatureCountForGroup(tasks.getGroup(group));
+	}
+
+	private long getFinishedFeatureCountForGroup(TaskGroup group) {
+		int count = 0;
+		for (final TaskContainer child : group.getChildren()) {
+			if (child.getState() == TaskContainerState.Finished) {
+				count++;
+			}
+			if (child instanceof TaskGroup childGroup) {
+				count += getFinishedFeatureCountForGroup(childGroup);
 			}
 		}
 		return count;

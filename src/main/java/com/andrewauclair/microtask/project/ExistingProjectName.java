@@ -11,7 +11,7 @@ public class ExistingProjectName {
 		this.projects = projects;
 		this.name = name;
 		if (!projects.hasProject(name)) {
-			throw new TaskException("Project '" + name + "' already exists");
+			throw new TaskException("Project '" + name + "' doesn't exist.");
 		}
 	}
 
