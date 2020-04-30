@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.ExistingProjectName;
@@ -17,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 
 @Command(name = "project")
 public class ProjectCommand implements Runnable {
@@ -49,35 +53,41 @@ public class ProjectCommand implements Runnable {
 
 			Project project = projects.getProject(name.getName());
 
-			List<List<String>> output = new ArrayList<>();
+			ConsoleTable table = new ConsoleTable();
+			table.setColumnAlignment(LEFT, RIGHT, LEFT, RIGHT, LEFT, RIGHT);
+			table.setCellSpacing(1);
 
-			output.add(Arrays.asList(
+//			List<List<String>> output = new ArrayList<>();
+
+			table.addRow(
 					"Features",
 					String.valueOf(project.getFinishedFeatureCount()),
 					"/",
 					String.valueOf(project.getFeatureCount()),
 					progressBar(project.getFinishedFeatureCount(), project.getFeatureCount()),
 					String.format("%d%%", (int) ((project.getFinishedFeatureCount() / (double) project.getFeatureCount()) * 100))
-			));
-			output.add(Arrays.asList(
+			);
+			table.addRow(
 					"Tasks",
 					String.valueOf(project.getFinishedTaskCount()),
 					"/",
 					String.valueOf(project.getTaskCount()),
 					progressBar(project.getFinishedTaskCount(), project.getTaskCount()),
 					String.format("%d%%", (int) ((project.getFinishedTaskCount() / (double) project.getTaskCount()) * 100))
-			));
-			output.add(Collections.emptyList());
+			);
+			table.addRow();
+//			output.add(Collections.emptyList());
 
-			output.addAll(getTaskOutput(project.getGroup()));
+			addTaskOutput(table, project.getGroup());
 
-			printOutput(output);
+//			printOutput(output);
+			table.print();
 		}
 		System.out.println();
 	}
 
-	private List<List<String>> getTaskOutput(TaskGroup group) {
-		List<List<String>> output = new ArrayList<>();
+	private void addTaskOutput(ConsoleTable table, TaskGroup group) {
+//		List<List<String>> output = new ArrayList<>();
 
 		for (final TaskContainer child : group.getChildren()) {
 			long finished = child.getTasks().stream()
@@ -86,20 +96,19 @@ public class ProjectCommand implements Runnable {
 
 			int percent = (int) ((finished / (double) child.getTasks().size()) * 100);
 
-			output.add(Arrays.asList(
+			table.addRow(
 					child.getFullPath(),
 					String.valueOf(finished),
 					"/",
 					String.valueOf(child.getTasks().size()),
 					progressBar(finished, child.getTasks().size()),
 					String.format("%d%%", percent)
-			));
+			);
 
 			if (child instanceof TaskGroup childGroup) {
-				output.addAll(getTaskOutput(childGroup));
+				addTaskOutput(table, childGroup);
 			}
 		}
-		return output;
 	}
 
 	private String progressBar(long finished, long total) {
