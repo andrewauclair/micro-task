@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class Commands_Rename_Task_Test extends CommandsBaseTestCase {
 	@Test
@@ -24,6 +25,22 @@ class Commands_Rename_Task_Test extends CommandsBaseTestCase {
 
 		assertOutput(
 				"Renamed task 1 - 'This is the new name of the task'",
+				""
+		);
+	}
+
+	@Test
+	void renaming_task_to_the_same_name_results_in_message() {
+		tasks.addTask("Testing the rename of a task");
+
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "rename task 1 --name \"Testing the rename of a task\"");
+
+		Mockito.verifyNoMoreInteractions(osInterface);
+
+		assertOutput(
+				"Task already has that name.",
 				""
 		);
 	}

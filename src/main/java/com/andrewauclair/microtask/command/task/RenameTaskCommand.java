@@ -26,6 +26,11 @@ public class RenameTaskCommand implements Runnable {
 
 	@Override
 	public void run() {
+		if (tasks.getTask(id).task.equals(name)) {
+			System.out.println("Task already has that name.");
+			System.out.println();
+			return;
+		}
 		Task task = tasks.renameTask(id, name);
 
 		System.out.println("Renamed task " + task.description());
