@@ -1,6 +1,9 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask;
 
+import com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor;
+import com.andrewauclair.microtask.os.OSInterface;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,18 +12,27 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_UNDERLINE;
 
 public class ConsoleTable {
+	private final OSInterface osInterface;
+
 	public enum Alignment {
 		LEFT,
 		RIGHT
 	}
 
 	List<String> headers = new ArrayList<>();
-	List<List<String>> output = new ArrayList<>();
+	List<List<String>> cells = new ArrayList<>();
+
+	List<ConsoleBackgroundColor> rowColors = new ArrayList<>();
 
 	List<Alignment> alignments = new ArrayList<>();
 
 	boolean alternateColors = false;
 	private int spacing = 2;
+	private int rowLimit = 0;
+
+	public ConsoleTable(OSInterface osInterface) {
+		this.osInterface = osInterface;
+	}
 
 	public void setHeaders(String... headers) {
 		this.headers = Arrays.asList(headers);
@@ -34,12 +46,21 @@ public class ConsoleTable {
 		this.spacing = spacing;
 	}
 
+	public void setRowLimit(int limit) {
+		rowLimit = limit;
+	}
+
 	public void enableAlternatingColors() {
 		alternateColors = true;
 	}
 
 	public void addRow(String... cells) {
-		output.add(Arrays.asList(cells));
+		addRow(ConsoleBackgroundColor.ANSI_BG_BLACK, cells);
+	}
+
+	public void addRow(ConsoleBackgroundColor bgColor, String... cells) {
+		rowColors.add(bgColor);
+		this.cells.add(Arrays.asList(cells));
 	}
 
 	public void print() {
@@ -51,7 +72,7 @@ public class ConsoleTable {
 			widths.add(header.length());
 		}
 
-		for (final List<String> row : output) {
+		for (final List<String> row : cells) {
 			for (int i = 0; i < row.size(); i++) {
 				if (widths.size() < i + 1) {
 					widths.add(0);
@@ -65,27 +86,45 @@ public class ConsoleTable {
 			}
 		}
 
+		int terminalWidth = osInterface.getTerminalWidth();
+
 		if (headers.size() > 0) {
+			String line = "";
+
 			for (int i = 0; i < widths.size(); i++) {
 				String header = headers.get(i);
 
-				System.out.print(String.format("%-" + widths.get(i) + "s", ANSI_UNDERLINE + header + ANSI_RESET));
+				line += String.format("%-" + widths.get(i) + "s", ANSI_UNDERLINE + header + ANSI_RESET);
 
 				if (i + 1 < widths.size()) {
-					System.out.print(space);
+					line += space;
 				}
 			}
-			System.out.println();
+			if (line.length() > terminalWidth) {
+				line = line.substring(0, terminalWidth);
+			}
+			System.out.println(line);
 		}
 
 		int rowCount = 0;
 
-		for (final List<String> row : output) {
+		for (final List<String> row : cells) {
+			if (rowCount >= rowLimit && rowLimit != 0) {
+				break;
+			}
+
+			ConsoleBackgroundColor bgColor = rowColors.get(rowCount);
+
 			rowCount++;
 
-			if (rowCount % 2 != 0 && alternateColors) {
-				System.out.print("\u001B[49;5;237m");
+			if (bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {
+				System.out.print(bgColor);
 			}
+			else if (rowCount % 2 != 0 && alternateColors) {
+				System.out.print(ConsoleBackgroundColor.ANSI_BG_GRAY);
+			}
+
+			String line = "";
 
 			for (int i = 0; i < row.size(); i++) {
 				String cell = row.get(i);
@@ -98,14 +137,26 @@ public class ConsoleTable {
 					format = "%" + widths.get(i) + "s";
 				}
 
-				System.out.print(String.format(format, cell));
+				line += String.format(format, cell);
+//				System.out.print(String.format(format, cell));
 
 				if (i + 1 < row.size()) {
-					System.out.print(space);
+//					System.out.print(space);
+					line += space;
 				}
 			}
 
-			if (rowCount % 2 != 0 && alternateColors) {
+			if (line.replaceAll(" +$", "").length() > terminalWidth) {
+				line = line.substring(0, terminalWidth - 3) + "...";
+			}
+			else if (line.length() > terminalWidth) {
+				line = line.substring(0, terminalWidth);
+			}
+
+			System.out.print(line);
+
+			if ((rowCount % 2 != 0 && alternateColors) ||
+					bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {
 				System.out.print(ANSI_RESET);
 			}
 			System.out.println();

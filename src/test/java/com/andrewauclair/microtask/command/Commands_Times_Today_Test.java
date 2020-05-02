@@ -37,7 +37,9 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(500, "Testing a longer name in the times command because it's not done anywhere else and there's a bug right now", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
-		
+
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+
 		commands.execute(printStream, "times --today");
 		
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);

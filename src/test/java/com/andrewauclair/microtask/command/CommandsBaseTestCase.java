@@ -51,6 +51,8 @@ public class CommandsBaseTestCase {
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
+
 		Mockito.when(localSettings.getActiveList()).thenReturn("/default");
 		Mockito.when(localSettings.getActiveGroup()).thenReturn("/");
 

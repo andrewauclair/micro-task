@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -14,8 +15,12 @@ import picocli.CommandLine.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_BLACK;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 
 @Command(name = "list", description = "List tasks or the content of a group.")
@@ -53,7 +58,7 @@ final class ListCommand implements Runnable {
 		this.osInterface = osInterface;
 	}
 
-	private void printTasks(List<Task> tasksList, int limit) {
+	private void printTasks(ConsoleTable table, List<Task> tasksList, int limit, String listName, boolean printListName) {
 		Optional<Task> max = tasksList.stream()
 				.limit(limit)
 				.max(Comparator.comparingInt(o -> String.valueOf(o.id).length()));
@@ -61,7 +66,7 @@ final class ListCommand implements Runnable {
 		max.ifPresent(task -> tasksList.stream()
 				.limit(limit)
 				.sorted(Comparator.comparingLong(o -> o.id))
-				.forEach(str -> printTask(str, String.valueOf(task.id).length())));
+				.forEach(str -> printTask(table, str, String.valueOf(task.id).length(), listName, printListName)));
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
@@ -75,19 +80,32 @@ final class ListCommand implements Runnable {
 		}
 	}
 
-	private void printTask(Task task, int maxLength) {
-		String line;
+	private void printTask(ConsoleTable table, Task task, int maxLength, String listName, boolean printListName) {
+		String line = "";
 
 		boolean active = task.id == tasksData.getActiveTaskID();
 
+		if (printListName) {
+			line += listName;
+			line += " ";
+		}
+
+		// TODO This should probably have an F for finished
+		String type;
 		if (active) {
-			line = "* ";
+			line += "* ";
+			type = "*  ";
 		}
 		else if (task.isRecurring()) {
-			line = "R ";
+			line += "R ";
+			type = " R ";
+		}
+		else if (task.state == TaskState.Finished) {
+			type = "  F";
 		}
 		else {
-			line = "  ";
+			line += "  ";
+			type = "   ";
 		}
 
 		line += String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
@@ -113,10 +131,17 @@ final class ListCommand implements Runnable {
 			line += ANSI_RESET;
 		}
 
-		System.out.println(line);
+//		System.out.println(line);
+
+		if (printListName) {
+			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, listName, type, String.valueOf(task.id), task.task);
+		}
+		else {
+			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, type, String.valueOf(task.id), task.task);
+		}
 	}
 
-	private List<Task> printTasks(TaskGroup group, boolean finished, boolean recursive) {
+	private List<Task> printTasks(ConsoleTable table, TaskGroup mainGroup, TaskGroup group, boolean finished, boolean recursive) {
 		List<Task> tasks = new ArrayList<>();
 
 		for (TaskContainer child : group.getChildren()) {
@@ -128,13 +153,15 @@ final class ListCommand implements Runnable {
 				tasks.addAll(tasksList);
 
 				if (tasksList.size() > 0) {
-					System.out.println(ANSI_BOLD + list.getFullPath() + ANSI_RESET);
-					printTasks(tasksList, Integer.MAX_VALUE);
-					System.out.println();
+//					System.out.println(ANSI_BOLD + list.getFullPath() + ANSI_RESET);
+
+					String name = list.getFullPath().replace(mainGroup.getFullPath(), "");
+					printTasks(table, tasksList, Integer.MAX_VALUE, name, true);
+//					System.out.println();
 				}
 			}
 			else if (recursive) {
-				tasks.addAll(printTasks((TaskGroup) child, finished, true));
+				tasks.addAll(printTasks(table, mainGroup, (TaskGroup) child, finished, true));
 			}
 		}
 		return tasks;
@@ -181,8 +208,24 @@ final class ListCommand implements Runnable {
 //			int totalRecurring = 0;
 			List<Task> tasks = new ArrayList<>();
 
+			ConsoleTable table = new ConsoleTable(osInterface);
+			table.enableAlternatingColors();
+
 			if (useGroup) {
-				tasks = printTasks(tasksData.getActiveGroup(), finished, recursive);
+				table.setHeaders("List", "Type", "ID", "Description");
+				table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+			}
+			else {
+				table.setHeaders("Type", "ID", "Description");
+				table.setColumnAlignment(LEFT, RIGHT, LEFT);
+			}
+
+			if (!all) {
+				table.setRowLimit(MAX_DISPLAYED_TASKS);
+			}
+
+			if (useGroup) {
+				tasks = printTasks(table, tasksData.getActiveGroup(), tasksData.getActiveGroup(), finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasksData.getTasksForList(list).stream()
@@ -193,10 +236,15 @@ final class ListCommand implements Runnable {
 
 //				totalTasks += tasksList.size();
 
-				printTasks(tasksList, limit);
+				printTasks(table, tasksList, limit, "", false);
 			}
 
 			int totalTasks = tasks.size();
+
+			if (totalTasks > 0) {
+				table.print();
+			}
+
 			long totalRecurring = tasks.stream()
 					.filter(Task::isRecurring)
 					.count();

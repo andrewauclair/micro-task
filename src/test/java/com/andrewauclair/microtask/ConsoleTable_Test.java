@@ -2,9 +2,11 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
+import com.andrewauclair.microtask.os.OSInterface;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -13,6 +15,8 @@ import java.io.PrintStream;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_BLUE;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConsoleTable_Test {
@@ -21,11 +25,14 @@ public class ConsoleTable_Test {
 
 	private final PrintStream originalSystemOut = System.out;
 
-	private final ConsoleTable table = new ConsoleTable();
+	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
+	private final ConsoleTable table = new ConsoleTable(osInterface);
 
 	@BeforeEach
 	void setup() {
 		System.setOut(printStream);
+
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
 	}
 
 	@AfterEach
@@ -86,9 +93,9 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				"\u001B[49;5;237m1  one    data    data  data" + ANSI_RESET,
+				ANSI_BG_GRAY + "1  one    data    data  data" + ANSI_RESET,
 				"2  two    bigger  more  here",
-				"\u001B[49;5;237m3  three                    " + ANSI_RESET,
+				ANSI_BG_GRAY + "3  three                    " + ANSI_RESET,
 				"4  four   bigger        last"
 		);
 	}
@@ -153,6 +160,52 @@ public class ConsoleTable_Test {
 				"2  two   bigger more  here",
 				"3  three                  ",
 				"4  four  bigger       last"
+		);
+	}
+
+	@Test
+	void set_a_limit_for_how_many_rows_are_printed() {
+		table.setHeaders("ID", "One", "Two", "Three", "Four");
+		table.setRowLimit(2);
+
+		table.addRow("1", "one", "data", "data", "data");
+		table.addRow("2", "two", "bigger", "more", "here");
+		table.addRow("3", "three", "", "", "");
+		table.addRow("4", "four", "bigger", "", "last");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "ID" + r + "  " + u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
+//				"ID  One    Two     Three  Four",
+				"1   one    data    data   data",
+				"2   two    bigger  more   here"
+		);
+	}
+
+	@Test
+	void add_row_with_a_different_color() {
+		table.setHeaders("ID", "One", "Two", "Three", "Four");
+		table.setRowLimit(2);
+
+		table.addRow("1", "one", "data", "data", "data");
+		table.addRow(ANSI_BG_BLUE, "2", "two", "bigger", "more", "here");
+		table.addRow("3", "three", "", "", "");
+		table.addRow("4", "four", "bigger", "", "last");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "ID" + r + "  " + u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
+//				"ID  One    Two     Three  Four",
+				"1   one    data    data   data",
+				ANSI_BG_BLUE + "2   two    bigger  more   here" + ANSI_RESET
 		);
 	}
 
