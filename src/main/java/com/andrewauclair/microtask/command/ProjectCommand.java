@@ -53,7 +53,7 @@ public class ProjectCommand implements Runnable {
 
 			Project project = projects.getProject(name.getName());
 
-			ConsoleTable table = new ConsoleTable();
+			ConsoleTable table = new ConsoleTable(osInterface);
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, RIGHT, LEFT, RIGHT);
 			table.setCellSpacing(1);
 

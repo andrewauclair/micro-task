@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
 
@@ -57,6 +58,10 @@ public class OSInterfaceImpl implements OSInterface {
 		this.terminal = terminal;
 	}
 
+	private void printTimeDiff(long start, long stop) {
+		System.out.println(TimeUnit.NANOSECONDS.toMillis(stop - start) + "ms");
+	}
+
 	@Override
 	public boolean runGitCommand(String command) {
 		if (isJUnitTest()) {
@@ -74,7 +79,15 @@ public class OSInterfaceImpl implements OSInterface {
 
 			Process p = pb.start();
 
+			long start = System.nanoTime();
+
 			int exitCode = p.waitFor();
+
+			long afterWait = System.nanoTime();
+			if (localSettings.isDebugEnabled()) {
+				System.out.print("After Wait: ");
+				printTimeDiff(start, afterWait);
+			}
 
 			if (exitCode != 0) {
 				System.out.println();
