@@ -201,7 +201,14 @@ public class StatusConsole {
 				String line2 = "Active Task List: " + tasks.getActiveTaskList();
 				String line3 = "Current Group: " + currentGroup + "  Current List: " + currentList;
 
+				if (width - line2.length() - timeToday.length() < 0) {
+					line2 = "";
+				}
 				line2 += String.join("", Collections.nCopies(width - line2.length() - timeToday.length(), " "));
+
+				if (width - line3.length() - allTime.length() < 0) {
+					line3 = "Current Group: " + currentGroup;
+				}
 				line3 += String.join("", Collections.nCopies(width - line3.length() - allTime.length(), " "));
 
 				line2 += timeToday;
