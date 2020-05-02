@@ -41,8 +41,8 @@ public class CommandsBaseTestCase {
 
 	protected Commands commands;
 
-	private PrintStream originalSystemOut = System.out;
-	private PrintStream originalSystemErr = System.err;
+	private final PrintStream originalSystemOut = System.out;
+	private final PrintStream originalSystemErr = System.err;
 
 	@BeforeEach
 	public void setup() throws IOException {

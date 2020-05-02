@@ -21,29 +21,50 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void list_renames_are_always_relative() {
+	void renaming_a_nested_list() {
+		tasks.createGroup(newGroup("/test/"));
+		tasks.addList(newList("test/one"), true);
+		tasks.setActiveGroup(existingGroup("/test/"));
+
+		commands.execute(printStream, "rename list one -n \"two\"");
+
+		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/two");
+
+		assertOutput(
+				"Renamed list '/test/one' to '/test/two'",
+				""
+		);
+	}
+
+	@Test
+	void rename_a_list_in_a_different_group() {
+		tasks.createGroup(newGroup("/test/"));
+		tasks.createGroup(newGroup("/friday/"));
+		tasks.addList(newList("/test/one"), true);
+		tasks.setActiveGroup(existingGroup("/friday/"));
+
+		commands.execute(printStream, "rename list /test/one -n \"two\"");
+
+		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/two");
+
+		assertOutput(
+				"Renamed list '/test/one' to '/test/two'",
+				""
+		);
+	}
+
+	@Test
+	void new_list_must_be_provided_with_no_slashes() {
 		tasks.addGroup(newGroup("/test/new/"));
 		tasks.addList(newList("/test/one"), true);
 		tasks.addList(newList("/test/new/two"), true);
 		tasks.setActiveGroup(existingGroup("/test/"));
 
-		commands.execute(printStream, "rename list /test/one -n \"two\"");
-
 		commands.execute(printStream, "rename list one -n \"/test/two\"");
-
-		commands.execute(printStream, "rename list new/two -n \"three\"");
-
-		commands.execute(printStream, "rename list one -n \"test/two\"");
 
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test/one", "/test/new/two");
 
 		assertOutput(
-				"Lists must be renamed with name, not paths.",
-				"",
-				"Lists must be renamed with name, not paths.",
-				"",
-				"Lists must be renamed with name, not paths.",
-				"",
 				"Lists must be renamed with name, not paths.",
 				""
 		);

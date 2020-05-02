@@ -17,7 +17,6 @@ public class RenameListCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-//	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to rename.")
 	@Parameters(index = "0", completionCandidates = ListCompleter.class, description = "List to rename.")
 	private ExistingTaskListName list;
 
@@ -34,11 +33,7 @@ public class RenameListCommand implements Runnable {
 			throw new TaskException("Lists must be renamed with name, not paths.");
 		}
 
-		if (list.absoluteName().substring(1).contains("/")) {
-			throw new TaskException("Lists must be renamed with name, not paths.");
-		}
-
-		NewTaskListName newName = new NewTaskListName(tasks, name);
+		NewTaskListName newName = new NewTaskListName(tasks, list.parentGroupName().absoluteName() + name);
 		tasks.renameList(list, newName);
 
 		System.out.println("Renamed list '" + list + "' to '" + newName + "'");
