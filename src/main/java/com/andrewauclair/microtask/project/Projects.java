@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,6 +22,10 @@ public class Projects {
 	public Projects(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
+	}
+
+	public List<Project> getAllProjects() {
+		return Collections.unmodifiableList(projects);
 	}
 
 	public boolean hasProject(String name) {

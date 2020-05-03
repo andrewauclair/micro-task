@@ -38,6 +38,9 @@ public class ProjectCommand implements Runnable {
 	@Option(names = {"--progress"})
 	private boolean progress;
 
+	@Option(names = {"--list"})
+	private boolean list;
+
 	public ProjectCommand(Tasks tasks, Projects projects, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.projects = projects;
@@ -47,7 +50,12 @@ public class ProjectCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (progress) {
+		if (list) {
+			for (final Project project : projects.getAllProjects()) {
+				System.out.println(project.getName());
+			}
+		}
+		else if (progress) {
 			System.out.println("Project progress for 'test'");
 			System.out.println();
 
