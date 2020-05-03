@@ -10,9 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Commands_Status_Test extends CommandsBaseTestCase {
 	@Test
 	void status_command_sends_a_command_to_the_status_console() {
-		commands.execute(printStream, "status --command \"list --tasks\"");
+		commands.execute(printStream, "status --command \"tasks --all\"");
 
-		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.COMMAND, "list --tasks");
+		Mockito.verify(osInterface).sendStatusMessage(StatusConsole.TransferType.COMMAND, "tasks --all");
 	}
 
 	@Test

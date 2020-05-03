@@ -86,6 +86,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("focus", new FocusCommand(osInterface));
 		commands.put("status", new StatusCommand(this, osInterface));
 		commands.put("project", new ProjectCommand(tasks, projects, localSettings, osInterface));
+		commands.put("group", new GroupCommand(tasks));
+		commands.put("tasks", new TasksCommand(tasks, osInterface));
 	}
 
 	private CommandLine createCommand(CommandLine cmdLine, String command) {
@@ -177,6 +179,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new ProjectCommand(tasks, projects, localSettings, osInterface);
 			case "datagen":
 				return new RandomDataGenerator(tasks);
+			case "group":
+				return new GroupCommand(tasks);
+			case "tasks":
+				return new TasksCommand(tasks, osInterface);
 		}
 
 		for (String alias : aliases.keySet()) {
