@@ -2,18 +2,18 @@
 package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Project {
 	private final Tasks tasks;
-	private final ExistingTaskGroupName group;
+	private final ExistingGroupName group;
 
 	private final List<Feature> features = new ArrayList<>();
 
-	public Project(Tasks tasks, ExistingTaskGroupName group) {
+	public Project(Tasks tasks, ExistingGroupName group) {
 		this.tasks = tasks;
 		this.group = group;
 	}

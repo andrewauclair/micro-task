@@ -7,12 +7,15 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
@@ -35,13 +38,13 @@ final class ListCommand implements Runnable {
 	private boolean tasks;
 
 	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
-	private ExistingTaskListName list;
+	private ExistingListName list;
 
 	@Option(names = {"--current-group"}, description = "List tasks in the current group.")
 	private boolean current_group;
 
 	@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
-	private ExistingTaskGroupName group;
+	private ExistingGroupName group;
 
 	@Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")
 	private boolean recursive;
@@ -58,20 +61,6 @@ final class ListCommand implements Runnable {
 	ListCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasksData = tasks;
 		this.osInterface = osInterface;
-	}
-
-	private void printTasks(ConsoleTable table, List<Task> tasksList, int limit, String listName, boolean printListName) {
-		Optional<Task> max = tasksList.stream()
-				.limit(limit)
-				.max(Comparator.comparingInt(o -> String.valueOf(o.id).length()));
-
-		max.ifPresent(task -> tasksList.stream()
-				.limit(limit)
-				.sorted(((Comparator<Task>) (o1, o2) -> {
-					return Long.compare(o1.id, o2.id);
-				}).reversed())
-//				.sorted(Comparator.comparingLong(o -> o.id))
-				.forEach(str -> printTask(table, str, String.valueOf(task.id).length(), listName, printListName)));
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
@@ -111,67 +100,6 @@ final class ListCommand implements Runnable {
 		}
 	}
 
-	private void printTask(ConsoleTable table, Task task, int maxLength, String listName, boolean printListName) {
-		String line = "";
-
-		boolean active = task.id == tasksData.getActiveTaskID();
-
-		if (printListName) {
-			line += listName;
-			line += " ";
-		}
-
-		// TODO This should probably have an F for finished
-		String type;
-		if (active) {
-			line += "* ";
-			type = "*  ";
-		}
-		else if (task.isRecurring()) {
-			line += "R ";
-			type = " R ";
-		}
-		else if (task.state == TaskState.Finished) {
-			type = "  F";
-		}
-		else {
-			line += "  ";
-			type = "   ";
-		}
-
-		line += String.join("", Collections.nCopies(maxLength - String.valueOf(task.id).length(), " "));
-
-		if (active) {
-			line += ANSI_FG_GREEN;
-		}
-
-		line += task.description();
-
-		int length = line.length();
-
-		if (active) {
-			length -= ANSI_FG_GREEN.toString().length();
-		}
-
-		if (length > osInterface.getTerminalWidth()) {
-			line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
-			line += "...'";
-		}
-
-		if (active) {
-			line += ANSI_RESET;
-		}
-
-//		System.out.println(line);
-
-		if (printListName) {
-			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, listName, type, String.valueOf(task.id), task.task);
-		}
-		else {
-			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, type, String.valueOf(task.id), task.task);
-		}
-	}
-
 	private List<Task> getTasks(TaskGroup group, boolean finished, boolean recursive) {
 		List<Task> tasks = new ArrayList<>();
 
@@ -190,32 +118,6 @@ final class ListCommand implements Runnable {
 		return tasks;
 	}
 
-	private List<Task> printTasks(ConsoleTable table, TaskGroup mainGroup, TaskGroup group, boolean finished, boolean recursive) {
-		List<Task> tasks = new ArrayList<>();
-
-		for (TaskContainer child : group.getChildren()) {
-			if (child instanceof TaskList list) {
-				List<Task> tasksList = list.getTasks().stream()
-						.filter(task -> finished == (task.state == TaskState.Finished))
-						.collect(Collectors.toList());
-
-				tasks.addAll(tasksList);
-
-				if (tasksList.size() > 0) {
-//					System.out.println(ANSI_BOLD + list.getFullPath() + ANSI_RESET);
-
-					String name = list.getFullPath().replace(mainGroup.getFullPath(), "");
-					printTasks(table, tasksList, Integer.MAX_VALUE, name, true);
-//					System.out.println();
-				}
-			}
-			else if (recursive) {
-				tasks.addAll(printTasks(table, mainGroup, (TaskGroup) child, finished, true));
-			}
-		}
-		return tasks;
-	}
-
 	@Override
 	public void run() {
 		boolean all = this.all;
@@ -224,13 +126,13 @@ final class ListCommand implements Runnable {
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
 
-		ExistingTaskListName list = tasksData.getActiveList();
+		ExistingListName list = tasksData.getActiveList();
 
 		if (this.list != null) {
 			list = this.list;
 		}
 
-		ExistingTaskGroupName group = new ExistingTaskGroupName(tasksData, tasksData.getActiveGroup().getFullPath());
+		ExistingGroupName group = new ExistingGroupName(tasksData, tasksData.getActiveGroup().getFullPath());
 
 		if (this.group != null) {
 			group = this.group;
@@ -272,7 +174,6 @@ final class ListCommand implements Runnable {
 			}
 
 			if (useGroup) {
-//				tasks = printTasks(table, tasksData.getActiveGroup(), tasksData.getActiveGroup(), finished, recursive);
 				tasks = getTasks(tasksData.getActiveGroup(), finished, recursive);
 			}
 			else {
@@ -281,8 +182,6 @@ final class ListCommand implements Runnable {
 						.collect(Collectors.toList());
 
 				tasks.addAll(tasksList);
-
-//				printTasks(table, tasksList, limit, "", false);
 			}
 
 			if (tasks.size() > limit) {

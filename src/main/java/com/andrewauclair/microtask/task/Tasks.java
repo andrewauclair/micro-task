@@ -9,10 +9,10 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.add.ListAdder;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.TaskListFileWriter;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import com.andrewauclair.microtask.task.move.GroupMover;
 import com.andrewauclair.microtask.task.move.ListMover;
@@ -44,9 +44,9 @@ public class Tasks {
 
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
-	private ExistingTaskGroupName activeGroup = new ExistingTaskGroupName(this, ROOT_PATH);
+	private ExistingGroupName activeGroup = new ExistingGroupName(this, ROOT_PATH);
 	private long activeTaskID = NO_ACTIVE_TASK;
-	private ExistingTaskListName activeList;
+	private ExistingListName activeList;
 
 	private long nextID = 1;
 
@@ -63,7 +63,7 @@ public class Tasks {
 		else {
 			addList(new NewTaskListName(this, "/default"), false);
 		}
-		activeList = new ExistingTaskListName(this, "/default");
+		activeList = new ExistingListName(this, "/default");
 	}
 
 	private boolean hasRepo() {
@@ -105,11 +105,11 @@ public class Tasks {
 		return addTask(task, activeList);
 	}
 
-	public Task addTask(String task, ExistingTaskListName list) {
+	public Task addTask(String task, ExistingListName list) {
 		return getList(list).addTask(new NewID(this, incrementID()), task);
 	}
 
-	public TaskList getList(ExistingTaskListName listName) {
+	public TaskList getList(ExistingListName listName) {
 		return getGroupForList(listName).getListAbsolute(listName.absoluteName());
 	}
 
@@ -131,7 +131,7 @@ public class Tasks {
 		}
 	}
 
-	public TaskGroup getGroupForList(ExistingTaskListName list) {
+	public TaskGroup getGroupForList(ExistingListName list) {
 		TaskGroup group = getGroup(list.parentGroupName());
 
 		if (!group.containsListAbsolute(list.absoluteName())) {
@@ -140,7 +140,7 @@ public class Tasks {
 		return group;
 	}
 
-	public TaskGroup getGroup(ExistingTaskGroupName group) {
+	public TaskGroup getGroup(ExistingGroupName group) {
 		return getGroup(group.absoluteName());
 	}
 
@@ -159,17 +159,17 @@ public class Tasks {
 		return nextID;
 	}
 
-	public void moveList(ExistingTaskListName list, ExistingTaskGroupName group) {
+	public void moveList(ExistingListName list, ExistingGroupName group) {
 		ListMover mover = new ListMover(this, osInterface);
 		mover.moveList(list, group);
 	}
 
-	public void moveGroup(ExistingTaskGroupName group, ExistingTaskGroupName destGroup) {
+	public void moveGroup(ExistingGroupName group, ExistingGroupName destGroup) {
 		GroupMover mover = new GroupMover(this, osInterface);
 		mover.moveGroup(group, destGroup);
 	}
 
-	public Task moveTask(ExistingID id, ExistingTaskListName listName) {
+	public Task moveTask(ExistingID id, ExistingListName listName) {
 		return getListForTask(id).moveTask(id, getList(listName));
 	}
 
@@ -198,11 +198,11 @@ public class Tasks {
 		return finishTask(new ExistingID(this, getActiveTask().id));
 	}
 
-	public List<Task> getTasksForList(ExistingTaskListName listName) {
+	public List<Task> getTasksForList(ExistingListName listName) {
 		return getList(listName).getTasks();
 	}
 
-	public TaskList getListByName(ExistingTaskListName name) {
+	public TaskList getListByName(ExistingListName name) {
 		return getList(name);
 	}
 
@@ -267,11 +267,11 @@ public class Tasks {
 		return getList(activeList).getTasks();
 	}
 
-	public ExistingTaskListName getActiveTaskList() {
+	public ExistingListName getActiveTaskList() {
 		if (activeTaskID == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		return new ExistingTaskListName(this, getListForTask(new ExistingID(this, activeTaskID)).getFullPath());
+		return new ExistingListName(this, getListForTask(new ExistingID(this, activeTaskID)).getFullPath());
 	}
 
 	public Task finishTask(ExistingID id) {
@@ -288,7 +288,7 @@ public class Tasks {
 		return list.getTask(new ExistingID(this, activeTaskID));
 	}
 
-	public void renameList(ExistingTaskListName currentName, NewTaskListName newName) {
+	public void renameList(ExistingListName currentName, NewTaskListName newName) {
 		TaskGroup group = getGroupForList(currentName);
 
 		TaskList currentList = group.getListAbsolute(currentName.absoluteName());
@@ -301,7 +301,7 @@ public class Tasks {
 		group.addChild(currentList.rename(newName.shortName()));
 
 		if (activeList.equals(currentName)) {
-			activeList = new ExistingTaskListName(this, newName.absoluteName());
+			activeList = new ExistingListName(this, newName.absoluteName());
 		}
 
 		try {
@@ -316,7 +316,7 @@ public class Tasks {
 				.commit("Renamed list '" + currentName + "' to '" + newName + "'");
 	}
 
-	public void renameGroup(ExistingTaskGroupName currentGroup, NewTaskGroupName newGroup) {
+	public void renameGroup(ExistingGroupName currentGroup, NewTaskGroupName newGroup) {
 		TaskGroup group = getGroup(currentGroup);
 
 		boolean isActiveGroup = activeGroup.absoluteName().equals(group.getFullPath());
@@ -339,7 +339,7 @@ public class Tasks {
 		}
 
 		if (isActiveGroup) {
-			activeGroup = new ExistingTaskGroupName(this, newGroup.absoluteName());
+			activeGroup = new ExistingGroupName(this, newGroup.absoluteName());
 		}
 	}
 
@@ -357,7 +357,7 @@ public class Tasks {
 		}
 	}
 
-	public ExistingTaskListName getActiveList() {
+	public ExistingListName getActiveList() {
 		return activeList;
 	}
 
@@ -365,7 +365,7 @@ public class Tasks {
 		this.activeTaskID = activeTaskID;
 	}
 
-	public void setActiveList(ExistingTaskListName listName) {
+	public void setActiveList(ExistingListName listName) {
 		activeList = listName;
 	}
 
@@ -377,7 +377,7 @@ public class Tasks {
 		TaskGroupFinder finder = new TaskGroupFinder(this);
 
 		if (finder.hasGroupPath(groupName)) {
-			return getGroup(new ExistingTaskGroupName(this, groupName.absoluteName()));
+			return getGroup(new ExistingGroupName(this, groupName.absoluteName()));
 		}
 
 		String currentParent = ROOT_PATH;
@@ -445,7 +445,7 @@ public class Tasks {
 		return listForTask.get();
 	}
 
-	public void replaceTask(ExistingTaskListName listName, Task oldTask, Task newTask) {
+	public void replaceTask(ExistingListName listName, Task oldTask, Task newTask) {
 		TaskList list = getList(listName);
 		list.removeTask(oldTask);
 		list.addTask(newTask);
@@ -463,7 +463,7 @@ public class Tasks {
 				.build();
 
 		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
-		replaceTask(new ExistingTaskListName(this, list), optionalTask, task);
+		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
@@ -474,7 +474,7 @@ public class Tasks {
 		return task;
 	}
 
-	public void setProject(ExistingTaskListName listName, String project, boolean createFiles) {
+	public void setProject(ExistingListName listName, String project, boolean createFiles) {
 		TaskList list = getList(listName);
 
 		if (list.getState() == TaskContainerState.Finished) {
@@ -496,7 +496,7 @@ public class Tasks {
 		}
 	}
 
-	public void setProject(ExistingTaskGroupName groupName, String project, boolean createFiles) {
+	public void setProject(ExistingGroupName groupName, String project, boolean createFiles) {
 		TaskGroup group = getGroup(groupName);
 
 		if (group.getState() == TaskContainerState.Finished) {
@@ -525,7 +525,7 @@ public class Tasks {
 		}
 	}
 
-	public void setFeature(ExistingTaskListName listName, String feature, boolean createFiles) {
+	public void setFeature(ExistingListName listName, String feature, boolean createFiles) {
 		TaskList list = getList(listName);
 
 		if (list.getState() == TaskContainerState.Finished) {
@@ -547,7 +547,7 @@ public class Tasks {
 		}
 	}
 
-	public void setFeature(ExistingTaskGroupName groupName, String feature, boolean createFiles) {
+	public void setFeature(ExistingGroupName groupName, String feature, boolean createFiles) {
 		TaskGroup group = getGroup(groupName);
 
 		if (group.getState() == TaskContainerState.Finished) {
@@ -576,7 +576,7 @@ public class Tasks {
 		}
 	}
 
-	public void setGroupState(ExistingTaskGroupName groupName, TaskContainerState state, boolean createFiles) {
+	public void setGroupState(ExistingGroupName groupName, TaskContainerState state, boolean createFiles) {
 		TaskGroup group = getGroup(groupName);
 
 		TaskGroup parent = getGroup(group.getParent());
@@ -595,10 +595,10 @@ public class Tasks {
 		}
 	}
 
-	public void setListState(ExistingTaskListName listName, TaskContainerState state, boolean createFiles) {
+	public void setListState(ExistingListName listName, TaskContainerState state, boolean createFiles) {
 		TaskList list = getList(listName);
 
-		TaskGroup parent = getGroupForList(new ExistingTaskListName(this, list.getFullPath()));
+		TaskGroup parent = getGroupForList(new ExistingListName(this, list.getFullPath()));
 
 		parent.removeChild(list);
 
@@ -614,7 +614,7 @@ public class Tasks {
 		}
 	}
 
-	public TaskGroup setActiveGroup(ExistingTaskGroupName groupName) {
+	public TaskGroup setActiveGroup(ExistingGroupName groupName) {
 		activeGroup = groupName;
 
 		return getGroup(activeGroup);
@@ -628,7 +628,7 @@ public class Tasks {
 		return rootGroup;
 	}
 
-	public TaskList finishList(ExistingTaskListName list) {
+	public TaskList finishList(ExistingListName list) {
 		TaskList taskList = getList(list);
 
 		TaskGroup parent = getGroupForList(list);
@@ -647,7 +647,7 @@ public class Tasks {
 		return newList;
 	}
 
-	public TaskGroup finishGroup(ExistingTaskGroupName group) {
+	public TaskGroup finishGroup(ExistingGroupName group) {
 		TaskGroup origGroup = getGroup(group);
 		TaskGroup parent = getGroup(origGroup.getParent());
 
@@ -667,7 +667,7 @@ public class Tasks {
 
 	public boolean load(TaskLoader loader, Commands commands) {
 		rootGroup = TaskGroupBuilder.createRootGroup();
-		activeGroup = new ExistingTaskGroupName(this, ROOT_PATH);
+		activeGroup = new ExistingGroupName(this, ROOT_PATH);
 		activeTaskID = NO_ACTIVE_TASK;
 
 		try {
@@ -681,8 +681,8 @@ public class Tasks {
 
 			if (activeTask.isPresent()) {
 				activeTaskID = activeTask.get().id;
-				activeList = new ExistingTaskListName(this, findListForTask(new ExistingID(this, activeTaskID)).getFullPath());
-				activeGroup = new ExistingTaskGroupName(this, getGroupForList(activeList).getFullPath());
+				activeList = new ExistingListName(this, findListForTask(new ExistingID(this, activeTaskID)).getFullPath());
+				activeGroup = new ExistingGroupName(this, getGroupForList(activeList).getFullPath());
 			}
 		}
 		catch (Exception e) {

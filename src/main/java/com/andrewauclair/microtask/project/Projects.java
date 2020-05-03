@@ -3,10 +3,9 @@ package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class Projects {
 				.anyMatch(project -> project.getName().equals(name));
 	}
 
-	public Project createProject(ExistingTaskGroupName group) {
+	public Project createProject(ExistingGroupName group) {
 		Project project = new Project(tasks, group);
 		projects.add(project);
 
@@ -60,7 +59,7 @@ public class Projects {
 	public void load() {
 		try (Scanner scanner = new Scanner(osInterface.createInputStream("git-data/projects.txt"))) {
 			while (scanner.hasNextLine()) {
-				createProject(new ExistingTaskGroupName(tasks, scanner.nextLine()));
+				createProject(new ExistingGroupName(tasks, scanner.nextLine()));
 			}
 		}
 		catch (IOException e) {

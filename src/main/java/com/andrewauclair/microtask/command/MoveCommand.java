@@ -7,8 +7,8 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -28,17 +28,17 @@ final class MoveCommand implements Runnable {
 		private ExistingID[] id;
 
 		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to move.")
-		private ExistingTaskListName list;
+		private ExistingListName list;
 
 		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to move.")
-		private ExistingTaskGroupName group;
+		private ExistingGroupName group;
 	}
 
 	@Option(names = {"--dest-group"}, completionCandidates = GroupCompleter.class, description = "Destination group for list or group.")
-	private ExistingTaskGroupName dest_group;
+	private ExistingGroupName dest_group;
 
 	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class, description = "Destination list for task.")
-	private ExistingTaskListName dest_list;
+	private ExistingListName dest_list;
 
 	MoveCommand(Tasks tasks) {
 		this.tasks = tasks;
@@ -78,7 +78,7 @@ final class MoveCommand implements Runnable {
 		}
 	}
 
-	private void moveTask(ExistingTaskListName list, ExistingID taskID) {
+	private void moveTask(ExistingListName list, ExistingID taskID) {
 		TaskList taskList = tasks.getListForTask(taskID);
 		taskList.moveTask(taskID, tasks.getListByName(list));
 

@@ -13,10 +13,10 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 
 @Command(name = "version", description = "Display the application version.")
 public final class VersionCommand implements Runnable {
-	private final OSInterface osInterface;
-
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
+
+	private final OSInterface osInterface;
 
 	VersionCommand(OSInterface osInterface) {
 		this.osInterface = osInterface;

@@ -4,11 +4,9 @@ package com.andrewauclair.microtask.project;
 import com.andrewauclair.microtask.TaskException;
 
 public class ExistingProjectName {
-	private final Projects projects;
 	private final String name;
 
 	public ExistingProjectName(Projects projects, String name) {
-		this.projects = projects;
 		this.name = name;
 		if (!projects.hasProject(name)) {
 			throw new TaskException("Project '" + name + "' doesn't exist.");

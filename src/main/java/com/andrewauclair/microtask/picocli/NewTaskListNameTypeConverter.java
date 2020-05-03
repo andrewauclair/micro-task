@@ -13,7 +13,7 @@ public class NewTaskListNameTypeConverter implements CommandLine.ITypeConverter<
 	}
 
 	@Override
-	public NewTaskListName convert(String value) throws Exception {
+	public NewTaskListName convert(String value) {
 		try {
 			return new NewTaskListName(tasks, value);
 		}

@@ -16,9 +16,9 @@ import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.Parser;
@@ -244,9 +244,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		setHandlers(cmdLine);
 
-		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingListName.class, s -> new ExistingListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
@@ -289,9 +289,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 
 		setHandlers(cmdLine);
 
-		cmdLine.registerConverter(ExistingTaskListName.class, s -> new ExistingTaskListNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingListName.class, s -> new ExistingListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(ExistingTaskGroupName.class, s -> new ExistingTaskGroupNameTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));

@@ -14,7 +14,7 @@ public class NewTaskGroupNameTypeConverter implements CommandLine.ITypeConverter
 	}
 
 	@Override
-	public NewTaskGroupName convert(String value) throws Exception {
+	public NewTaskGroupName convert(String value) {
 		try {
 			return new NewTaskGroupName(tasks, value);
 		}

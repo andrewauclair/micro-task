@@ -12,12 +12,12 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_UNDERLINE;
 
 public class ConsoleTable {
-	private final OSInterface osInterface;
-
 	public enum Alignment {
 		LEFT,
 		RIGHT
 	}
+
+	private final OSInterface osInterface;
 
 	List<String> headers = new ArrayList<>();
 	List<List<String>> cells = new ArrayList<>();
@@ -73,61 +73,38 @@ public class ConsoleTable {
 	public void print() {
 		String space = " ".repeat(spacing);
 
-		List<Integer> widths = new ArrayList<>();
+		List<Integer> widths = getColumnWidths();
 
-		for (final String header : headers) {
-			widths.add(header.length());
-		}
-
-//		for (final List<String> row : cells) {
-		int startRow = cells.size() > rowLimit && printLastRows ? cells.size() - rowLimit : 0;
-
-		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
-			List<String> row = cells.get(rowNum);
-
-			for (int i = 0; i < row.size(); i++) {
-				if (widths.size() < i + 1) {
-					widths.add(0);
-				}
-
-				String cell = row.get(i);
-
-				if (cell.length() > widths.get(i)) {
-					widths.set(i, cell.length());
-				}
-			}
-		}
+		int startRow = getStartRow();
 
 		int terminalWidth = osInterface.getTerminalWidth();
 
 		if (headers.size() > 0) {
-			String line = "";
+			StringBuilder line = new StringBuilder();
 
 			for (int i = 0; i < widths.size(); i++) {
 				String header = headers.get(i);
 
-//				line += String.format("%-" + widths.get(i) + "s", ANSI_UNDERLINE + header + ANSI_RESET);
-				line += ANSI_UNDERLINE;
-				line += header;
-				line += ANSI_RESET;
+				line.append(ANSI_UNDERLINE);
+				line.append(header);
+				line.append(ANSI_RESET);
 
 				if (widths.get(i) - header.length() > 0) {
-					line += String.format("%" + (widths.get(i) - header.length()) + "s", " ");
+					line.append(String.format("%" + (widths.get(i) - header.length()) + "s", " "));
 				}
 
 				if (i + 1 < widths.size()) {
-					line += space;
+					line.append(space);
 				}
 			}
 			if (line.length() > terminalWidth) {
-				line = line.substring(0, terminalWidth);
+				line = new StringBuilder(line.substring(0, terminalWidth));
 			}
 			System.out.println(line);
 		}
 
 		int rowCount = 0;
 
-//		for (final List<String> row : cells) {
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
 			List<String> row = cells.get(rowNum);
 
@@ -146,7 +123,7 @@ public class ConsoleTable {
 				System.out.print(ConsoleBackgroundColor.ANSI_BG_GRAY);
 			}
 
-			String line = "";
+			StringBuilder line = new StringBuilder();
 			int prelength = 0;
 
 			for (int i = 0; i < row.size(); i++) {
@@ -165,14 +142,14 @@ public class ConsoleTable {
 					prelength = line.length();
 				}
 
-				line += cellLine;
+				line.append(cellLine);
 
 				if (i + 1 < row.size()) {
-					line += space;
+					line.append(space);
 				}
 			}
 
-			if (wordWrap && line.trim().length() > terminalWidth) {
+			if (wordWrap && line.toString().trim().length() > terminalWidth) {
 				int lastSpace = line.substring(0, terminalWidth + 1).lastIndexOf(' ');
 
 				String currentline = line.substring(0, lastSpace);
@@ -190,11 +167,11 @@ public class ConsoleTable {
 				System.out.print(String.format("%-" + terminalWidth + "s", nextLine));
 			}
 			else {
-				if (line.replaceAll(" +$", "").length() > terminalWidth) {
-					line = line.substring(0, terminalWidth - 3) + "...";
+				if (line.toString().replaceAll(" +$", "").length() > terminalWidth) {
+					line = new StringBuilder(line.substring(0, terminalWidth - 3) + "...");
 				}
 				else if (line.length() > terminalWidth) {
-					line = line.substring(0, terminalWidth);
+					line = new StringBuilder(line.substring(0, terminalWidth));
 				}
 
 				System.out.print(line);
@@ -206,6 +183,37 @@ public class ConsoleTable {
 			}
 			System.out.println();
 		}
+	}
+
+	private List<Integer> getColumnWidths() {
+		List<Integer> widths = new ArrayList<>();
+
+		for (final String header : headers) {
+			widths.add(header.length());
+		}
+
+		int startRow = getStartRow();
+
+		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
+			List<String> row = cells.get(rowNum);
+
+			for (int i = 0; i < row.size(); i++) {
+				if (widths.size() < i + 1) {
+					widths.add(0);
+				}
+
+				String cell = row.get(i);
+
+				if (cell.length() > widths.get(i)) {
+					widths.set(i, cell.length());
+				}
+			}
+		}
+		return widths;
+	}
+
+	private int getStartRow() {
+		return cells.size() > rowLimit && printLastRows ? cells.size() - rowLimit : 0;
 	}
 
 	private Alignment getAlignment(int column) {

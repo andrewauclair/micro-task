@@ -13,7 +13,7 @@ public class ExistingProjectNameTypeConverter implements CommandLine.ITypeConver
 	}
 
 	@Override
-	public ExistingProjectName convert(String value) throws Exception {
+	public ExistingProjectName convert(String value) {
 		try {
 			return new ExistingProjectName(projects, value);
 		}

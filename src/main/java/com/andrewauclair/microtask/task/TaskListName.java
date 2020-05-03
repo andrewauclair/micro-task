@@ -1,7 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
@@ -9,7 +9,7 @@ public abstract class TaskListName {
 	private final String absoluteName;
 	private final String shortName;
 
-	private final ExistingTaskGroupName parent;
+	private final ExistingGroupName parent;
 
 	public TaskListName(Tasks tasks, String name) {
 		if (name.endsWith("/")) {
@@ -21,7 +21,7 @@ public abstract class TaskListName {
 
 		String parent = absoluteName.substring(0, absoluteName.lastIndexOf('/') + 1);
 
-		this.parent = new ExistingTaskGroupName(tasks, parent);
+		this.parent = new ExistingGroupName(tasks, parent);
 	}
 
 	private String absoluteName(Tasks tasks, String name) {
@@ -39,7 +39,7 @@ public abstract class TaskListName {
 		return shortName;
 	}
 
-	public ExistingTaskGroupName parentGroupName() {
+	public ExistingGroupName parentGroupName() {
 		return parent;
 	}
 

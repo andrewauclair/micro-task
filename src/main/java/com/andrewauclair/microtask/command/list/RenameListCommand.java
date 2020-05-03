@@ -4,7 +4,7 @@ package com.andrewauclair.microtask.command.list;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -18,7 +18,7 @@ public class RenameListCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(index = "0", completionCandidates = ListCompleter.class, description = "List to rename.")
-	private ExistingTaskListName list;
+	private ExistingListName list;
 
 	@Option(names = {"-n", "--name"}, required = true, description = "The new name for the list.")
 	private String name;

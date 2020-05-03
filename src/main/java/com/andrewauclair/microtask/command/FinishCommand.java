@@ -5,8 +5,8 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -27,10 +27,10 @@ final class FinishCommand implements Runnable {
 		private ExistingID[] id;
 
 		@Option(required = true, names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List to finish.")
-		private ExistingTaskListName list;
+		private ExistingListName list;
 
 		@Option(required = true, names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "Group to finish.")
-		private ExistingTaskGroupName group;
+		private ExistingGroupName group;
 
 		@Option(required = true, names = {"--active-task"}, description = "Finish the active task.")
 		private boolean active;

@@ -5,8 +5,8 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
@@ -58,10 +58,10 @@ final class ChangeCommand implements Runnable {
 
 	private static final class Args {
 		@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "The list to change to.")
-		private ExistingTaskListName list;
+		private ExistingListName list;
 
 		@Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "The group to change to.")
-		private ExistingTaskGroupName group;
+		private ExistingGroupName group;
 
 		@Option(names = {"-p", "--project"}, description = "The project to change to.")
 		private String project;

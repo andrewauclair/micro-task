@@ -2,7 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public class TaskFinder {
 
 	public boolean hasTaskWithID(long id) {
 		for (String listName : tasks.getAllListNames()) {
-			if (tasks.getList(new ExistingTaskListName(tasks, listName)).containsTask(id)) {
+			if (tasks.getList(new ExistingListName(tasks, listName)).containsTask(id)) {
 				return true;
 			}
 		}
@@ -37,7 +37,7 @@ public class TaskFinder {
 
 		String project = listForTask.getProject();
 
-		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
+		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
 
 		while (project.isEmpty()) {
 			project = group.getProject();
@@ -55,7 +55,7 @@ public class TaskFinder {
 
 		String feature = listForTask.getFeature();
 
-		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
+		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
 
 		while (feature.isEmpty()) {
 			feature = group.getFeature();

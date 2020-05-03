@@ -3,7 +3,7 @@ package com.andrewauclair.microtask.command.group;
 
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -16,7 +16,7 @@ public class RenameGroupCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(index = "0", completionCandidates = GroupCompleter.class, description = "Group to rename.")
-	private ExistingTaskGroupName group;
+	private ExistingGroupName group;
 
 	@Option(names = {"-n", "--name"}, required = true, description = "The new name for the group.")
 	private NewTaskGroupName name;

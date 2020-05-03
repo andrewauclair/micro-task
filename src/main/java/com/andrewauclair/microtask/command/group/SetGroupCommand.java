@@ -5,7 +5,7 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.task.TaskContainerState;
 import com.andrewauclair.microtask.task.TaskGroup;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
@@ -19,7 +19,7 @@ public class SetGroupCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(completionCandidates = GroupCompleter.class, description = "The group to set.")
-	private ExistingTaskGroupName group;
+	private ExistingGroupName group;
 
 	private static class Args {
 		@ArgGroup(exclusive = false)

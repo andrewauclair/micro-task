@@ -5,7 +5,6 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

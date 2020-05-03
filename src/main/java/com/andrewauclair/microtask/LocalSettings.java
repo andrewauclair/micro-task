@@ -3,8 +3,8 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -26,7 +26,7 @@ public class LocalSettings {
 		return activeList;
 	}
 
-	public void setActiveList(ExistingTaskListName activeList) {
+	public void setActiveList(ExistingListName activeList) {
 		this.activeList = activeList.absoluteName();
 
 		save();
@@ -36,7 +36,7 @@ public class LocalSettings {
 		return activeGroup;
 	}
 
-	public void setActiveGroup(ExistingTaskGroupName activeGroup) {
+	public void setActiveGroup(ExistingGroupName activeGroup) {
 		this.activeGroup = activeGroup.absoluteName();
 
 		save();
@@ -87,8 +87,8 @@ public class LocalSettings {
 		hoursInDay = Integer.parseInt(properties.getProperty("hours_in_day", "8"));
 		estimatedTimePerTask = Long.parseLong(properties.getProperty("estimated_time_per_task", "30000"));
 
-		tasks.setActiveList(new ExistingTaskListName(tasks, activeList));
-		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, activeGroup));
+		tasks.setActiveList(new ExistingListName(tasks, activeList));
+		tasks.setActiveGroup(new ExistingGroupName(tasks, activeGroup));
 	}
 
 	private void save() {

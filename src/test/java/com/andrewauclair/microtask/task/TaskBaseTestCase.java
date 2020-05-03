@@ -2,9 +2,9 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.MockOSInterface;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,16 +40,16 @@ class TaskBaseTestCase {
 //		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 	}
 
-	public ExistingTaskListName existingList(String name) {
-		return new ExistingTaskListName(tasks, name);
+	public ExistingListName existingList(String name) {
+		return new ExistingListName(tasks, name);
 	}
 
 	public NewTaskListName newList(String name) {
 		return new NewTaskListName(tasks, name);
 	}
 
-	public ExistingTaskGroupName existingGroup(String name) {
-		return new ExistingTaskGroupName(tasks, name);
+	public ExistingGroupName existingGroup(String name) {
+		return new ExistingGroupName(tasks, name);
 	}
 
 	public NewTaskGroupName newGroup(String name) {

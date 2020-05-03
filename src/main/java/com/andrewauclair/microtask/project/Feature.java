@@ -3,8 +3,8 @@ package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.util.*;
 
@@ -13,8 +13,8 @@ public class Feature {
 	private final String name;
 	private final Feature parent;
 
-	private final List<ExistingTaskListName> lists = new ArrayList<>();
-	private final List<ExistingTaskGroupName> groups = new ArrayList<>();
+	private final List<ExistingListName> lists = new ArrayList<>();
+	private final List<ExistingGroupName> groups = new ArrayList<>();
 
 	public Feature(Tasks tasks, String name, Feature parent) {
 		this.tasks = tasks;
@@ -30,11 +30,11 @@ public class Feature {
 		return parent;
 	}
 
-	public void addList(ExistingTaskListName listName) {
+	public void addList(ExistingListName listName) {
 		lists.add(listName);
 	}
 
-	public void addGroup(ExistingTaskGroupName groupName) {
+	public void addGroup(ExistingGroupName groupName) {
 		groups.add(groupName);
 	}
 

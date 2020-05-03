@@ -3,9 +3,8 @@ package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine;
 
@@ -77,7 +76,7 @@ public class RandomDataGenerator implements Runnable {
 			NewTaskListName listName = new NewTaskListName(tasks, animals.get(0));
 			animals.remove(0);
 			tasks.addList(listName, true);
-			tasks.setActiveList(new ExistingTaskListName(tasks, listName.absoluteName()));
+			tasks.setActiveList(new ExistingListName(tasks, listName.absoluteName()));
 
 			System.out.println("Created list '" + listName + "'");
 		}

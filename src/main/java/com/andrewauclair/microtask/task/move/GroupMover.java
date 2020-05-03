@@ -4,7 +4,7 @@ package com.andrewauclair.microtask.task.move;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.TaskGroup;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 
 public class GroupMover {
 	private final Tasks tasks;
@@ -15,7 +15,7 @@ public class GroupMover {
 		this.osInterface = osInterface;
 	}
 
-	public void moveGroup(ExistingTaskGroupName group, ExistingTaskGroupName destGroup) {
+	public void moveGroup(ExistingGroupName group, ExistingGroupName destGroup) {
 		TaskGroup groupToMove = tasks.getGroup(group);
 
 		TaskGroup activeGroup = tasks.getActiveGroup();
@@ -23,7 +23,7 @@ public class GroupMover {
 		TaskGroup newGroup = tasks.getGroup(groupToMove.getParent()).moveGroup(groupToMove, tasks.getGroup(destGroup), System.out, osInterface);
 
 		if (activeGroup.getFullPath().equals(groupToMove.getFullPath())) {
-			tasks.setActiveGroup(new ExistingTaskGroupName(tasks, newGroup.getFullPath()));
+			tasks.setActiveGroup(new ExistingGroupName(tasks, newGroup.getFullPath()));
 		}
 	}
 }
