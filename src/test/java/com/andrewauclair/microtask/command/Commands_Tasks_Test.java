@@ -12,7 +12,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 
-class Commands_List_Tasks_Test extends CommandsBaseTestCase {
+class Commands_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void execute_list_command() {
 		tasks.addTask("Task 1");
@@ -22,7 +22,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask();
 		tasks.startTask(existingID(3), false);
 
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -51,7 +51,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("test"), true);
 		tasks.setActiveList(existingList("test"));
 
-		commands.execute(printStream, "list --tasks --list default");
+		commands.execute(printStream, "tasks --list default");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -82,7 +82,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.startTask(existingID(3), false);
 
-		commands.execute(printStream, "list --tasks --group /test/");
+		commands.execute(printStream, "tasks --group /test/");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -111,7 +111,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask(existingID(1));
 		tasks.finishTask(existingID(3));
 
-		commands.execute(printStream, "list --tasks --finished");
+		commands.execute(printStream, "tasks --finished");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -146,7 +146,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.setActiveGroup(existingGroup("/test/"));
 
-		commands.execute(printStream, "list --tasks --current-group --finished");
+		commands.execute(printStream, "tasks --current-group --finished");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -168,7 +168,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		IntStream.range(1, 40)
 				.forEach(num -> tasks.addTask("Test " + num));
 
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -213,7 +213,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.startTask(existingID(2), false);
 
-		commands.execute(printStream, "list --tasks --all");
+		commands.execute(printStream, "tasks --all");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -264,7 +264,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.finishTask();
 		tasks.startTask(existingID(3), false);
 
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -283,7 +283,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 	@Test
 	void list_command_does_not_throw_the_no_active_task_exception() {
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		assertOutput(
 				"Tasks on list '/default'",
@@ -334,7 +334,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 //		outputStream.reset();
 
-		commands.execute(printStream, "list --tasks --current-group");
+		commands.execute(printStream, "tasks --current-group");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -385,7 +385,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 		tasks.setRecurring(existingID(5), true);
 		tasks.setRecurring(existingID(8), true);
 
-		commands.execute(printStream, "list --tasks --current-group --recursive");
+		commands.execute(printStream, "tasks --current-group --recursive");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -415,7 +415,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.setRecurring(existingID(1), true);
 
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -445,7 +445,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
 
-		commands.execute(printStream, "list --tasks");
+		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -478,7 +478,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
 
-		commands.execute(printStream, "list --tasks -v");
+		commands.execute(printStream, "tasks -v");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -502,7 +502,7 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 
 	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
-		commands.execute(printStream, "list --tasks --current-group");
+		commands.execute(printStream, "tasks --current-group");
 
 		assertOutput(
 				"Tasks in group '/'",

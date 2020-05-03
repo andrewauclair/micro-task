@@ -61,11 +61,11 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		outputStream.reset();
 
-		commands.execute(printStream, "alias --name lt --command \"list --tasks\"");
+		commands.execute(printStream, "alias --name lt --command \"tasks --all\"");
 
 		assertThat(outputStream.toString()).isEqualTo(
 				"ttt=\"times --today\"" + NL +
-						"lt=\"list --tasks\"" + NL
+						"lt=\"tasks --all\"" + NL
 		);
 	}
 
@@ -123,11 +123,11 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		outputStream.reset();
 
-		commands.execute(printStream, "alias -n ltg -c \"list --tasks --current-group\"");
+		commands.execute(printStream, "alias -n ltg -c \"tasks --all\"");
 
 		assertThat(outputStream.toString()).isEqualTo(
 				"ttt=\"times --today\"" + NL +
-						"ltg=\"list --tasks --current-group\"" + NL
+						"ltg=\"tasks --all\"" + NL
 		);
 
 		outputStream.reset();
@@ -135,7 +135,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "alias -r -n ttt");
 
 		assertThat(outputStream.toString()).isEqualTo(
-				"ltg=\"list --tasks --current-group\"" + NL
+				"ltg=\"tasks --all\"" + NL
 		);
 	}
 

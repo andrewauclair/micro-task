@@ -48,7 +48,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "finish", "list", "move", "move", "search"})
+	@ValueSource(strings = {"ch", "finish", "group", "move", "move", "search"})
 	void command_group_option_has_group_completer(String group) {
 		commands.execute(printStream, "mk -g /test/");
 
