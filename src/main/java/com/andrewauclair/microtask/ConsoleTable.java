@@ -28,8 +28,9 @@ public class ConsoleTable {
 
 	boolean alternateColors = false;
 	boolean wordWrap = false;
+	boolean printLastRows = false;
 	private int spacing = 2;
-	private int rowLimit = 0;
+	private int rowLimit = Integer.MAX_VALUE;
 
 	public ConsoleTable(OSInterface osInterface) {
 		this.osInterface = osInterface;
@@ -47,8 +48,9 @@ public class ConsoleTable {
 		this.spacing = spacing;
 	}
 
-	public void setRowLimit(int limit) {
+	public void setRowLimit(int limit, boolean printLastRows) {
 		rowLimit = limit;
+		this.printLastRows = printLastRows;
 	}
 
 	public void enableAlternatingColors() {
@@ -77,7 +79,12 @@ public class ConsoleTable {
 			widths.add(header.length());
 		}
 
-		for (final List<String> row : cells) {
+//		for (final List<String> row : cells) {
+		int startRow = cells.size() > rowLimit && printLastRows ? cells.size() - rowLimit : 0;
+
+		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
+			List<String> row = cells.get(rowNum);
+
 			for (int i = 0; i < row.size(); i++) {
 				if (widths.size() < i + 1) {
 					widths.add(0);
@@ -99,7 +106,14 @@ public class ConsoleTable {
 			for (int i = 0; i < widths.size(); i++) {
 				String header = headers.get(i);
 
-				line += String.format("%-" + widths.get(i) + "s", ANSI_UNDERLINE + header + ANSI_RESET);
+//				line += String.format("%-" + widths.get(i) + "s", ANSI_UNDERLINE + header + ANSI_RESET);
+				line += ANSI_UNDERLINE;
+				line += header;
+				line += ANSI_RESET;
+
+				if (widths.get(i) - header.length() > 0) {
+					line += String.format("%" + (widths.get(i) - header.length()) + "s", " ");
+				}
 
 				if (i + 1 < widths.size()) {
 					line += space;
@@ -113,12 +127,15 @@ public class ConsoleTable {
 
 		int rowCount = 0;
 
-		for (final List<String> row : cells) {
+//		for (final List<String> row : cells) {
+		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
+			List<String> row = cells.get(rowNum);
+
 			if (rowCount >= rowLimit && rowLimit != 0) {
 				break;
 			}
 
-			ConsoleBackgroundColor bgColor = rowColors.get(rowCount);
+			ConsoleBackgroundColor bgColor = rowColors.get(rowCount + startRow);
 
 			rowCount++;
 

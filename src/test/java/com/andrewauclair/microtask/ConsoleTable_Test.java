@@ -15,8 +15,7 @@ import java.io.PrintStream;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_BLUE;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConsoleTable_Test {
@@ -72,7 +71,7 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "ID" + r + "  " + u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
+				u + "ID" + r + "  " + u + "One" + r + "    " + u + "Two" + r + "     " + u + "Three" + r + "  " + u + "Four" + r,
 //				"ID  One    Two     Three  Four",
 				"1   one    data    data   data",
 				"2   two    bigger  more   here",
@@ -154,7 +153,7 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "ID" + r + " " + u + "One" + r + " " + u + "Two" + r + " " + u + "Three" + r + " " + u + "Four" + r,
+				u + "ID" + r + " " + u + "One" + r + "   " + u + "Two" + r + "    " + u + "Three" + r + " " + u + "Four" + r,
 //				"ID One   Two    Three Four",
 				"1  one   data   data  data",
 				"2  two   bigger more  here",
@@ -166,7 +165,7 @@ public class ConsoleTable_Test {
 	@Test
 	void set_a_limit_for_how_many_rows_are_printed() {
 		table.setHeaders("ID", "One", "Two", "Three", "Four");
-		table.setRowLimit(2);
+		table.setRowLimit(2, false);
 
 		table.addRow("1", "one", "data", "data", "data");
 		table.addRow("2", "two", "bigger", "more", "here");
@@ -179,7 +178,7 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "ID" + r + "  " + u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
+				u + "ID" + r + "  " + u + "One" + r + "    " + u + "Two" + r + "     " + u + "Three" + r + "  " + u + "Four" + r,
 //				"ID  One    Two     Three  Four",
 				"1   one    data    data   data",
 				"2   two    bigger  more   here"
@@ -189,7 +188,7 @@ public class ConsoleTable_Test {
 	@Test
 	void add_row_with_a_different_color() {
 		table.setHeaders("ID", "One", "Two", "Three", "Four");
-		table.setRowLimit(2);
+		table.setRowLimit(2, false);
 
 		table.addRow("1", "one", "data", "data", "data");
 		table.addRow(ANSI_BG_BLUE, "2", "two", "bigger", "more", "here");
@@ -202,7 +201,7 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "ID" + r + "  " + u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
+				u + "ID" + r + "  " + u + "One" + r + "    " + u + "Two" + r + "     " + u + "Three" + r + "  " + u + "Four" + r,
 //				"ID  One    Two     Three  Four",
 				"1   one    data    data   data",
 				ANSI_BG_BLUE + "2   two    bigger  more   here" + ANSI_RESET
@@ -277,6 +276,40 @@ public class ConsoleTable_Test {
 				"      23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,   ",
 				"      41, 42, 43, 44, 45, 46, 47, 48, 49, 50                                    ",
 				"data  this is a normal string                                                   "
+		);
+	}
+
+	@Test
+	void print_the_last_rows_with_color() {
+		table.setRowLimit(1, true);
+
+		table.addRow("add");
+		table.addRow("two");
+		table.addRow(ANSI_BG_GREEN, "rows");
+
+		table.print();
+
+		assertOutput(
+				ANSI_BG_GREEN + "rows" + ANSI_RESET
+		);
+	}
+
+	@Test
+	void header_spaces_out_based_on_data_width() {
+		table.setHeaders("type", "data");
+
+		table.addRow("one", "alpha");
+		table.addRow("forty-five", "beta");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "type" + r + "        " + u + "data" + r + " ",
+				"one         alpha",
+				"forty-five  beta "
 		);
 	}
 

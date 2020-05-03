@@ -170,6 +170,16 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	@Override
+	public int getTerminalHeight() {
+		int height = terminal.getHeight();
+
+		if (height == 0) {
+			height = 30;
+		}
+		return height;
+	}
+
+	@Override
 	public int getTerminalWidth() {
 		int width = terminal.getWidth();
 

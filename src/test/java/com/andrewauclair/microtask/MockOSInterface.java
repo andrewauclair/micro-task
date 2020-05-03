@@ -65,7 +65,12 @@ public class MockOSInterface implements OSInterface {
 	public List<TaskFileInfo> listFiles(String folder) {
 		return new ArrayList<>();
 	}
-	
+
+	@Override
+	public int getTerminalHeight() {
+		return 20;
+	}
+
 	@Override
 	public int getTerminalWidth() {
 		return 60;

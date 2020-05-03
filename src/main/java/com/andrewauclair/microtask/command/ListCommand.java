@@ -25,7 +25,6 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 
 @Command(name = "list", description = "List tasks or the content of a group.")
 final class ListCommand implements Runnable {
-	private static final int MAX_DISPLAYED_TASKS = 20;
 	private final Tasks tasksData;
 	private final OSInterface osInterface;
 
@@ -68,7 +67,10 @@ final class ListCommand implements Runnable {
 
 		max.ifPresent(task -> tasksList.stream()
 				.limit(limit)
-				.sorted(Comparator.comparingLong(o -> o.id))
+				.sorted(((Comparator<Task>) (o1, o2) -> {
+					return Long.compare(o1.id, o2.id);
+				}).reversed())
+//				.sorted(Comparator.comparingLong(o -> o.id))
 				.forEach(str -> printTask(table, str, String.valueOf(task.id).length(), listName, printListName)));
 	}
 
@@ -80,6 +82,32 @@ final class ListCommand implements Runnable {
 		else if (finished == (list.getState() == TaskContainerState.Finished)) {
 			System.out.print("  ");
 			System.out.println(list.getName());
+		}
+	}
+
+	private void addTaskToTable(ConsoleTable table, Task task, String listName, boolean printListName) {
+		boolean active = task.id == tasksData.getActiveTaskID();
+
+		// TODO This should probably have an F for finished
+		String type;
+		if (active) {
+			type = "*  ";
+		}
+		else if (task.isRecurring()) {
+			type = " R ";
+		}
+		else if (task.state == TaskState.Finished) {
+			type = "  F";
+		}
+		else {
+			type = "   ";
+		}
+
+		if (printListName) {
+			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, listName, type, String.valueOf(task.id), task.task);
+		}
+		else {
+			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, type, String.valueOf(task.id), task.task);
 		}
 	}
 
@@ -144,6 +172,24 @@ final class ListCommand implements Runnable {
 		}
 	}
 
+	private List<Task> getTasks(TaskGroup group, boolean finished, boolean recursive) {
+		List<Task> tasks = new ArrayList<>();
+
+		for (final TaskContainer child : group.getChildren()) {
+			if (child instanceof TaskList list) {
+				tasks.addAll(list.getTasks().stream()
+						.filter(task -> finished == (task.state == TaskState.Finished))
+						.collect(Collectors.toList()));
+
+
+			}
+			else if (recursive) {
+				tasks.addAll(getTasks((TaskGroup) child, finished, true));
+			}
+		}
+		return tasks;
+	}
+
 	private List<Task> printTasks(ConsoleTable table, TaskGroup mainGroup, TaskGroup group, boolean finished, boolean recursive) {
 		List<Task> tasks = new ArrayList<>();
 
@@ -205,10 +251,8 @@ final class ListCommand implements Runnable {
 			}
 			System.out.println();
 
-			final int limit = all ? Integer.MAX_VALUE : MAX_DISPLAYED_TASKS;
+			int limit = all ? Integer.MAX_VALUE : osInterface.getTerminalHeight() - 8;
 
-//			int totalTasks = 0;
-//			int totalRecurring = 0;
 			List<Task> tasks = new ArrayList<>();
 
 			ConsoleTable table = new ConsoleTable(osInterface);
@@ -223,16 +267,13 @@ final class ListCommand implements Runnable {
 				table.setColumnAlignment(LEFT, RIGHT, LEFT);
 			}
 
-			if (!all) {
-				table.setRowLimit(MAX_DISPLAYED_TASKS);
-			}
-
 			if (verbose) {
 				table.enableWordWrap();
 			}
 
 			if (useGroup) {
-				tasks = printTasks(table, tasksData.getActiveGroup(), tasksData.getActiveGroup(), finished, recursive);
+//				tasks = printTasks(table, tasksData.getActiveGroup(), tasksData.getActiveGroup(), finished, recursive);
+				tasks = getTasks(tasksData.getActiveGroup(), finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasksData.getTasksForList(list).stream()
@@ -241,9 +282,36 @@ final class ListCommand implements Runnable {
 
 				tasks.addAll(tasksList);
 
-//				totalTasks += tasksList.size();
+//				printTasks(table, tasksList, limit, "", false);
+			}
 
-				printTasks(table, tasksList, limit, "", false);
+			if (tasks.size() > limit) {
+				limit--;
+			}
+
+			table.setRowLimit(limit, true);
+
+			tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
+
+			Optional<Task> activeTask = Optional.empty();
+
+			for (final Task task : tasks) {
+				if (task.state == TaskState.Active) {
+					activeTask = Optional.of(task);
+				}
+				else {
+					TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
+					String name = listForTask.getFullPath().replace(tasksData.getActiveGroup().getFullPath(), "");
+
+					addTaskToTable(table, task, name, useGroup);
+				}
+			}
+
+			if (activeTask.isPresent()) {
+				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+				String name = listForTask.getFullPath().replace(tasksData.getActiveGroup().getFullPath(), "");
+
+				addTaskToTable(table, activeTask.get(), name, useGroup);
 			}
 
 			int totalTasks = tasks.size();
@@ -257,7 +325,8 @@ final class ListCommand implements Runnable {
 					.count();
 
 			if (totalTasks > limit) {
-				System.out.println("(" + (totalTasks - MAX_DISPLAYED_TASKS) + " more tasks.)");
+				System.out.println();
+				System.out.println("(" + (totalTasks - limit) + " more tasks.)");
 			}
 			else if (totalTasks == 0) {
 				System.out.println("No tasks.");

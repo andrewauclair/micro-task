@@ -22,6 +22,8 @@ public interface OSInterface {
 
 	List<TaskFileInfo> listFiles(String folder);
 
+	int getTerminalHeight();
+
 	int getTerminalWidth();
 
 	String getVersion() throws IOException;
