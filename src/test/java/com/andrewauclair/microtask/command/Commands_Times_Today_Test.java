@@ -60,7 +60,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 	}
 	
 	@Test
-	void today_for_single_list() {
+	void today_for_single_list_non_verbose() {
 		setTime(june17_8_am);
 		
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
@@ -86,6 +86,41 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				"Times for day 06/17/2019",
 				"",
 				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
+//				"1h 49m 15s F 3 - 'Test 3'",
+//				"   32m 20s R 5 - 'Test 5'",
+				"",
+				"2h 21m 35s   Total",
+				""
+		);
+	}
+
+	@Test
+	void today_for_single_list_verbose() {
+		setTime(june17_8_am);
+
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/one/design"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/design")
+				)
+		);
+
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/design"), true);
+
+		commands.execute(printStream, "times --today --list /one/design -v");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForList("/one/design");
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+
+		assertOutput(
+				"Times for day 06/17/2019",
+				"",
+//				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
 				"1h 49m 15s F 3 - 'Test 3'",
 				"   32m 20s R 5 - 'Test 5'",
 				"",
@@ -93,9 +128,9 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				""
 		);
 	}
-	
+
 	@Test
-	void specific_day_for_single_list() {
+	void specific_day_for_single_list_non_verbose() {
 		setTime(june17_8_am);
 		
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
@@ -121,6 +156,41 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				"Times for day 06/17/2019",
 				"",
 				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
+//				"1h 49m 15s F 3 - 'Test 3'",
+//				"   32m 20s R 5 - 'Test 5'",
+				"",
+				"2h 21m 35s   Total",
+				""
+		);
+	}
+
+	@Test
+	void specific_day_for_single_list_verbose() {
+		setTime(june17_8_am);
+
+		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+
+		when(mockTaskTimesFilter.getData()).thenReturn(
+				Arrays.asList(
+						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/one/design"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/design")
+				)
+		);
+
+		tasks.addGroup(newGroup("/one/"));
+		tasks.addList(newList("/one/design"), true);
+
+		commands.execute(printStream, "times -d 17 --list /one/design -v");
+
+		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
+		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
+		order.verify(mockTaskTimesFilter, times(1)).filterForList("/one/design");
+		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
+
+		assertOutput(
+				"Times for day 06/17/2019",
+				"",
+//				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
 				"1h 49m 15s F 3 - 'Test 3'",
 				"   32m 20s R 5 - 'Test 5'",
 				"",

@@ -71,6 +71,9 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"--total"}, description = "Display only the final total.")
 	private boolean total;
 
+	@Option(names = {"-v", "--verbose"}, description = "Display times with verbose output.")
+	private boolean verbose;
+
 	TimesCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -152,29 +155,46 @@ public final class TimesCommand implements Runnable {
 
 			long totalTime = 0;
 
-			for (List<TaskTimesFilter.TaskTimeFilterResult> taskTimeFilterResults : lists) {
-				taskTimeFilterResults.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
-
-				long listTime = 0;
-				for (TaskTimesFilter.TaskTimeFilterResult task : taskTimeFilterResults) {
-					listTime += task.total;
-				}
-
+			if (!verbose) {
 				System.out.println();
-				System.out.print(ConsoleColors.ANSI_BOLD);
-				System.out.print(Utils.formatTime(listTime, highestTime));
-				System.out.print(" ");
-				System.out.print(taskTimeFilterResults.get(0).list);
-				System.out.print(ANSI_RESET);
 
-				if (!total) {
-					System.out.println();
+				for (List<TaskTimesFilter.TaskTimeFilterResult> taskTimeFilterResults : lists) {
+					taskTimeFilterResults.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
+
+					long listTime = 0;
+					for (TaskTimesFilter.TaskTimeFilterResult task : taskTimeFilterResults) {
+						listTime += task.total;
+					}
+
+					if (!verbose) {
+						System.out.print(ConsoleColors.ANSI_BOLD);
+						System.out.print(Utils.formatTime(listTime, highestTime));
+						System.out.print(" ");
+						System.out.print(taskTimeFilterResults.get(0).list);
+						System.out.println(ANSI_RESET);
+					}
+
+					if (verbose) {
+						totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
+					}
+					else {
+						for (final TaskTimesFilter.TaskTimeFilterResult result : taskTimeFilterResults) {
+							totalTime += result.getTotal();
+						}
+					}
 				}
-				totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
 			}
+			else {
+				List<TaskTimesFilter.TaskTimeFilterResult> allListResults = new ArrayList<>();
+				for (final List<TaskTimesFilter.TaskTimeFilterResult> taskTimeFilterResults : lists) {
+					allListResults.addAll(taskTimeFilterResults);
+				}
 
-			if (total) {
+				allListResults.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
+
 				System.out.println();
+
+				totalTime += printResults(allListResults, highestTime, idSpace);
 			}
 
 			System.out.println();

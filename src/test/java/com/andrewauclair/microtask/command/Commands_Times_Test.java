@@ -55,9 +55,9 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "times --help");
 
 		assertOutput(
-				"Usage:  times [-h] [--all-month] [--all-time] [--proj-feat] [--today] [--total]",
-				"              [--week] [--yesterday] [-d=<day>] [-m=<month>] [-y=<year>]",
-				"              [--group=<group>]... [--list=<list>]...",
+				"Usage:  times [-hv] [--all-month] [--all-time] [--proj-feat] [--today]",
+				"              [--total] [--week] [--yesterday] [-d=<day>] [-m=<month>]",
+				"              [-y=<year>] [--group=<group>]... [--list=<list>]...",
 				"Display times for tasks, lists or groups.",
 				"      --all-month       Display times for the entire month",
 				"      --all-time        Display all task times recorded.",
@@ -69,6 +69,7 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 				"      --proj-feat       Display times grouped as projects and features.",
 				"      --today           Display times for today.",
 				"      --total           Display only the final total.",
+				"  -v, --verbose         Display times with verbose output.",
 				"      --week            Week to display times for.",
 				"  -y, --year=<year>     Year to display times for.",
 				"      --yesterday       Display times for yesterday."
