@@ -5,7 +5,7 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.task.TaskContainerState;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -19,7 +19,7 @@ public class SetListCommand implements Runnable {
 	private boolean help;
 
 	@Parameters(completionCandidates = ListCompleter.class, description = "The list to set.")
-	private ExistingTaskListName list;
+	private ExistingListName list;
 
 	@ArgGroup(exclusive = false, multiplicity = "1")
 	Args args;

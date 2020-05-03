@@ -1,11 +1,10 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask;
 
-import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,7 +144,7 @@ class LocalSettings_Test {
 
 		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
 
-		localSettings.setActiveList(new ExistingTaskListName(tasks, "/test/one"));
+		localSettings.setActiveList(new ExistingListName(tasks, "/test/one"));
 
 		assertThat(outputStream.toString()).contains("active_list=/test/one");
 	}
@@ -157,7 +156,7 @@ class LocalSettings_Test {
 		Mockito.when(osInterface.createOutputStream("settings.properties")).thenReturn(new DataOutputStream(outputStream));
 
 		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
-		localSettings.setActiveGroup(new ExistingTaskGroupName(tasks, "/test/"));
+		localSettings.setActiveGroup(new ExistingGroupName(tasks, "/test/"));
 
 		assertThat(outputStream.toString()).contains("active_group=/test/");
 	}
@@ -224,7 +223,7 @@ class LocalSettings_Test {
 		System.setOut(printStream);
 
 		tasks.addGroup(new NewTaskGroupName(tasks, "/test/"));
-		localSettings.setActiveGroup(new ExistingTaskGroupName(tasks, "/test/"));
+		localSettings.setActiveGroup(new ExistingGroupName(tasks, "/test/"));
 
 		assertOutput(
 				outputStream,
@@ -281,7 +280,7 @@ class LocalSettings_Test {
 
 		localSettings.load(tasks);
 
-		assertEquals(new ExistingTaskListName(tasks, "/test/one"), tasks.getActiveList());
+		assertEquals(new ExistingListName(tasks, "/test/one"), tasks.getActiveList());
 		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
 	}
 }

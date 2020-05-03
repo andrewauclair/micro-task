@@ -3,7 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -20,7 +20,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		Task task = tasks.addTask("Task to move");
 		tasks.addList(newList("one"), true);
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		assertThat(tasks.getTasksForList(existingList("default")))
 				.isEmpty();
@@ -34,7 +34,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addList(newList("one"), true);
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		Mockito.verify(osInterface).removeFile("git-data/tasks/default/1.txt");
 
@@ -45,7 +45,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		tasks.addList(newList("one"), true);
 
-		Task task = tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		Task task = tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		Mockito.verify(writer).writeTask(task, "git-data/tasks/one/1.txt");
 	}
@@ -57,7 +57,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
 		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
@@ -70,7 +70,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.addList(newList("one"), true);
 		tasks.setActiveList(existingList("one"));
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		assertThat(tasks.getTasksForList(existingList("default")))
 				.isEmpty();
@@ -86,7 +86,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		tasks.startTask(existingID(1), false);
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		assertEquals("/one", tasks.getActiveTaskList().absoluteName());
 	}
@@ -99,7 +99,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		tasks.startTask(existingID(2), false);
 
-		tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one"));
+		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
 		assertEquals("/default", tasks.getActiveTaskList().absoluteName());
 	}
@@ -224,7 +224,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void throws_exception_if_task_was_not_found() {
 		tasks.addList(newList("one"), true);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(5), new ExistingTaskListName(tasks, "one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(5), new ExistingListName(tasks, "one")));
 		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
 
@@ -232,7 +232,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void moving_task_throws_exception_if_move_to_list_is_not_found() {
 		tasks.addTask("Test 1");
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingListName(tasks, "one")));
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
 
@@ -240,7 +240,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void task_already_on_list() {
 		tasks.addTask("Test");
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/default")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingListName(tasks, "/default")));
 
 		assertEquals("Task 1 is already on list '/default'.", taskException.getMessage());
 	}
@@ -253,7 +253,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingListName(tasks, "/one")));
 
 		assertEquals("Task 1 cannot be moved because list '/default' has been finished.", taskException.getMessage());
 
@@ -270,7 +270,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingListName(tasks, "/one")));
 
 		assertEquals("Task 1 cannot be moved because list '/one' has been finished.", taskException.getMessage());
 
@@ -287,7 +287,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		Mockito.reset(writer, osInterface);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingTaskListName(tasks, "/one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveTask(existingID(1), new ExistingListName(tasks, "/one")));
 
 		assertEquals("Task 1 cannot be moved because it has been finished.", taskException.getMessage());
 

@@ -2,7 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class TaskTimesFilter {
 		lists.add(list);
 
 		allTasks.clear();
-		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(new ExistingTaskListName(tasks, name))));
+		lists.forEach(name -> allTasks.addAll(tasks.getTasksForList(new ExistingListName(tasks, name))));
 
 		buildResults();
 	}

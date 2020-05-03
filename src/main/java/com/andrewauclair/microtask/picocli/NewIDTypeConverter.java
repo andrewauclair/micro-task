@@ -13,7 +13,7 @@ public class NewIDTypeConverter implements CommandLine.ITypeConverter<NewID> {
 	}
 
 	@Override
-	public NewID convert(String value) throws Exception {
+	public NewID convert(String value) {
 		try {
 			return new NewID(tasks, Long.parseLong(value));
 		}

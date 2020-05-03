@@ -12,11 +12,6 @@ import picocli.CommandLine.Option;
 
 @CommandLine.Command(name = "repo", description = "Push/pull changes to/from remote repo.")
 public class UpdateRepoCommand implements Runnable {
-	private final Tasks tasks;
-	private final OSInterface osInterface;
-	private final LocalSettings localSettings;
-	private final Projects projects;
-	private final Commands commands;
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
@@ -30,6 +25,12 @@ public class UpdateRepoCommand implements Runnable {
 		@Option(names = {"--from-remote"}, description = "Pull changes from the remote repo.")
 		private boolean from_remote;
 	}
+
+	private final Tasks tasks;
+	private final OSInterface osInterface;
+	private final LocalSettings localSettings;
+	private final Projects projects;
+	private final Commands commands;
 
 	public UpdateRepoCommand(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Projects projects, Commands commands) {
 		this.tasks = tasks;

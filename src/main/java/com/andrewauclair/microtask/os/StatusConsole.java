@@ -6,8 +6,8 @@ import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -159,8 +159,8 @@ public class StatusConsole {
 						transferType = TransferType.valueOf(in.read());
 					}
 
-					tasks.setActiveGroup(new ExistingTaskGroupName(tasks, currentGroup));
-					tasks.setActiveList(new ExistingTaskListName(tasks, currentList));
+					tasks.setActiveGroup(new ExistingGroupName(tasks, currentGroup));
+					tasks.setActiveList(new ExistingListName(tasks, currentList));
 
 					try {
 						commands.execute(System.out, currentCommand);

@@ -8,8 +8,8 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -39,10 +39,10 @@ public final class TimesCommand implements Runnable {
 	private boolean proj_feat;
 
 	@Option(names = {"--list"}, completionCandidates = ListCompleter.class, description = "The list to display times for.")
-	private ExistingTaskListName[] list;
+	private ExistingListName[] list;
 
 	@Option(names = {"--group"}, completionCandidates = GroupCompleter.class, description = "The group to display times for.")
-	private ExistingTaskGroupName[] group;
+	private ExistingGroupName[] group;
 
 	@Option(names = {"--today"}, description = "Display times for today.")
 	private boolean today;
@@ -322,18 +322,18 @@ public final class TimesCommand implements Runnable {
 		}
 
 		if ((list != null || group != null) && this.day == null && !today) {
-			List<ExistingTaskListName> lists = new ArrayList<>();
+			List<ExistingListName> lists = new ArrayList<>();
 
 			if (list != null) {
 				lists.addAll(Arrays.asList(list));
 			}
 
 			if (group != null) {
-				for (ExistingTaskGroupName group : group) {
+				for (ExistingGroupName group : group) {
 					lists.addAll(tasks.getGroup(group.absoluteName()).getChildren().stream()
 							.filter(child -> child instanceof TaskList)
 							.map(TaskContainer::getFullPath)
-							.map(path -> new ExistingTaskListName(tasks, path))
+							.map(path -> new ExistingListName(tasks, path))
 							.collect(Collectors.toSet()));
 				}
 			}
@@ -448,7 +448,7 @@ public final class TimesCommand implements Runnable {
 
 		String feature = listForTask.getFeature();
 
-		TaskGroup group = tasks.getGroupForList(new ExistingTaskListName(tasks, listForTask.getFullPath()));
+		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
 
 		while (group != null) {
 			if (feature.isEmpty()) {

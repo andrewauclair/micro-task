@@ -5,9 +5,9 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		tasks.addList(new NewTaskListName(tasks, name), false);
-		tasks.setActiveList(new ExistingTaskListName(tasks, name));
+		tasks.setActiveList(new ExistingListName(tasks, name));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
@@ -103,14 +103,14 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		TaskGroup group = tasks.addGroup(new NewTaskGroupName(tasks, name + "/"));
-		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, name + "/"));
+		tasks.setActiveGroup(new ExistingGroupName(tasks, name + "/"));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			tasks.setProject(new ExistingTaskGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
-			tasks.setFeature(new ExistingTaskGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
-			tasks.setGroupState(new ExistingTaskGroupName(tasks, group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
+			tasks.setProject(new ExistingGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
+			tasks.setFeature(new ExistingGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
+			tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException e) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
@@ -118,7 +118,7 @@ public class TaskLoader {
 		}
 
 		loadTasks(fileInfo.getPath(), true);
-		tasks.setActiveGroup(new ExistingTaskGroupName(tasks, tasks.getActiveGroup().getParent()));
+		tasks.setActiveGroup(new ExistingGroupName(tasks, tasks.getActiveGroup().getParent()));
 	}
 
 	private boolean isGroupFolder(String folder) {

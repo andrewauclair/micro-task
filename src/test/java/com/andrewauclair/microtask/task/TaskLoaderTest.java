@@ -4,15 +4,12 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.group.name.ExistingTaskGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingTaskListName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +26,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 	private final Projects projects = Mockito.mock(Projects.class);
 	private TaskLoader loader;// = new TaskLoader(tasks, reader, localSettings, osInterface);
 
-	private ExistingTaskGroupName activeGroup;
+	private ExistingGroupName activeGroup;
 
 	@BeforeEach
 	protected void setup() throws IOException {
@@ -78,10 +75,10 @@ class TaskLoaderTest extends TaskBaseTestCase {
 //			}
 //		});
 
-		activeGroup = new ExistingTaskGroupName(tasks, "/");
+		activeGroup = new ExistingGroupName(tasks, "/");
 
 		loader.load();
-		ExistingTaskListName expectedList = new ExistingTaskListName(tasks, "/test");
+		ExistingListName expectedList = new ExistingListName(tasks, "/test");
 
 		InOrder order = Mockito.inOrder(localSettings, projects);
 
