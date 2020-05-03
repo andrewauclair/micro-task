@@ -461,7 +461,43 @@ class Commands_List_Tasks_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
-	
+
+	@Test
+	void long_task_names_wrap_when_using_verbose() {
+		tasks.addTask("Very long titles will be wrapped at the side of the screen instead of being cut off at the edge");
+		tasks.addTask("Very long titles will be wrapped at the side of the screen instead of being cut off at the edge");
+		tasks.addTask("Very long titles will be wrapped at the side of the screen instead of being cut off at the edge");
+		tasks.addTask("Very long titles will be wrapped at the side of the screen instead of being cut off at the edge");
+		tasks.addTask("Normal task");
+		tasks.startTask(existingID(2), false);
+		tasks.startTask(existingID(3), true);
+
+		tasks.setRecurring(existingID(1), true);
+
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+
+		commands.execute(printStream, "list --tasks -v");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Tasks on list '/default'",
+				"",
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "               ",
+				ANSI_BG_GRAY + " R     1  Very long titles will be wrapped at the side of   ",
+				 "          the screen instead of being cut off at the edge   " + ANSI_RESET,
+				ANSI_BG_GREEN + "*      3  Very long titles will be wrapped at the side of   ",
+				"          the screen instead of being cut off at the edge   " + ANSI_RESET,
+				ANSI_BG_GRAY + "       4  Very long titles will be wrapped at the side of   ",
+				"          the screen instead of being cut off at the edge   " + ANSI_RESET,
+				"       5  Normal task                                       ",
+				"",
+				ANSI_BOLD + "Total Tasks: 4 (1 Recurring)" + ANSI_RESET,
+				""
+		);
+	}
+
 	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
 		commands.execute(printStream, "list --tasks --current-group");
