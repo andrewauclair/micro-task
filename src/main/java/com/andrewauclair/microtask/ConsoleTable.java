@@ -27,6 +27,7 @@ public class ConsoleTable {
 	List<Alignment> alignments = new ArrayList<>();
 
 	boolean alternateColors = false;
+	boolean wordWrap = false;
 	private int spacing = 2;
 	private int rowLimit = 0;
 
@@ -52,6 +53,10 @@ public class ConsoleTable {
 
 	public void enableAlternatingColors() {
 		alternateColors = true;
+	}
+
+	public void enableWordWrap() {
+		wordWrap = true;
 	}
 
 	public void addRow(String... cells) {
@@ -125,6 +130,7 @@ public class ConsoleTable {
 			}
 
 			String line = "";
+			int prelength = 0;
 
 			for (int i = 0; i < row.size(); i++) {
 				String cell = row.get(i);
@@ -137,23 +143,45 @@ public class ConsoleTable {
 					format = "%" + widths.get(i) + "s";
 				}
 
-				line += String.format(format, cell);
-//				System.out.print(String.format(format, cell));
+				String cellLine = String.format(format, cell);
+				if (i == row.size() - 1 && wordWrap && (line.length() + cellLine.trim().length() > terminalWidth)) {
+					prelength = line.length();
+				}
+
+				line += cellLine;
 
 				if (i + 1 < row.size()) {
-//					System.out.print(space);
 					line += space;
 				}
 			}
 
-			if (line.replaceAll(" +$", "").length() > terminalWidth) {
-				line = line.substring(0, terminalWidth - 3) + "...";
-			}
-			else if (line.length() > terminalWidth) {
-				line = line.substring(0, terminalWidth);
-			}
+			if (wordWrap && line.trim().length() > terminalWidth) {
+				int lastSpace = line.substring(0, terminalWidth + 1).lastIndexOf(' ');
 
-			System.out.print(line);
+				String currentline = line.substring(0, lastSpace);
+				System.out.println(String.format("%-" + terminalWidth + "s", currentline));
+
+				String nextLine = " ".repeat(prelength) + line.substring(lastSpace + 1);
+
+				while (nextLine.length() > terminalWidth) {
+					lastSpace = nextLine.substring(0, terminalWidth + 1).lastIndexOf(' ');
+					currentline = nextLine.substring(0, lastSpace);
+					nextLine = " ".repeat(prelength) + nextLine.substring(lastSpace + 1);
+
+					System.out.println(String.format("%-" + terminalWidth + "s", currentline));
+				}
+				System.out.print(String.format("%-" + terminalWidth + "s", nextLine));
+			}
+			else {
+				if (line.replaceAll(" +$", "").length() > terminalWidth) {
+					line = line.substring(0, terminalWidth - 3) + "...";
+				}
+				else if (line.length() > terminalWidth) {
+					line = line.substring(0, terminalWidth);
+				}
+
+				System.out.print(line);
+			}
 
 			if ((rowCount % 2 != 0 && alternateColors) ||
 					bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {

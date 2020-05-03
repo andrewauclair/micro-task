@@ -53,6 +53,9 @@ final class ListCommand implements Runnable {
 	@Option(names = {"--all"}, description = "List all tasks.")
 	private boolean all;
 
+	@Option(names = {"-v", "--verbose"}, description = "Display verbose information.")
+	private boolean verbose;
+
 	ListCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasksData = tasks;
 		this.osInterface = osInterface;
@@ -222,6 +225,10 @@ final class ListCommand implements Runnable {
 
 			if (!all) {
 				table.setRowLimit(MAX_DISPLAYED_TASKS);
+			}
+
+			if (verbose) {
+				table.enableWordWrap();
 			}
 
 			if (useGroup) {

@@ -209,6 +209,77 @@ public class ConsoleTable_Test {
 		);
 	}
 
+	@Test
+	void word_wrap_the_last_column() {
+		table.enableWordWrap();
+
+		table.addRow("data", "this really long string of data in the last column will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				"data  this really long string of data in the last column will require wrapping  ",
+				"      around in the cell when it is displayed                                   ",
+				"data  this is a normal string                                                   "
+		);
+	}
+
+	@Test
+	void word_wrap_the_last_column_when_word_perfectly_ends_at_edge() {
+		table.enableWordWrap();
+
+		table.addRow("data", "this is a really long string of data in the last column which will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				"data  this is a really long string of data in the last column which will require",
+				"      wrapping around in the cell when it is displayed                          ",
+				"data  this is a normal string                                                   "
+		);
+	}
+
+	@Test
+	void word_wrap_the_last_column_wraps_the_colors() {
+		table.enableWordWrap();
+		table.enableAlternatingColors();
+
+		table.addRow("data", "this is a really long string of data in the last column which will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this is a normal string");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				ANSI_BG_GRAY + "data  this is a really long string of data in the last column which will require",
+				"      wrapping around in the cell when it is displayed                          " + ANSI_RESET,
+				"data  this is a normal string                                                   ",
+				ANSI_BG_GRAY + "data  this is a normal string                                                   " + ANSI_RESET
+		);
+	}
+
+	@Test
+	void wrap_multiple_times() {
+		table.enableWordWrap();
+
+		table.addRow("data", "This is a really long string of values that will wrap several times " +
+				"1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, " +
+				"31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				"data  This is a really long string of values that will wrap several times 1, 2, ",
+				"      3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  ",
+				"      23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,   ",
+				"      41, 42, 43, 44, 45, 46, 47, 48, 49, 50                                    ",
+				"data  this is a normal string                                                   "
+		);
+	}
+
 	protected void assertOutput(String... lines) {
 		assertOutput(outputStream, lines);
 	}

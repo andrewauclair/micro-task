@@ -119,7 +119,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "list --help");
 
 		assertOutput(
-				"Usage:  list [-h] [--all] [--current-group] [--finished] [--recursive]",
+				"Usage:  list [-hv] [--all] [--current-group] [--finished] [--recursive]",
 				"             [--tasks] [-g=<group>] [-l=<list>]",
 				"List tasks or the content of a group.",
 				"      --all             List all tasks.",
@@ -129,7 +129,8 @@ class Commands_List_Test extends CommandsBaseTestCase {
 				"  -h, --help            Show this help message.",
 				"  -l, --list=<list>     List tasks on list.",
 				"      --recursive       List tasks recursively in all sub-groups.",
-				"      --tasks           List tasks on list or in group."
+				"      --tasks           List tasks on list or in group.",
+				"  -v, --verbose         Display verbose information."
 		);
 	}
 }
