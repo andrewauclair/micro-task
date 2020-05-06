@@ -280,6 +280,25 @@ public class ConsoleTable_Test {
 	}
 
 	@Test
+	void wrap_rows_when_first_cells_are_empty() {
+		table.enableWordWrap();
+
+		table.setHeaders("One", "Two", "Three", "Four");
+		table.addRow("", "", "", "this is a longer string that will wrap around to the next line even with the spaces in front");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r + "                           ",
+				"                 this is a longer string that will wrap around to the next line ",
+				"                 even with the spaces in front                                  "
+		);
+	}
+
+	@Test
 	void print_the_last_rows_with_color() {
 		table.setRowLimit(1, true);
 

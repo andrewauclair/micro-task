@@ -149,7 +149,7 @@ public class ConsoleTable {
 				}
 			}
 
-			if (wordWrap && line.toString().trim().length() > terminalWidth) {
+			if (wordWrap && rtrim(line.toString()).length() > terminalWidth) {
 				int lastSpace = line.substring(0, terminalWidth + 1).lastIndexOf(' ');
 
 				String currentline = line.substring(0, lastSpace);
@@ -183,6 +183,14 @@ public class ConsoleTable {
 			}
 			System.out.println();
 		}
+	}
+
+	private static String rtrim(String str) {
+		int i = str.length() - 1;
+		while (i >= 0 && Character.isWhitespace(str.charAt(i))) {
+			i--;
+		}
+		return str.substring(0, i + 1);
 	}
 
 	public List<Integer> getColumnWidths() {

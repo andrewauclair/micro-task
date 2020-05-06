@@ -86,6 +86,9 @@ public class MainConsole extends CommonConsole {
 				if (command.equals("export")) {
 //					exportData(tasks);
 				}
+				else if (command.equals("size")) {
+					System.out.println(terminal.getSize());
+				}
 				else {
 					commands.execute(System.out, command);
 				}
