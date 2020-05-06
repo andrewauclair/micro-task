@@ -443,7 +443,7 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.setRecurring(existingID(1), true);
 
-		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
 
 		commands.execute(printStream, "tasks");
 
@@ -453,11 +453,11 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks on list '/default'",
 				"",
-				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "               ",
-				ANSI_BG_GRAY + "       5  Normal task                                       " + ANSI_RESET,
-				"       4  Very long titles will be cut off at the side of...",
-				ANSI_BG_GRAY + " R     1  Very long titles will be cut off at the side of..." + ANSI_RESET,
-				ANSI_BG_GREEN + "*      3  Very long titles will be cut off at the side of..." + ANSI_RESET,
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "                                   ",
+				ANSI_BG_GRAY + "       5  Normal task                                                           " + ANSI_RESET,
+				"       4  Very long titles will be cut off at the side of the screen so that ...",
+				ANSI_BG_GRAY + " R     1  Very long titles will be cut off at the side of the screen so that ..." + ANSI_RESET,
+				ANSI_BG_GREEN + "*      3  Very long titles will be cut off at the side of the screen so that ..." + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 4 (1 Recurring)" + ANSI_RESET,
 				""
@@ -476,7 +476,7 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 
 		tasks.setRecurring(existingID(1), true);
 
-		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
 
 		commands.execute(printStream, "tasks -v");
 
@@ -486,14 +486,14 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks on list '/default'",
 				"",
-				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "               ",
-				ANSI_BG_GRAY + "       5  Normal task                                       " + ANSI_RESET,
-				"       4  Very long titles will be wrapped at the side of   ",
-				"          the screen instead of being cut off at the edge   ",
-				ANSI_BG_GRAY + " R     1  Very long titles will be wrapped at the side of   ",
-				"          the screen instead of being cut off at the edge   " + ANSI_RESET,
-				ANSI_BG_GREEN + "*      3  Very long titles will be wrapped at the side of   ",
-				"          the screen instead of being cut off at the edge   " + ANSI_RESET,
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "                                   ",
+				ANSI_BG_GRAY + "       5  Normal task                                                           " + ANSI_RESET,
+				"       4  Very long titles will be wrapped at the side of the screen instead of ",
+				"          being cut off at the edge                                             ",
+				ANSI_BG_GRAY + " R     1  Very long titles will be wrapped at the side of the screen instead of ",
+				"          being cut off at the edge                                             " + ANSI_RESET,
+				ANSI_BG_GREEN + "*      3  Very long titles will be wrapped at the side of the screen instead of ",
+				"          being cut off at the edge                                             " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 4 (1 Recurring)" + ANSI_RESET,
 				""

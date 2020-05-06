@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.*;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -101,16 +104,17 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/one/"));
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for group '/one/'",
 				"",
-//				ANSI_BOLD + "2h 21m 35s /one/test" + ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-				"   32m 20s R 5 - 'Test 5'",
-//				"",
-//				ANSI_BOLD + "1h 12m  0s /one/impl" + ANSI_RESET,
-				"   10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   32m 20s   R     5  Test 5     " + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -203,16 +207,17 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/one/"));
 		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/two/"));
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for multiple groups",
 				"",
-//				ANSI_BOLD + "2h 21m 35s /two/data" + ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-				"   32m 20s R 5 - 'Test 5'",
-//				"",
-//				ANSI_BOLD + "1h 12m  0s /one/data" + ANSI_RESET,
-				"   10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   32m 20s   R     5  Test 5     " + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""

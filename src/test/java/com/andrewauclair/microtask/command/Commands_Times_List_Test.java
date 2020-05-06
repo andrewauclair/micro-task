@@ -3,9 +3,9 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskTimesFilter;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
+import com.andrewauclair.microtask.task.TaskTimesFilter;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -43,34 +43,21 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/default");
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for list '/default'",
 				"",
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-				"   32m 20s R 5 - 'Test 5'",
-				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   32m 20s   R     5  Test 5     " + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
 		);
-
-		String u = ConsoleColors.ANSI_UNDERLINE;
-		String r = ANSI_RESET;
-
-		// TODO I'm going to migrate towards this
-//		assertOutput(
-//				"Times for list '/default'",
-//				"",
-//				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "Description" + r,
-//				ANSI_BG_GRAY + "1h 49m 15s    F  3  Test 3" + ANSI_RESET,
-//				"1h  1m 39s       2  Test 2",
-//				ANSI_BG_GRAY + "   32m 20s   R   5  Test 5" + ANSI_RESET,
-//				ANSI_BG_GREEN + "   10m 21s  *    1  Test 1" + ANSI_RESET,
-//				"",
-//				"3h 33m 35s  Total",
-//				""
-//		);
 	}
 
 	@Test
@@ -90,7 +77,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		);
 
 		tasks.addList(newList("/testing"), true);
-		
+
 		commands.execute(printStream, "times --list default --list /testing");
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
@@ -101,13 +88,8 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for multiple lists",
 				"",
-				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ConsoleColors.ANSI_RESET,
-//				"1h 49m 15s F 3 - 'Test 3'",
-//				"   32m 20s R 5 - 'Test 5'",
-//				"",
-				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ConsoleColors.ANSI_RESET,
-//				"1h  1m 39s   2 - 'Test 2'",
-//				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -139,16 +121,17 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/default");
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/testing");
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for multiple lists",
 				"",
-//				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ConsoleColors.ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-				"   32m 20s R 5 - 'Test 5'",
-//				"",
-//				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ConsoleColors.ANSI_RESET,
-				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   32m 20s   R     5  Test 5     " + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -172,7 +155,7 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		);
 
 		tasks.addList(newList("/testing"), true);
-		
+
 		commands.execute(printStream, "times --total --list default --list /testing");
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
@@ -183,8 +166,8 @@ class Commands_Times_List_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Total times for multiple lists",
 				"",
-				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ConsoleColors.ANSI_RESET,
-				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ConsoleColors.ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "2h 21m 35s /testing" + ANSI_RESET,
+				ConsoleColors.ANSI_BOLD + "1h 12m  0s /default" + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""

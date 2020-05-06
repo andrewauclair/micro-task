@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.text.ParseException;
 import java.util.List;
 
 @Command(name = "app", description = "Update the application.")
@@ -41,6 +42,12 @@ public class UpdateAppCommand implements Runnable {
 
 		@Option(names = {"--release"}, description = "Update to a specific release.")
 		private String release;
+
+		@Option(names = {"--list-snapshots"}, description = "List pipelines with artifacts available.")
+		private boolean list_snapshots;
+
+		@Option(names = {"--snapshot"}, description = "Update to a specific snapshot release.")
+		private String snapshot;
 	}
 
 	@ArgGroup()
@@ -129,6 +136,22 @@ public class UpdateAppCommand implements Runnable {
 		}
 		else if (args.latest) {
 			updatedToNewRelease = updateToVersion(versions.get(versions.size() - 1), proxy);
+		}
+		else if (args.list_snapshots) {
+			try {
+				gitLabReleases.listSnapshotVersions(osInterface, proxy);
+			}
+			catch (IOException | ParseException e) {
+				e.printStackTrace(System.out);
+			}
+		}
+		else if (args.snapshot != null) {
+			try {
+				updatedToNewRelease = gitLabReleases.updateToSnapshotRelease(args.snapshot, proxy);
+			}
+			catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
 		}
 		else {
 			updatedToNewRelease = updateToVersion(args.release, proxy);

@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -44,14 +47,18 @@ class Commands_Times_Day_Test extends Commands_Times_BaseTestCase {
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
-		
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-				"   32m 20s R 5 - 'Test 5'",
-				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   32m 20s   R     5  Test 5     " + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""

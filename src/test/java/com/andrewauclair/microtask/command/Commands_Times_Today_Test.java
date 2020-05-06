@@ -16,6 +16,8 @@ import java.util.List;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -38,21 +40,25 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 				)
 		);
 
-		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
 
 		commands.execute(printStream, "times --today");
 		
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
-		
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				"1h 49m 15s F  30 - 'Test 3'",
-				"1h  1m 39s    20 - 'Test 2'",
-				"   32m 20s R 500 - 'Testing a longer name in the times c...'",
-				"   10m 21s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + " 10 - 'Test 1'" + ConsoleColors.ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "   " + u + "Description" + r + "              ",
+				ANSI_BG_GRAY + "1h 49m 15s    F    30  Test 3                                                   " + ANSI_RESET,
+				"1h  1m 39s         20  Test 2                                                   ",
+				ANSI_BG_GRAY + "   32m 20s   R    500  Testing a longer name in the times command because it'..." + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      10  Test 1                                                   " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -81,7 +87,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/one/design");
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
-		
+
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
@@ -117,12 +123,15 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/one/design");
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-//				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"   32m 20s R 5 - 'Test 5'",
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"   32m 20s   R     5  Test 5     ",
 				"",
 				"2h 21m 35s   Total",
 				""
@@ -187,12 +196,15 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/one/design");
 		order.verify(mockTaskTimesFilter, times(1)).filterForDay(6, 17, 2019);
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-//				ANSI_BOLD + "2h 21m 35s /one/design" + ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"   32m 20s R 5 - 'Test 5'",
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"   32m 20s   R     5  Test 5     ",
 				"",
 				"2h 21m 35s   Total",
 				""

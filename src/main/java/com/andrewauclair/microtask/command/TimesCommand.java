@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.jline.GroupCompleter;
@@ -22,8 +23,11 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
@@ -105,21 +109,14 @@ public final class TimesCommand implements Runnable {
 	private void displayTimes(TaskTimesFilter filter, boolean individualLists) {
 		List<TaskTimesFilter.TaskTimeFilterResult> results = filter.getData();
 
-		long maxID = Long.MIN_VALUE;
-		long minID = Long.MAX_VALUE;
-
-		for (TaskTimesFilter.TaskTimeFilterResult result : results) {
-			if (result.task.id > maxID) {
-				maxID = result.task.id;
-			}
-			if (result.task.id < minID) {
-				minID = result.task.id;
-			}
-		}
-
-		long idSpace = Long.toString(maxID).length();
+		ConsoleTable table = new ConsoleTable(osInterface);
+		table.enableAlternatingColors();
+		table.setColumnAlignment(RIGHT, LEFT, RIGHT, LEFT);
+		table.setHeaders("Time", "Type", "ID", "Description");
 
 		Utils.HighestTime highestTime = getHighestTime(filter);
+
+		long totalTime = 0;
 
 		if (individualLists) {
 			Map<String, List<TaskTimesFilter.TaskTimeFilterResult>> map = new HashMap<>();
@@ -153,7 +150,6 @@ public final class TimesCommand implements Runnable {
 					}
 			);
 
-			long totalTime = 0;
 
 			if (!verbose) {
 				System.out.println();
@@ -175,7 +171,11 @@ public final class TimesCommand implements Runnable {
 					}
 
 					if (verbose) {
-						totalTime += printResults(taskTimeFilterResults, highestTime, idSpace);
+						totalTime += printResults(table, taskTimeFilterResults, highestTime);
+
+						if (!total) {
+							table.print();
+						}
 					}
 					else {
 						for (final TaskTimesFilter.TaskTimeFilterResult result : taskTimeFilterResults) {
@@ -194,21 +194,32 @@ public final class TimesCommand implements Runnable {
 
 				System.out.println();
 
-				totalTime += printResults(allListResults, highestTime, idSpace);
+				totalTime += printResults(table, allListResults, highestTime);
+
+				if (!total) {
+					table.print();
+				}
 			}
 
-			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, highestTime));
+//			System.out.println();
+//			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
 
-			long totalTime = printResults(results, highestTime, idSpace);
+			totalTime = printResults(table, results, highestTime);
 
-			System.out.println();
-			System.out.print(Utils.formatTime(totalTime, highestTime));
+			if (!total) {
+				table.print();
+			}
+
 		}
-		System.out.print("   Total");
+			System.out.println();
+//			System.out.print(Utils.formatTime(totalTime, highestTime));
+
+		System.out.print(String.format("%-" + table.getColumnWidths().get(0) + "s   Total", Utils.formatTime(totalTime, highestTime)));
+
+//		System.out.print("  Total");
 		System.out.println();
 		System.out.println();
 	}
@@ -221,49 +232,45 @@ public final class TimesCommand implements Runnable {
 		return Utils.fromTimestamp(totalTime);
 	}
 
-	private long printResults(List<TaskTimesFilter.TaskTimeFilterResult> data, Utils.HighestTime highestTime, long idSpace) {
+	private long printResults(ConsoleTable table, List<TaskTimesFilter.TaskTimeFilterResult> data, Utils.HighestTime highestTime) {
 		long totalTime = 0;
 
 		for (TaskTimesFilter.TaskTimeFilterResult result : data) {
-			String line = Utils.formatTime(result.getTotal(), highestTime);
+			String time = Utils.formatTime(result.getTotal(), highestTime);
 
+			String type = "";
 			Task task = result.task;
 
 			boolean active = tasks.getActiveTaskID() == task.id;
 
 			if (active) {
-				line += " * ";
-				line += ANSI_FG_GREEN;
-			}
-			else if (task.state == TaskState.Finished) {
-				line += " F ";
-			}
-			else if (task.isRecurring()) {
-				line += " R ";
+				type += "*";
 			}
 			else {
-				line += "   ";
+				type += " ";
 			}
 
-			line += task.description(idSpace);
-
-			int length = line.length();
-
-			if (active) {
-				length -= ANSI_FG_GREEN.toString().length();
+			if (task.isRecurring()) {
+				type += "R";
+			}
+			else {
+				type += " ";
 			}
 
-			if (length > osInterface.getTerminalWidth()) {
-				line = line.substring(0, osInterface.getTerminalWidth() - 4 + (line.length() - length));
-				line += "...'";
+			if (task.state == TaskState.Finished) {
+				type += "F";
 			}
-
-			if (active) {
-				line += ANSI_RESET;
+			else {
+				type += " ";
 			}
 
 			if (!total) {
-				System.out.println(line);
+				if (active) {
+					table.addRow(ANSI_BG_GREEN, time, type, String.valueOf(task.id), task.task);
+				}
+				else {
+					table.addRow(time, type, String.valueOf(task.id), task.task);
+				}
 			}
 
 			totalTime += result.getTotal();
