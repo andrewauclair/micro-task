@@ -27,6 +27,8 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
+	public static boolean disableGit = false;
+
 	public Terminal terminal = null;
 
 	private String lastInputFile = "";
@@ -66,6 +68,10 @@ public class OSInterfaceImpl implements OSInterface {
 	public boolean runGitCommand(String command) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
+		}
+
+		if (disableGit) {
+			return true;
 		}
 
 		try {
