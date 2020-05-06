@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.MainConsole;
+import com.andrewauclair.microtask.os.OSInterfaceImpl;
 import com.andrewauclair.microtask.os.StatusConsole;
 
 public final class Main {
@@ -12,6 +13,9 @@ public final class Main {
 			System.exit(0);
 		}
 		else {
+			if (args.length > 0 && args[0].equals("--disable-git")) {
+				OSInterfaceImpl.disableGit = true;
+			}
 			new MainConsole();
 		}
 	}
