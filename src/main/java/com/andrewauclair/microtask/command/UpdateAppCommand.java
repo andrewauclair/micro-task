@@ -146,12 +146,7 @@ public class UpdateAppCommand implements Runnable {
 			}
 		}
 		else if (args.snapshot != null) {
-			try {
-				updatedToNewRelease = gitLabReleases.updateToSnapshotRelease(args.snapshot, proxy);
-			}
-			catch (IOException e) {
-				e.printStackTrace(System.out);
-			}
+			updatedToNewRelease = updateToSnapshotVersion(args.snapshot, proxy);
 		}
 		else {
 			updatedToNewRelease = updateToVersion(args.release, proxy);
@@ -188,6 +183,35 @@ public class UpdateAppCommand implements Runnable {
 		catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Failed to update to version '" + version + "'");
+		}
+
+		return false;
+	}
+
+	private boolean updateToSnapshotVersion(String version, Proxy proxy) {
+		try {
+			boolean updated = gitLabReleases.updateToSnapshotRelease(version, proxy);
+
+			if (updated) {
+				System.out.println("Updated to snapshot version '" + version + "'");
+				System.out.println();
+				System.out.println(gitLabReleases.messageForSnapshot(version, proxy));
+				System.out.println();
+				System.out.println("Press any key to shutdown. Please restart with the new version.");
+
+				// force a restart, but wait for the user to respond first
+				//noinspection ResultOfMethodCallIgnored
+				System.in.read();
+
+				return true;
+			}
+			else {
+				System.out.println("Snapshot version '" + version + "' not found on GitLab");
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+			System.out.println("Failed to update to snapshot version '" + version + "'");
 		}
 
 		return false;

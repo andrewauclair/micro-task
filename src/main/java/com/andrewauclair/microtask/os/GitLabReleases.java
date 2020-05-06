@@ -221,26 +221,7 @@ public class GitLabReleases {
 	public void listSnapshotVersions(OSInterface osInterface, Proxy proxy) throws IOException, ParseException {
 		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "https://gitlab.com/api/v4/projects/12882469/jobs?scope=success"
 
-		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/jobs?scope=success");
-		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
-
-		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
-
-		connection.setDoOutput(true);
-
-		BufferedReader iny = new BufferedReader(
-				new InputStreamReader(connection.getInputStream()));
-		String output;
-		StringBuilder response = new StringBuilder();
-
-		while ((output = iny.readLine()) != null) {
-			response.append(output);
-		}
-		iny.close();
-
-		String jsonStr = response.toString();
-
-		JSONArray jsonArray = new JSONArray(jsonStr);
+		JSONArray jsonArray = getPipelineJSON(proxy);
 
 //		Map<In/teger, String> refs = new HashMap<>();
 		List<String> refs = new ArrayList<>();
@@ -290,12 +271,9 @@ public class GitLabReleases {
 		table.print();
 	}
 
-	public boolean updateToSnapshotRelease(String name, Proxy proxy) throws IOException {
+	private JSONArray getPipelineJSON(Proxy proxy) throws IOException {
 		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/jobs?scope=success");
 		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
-
-		// GET /projects/:id/jobs/:job_id/artifacts
-		String artifactsBaseURL = "https://gitlab.com/api/v4/projects/12882469/jobs/";
 
 		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
 
@@ -313,7 +291,14 @@ public class GitLabReleases {
 
 		String jsonStr = response.toString();
 
-		JSONArray jsonArray = new JSONArray(jsonStr);
+		return new JSONArray(jsonStr);
+	}
+
+	public boolean updateToSnapshotRelease(String name, Proxy proxy) throws IOException {
+		// GET /projects/:id/jobs/:job_id/artifacts
+		String artifactsBaseURL = "https://gitlab.com/api/v4/projects/12882469/jobs/";
+
+		JSONArray jsonArray = getPipelineJSON(proxy);
 
 		List<String> refs = new ArrayList<>();
 
@@ -339,16 +324,44 @@ public class GitLabReleases {
 						unzip(ref + ".zip");
 
 						Files.delete(new File(ref + ".zip").toPath());
-
-						System.out.println();
-						System.out.println("Updated to snapshot version '" + ref + "'");
-						System.out.println();
 					}
 				}
 			}
 		}
 
 		return true;
+	}
+
+	public String messageForSnapshot(String version, Proxy proxy) throws IOException {
+// GET /projects/:id/jobs/:job_id/artifacts
+		String artifactsBaseURL = "https://gitlab.com/api/v4/projects/12882469/jobs/";
+
+		JSONArray jsonArray = getPipelineJSON(proxy);
+
+		List<String> refs = new ArrayList<>();
+
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+		dateFormat.setTimeZone(tz);
+
+		for (int i = 0; i < jsonArray.length() - 1; i++) {
+			JSONObject obj = jsonArray.getJSONObject(i);
+
+			int id = obj.getInt("id");
+
+			String ref = obj.getString("ref");
+
+			boolean tag = obj.getBoolean("tag");
+
+			if (!obj.isNull("artifacts_expire_at") && !tag && !refs.contains(ref)) {
+				refs.add(ref);
+
+				if (ref.equals(version)) {
+					return obj.getJSONObject("commit").getString("message");
+				}
+			}
+		}
+		return "";
 	}
 
 	/**
