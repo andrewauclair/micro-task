@@ -185,7 +185,7 @@ public class ConsoleTable {
 		}
 	}
 
-	private List<Integer> getColumnWidths() {
+	public List<Integer> getColumnWidths() {
 		List<Integer> widths = new ArrayList<>();
 
 		for (final String header : headers) {

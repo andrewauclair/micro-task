@@ -7,6 +7,10 @@ import org.mockito.Mockito;
 
 import java.util.Locale;
 
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
+
 // Test for a simple times command to execute out a task times list, might just be a temporary step towards bigger better features
 class Commands_Times_Task_Test extends CommandsBaseTestCase {
 	@Test
@@ -43,17 +47,21 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		Locale.setDefault(Locale.US);
 		commands.execute(printStream, "times --all-time");
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times",
 				"",
-				"   16m 40s   1 - 'Test 1'",
-				"   16m 40s   2 - 'Test 2'",
-				"   16m 40s   3 - 'Test 3'",
-				"   16m 40s   4 - 'Test 4'",
-				"   16m 40s   5 - 'Test 5'",
-				"   16m 40s   6 - 'Test 6'",
-				"   16m 40s   7 - 'Test 7'",
-				"   16m 40s   8 - 'Test 8'",
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "   16m 40s         1  Test 1     " + ANSI_RESET,
+				"   16m 40s         2  Test 2     ",
+				ANSI_BG_GRAY + "   16m 40s         3  Test 3     " + ANSI_RESET,
+				"   16m 40s         4  Test 4     ",
+				ANSI_BG_GRAY + "   16m 40s         5  Test 5     " + ANSI_RESET,
+				"   16m 40s         6  Test 6     ",
+				ANSI_BG_GRAY + "   16m 40s         7  Test 7     " + ANSI_RESET,
+				"   16m 40s         8  Test 8     ",
 				"",
 				"2h 13m 20s   Total",
 				""
@@ -75,22 +83,26 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		tasks.startTask(existingID(2), true);
 		tasks.setRecurring(existingID(3), true);
 		
-		Mockito.when(osInterface.getTerminalWidth()).thenReturn(60);
+		Mockito.when(osInterface.getTerminalWidth()).thenReturn(80);
 		
 		Locale.setDefault(Locale.US);
 		commands.execute(printStream, "times --all-time");
-		
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times",
 				"",
-				"1h 23m 20s * " + ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN + "2 - 'Very long titles will be cut off at th...'" + ConsoleColors.ANSI_RESET,
-				"   33m 20s F 1 - 'Very long titles will be cut off at th...'",
-				"   16m 40s   4 - 'Very long titles will be cut off at th...'",
-				"   16m 40s   5 - 'Test 5'",
-				"   16m 40s   6 - 'Test 6'",
-				"   16m 40s   7 - 'Test 7'",
-				"   16m 40s   8 - 'Test 8'",
-				"   16m 40s R 3 - 'Very long titles will be cut off at th...'",
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "               ",
+				ANSI_BG_GREEN + "1h 23m 20s  *      2  Very long titles will be cut off at the side of the scr..." + ANSI_RESET,
+				"   33m 20s    F    1  Very long titles will be cut off at the side of the scr...",
+				ANSI_BG_GRAY + "   16m 40s         4  Very long titles will be cut off at the side of the scr..." + ANSI_RESET,
+				"   16m 40s         5  Test 5                                                    ",
+				ANSI_BG_GRAY + "   16m 40s         6  Test 6                                                    " + ANSI_RESET,
+				"   16m 40s         7  Test 7                                                    ",
+				ANSI_BG_GRAY + "   16m 40s         8  Test 8                                                    " + ANSI_RESET,
+				"   16m 40s   R     3  Very long titles will be cut off at the side of the scr...",
 				"",
 				"3h 36m 40s   Total",
 				""

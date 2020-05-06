@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.text.ParseException;
 import java.util.Arrays;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
@@ -421,6 +422,34 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
 				""
 		);
+	}
+
+	@Test
+	void list_snapshot_releases() throws IOException, ParseException {
+		commands.execute(printStream, "update app --list-snapshots");
+
+		Mockito.verify(gitLabReleases).listSnapshotVersions(osInterface, Proxy.NO_PROXY);
+	}
+
+	@Test
+	void list_snapshot_releases_with_proxy() throws IOException, ParseException {
+		commands.execute(printStream, "update app --list-snapshots --proxy-ip 10.90.0.50 --proxy-port 8080");
+
+		Mockito.verify(gitLabReleases).listSnapshotVersions(osInterface, proxy);
+	}
+
+	@Test
+	void update_to_snapshot_version() throws IOException, ParseException {
+		commands.execute(printStream, "update app --snapshot test");
+
+		Mockito.verify(gitLabReleases).updateToSnapshotRelease("test", Proxy.NO_PROXY);
+	}
+
+	@Test
+	void update_to_snapshot_version_with_proxy() throws IOException, ParseException {
+		commands.execute(printStream, "update app --snapshot test --proxy-ip 10.90.0.50 --proxy-port 8080");
+
+		Mockito.verify(gitLabReleases).updateToSnapshotRelease("test", proxy);
 	}
 
 	@Test

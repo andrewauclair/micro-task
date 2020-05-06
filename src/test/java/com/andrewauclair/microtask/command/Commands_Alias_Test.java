@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import static com.andrewauclair.microtask.Utils.NL;
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -75,14 +76,18 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "tt");
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Created alias 'tt' for command 'times --today'",
 				"",
 				ConsoleColors.ANSI_BOLD + "times --today" + ConsoleColors.ANSI_RESET,
 				"Times for day 12/31/1969",
 				"",
+				u + "Time" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
 				"",
-				" 0s   Total",
+				" 0s    Total",
 				""
 		);
 	}

@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
+import com.andrewauclair.microtask.ConsoleTable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,10 +10,16 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("CanBeFinal")
 public class GitLabReleases {
@@ -158,27 +165,36 @@ public class GitLabReleases {
 			if (release.isEmpty() || releaseName.equals(release)) {
 				// download the jar file and rename it to micro-task.jar
 
-				URL gitlabURL = new URL(jar);
-				HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
-				try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-				     FileOutputStream fileOutputStream = new FileOutputStream("micro-task.jar")) {
-					byte[] dataBuffer = new byte[1024];
-					int bytesRead;
-					while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-						fileOutputStream.write(dataBuffer, 0, bytesRead);
-					}
-
+				if (downloadFile(proxy, jar, "micro-task.jar")) {
 					return true;
-				}
-				catch (IOException e) {
-					// handle exception
-					e.printStackTrace();
 				}
 
 				break;
 			}
 		}
 
+		return false;
+	}
+
+	private boolean downloadFile(Proxy proxy, String URL, String fileName) throws IOException {
+		URL gitlabURL = new URL(URL);
+		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
+		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
+
+		try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+		     FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+			byte[] dataBuffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+				fileOutputStream.write(dataBuffer, 0, bytesRead);
+			}
+
+			return true;
+		}
+		catch (IOException e) {
+			// handle exception
+			e.printStackTrace();
+		}
 		return false;
 	}
 
@@ -200,5 +216,183 @@ public class GitLabReleases {
 			}
 		}
 		return "";
+	}
+
+	public void listSnapshotVersions(OSInterface osInterface, Proxy proxy) throws IOException, ParseException {
+		// curl --header "PRIVATE-TOKEN: gDybLx3yrUK_HLp3qPjS" "https://gitlab.com/api/v4/projects/12882469/jobs?scope=success"
+
+		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/jobs?scope=success");
+		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
+
+		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
+
+		connection.setDoOutput(true);
+
+		BufferedReader iny = new BufferedReader(
+				new InputStreamReader(connection.getInputStream()));
+		String output;
+		StringBuilder response = new StringBuilder();
+
+		while ((output = iny.readLine()) != null) {
+			response.append(output);
+		}
+		iny.close();
+
+		String jsonStr = response.toString();
+
+		JSONArray jsonArray = new JSONArray(jsonStr);
+
+//		Map<In/teger, String> refs = new HashMap<>();
+		List<String> refs = new ArrayList<>();
+
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+		dateFormat.setTimeZone(tz);
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+		ConsoleTable table = new ConsoleTable(osInterface);
+		table.setHeaders("Branch", "Date", "Expires", "Description");
+		table.enableAlternatingColors();
+		table.enableWordWrap();
+
+		for (int i = 0; i < jsonArray.length() - 1; i++) {
+			JSONObject obj = jsonArray.getJSONObject(i);
+
+			int id = obj.getInt("id");
+
+			String ref = obj.getString("ref");
+
+			boolean tag = obj.getBoolean("tag");
+
+			String title = obj.getJSONObject("commit").getString("title");
+
+			String finished = obj.getString("finished_at");
+
+			Date finishedDate = dateFormat.parse(finished);
+
+//			System.out.println(String.format("%d %s %s %s", id, ref, title, obj.get("artifacts_expire_at")));
+
+			if (!obj.isNull("artifacts_expire_at") && !tag && !refs.contains(ref)) {
+				refs.add(ref);
+
+				String expires = obj.getString("artifacts_expire_at");
+				Date expireDate = dateFormat.parse(expires);
+
+
+				String finishedFormat = finishedDate.toInstant().atZone(osInterface.getZoneId()).format(dateTimeFormatter);
+				String expiresFormat = expireDate.toInstant().atZone(osInterface.getZoneId()).format(dateTimeFormatter);
+
+				table.addRow(ref, finishedFormat, expiresFormat, title);
+			}
+		}
+
+		table.print();
+	}
+
+	public boolean updateToSnapshotRelease(String name, Proxy proxy) throws IOException {
+		URL gitlabURL = new URL("https://gitlab.com/api/v4/projects/12882469/jobs?scope=success");
+		HttpsURLConnection connection = (HttpsURLConnection) gitlabURL.openConnection(proxy);
+
+		// GET /projects/:id/jobs/:job_id/artifacts
+		String artifactsBaseURL = "https://gitlab.com/api/v4/projects/12882469/jobs/";
+
+		connection.setRequestProperty("PRIVATE-TOKEN", "jMKLMkAQ2WfaWz43zNVz");
+
+		connection.setDoOutput(true);
+
+		BufferedReader iny = new BufferedReader(
+				new InputStreamReader(connection.getInputStream()));
+		String output;
+		StringBuilder response = new StringBuilder();
+
+		while ((output = iny.readLine()) != null) {
+			response.append(output);
+		}
+		iny.close();
+
+		String jsonStr = response.toString();
+
+		JSONArray jsonArray = new JSONArray(jsonStr);
+
+		List<String> refs = new ArrayList<>();
+
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+		dateFormat.setTimeZone(tz);
+
+		for (int i = 0; i < jsonArray.length() - 1; i++) {
+			JSONObject obj = jsonArray.getJSONObject(i);
+
+			int id = obj.getInt("id");
+
+			String ref = obj.getString("ref");
+
+			boolean tag = obj.getBoolean("tag");
+
+			if (!obj.isNull("artifacts_expire_at") && !tag && !refs.contains(ref)) {
+				refs.add(ref);
+
+				if (ref.equals(name)) {
+					// update to this snapshot version
+					if (downloadFile(proxy, artifactsBaseURL + id + "/artifacts", ref + ".zip")) {
+						unzip(ref + ".zip");
+
+						Files.delete(new File(ref + ".zip").toPath());
+
+						System.out.println();
+						System.out.println("Updated to snapshot version '" + ref + "'");
+						System.out.println();
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Size of the buffer to read/write data
+	 */
+	private static final int BUFFER_SIZE = 4096;
+
+	/**
+	 * Extracts a zip file specified by the zipFilePath to a directory specified by
+	 * destDirectory (will be created if does not exists)
+	 *
+	 * @param zipFilePath
+	 * @throws IOException
+	 */
+	public void unzip(String zipFilePath) throws IOException {
+		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+		ZipEntry entry = zipIn.getNextEntry();
+		// iterates over entries in the zip file
+		while (entry != null) {
+			String filePath = entry.getName();
+			if (!entry.isDirectory() && filePath.equals("build/libs/micro-task.jar")) {
+				// if the entry is a file, extracts it
+				extractFile(zipIn, "micro-task.jar");
+			}
+			zipIn.closeEntry();
+			entry = zipIn.getNextEntry();
+		}
+		zipIn.close();
+	}
+
+	/**
+	 * Extracts a zip entry (file entry)
+	 *
+	 * @param zipIn
+	 * @param filePath
+	 * @throws IOException
+	 */
+	private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+		byte[] bytesIn = new byte[BUFFER_SIZE];
+		int read = 0;
+		while ((read = zipIn.read(bytesIn)) != -1) {
+			bos.write(bytesIn, 0, read);
+		}
+		bos.close();
 	}
 }

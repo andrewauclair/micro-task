@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.os.ConsoleColors.*;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -103,19 +106,18 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/data");
 		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/one/"));
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for multiple lists",
 				"",
-//				ANSI_BOLD + "2h 21m 35s /one/test" + ANSI_RESET,
-				"1h 49m 15s F 3 - 'Test 3'",
-				"1h  1m 39s   2 - 'Test 2'",
-//				"",
-//				ANSI_BOLD + "1h 12m  0s /one/impl" + ANSI_RESET,
-				"   46m 24s   7 - 'Test 7'",
-				"   32m 20s R 5 - 'Test 5'",
-				"   10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + "1 - 'Test 1'" + ANSI_RESET,
-//				"",
-//				ANSI_BOLD + "   46m 24s /data" + ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"1h  1m 39s         2  Test 2     ",
+				ANSI_BG_GRAY + "   46m 24s         7  Test 7     " + ANSI_RESET,
+				"   32m 20s   R     5  Test 5     ",
+				ANSI_BG_GREEN + "   10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"4h 19m 59s   Total",
 				""
@@ -234,30 +236,23 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 		order.verify(mockTaskTimesFilter, times(1)).filterForList("/data");
 		order.verify(mockTaskTimesFilter, times(1)).filterForGroup(tasks.getGroup("/one/"));
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				"Times for multiple lists",
 				"",
-//				ANSI_BOLD + "   2h 48m 15s /two/test" + ANSI_RESET,
-				"   1h 49m 15s F  3 - 'Test 3'",
-				"   1h 42m 35s F 12 - 'Test 12'",
-				"   1h  5m 40s R 15 - 'Test 15'",
-//				"",
-//				ANSI_BOLD + "   2h 21m 35s /one/test" + ANSI_RESET,
-				"   1h  3m 49s   11 - 'Test 11'",
-				"   1h  1m 39s    2 - 'Test 2'",
-//				"",
-//				ANSI_BOLD + "   1h 14m 50s /two/impl" + ANSI_RESET,
-//				"",
-//				ANSI_BOLD + "   1h 12m  0s /one/impl" + ANSI_RESET,
-//				"",
-//				ANSI_BOLD + "      48m 14s /default" + ANSI_RESET,
-				"      48m 14s    8 - 'Test 8'",
-				"      46m 24s    7 - 'Test 7'",
-				"      32m 20s R  5 - 'Test 5'",
-				"      11m  1s   10 - 'Test 10'",
-				"      10m 21s * " + ConsoleForegroundColor.ANSI_FG_GREEN + " 1 - 'Test 1'" + ANSI_RESET,
-//				"",
-//				ANSI_BOLD + "      46m 24s /data" + ANSI_RESET,
+				u + "Time" + r + "           " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "   1h 49m 15s    F    3  Test 3     " + ANSI_RESET,
+				"   1h 42m 35s    F   12  Test 12    ",
+				ANSI_BG_GRAY + "   1h  5m 40s   R    15  Test 15    " + ANSI_RESET,
+				"   1h  3m 49s        11  Test 11    ",
+				ANSI_BG_GRAY + "   1h  1m 39s         2  Test 2     " + ANSI_RESET,
+				"      48m 14s         8  Test 8     ",
+				ANSI_BG_GRAY + "      46m 24s         7  Test 7     " + ANSI_RESET,
+				"      32m 20s   R     5  Test 5     ",
+				ANSI_BG_GRAY + "      11m  1s        10  Test 10    " + ANSI_RESET,
+				ANSI_BG_GREEN + "      10m 21s  *      1  Test 1     " + ANSI_RESET,
 				"",
 				"1d 1h 11m 18s   Total",
 				""

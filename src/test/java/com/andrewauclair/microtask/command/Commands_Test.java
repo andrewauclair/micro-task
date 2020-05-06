@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import picocli.CommandLine;
 
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Commands_Test extends CommandsBaseTestCase {
@@ -19,12 +20,16 @@ class Commands_Test extends CommandsBaseTestCase {
 
 		commandLine.execute("tt");
 
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
 		assertOutput(
 				ConsoleColors.ANSI_BOLD + "times --today" + ConsoleColors.ANSI_RESET,
 				"Times for day 12/31/1969",
 				"",
+				u + "Time" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
 				"",
-				" 0s   Total",
+				" 0s    Total",
 				""
 		);
 	}
