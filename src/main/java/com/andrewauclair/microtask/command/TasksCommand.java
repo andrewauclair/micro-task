@@ -108,7 +108,7 @@ public class TasksCommand implements Runnable {
 			}
 
 			if (useGroup) {
-				tasks = getTasks(tasksData.getActiveGroup(), finished, recursive);
+				tasks = getTasks(tasksData.getGroup(group), finished, recursive);
 			}
 			else {
 				List<Task> tasksList = tasksData.getTasksForList(list).stream()
@@ -134,7 +134,7 @@ public class TasksCommand implements Runnable {
 				}
 				else {
 					TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
-					String name = listForTask.getFullPath().replace(tasksData.getActiveGroup().getFullPath(), "");
+					String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 					addTaskToTable(table, task, name, useGroup);
 				}
@@ -142,7 +142,7 @@ public class TasksCommand implements Runnable {
 
 			if (activeTask.isPresent()) {
 				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
-				String name = listForTask.getFullPath().replace(tasksData.getActiveGroup().getFullPath(), "");
+				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 				addTaskToTable(table, activeTask.get(), name, useGroup);
 			}

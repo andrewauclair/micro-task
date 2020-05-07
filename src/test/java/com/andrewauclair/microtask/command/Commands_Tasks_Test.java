@@ -71,6 +71,7 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 	@Test
 	void display_tasks_in_a_different_group() {
 		tasks.createGroup(newGroup("/test/"));
+		tasks.createGroup(newGroup("/done/"));
 		tasks.addList(newList("/test/one"), true);
 		tasks.addList(newList("/test/two"), true);
 
@@ -81,6 +82,8 @@ class Commands_Tasks_Test extends CommandsBaseTestCase {
 		tasks.addTask("Task 5", existingList("/test/two"));
 
 		tasks.startTask(existingID(3), false);
+
+		tasks.setActiveGroup(existingGroup("/done/"));
 
 		commands.execute(printStream, "tasks --group /test/");
 
