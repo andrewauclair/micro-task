@@ -633,6 +633,10 @@ public class Tasks {
 
 		TaskGroup parent = getGroupForList(list);
 
+		if (taskList.getState() == TaskContainerState.Finished) {
+			throw new TaskException("List has already been finished.");
+		}
+
 		TaskList newList = taskList.changeState(TaskContainerState.Finished);
 
 		parent.removeChild(taskList);
@@ -650,6 +654,10 @@ public class Tasks {
 	public TaskGroup finishGroup(ExistingGroupName group) {
 		TaskGroup origGroup = getGroup(group);
 		TaskGroup parent = getGroup(origGroup.getParent());
+
+		if (origGroup.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Group has already been finished.");
+		}
 
 		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);
 

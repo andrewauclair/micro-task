@@ -2,8 +2,11 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.task.TaskContainerState;
+import com.andrewauclair.microtask.task.TaskGroup;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -61,5 +64,27 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		);
 
 		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test/one")).getState());
+	}
+
+	@Test
+	void finished_groups_cannot_be_finished() {
+		tasks.addGroup(newGroup("/test/"));
+		TaskGroup group = tasks.finishGroup(existingGroup("/test/"));
+
+		Mockito.reset(osInterface, writer);
+
+		commands.execute(printStream, "finish --group /test/");
+
+		assertOutput(
+				"Group has already been finished.",
+				""
+		);
+
+		assertThat(tasks.getGroup(existingGroup("/")).getChildren()).containsOnly(
+				group,
+				tasks.getListByName(existingList("/default"))
+		);
+
+		Mockito.verifyNoInteractions(osInterface, writer);
 	}
 }
