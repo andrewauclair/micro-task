@@ -244,6 +244,10 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Recurring tasks cannot be finished.");
 		}
 
+		if (currentTask.state == TaskState.Finished) {
+			throw new TaskException("Task " + id.get() + " has already been finished.");
+		}
+
 		Task finishedTask = new TaskBuilder(currentTask).finish(osInterface.currentSeconds());
 
 		replaceTask(currentTask, finishedTask);

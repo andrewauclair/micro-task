@@ -78,13 +78,36 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.addTask("Test");
 		tasks.setRecurring(existingID(1), true);
 
-		tasks.startTask(existingID(1), false);
-		
+		Task task = tasks.startTask(existingID(1), false);
+
+		Mockito.reset(osInterface);
+
 		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
 		
 		assertEquals("Recurring tasks cannot be finished.", taskException.getMessage());
+
+		assertThat(tasks.getAllTasks()).containsOnly(task);
+
+		Mockito.verifyNoInteractions(osInterface);
 	}
-	
+
+	@Test
+	void finished_tasks_cannot_be_finished() {
+		tasks.addTask("Test");
+
+		Task task = tasks.finishTask(existingID(1));
+
+		Mockito.reset(osInterface);
+
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.finishTask(existingID(1)));
+
+		assertEquals("Task 1 has already been finished.", taskException.getMessage());
+
+		assertThat(tasks.getAllTasks()).containsOnly(task);
+
+		Mockito.verifyNoInteractions(osInterface);
+	}
+
 	@Test
 	void finish_list_writes_file() throws IOException {
 		tasks.addGroup(newGroup("/test/"));
