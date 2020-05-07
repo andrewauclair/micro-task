@@ -38,7 +38,9 @@ public class Projects {
 		projects.add(project);
 
 		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/projects.txt"))) {
-			outputStream.println(group.absoluteName());
+			for (Project proj : projects) {
+				outputStream.println(proj.getGroup().getFullPath());
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);

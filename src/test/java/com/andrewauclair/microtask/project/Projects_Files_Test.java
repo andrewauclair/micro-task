@@ -20,10 +20,12 @@ public class Projects_Files_Test extends ProjectBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/projects.txt")).thenReturn(new DataOutputStream(outputStream));
 
-		projects.createProject(existingGroup("test/"));
+		tasks.createGroup(newGroup("done/"));
+		projects.createProject(existingGroup("done/"));
 
 		TestUtils.assertOutput(outputStream,
 				"/test/",
+				"/done/",
 				""
 		);
 	}
