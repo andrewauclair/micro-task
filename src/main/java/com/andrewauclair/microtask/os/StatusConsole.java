@@ -140,7 +140,7 @@ public class StatusConsole {
 			while ((c = in.read()) != -1) {
 				synchronized (tasks) {
 					tasks.load(loader, commands);
-
+					commands.loadAliases();
 					lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 
 					TransferType transferType = TransferType.valueOf(c);
