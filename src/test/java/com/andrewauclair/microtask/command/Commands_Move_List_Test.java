@@ -1,10 +1,12 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskListFinder;
 import com.andrewauclair.microtask.task.TaskListName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,6 +56,26 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 				"Moved list /one/two/three to group '/'",
 				""
 		);
+	}
+
+	@Test
+	void moved_list_still_has_tasks() {
+		tasks.addGroup(newGroup("/one/two/"));
+		tasks.addGroup(newGroup("/one/test/"));
+		tasks.addList(newList("/one/two/three"), true);
+		tasks.addList(newList("/one/test/five"), true);
+		tasks.setActiveList(existingList("/one/two/three"));
+
+		Task task = tasks.addTask("Test 1");
+
+		commands.execute(printStream, "move --list /one/two/three --dest-group /one/test/");
+
+		TaskListFinder finder = new TaskListFinder(tasks);
+
+		assertFalse(finder.hasList(new TaskListName(tasks, "/one/two/two") {}));
+		assertTrue(finder.hasList(new TaskListName(tasks, "/one/test/three") {}));
+
+		assertThat(tasks.getTasksForList(existingList("/one/test/three"))).containsOnly(task);
 	}
 
 	@Test
