@@ -242,6 +242,7 @@ public final class TaskGroup implements TaskContainer {
 		removeChild(list);
 
 		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), list.getProject(), list.getFeature(), TaskContainerState.InProgress);
+		list.getTasks().forEach(newList::addTask);
 
 		group.addChild(newList);
 
