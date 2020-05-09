@@ -293,6 +293,20 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void alias_command_cannot_have_same_name_as_real_command() {
+		Mockito.reset(osInterface);
+
+		commands.execute(printStream, "alias -n start -c \"tasks\"");
+
+		Mockito.verifyNoInteractions(osInterface);
+
+		assertOutput(
+				"'start' is a command and cannot be used for an alias name.",
+				""
+		);
+	}
+
+	@Test
 	void invalid_command() {
 		commands.execute(printStream, "alias");
 
