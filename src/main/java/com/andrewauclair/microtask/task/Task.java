@@ -90,10 +90,6 @@ public final class Task {
 		return id + " - '" + task + "'";
 	}
 
-	public String description(long idSpace) {
-		return String.format("%" + idSpace + "d", id) + " - '" + task + "'";
-	}
-
 	public boolean isRecurring() {
 		return recurring;
 	}

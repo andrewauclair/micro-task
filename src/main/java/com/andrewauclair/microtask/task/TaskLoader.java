@@ -92,7 +92,6 @@ public class TaskLoader {
 			tasks.setListState(tasks.getActiveList(), TaskContainerState.valueOf(scanner.nextLine()), false);
 		}
 		catch (IOException e) {
-			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
 			e.printStackTrace(System.out);
 		}
 
