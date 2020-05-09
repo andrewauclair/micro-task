@@ -58,7 +58,11 @@ final class AliasCommand implements Runnable {
 				System.out.println();
 			}
 			else {
-				if (commands.isValidCommand(args.command)) {
+				if (commands.buildCommandLineWithAllCommands().getSubcommands().containsKey(name)) {
+					System.out.println("'" + name + "' is a command and cannot be used for an alias name.");
+					System.out.println();
+				}
+				else if (commands.isValidCommand(args.command)) {
 					System.out.println("Created alias '" + name + "' for command '" + args.command + "'");
 					System.out.println();
 
