@@ -209,6 +209,46 @@ public class ConsoleTable_Test {
 	}
 
 	@Test
+	void wrapped_lines_are_counted_for_row_limit() {
+		table.setRowLimit(3, false);
+		table.enableWordWrap();
+
+		table.addRow("data", "this really long string of data in the last column will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this is a normal string");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				"data  this really long string of data in the last column will require wrapping  ",
+				"      around in the cell when it is displayed                                   ",
+				"data  this is a normal string                                                   "
+		);
+	}
+
+	@Test
+	void fits_height_when_all_lines_wrap() {
+		table.setRowLimit(5, false);
+		table.enableWordWrap();
+		table.enableAlternatingColors();
+
+		table.addRow("data", "this really long string of data in the last column will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this really long string of data in the last column will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this really long string of data in the last column will require wrapping around in the cell when it is displayed");
+		table.addRow("data", "this is a normal string");
+		table.addRow("data", "this is a normal string");
+
+		table.print();
+
+		assertOutput(
+				ANSI_BG_GRAY + "data  this really long string of data in the last column will require wrapping  ",
+				"      around in the cell when it is displayed                                   " + ANSI_RESET,
+				"data  this really long string of data in the last column will require wrapping  ",
+				"      around in the cell when it is displayed                                   "
+		);
+	}
+
+	@Test
 	void word_wrap_the_last_column() {
 		table.enableWordWrap();
 

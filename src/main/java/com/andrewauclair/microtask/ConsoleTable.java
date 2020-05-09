@@ -104,24 +104,18 @@ public class ConsoleTable {
 		}
 
 		int rowCount = 0;
+		int rowsDisplayed = 0;
 
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
 			List<String> row = cells.get(rowNum);
 
-			if (rowCount >= rowLimit && rowLimit != 0) {
+			if (rowsDisplayed >= rowLimit && rowLimit != 0) {
 				break;
 			}
 
 			ConsoleBackgroundColor bgColor = rowColors.get(rowCount + startRow);
 
 			rowCount++;
-
-			if (bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {
-				System.out.print(bgColor);
-			}
-			else if (rowCount % 2 != 0 && alternateColors) {
-				System.out.print(ConsoleBackgroundColor.ANSI_BG_GRAY);
-			}
 
 			StringBuilder line = new StringBuilder();
 			int prelength = 0;
@@ -149,11 +143,15 @@ public class ConsoleTable {
 				}
 			}
 
+			List<String> lines = new ArrayList<>();
+
 			if (wordWrap && rtrim(line.toString()).length() > terminalWidth) {
 				int lastSpace = line.substring(0, terminalWidth + 1).lastIndexOf(' ');
 
 				String currentline = line.substring(0, lastSpace);
-				System.out.println(String.format("%-" + terminalWidth + "s", currentline));
+				lines.add(String.format("%-" + terminalWidth + "s", currentline));
+
+				rowsDisplayed++;
 
 				String nextLine = " ".repeat(prelength) + line.substring(lastSpace + 1);
 
@@ -162,9 +160,10 @@ public class ConsoleTable {
 					currentline = nextLine.substring(0, lastSpace);
 					nextLine = " ".repeat(prelength) + nextLine.substring(lastSpace + 1);
 
-					System.out.println(String.format("%-" + terminalWidth + "s", currentline));
+					lines.add(String.format("%-" + terminalWidth + "s", currentline));
+					rowsDisplayed++;
 				}
-				System.out.print(String.format("%-" + terminalWidth + "s", nextLine));
+				lines.add(String.format("%-" + terminalWidth + "s", nextLine));
 			}
 			else {
 				if (line.toString().replaceAll(" +$", "").length() > terminalWidth) {
@@ -174,7 +173,29 @@ public class ConsoleTable {
 					line = new StringBuilder(line.substring(0, terminalWidth));
 				}
 
-				System.out.print(line);
+				lines.add(line.toString());
+			}
+			rowsDisplayed++;
+
+			// adding these new rows would go over the limit
+			if (rowsDisplayed > rowLimit && rowLimit != 0) {
+				continue;
+			}
+
+			if (bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {
+				System.out.print(bgColor);
+			}
+			else if (rowCount % 2 != 0 && alternateColors) {
+				System.out.print(ConsoleBackgroundColor.ANSI_BG_GRAY);
+			}
+
+			for (int i = 0; i < lines.size(); i++) {
+				if (i + 1 < lines.size()) {
+					System.out.println(lines.get(i));
+				}
+				else {
+					System.out.print(lines.get(i));
+				}
 			}
 
 			if ((rowCount % 2 != 0 && alternateColors) ||
