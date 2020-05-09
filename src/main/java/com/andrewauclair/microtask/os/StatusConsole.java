@@ -204,12 +204,23 @@ public class StatusConsole {
 				if (width - line2.length() - timeToday.length() < 0) {
 					line2 = "";
 				}
-				line2 += String.join("", Collections.nCopies(width - line2.length() - timeToday.length(), " "));
+
+				if (width - line2.length() - timeToday.length() < 0) {
+					line2 += timeToday;
+				}
+				else {
+					line2 += String.join("", Collections.nCopies(width - line2.length() - timeToday.length(), " "));
+				}
 
 				if (width - line3.length() - allTime.length() < 0) {
 					line3 = "Current Group: " + currentGroup;
 				}
-				line3 += String.join("", Collections.nCopies(width - line3.length() - allTime.length(), " "));
+				if (width - line3.length() - allTime.length() < 0) {
+					line3 += allTime.length();
+				}
+				else {
+					line3 += String.join("", Collections.nCopies(width - line3.length() - allTime.length(), " "));
+				}
 
 				line2 += timeToday;
 				line3 += allTime;
@@ -296,6 +307,9 @@ public class StatusConsole {
 	}
 
 	private String padString(String str, int width) {
+		if (width - str.length() < 0) {
+			return str;
+		}
 		return str + String.join("", Collections.nCopies(width - str.length(), " "));
 	}
 

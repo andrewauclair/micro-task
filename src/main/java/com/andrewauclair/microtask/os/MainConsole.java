@@ -11,6 +11,7 @@ import com.andrewauclair.microtask.task.TaskLoader;
 import com.andrewauclair.microtask.task.TaskReader;
 import com.andrewauclair.microtask.task.TaskWriter;
 import com.andrewauclair.microtask.task.Tasks;
+import com.sun.jna.platform.win32.Kernel32;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
 import picocli.CommandLine;
@@ -25,6 +26,8 @@ import java.util.Scanner;
 import static java.util.Comparator.comparingLong;
 
 public class MainConsole extends CommonConsole {
+	private static final String CONSOLE_TITLE = "micro task main";
+
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl();
 
 	private final Commands commands;
@@ -64,6 +67,10 @@ public class MainConsole extends CommonConsole {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		final Kernel32 kernel32 = Kernel32.INSTANCE;
+
+		kernel32.SetConsoleTitle(CONSOLE_TITLE);
 
 		run();
 	}

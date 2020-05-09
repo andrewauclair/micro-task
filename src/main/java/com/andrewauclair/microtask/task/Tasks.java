@@ -384,10 +384,6 @@ public class Tasks {
 		TaskGroup newGroup = null;
 
 		for (String group : groupName.absoluteName().substring(1).split("/")) {
-			// TODO I think this should be an invalid path
-			if (group.isEmpty()) {
-				continue;
-			}
 			TaskGroup parentGroup = getGroup(currentParent);
 
 			if (parentGroup.getState() == TaskContainerState.Finished && createFiles) {
