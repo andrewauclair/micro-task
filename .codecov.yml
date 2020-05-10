@@ -8,8 +8,18 @@ coverage:
   range: "70...100"
 
   status:
-    project: true
-    patch: true
+    project:
+      default:
+        tests:
+          target: 100%
+          paths:
+            - "src/test/"
+    patch:
+      default:
+        tests:
+          target: 100%
+          paths:
+            - "src/test/"
     changes: no
 
 parsers:
