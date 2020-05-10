@@ -17,7 +17,9 @@ import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.linesOf;
 public class CommandsBaseTestCase {
 	protected final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	protected final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+	@InjectMocks
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	protected final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	final GitLabReleases gitLabReleases = Mockito.mock(GitLabReleases.class);
@@ -46,6 +49,8 @@ public class CommandsBaseTestCase {
 
 	@BeforeEach
 	public void setup() throws IOException {
+		MockitoAnnotations.initMocks(this);
+
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 

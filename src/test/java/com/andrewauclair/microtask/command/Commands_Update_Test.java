@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.ConsoleColors;
+import com.andrewauclair.microtask.os.GitLabReleases;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -11,18 +12,32 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
+import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 
 class Commands_Update_Test extends CommandsBaseTestCase {
 	private final Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.90.0.50", 8080));
 
 	@Test
 	void execute_update_command() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenReturn(true);
-		Mockito.when(gitLabReleases.changelogForRelease("version-1", Proxy.NO_PROXY)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(
+				Collections.singletonList(
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
+		Mockito.when(gitLabReleases.updateToRelease(
+				new GitLabReleases.ReleasePipeline("version-1", 5),
+				Proxy.NO_PROXY
+		)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease(
+				new GitLabReleases.ReleasePipeline("version-1", 5),
+				Proxy.NO_PROXY,
+				false
+		)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -44,7 +59,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
-		inOrder.verify(gitLabReleases).updateToRelease("version-1", Proxy.NO_PROXY);
+		inOrder.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("version-1", 5), Proxy.NO_PROXY);
 		//noinspection ResultOfMethodCallIgnored, don't need to do anything with the result because this is just a Mockito.verify
 		inOrder.verify(in).read();
 		inOrder.verify(osInterface).exit();
@@ -63,7 +78,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_prints_not_found_when_version_is_unknown() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenReturn(false);
+		Mockito.when(gitLabReleases.updateToRelease(new GitLabReleases.ReleasePipeline("version-1", 5), Proxy.NO_PROXY)).thenReturn(false);
 
 		commands.execute(printStream, "update app --release version-1");
 
@@ -75,7 +90,12 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_prints_failure_if_updateToRelease_throws_exception() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1", Proxy.NO_PROXY)).thenThrow(IOException.class);
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(
+				Collections.singletonList(
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
+		Mockito.when(gitLabReleases.updateToRelease(new GitLabReleases.ReleasePipeline("version-1", 5), Proxy.NO_PROXY)).thenThrow(IOException.class);
 
 		commands.execute(printStream, "update app --release version-1");
 
@@ -87,8 +107,13 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_to_release_with_proxy_settings() throws IOException {
-		Mockito.when(gitLabReleases.updateToRelease("version-1", proxy)).thenReturn(true);
-		Mockito.when(gitLabReleases.changelogForRelease("version-1", proxy)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
+		Mockito.when(gitLabReleases.getReleases(proxy, false)).thenReturn(
+				Collections.singletonList(
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
+		Mockito.when(gitLabReleases.updateToRelease(new GitLabReleases.ReleasePipeline("version-1", 5), proxy)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease(new GitLabReleases.ReleasePipeline("version-1", 5), proxy, false)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -110,7 +135,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
-		inOrder.verify(gitLabReleases).updateToRelease("version-1", proxy);
+		inOrder.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("version-1", 5), proxy);
 		//noinspection ResultOfMethodCallIgnored, don't need to do anything with the result because this is just a Mockito.verify
 		inOrder.verify(in).read();
 		inOrder.verify(osInterface).exit();
@@ -149,70 +174,93 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void print_out_releases() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("version-3", 3),
+						new GitLabReleases.ReleasePipeline("version-2", 2),
+						new GitLabReleases.ReleasePipeline("version-1", 1)
+				));
 
-		commands.execute(printStream, "update app --releases");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"version-1",
-				"version-2",
-				ANSI_FG_GREEN + "version-3 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "         ",
+				ANSI_BG_GRAY + "version-3     -- latest" + ANSI_RESET,
+				"version-2              ",
+				ANSI_BG_GRAY + "version-1              " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
 	void print_out_releases_with_proxy() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(proxy)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
+		Mockito.when(gitLabReleases.getReleases(proxy, false)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("version-3", 5),
+						new GitLabReleases.ReleasePipeline("version-2", 5),
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
 
-		commands.execute(printStream, "update app -r --proxy-ip 10.90.0.50 --proxy-port 8080");
+		commands.execute(printStream, "update app --list-releases --proxy-ip 10.90.0.50 --proxy-port 8080");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"version-1",
-				"version-2",
-				ANSI_FG_GREEN + "version-3 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "         ",
+				ANSI_BG_GRAY + "version-3     -- latest" + ANSI_RESET,
+				"version-2              ",
+				ANSI_BG_GRAY + "version-1              " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
 	void lists_only_the_newest_5_versions_and_highlights_newest() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList(
-				"19.1.1",
-				"19.1.2",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				"19.1.7"
-		));
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("19.1.7", 5),
+						new GitLabReleases.ReleasePipeline("19.1.6", 5),
+						new GitLabReleases.ReleasePipeline("19.1.5", 5),
+						new GitLabReleases.ReleasePipeline("19.1.4", 5),
+						new GitLabReleases.ReleasePipeline("19.1.3", 5),
+						new GitLabReleases.ReleasePipeline("19.1.2", 5),
+						new GitLabReleases.ReleasePipeline("19.1.1", 5)
+				)
+		);
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 
-		commands.execute(printStream, "update app -r");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"2 older releases",
-				"",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
-				"19.1.6",
-				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "          ",
+				ANSI_BG_GRAY + "19.1.7        -- latest " + ANSI_RESET,
+				"19.1.6                  ",
+				ANSI_BG_GREEN + "19.1.5        -- current" + ANSI_RESET,
+				"19.1.4                  ",
+				ANSI_BG_GRAY + "19.1.3                  " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
 	void failure_to_retrieve_releases_from_gitlab() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenThrow(IOException.class);
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenThrow(IOException.class);
 
-		commands.execute(printStream, "update app --releases");
+		commands.execute(printStream, "update app --list-releases");
 
 		assertOutput(
 				"Failed to get releases from GitLab",
@@ -222,9 +270,15 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_to_latest_release() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
-		Mockito.when(gitLabReleases.updateToRelease("version-3", Proxy.NO_PROXY)).thenReturn(true);
-		Mockito.when(gitLabReleases.changelogForRelease("version-3", Proxy.NO_PROXY)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("version-3", 5),
+						new GitLabReleases.ReleasePipeline("version-2", 5),
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
+		Mockito.when(gitLabReleases.updateToRelease(new GitLabReleases.ReleasePipeline("version-3", 5), Proxy.NO_PROXY)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease(new GitLabReleases.ReleasePipeline("version-3", 5), Proxy.NO_PROXY, false)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -246,7 +300,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
-		inOrder.verify(gitLabReleases).updateToRelease("version-3", Proxy.NO_PROXY);
+		inOrder.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("version-3", 5), Proxy.NO_PROXY);
 		//noinspection ResultOfMethodCallIgnored, don't need to do anything with the result because this is just a Mockito.verify
 		inOrder.verify(in).read();
 		inOrder.verify(osInterface).exit();
@@ -265,9 +319,15 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_to_latest_with_proxy_settings() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(proxy)).thenReturn(Arrays.asList("version-1", "version-2", "version-3"));
-		Mockito.when(gitLabReleases.updateToRelease("version-3", proxy)).thenReturn(true);
-		Mockito.when(gitLabReleases.changelogForRelease("version-3", proxy)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
+		Mockito.when(gitLabReleases.getReleases(proxy, false)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("version-3", 5),
+						new GitLabReleases.ReleasePipeline("version-2", 5),
+						new GitLabReleases.ReleasePipeline("version-1", 5)
+				)
+		);
+		Mockito.when(gitLabReleases.updateToRelease(new GitLabReleases.ReleasePipeline("version-3", 5), proxy)).thenReturn(true);
+		Mockito.when(gitLabReleases.changelogForRelease(new GitLabReleases.ReleasePipeline("version-3", 5), proxy, false)).thenReturn("This is a" + Utils.NL + "multiline" + Utils.NL + "changelog");
 
 		ByteArrayInputStream in = Mockito.mock(ByteArrayInputStream.class);
 		System.setIn(in);
@@ -289,7 +349,7 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 		InOrder inOrder = Mockito.inOrder(gitLabReleases, in, osInterface);
 
-		inOrder.verify(gitLabReleases).updateToRelease("version-3", proxy);
+		inOrder.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("version-3", 5), proxy);
 		//noinspection ResultOfMethodCallIgnored, don't need to do anything with the result because this is just a Mockito.verify
 		inOrder.verify(in).read();
 		inOrder.verify(osInterface).exit();
@@ -308,88 +368,94 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 
 	@Test
 	void highlights_current_release() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList(
-				"19.1.1",
-				"19.1.2",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				"19.1.7"
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(Arrays.asList(
+				new GitLabReleases.ReleasePipeline("19.1.7", 7),
+				new GitLabReleases.ReleasePipeline("19.1.6", 6),
+				new GitLabReleases.ReleasePipeline("19.1.5", 5),
+				new GitLabReleases.ReleasePipeline("19.1.4", 4),
+				new GitLabReleases.ReleasePipeline("19.1.3", 3),
+				new GitLabReleases.ReleasePipeline("19.1.2", 2),
+				new GitLabReleases.ReleasePipeline("19.1.1", 1)
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.5");
 
-		commands.execute(printStream, "update app -r");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"2 older releases",
-				"",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
-				"19.1.6",
-				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "          ",
+				ANSI_BG_GRAY + "19.1.7        -- latest " + ANSI_RESET,
+				"19.1.6                  ",
+				ANSI_BG_GREEN + "19.1.5        -- current" + ANSI_RESET,
+				"19.1.4                  ",
+				ANSI_BG_GRAY + "19.1.3                  " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
 	void current_and_latest_are_same_release() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList(
-				"19.1.1",
-				"19.1.2",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				"19.1.7"
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(Arrays.asList(
+				new GitLabReleases.ReleasePipeline("19.1.7", 1),
+				new GitLabReleases.ReleasePipeline("19.1.6", 2),
+				new GitLabReleases.ReleasePipeline("19.1.5", 3),
+				new GitLabReleases.ReleasePipeline("19.1.4", 4),
+				new GitLabReleases.ReleasePipeline("19.1.3", 5),
+				new GitLabReleases.ReleasePipeline("19.1.2", 6),
+				new GitLabReleases.ReleasePipeline("19.1.1", 7)
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.7");
 
-		commands.execute(printStream, "update app -r");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"2 older releases",
-				"",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				ANSI_FG_GREEN + "19.1.7 " + ANSI_FG_GREEN + "-- current & latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "                   ",
+				ANSI_BG_GREEN + "19.1.7        -- current & latest" + ANSI_RESET,
+				"19.1.6                           ",
+				ANSI_BG_GRAY + "19.1.5                           " + ANSI_RESET,
+				"19.1.4                           ",
+				ANSI_BG_GRAY + "19.1.3                           " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
 	void highlights_current_release_if_current_release_is_not_one_of_newest_5_releases() throws IOException {
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList(
-				"19.1.1",
-				"19.1.2",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				"19.1.7"
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(Arrays.asList(
+				new GitLabReleases.ReleasePipeline("19.1.7", 7),
+				new GitLabReleases.ReleasePipeline("19.1.6", 6),
+				new GitLabReleases.ReleasePipeline("19.1.5", 5),
+				new GitLabReleases.ReleasePipeline("19.1.4", 4),
+				new GitLabReleases.ReleasePipeline("19.1.3", 3),
+				new GitLabReleases.ReleasePipeline("19.1.2", 2),
+				new GitLabReleases.ReleasePipeline("19.1.1", 1)
 		));
 		Mockito.when(osInterface.getVersion()).thenReturn("19.1.1");
 
-		commands.execute(printStream, "update app -r");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"2 older releases",
-				"",
-				"19.1.1 " + ANSI_FG_GREEN + "-- current" + ConsoleColors.ANSI_RESET,
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "          ",
+				ANSI_BG_GRAY + "19.1.7        -- latest " + ANSI_RESET,
+				"19.1.6                  ",
+				ANSI_BG_GRAY + "19.1.5                  " + ANSI_RESET,
+				"19.1.4                  ",
+				ANSI_BG_GRAY + "19.1.3                  " + ANSI_RESET,
+				ANSI_BG_GREEN + "19.1.1        -- current" + ANSI_RESET,
 				""
 		);
 	}
@@ -398,58 +464,122 @@ class Commands_Update_Test extends CommandsBaseTestCase {
 	void ignores_exception_for_getting_version() throws IOException {
 		Mockito.when(osInterface.getVersion()).thenThrow(IOException.class);
 
-		Mockito.when(gitLabReleases.getVersions(Proxy.NO_PROXY)).thenReturn(Arrays.asList(
-				"19.1.1",
-				"19.1.2",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				"19.1.7"
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, false)).thenReturn(Arrays.asList(
+				new GitLabReleases.ReleasePipeline("19.1.7", 7),
+				new GitLabReleases.ReleasePipeline("19.1.6", 6),
+				new GitLabReleases.ReleasePipeline("19.1.5", 5),
+				new GitLabReleases.ReleasePipeline("19.1.4", 4),
+				new GitLabReleases.ReleasePipeline("19.1.3", 3),
+				new GitLabReleases.ReleasePipeline("19.1.2", 2),
+				new GitLabReleases.ReleasePipeline("19.1.1", 1)
 		));
 
-		commands.execute(printStream, "update app -r");
+		commands.execute(printStream, "update app --list-releases");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
 
 		assertOutput(
 				"Releases found on GitLab",
 				"",
-				"2 older releases",
-				"",
-				"19.1.3",
-				"19.1.4",
-				"19.1.5",
-				"19.1.6",
-				ANSI_FG_GREEN + "19.1.7 -- latest" + ConsoleColors.ANSI_RESET,
+				u + "Release Name" + r + "  " + u + r + "         ",
+				ANSI_BG_GRAY + "19.1.7        -- latest" + ANSI_RESET,
+				"19.1.6                 ",
+				ANSI_BG_GRAY + "19.1.5                 " + ANSI_RESET,
+				"19.1.4                 ",
+				ANSI_BG_GRAY + "19.1.3                 " + ANSI_RESET,
 				""
 		);
 	}
 
 	@Test
-	void list_snapshot_releases() throws IOException, ParseException {
+	void list_snapshot_releases() throws IOException {
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, true)).thenReturn(
+				Arrays.asList(
+						new GitLabReleases.ReleasePipeline("19.1.7", 7),
+						new GitLabReleases.ReleasePipeline("19.1.6", 6),
+						new GitLabReleases.ReleasePipeline("19.1.5", 5),
+						new GitLabReleases.ReleasePipeline("19.1.4", 4),
+						new GitLabReleases.ReleasePipeline("19.1.3", 3),
+						new GitLabReleases.ReleasePipeline("19.1.2", 2),
+						new GitLabReleases.ReleasePipeline("19.1.1", 1)
+				)
+		);
+
 		commands.execute(printStream, "update app --list-snapshots");
 
-		Mockito.verify(gitLabReleases).listSnapshotVersions(osInterface, Proxy.NO_PROXY);
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Snapshots found on GitLab",
+				"",
+				u + "Release Name" + r,
+				ANSI_BG_GRAY + "19.1.7      " + ANSI_RESET,
+				"19.1.6      ",
+				ANSI_BG_GRAY + "19.1.5      " + ANSI_RESET,
+				"19.1.4      ",
+				ANSI_BG_GRAY + "19.1.3      " + ANSI_RESET,
+				"19.1.2      ",
+				ANSI_BG_GRAY + "19.1.1      " + ANSI_RESET,
+				""
+		);
 	}
 
 	@Test
-	void list_snapshot_releases_with_proxy() throws IOException, ParseException {
+	void list_snapshot_releases_with_proxy() throws IOException {
+		Mockito.when(gitLabReleases.getReleases(proxy, true)).thenReturn(Arrays.asList(
+				new GitLabReleases.ReleasePipeline("19.1.7", 7),
+				new GitLabReleases.ReleasePipeline("19.1.6", 6),
+				new GitLabReleases.ReleasePipeline("19.1.5", 5),
+				new GitLabReleases.ReleasePipeline("19.1.4", 4),
+				new GitLabReleases.ReleasePipeline("19.1.3", 3),
+				new GitLabReleases.ReleasePipeline("19.1.2", 2),
+				new GitLabReleases.ReleasePipeline("19.1.1", 1)
+		));
+
 		commands.execute(printStream, "update app --list-snapshots --proxy-ip 10.90.0.50 --proxy-port 8080");
 
-		Mockito.verify(gitLabReleases).listSnapshotVersions(osInterface, proxy);
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Snapshots found on GitLab",
+				"",
+				u + "Release Name" + r,
+				ANSI_BG_GRAY + "19.1.7      " + ANSI_RESET,
+				"19.1.6      ",
+				ANSI_BG_GRAY + "19.1.5      " + ANSI_RESET,
+				"19.1.4      ",
+				ANSI_BG_GRAY + "19.1.3      " + ANSI_RESET,
+				"19.1.2      ",
+				ANSI_BG_GRAY + "19.1.1      " + ANSI_RESET,
+				""
+		);
 	}
 
 	@Test
-	void update_to_snapshot_version() throws IOException, ParseException {
+	void update_to_snapshot_version() throws IOException {
+		Mockito.when(gitLabReleases.getReleases(Proxy.NO_PROXY, true)).thenReturn(
+				Collections.singletonList(
+						new GitLabReleases.ReleasePipeline("test", 5)
+				)
+		);
 		commands.execute(printStream, "update app --snapshot test");
 
-		Mockito.verify(gitLabReleases).updateToSnapshotRelease("test", Proxy.NO_PROXY);
+		Mockito.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("test", 5), Proxy.NO_PROXY);
 	}
 
 	@Test
-	void update_to_snapshot_version_with_proxy() throws IOException, ParseException {
+	void update_to_snapshot_version_with_proxy() throws IOException {
+		Mockito.when(gitLabReleases.getReleases(proxy, true)).thenReturn(
+				Collections.singletonList(
+						new GitLabReleases.ReleasePipeline("test", 5)
+				)
+		);
 		commands.execute(printStream, "update app --snapshot test --proxy-ip 10.90.0.50 --proxy-port 8080");
 
-		Mockito.verify(gitLabReleases).updateToSnapshotRelease("test", proxy);
+		Mockito.verify(gitLabReleases).updateToRelease(new GitLabReleases.ReleasePipeline("test", 5), proxy);
 	}
 
 	@Test
