@@ -26,7 +26,7 @@ dependencies {
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.7.0-M1'
     testCompile 'org.assertj:assertj-core:3.16.1'
-    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.1.13'
+    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.2'
     testCompile 'org.mockito:mockito-core:3.3.3'
     testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
 }
