@@ -6,15 +6,28 @@ stages:
   - test
   - deploy
 
-build:
+build-non-tag:
   stage: build
+  except:
+    - tags
   script:
     - ./create-version.sh
     - ./gradlew jar
   artifacts:
     paths:
-      - build/
+      - build/libs/
     expire_in: 1 week
+
+build-tag:
+  stage: build
+  only:
+    - tags
+  script:
+    - ./create-version.sh
+    - ./gradlew jar
+  artifacts:
+    paths:
+      - build/libs/
 
 test:
   stage: test
@@ -37,12 +50,12 @@ depends:
     - ./check-dependencies.sh
   allow_failure: true
 
-deploy:
-  stage: deploy
-  only:
-    - tags
-
-  script:
-    - ./create-version.sh
-    - ./gradlew jar
-    - ./upload-release.sh
+#deploy:
+#  stage: deploy
+#  only:
+#    - tags
+#
+#  script:
+#    - ./create-version.sh
+#    - ./gradlew jar
+#    - ./upload-release.sh

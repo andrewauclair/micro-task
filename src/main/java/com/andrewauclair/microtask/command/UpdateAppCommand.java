@@ -1,7 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.os.ConsoleColors;
+import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import picocli.CommandLine.ArgGroup;
@@ -14,6 +14,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.text.ParseException;
 import java.util.List;
+
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 
 @Command(name = "app", description = "Update the application.")
 public class UpdateAppCommand implements Runnable {
@@ -34,8 +36,8 @@ public class UpdateAppCommand implements Runnable {
 	private boolean help;
 
 	private static class Args {
-		@Option(names = {"-r", "--releases"}, description = "Display the available releases on GitLab.")
-		private boolean releases;
+		@Option(names = {"--list-releases"}, description = "Display the available releases on GitLab.")
+		private boolean list_releases;
 
 		@Option(names = {"-l", "--latest"}, description = "Update to the latest release.")
 		private boolean latest;
@@ -43,7 +45,7 @@ public class UpdateAppCommand implements Runnable {
 		@Option(names = {"--release"}, description = "Update to a specific release.")
 		private String release;
 
-		@Option(names = {"--list-snapshots"}, description = "List pipelines with artifacts available.")
+		@Option(names = {"--list-snapshots"}, description = "List non-tag pipelines with artifacts available.")
 		private boolean list_snapshots;
 
 		@Option(names = {"--snapshot"}, description = "Update to a specific snapshot release.")
@@ -71,10 +73,12 @@ public class UpdateAppCommand implements Runnable {
 			proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxy.proxy_ip, this.proxy.proxy_port));
 		}
 
-		List<String> versions;
+//		List<String> versions;
+		List<GitLabReleases.ReleasePipeline> releases;
 
 		try {
-			versions = gitLabReleases.getVersions(proxy);
+//			versions = gitLabReleases.getVersions(proxy);
+			releases = gitLabReleases.getReleases(proxy, args.list_snapshots || args.snapshot != null);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -83,11 +87,14 @@ public class UpdateAppCommand implements Runnable {
 			return;
 		}
 
-		if (args.releases) {
+		if (args.list_releases) {
 			System.out.println("Releases found on GitLab");
 			System.out.println();
 
-			int toDisplay = Math.min(versions.size(), MAX_DISPLAYED_VERSIONS);
+			ConsoleTable table = new ConsoleTable(osInterface);
+			table.setHeaders("Release Name", "");
+			table.enableAlternatingColors();
+//			table.setRowLimit(MAX_DISPLAYED_VERSIONS, false);
 
 			String currentVersion = "";
 
@@ -97,59 +104,83 @@ public class UpdateAppCommand implements Runnable {
 			catch (IOException ignored) {
 			}
 
-			if (versions.size() > 5) {
-				System.out.println((versions.size() - 5) + " older releases");
-				System.out.println();
+			int count = 0;
 
-				if (!versions.subList(versions.size() - 5, versions.size()).contains(currentVersion) && !currentVersion.isEmpty()) {
-					System.out.print(currentVersion);
-					System.out.print(" ");
-					System.out.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
-					System.out.print("-- current");
-					System.out.println(ConsoleColors.ANSI_RESET);
+			for (final GitLabReleases.ReleasePipeline release : releases) {
+				boolean isCurrentVersion = release.versionName.equals(currentVersion);
+				boolean isLatest = release.equals(releases.get(0));
+
+				String status = "";
+				if (isLatest && isCurrentVersion) {
+					status = "-- current & latest";
 				}
+				else if (isLatest) {
+					status = "-- latest";
+				}
+				else if (isCurrentVersion) {
+					status = "-- current";
+				}
+
+				if (isCurrentVersion) {
+					table.addRow(ANSI_BG_GREEN, release.versionName, status);
+				}
+				else if (count < MAX_DISPLAYED_VERSIONS) {
+					table.addRow(release.versionName, status);
+				}
+
+				count++;
 			}
 
-			for (int i = versions.size() - toDisplay; i < versions.size(); i++) {
-				if (i + 1 == versions.size()) {
-					System.out.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
-				}
-				System.out.print(versions.get(i));
-
-				if (versions.get(i).equals(currentVersion)) {
-					System.out.print(" ");
-					System.out.print(ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN);
-					System.out.print("-- current");
-
-					if (i + 1 == versions.size()) {
-						System.out.print(" & latest");
-					}
-					System.out.print(ConsoleColors.ANSI_RESET);
-				}
-				else if (i + 1 == versions.size()) {
-					System.out.print(" -- latest");
-					System.out.print(ConsoleColors.ANSI_RESET);
-				}
-
-				System.out.println();
-			}
+			table.print();
 		}
 		else if (args.latest) {
-			updatedToNewRelease = updateToVersion(versions.get(versions.size() - 1), proxy);
+			if (releases.size() > 0) {
+				updatedToNewRelease = updateToVersion(releases.get(0), proxy, false);
+			}
 		}
 		else if (args.list_snapshots) {
-			try {
-				gitLabReleases.listSnapshotVersions(osInterface, proxy);
+			System.out.println("Snapshots found on GitLab");
+			System.out.println();
+
+			ConsoleTable table = new ConsoleTable(osInterface);
+			table.setHeaders("Release Name");
+			table.enableAlternatingColors();
+
+			for (final GitLabReleases.ReleasePipeline release : releases) {
+				table.addRow(release.versionName);
 			}
-			catch (IOException | ParseException e) {
-				e.printStackTrace(System.out);
-			}
+
+			table.print();
 		}
 		else if (args.snapshot != null) {
-			updatedToNewRelease = updateToSnapshotVersion(args.snapshot, proxy);
+			GitLabReleases.ReleasePipeline pipeline = null;
+			for (final GitLabReleases.ReleasePipeline release : releases) {
+				if (release.versionName.equals(args.snapshot)) {
+					pipeline = release;
+					break;
+				}
+			}
+			if (pipeline == null) {
+				System.out.println("Snapshot version '" + args.snapshot + "' not found on GitLab");
+			}
+			else {
+				updatedToNewRelease = updateToVersion(pipeline, proxy, true);
+			}
 		}
 		else {
-			updatedToNewRelease = updateToVersion(args.release, proxy);
+			GitLabReleases.ReleasePipeline pipeline = null;
+			for (final GitLabReleases.ReleasePipeline release : releases) {
+				if (release.versionName.equals(args.release)) {
+					pipeline = release;
+					break;
+				}
+			}
+			if (pipeline == null) {
+				System.out.println("Version '" + args.release + "' not found on GitLab");
+			}
+			else {
+				updatedToNewRelease = updateToVersion(pipeline, proxy, false);
+			}
 		}
 
 		System.out.println();
@@ -159,14 +190,18 @@ public class UpdateAppCommand implements Runnable {
 		}
 	}
 
-	private boolean updateToVersion(String version, Proxy proxy) {
+	private boolean updateToVersion(GitLabReleases.ReleasePipeline version, Proxy proxy, boolean snapshot) {
 		try {
 			boolean updated = gitLabReleases.updateToRelease(version, proxy);
 
 			if (updated) {
-				System.out.println("Updated to version '" + version + "'");
+				System.out.print("Updated to");
+				if (snapshot) {
+					System.out.print(" snapshot");
+				}
+				System.out.println(" version '" + version.versionName + "'");
 				System.out.println();
-				System.out.println(gitLabReleases.changelogForRelease(version, proxy));
+				System.out.println(gitLabReleases.changelogForRelease(version, proxy, snapshot));
 				System.out.println();
 				System.out.println("Press any key to shutdown. Please restart with the new version.");
 
@@ -177,41 +212,12 @@ public class UpdateAppCommand implements Runnable {
 				return true;
 			}
 			else {
-				System.out.println("Version '" + version + "' not found on GitLab");
+				System.out.println("Version '" + version.versionName + "' not found on GitLab");
 			}
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Failed to update to version '" + version + "'");
-		}
-
-		return false;
-	}
-
-	private boolean updateToSnapshotVersion(String version, Proxy proxy) {
-		try {
-			boolean updated = gitLabReleases.updateToSnapshotRelease(version, proxy);
-
-			if (updated) {
-				System.out.println("Updated to snapshot version '" + version + "'");
-				System.out.println();
-				System.out.println(gitLabReleases.messageForSnapshot(version, proxy));
-				System.out.println();
-				System.out.println("Press any key to shutdown. Please restart with the new version.");
-
-				// force a restart, but wait for the user to respond first
-				//noinspection ResultOfMethodCallIgnored
-				System.in.read();
-
-				return true;
-			}
-			else {
-				System.out.println("Snapshot version '" + version + "' not found on GitLab");
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace(System.out);
-			System.out.println("Failed to update to snapshot version '" + version + "'");
+			System.out.println("Failed to update to version '" + version.versionName + "'");
 		}
 
 		return false;

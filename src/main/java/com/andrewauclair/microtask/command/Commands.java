@@ -28,6 +28,7 @@ import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -120,6 +121,32 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				break;
 		}
 
+		if (command.equals("json")) {
+			cmdLine.addSubcommand("json", new Runnable() {
+				@Option(names = {"--obj"}
+				)
+				private boolean obj;
+
+				@Option(names = {"-c"})
+				private String command;
+
+				@Override
+				public void run() {
+					try {
+						if (obj) {
+							System.out.println(GitLabReleases.getJSONObject(command, Proxy.NO_PROXY));
+						}
+						else {
+							System.out.println(GitLabReleases.getJSONArray(command, Proxy.NO_PROXY));
+						}
+					}
+					catch (IOException e) {
+						e.printStackTrace(System.out);
+					}
+				}
+			});
+		}
+
 		return cmdLine;
 	}
 
@@ -202,6 +229,32 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 					}
 				};
 			}
+		}
+
+		if (command.equals("json")) {
+			return new Runnable() {
+				@Option(names = {"--obj"}
+				)
+				private boolean obj;
+
+				@Option(names = {"-c"})
+				private String command;
+
+				@Override
+				public void run() {
+					try {
+						if (obj) {
+							System.out.println(GitLabReleases.getJSONObject(command, Proxy.NO_PROXY));
+						}
+						else {
+							System.out.println(GitLabReleases.getJSONArray(command, Proxy.NO_PROXY));
+						}
+					}
+					catch (IOException e) {
+						e.printStackTrace(System.out);
+					}
+				}
+			};
 		}
 
 		return null;
