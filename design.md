@@ -106,24 +106,51 @@ micro-task stores task data in a text file defined by its task ID. For example, 
 
 A list is a folder with its given name. For example, the list /default is stored in the default folder. Inside of this list folder there is any number of task files (task-<id>.txt) and a list.txt file that designates the folder as a list and defines list specific information.
 
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `state <enum>` | `InProgress` or `Finished` |
+
 ##### 4.2 Group
 
 A group is a folder with its given name, just like a list. For example, the group /projects/ is stored in the projects folder.
 		Inside of this group folder there is any number of list folders and a group.txt file that designates the folder as a group and defines
-		group specific information, similiar to lists.
-		
+		group specific information, similar to lists.
+
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `state <enum>` | `InProgress` or `Finished` |
+
 ##### 4.2 Project
 
 A project is a special form of group. Project folders are defined the same as group folders with an additional file, project.txt.
 		The project.txt file defines a more detailed name for the project along with other information, such as any number of notes added
 		by the user.
 		
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `name <text>` | Name of the project. This is more descriptive than the short name used for the file name. |
+| `state <enum>` | `InProgress` or `Finished` |
+| `note <time> <text>` | Any number of notes related to the project. |
+
 ##### 4.2 Feature
 
 A feature is a special version of either a group or list folder. A feature starts out as a list but can be converted to a group
 		if a sub-feature is added. A special feature.txt file is added to the group or list folder to give further details on the feature
 		and to indicate that the group or list is a feature.
-		
+
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `state <enum>` | `InProgress` or `Finished` |
+| `note <time> <text>` | Any number of notes related to the feature. |
+
 ##### 4.2 Milestone
 
 Milestones are stored in a special milestones folder in the project group folder. For example /projects/<project>/milestones. This
@@ -131,12 +158,99 @@ Milestones are stored in a special milestones folder in the project group folder
 		can not be used as a list or group name. In this folder are milestone files, these are named like so: milestone-<id>.txt. These files
 		contain data relating to the milestone. For now this data is just the features that belong to the milestone, a description and an optional
 		due date.
-		
+
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `state <enum>` | `InProgress` or `Finished` |
+| `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
+| `note <time> <text>` | Any number of notes related to the milestone. |
+
 ## 5. Command Line Interface
 micro-task is designed to run standalone from the command line or as an interactive program that continously takes input.
 When running in the interactive mode the user can see additional status data.
 
-#### 5.1 Add Command
+#### 5.X Standalone Mode
+
+In the standalone mode micro-task commands take the form `micro-task add task -n "Test"`.
+
+In this mode all commands have a `--json` option that can be used to output data in json instead of the normal
+format that is used when in the interactive mode, which is more of a pretty print for the user to look at. `--json`
+makes writing scripts that use micro-task easier.
+ 
+#### 5.X Add Command
+
+##### Sub-Commands
+| Sub-Command | Description |
+| ----------- | ----------- |
+| `task` | Add a new task |
+| `list` | Add a new list |
+| `group` | Add a new group |
+| `project` | Add a new project |
+| `feature` | Add a new feature |
+| `milestone` | Add a new milestone |
+
+##### Options
+
+| Option | Sub-Command(s) | Description |
+| ------ | -------------- | ----------- |
+| `-h`,`--help` | All | Print the help message for this command. |
+| `-n`,`--name` | All | The name of the new task, list, group, project, feature or milestone. |
+| `-l`,`--list` | `task` | The list to add the task to. Defaults to the `active context list` |
+| `-g`,`--group` | `list`, `group` | The group to add the list or group to. Defaults to the `active context group` |
+
+
+##### Error Messages
+
+- Cannot add a task to finished list.
+- Cannot add list to finished group.
+- Cannot add group to finished group.
+
+#### 5.X Start Command
+
+The start command allows the user to start a task, list or group.
+
+#### 5.X Stop Command
+
+The stop command allows the user to stop the active task, list or group.
+
+#### 5.X Finish Command
+
+The finish command allows the user to finish a task, list, group, project, feature or milestone.
+
+#### 5.X Move Command
+
+#### 5.X Search Command
+
+#### 5.X Tasks Command
+
+#### 5.X Times Command
+
+#### 5.X Update Command
+
+The update command allows the user to update the application and their local task repo.
+
+##### Sub-Commands
+| Sub-Command | Description |
+| ----------- | ----------- |
+| `app` | Update the application with releases found on GitLab |
+| `repo` | Update the local repo with remote data, or update the remote repo with local data |
+
+##### Options
+
+| Option | Sub-Command | Description |
+| ------ | -------------- | ----------- |
+| `-h`,`--help` | All | Print the help message for this command. |
+| `-n`,`--name` | All | The name of the new task, list, group, project, feature or milestone. |
+| `-l`,`--list` | `task` | The list to add the task to. Defaults to the `active context list` |
+| `-g`,`--group` | `list`, `group` | The group to add the list or group to. Defaults to the `active context group` |
+
+
+##### Error Messages
+
+- Finishing group when not all lists have been finished
+- finishing list when not all tasks have been finished
 
 <!---
 ## 4 Appendices and References
