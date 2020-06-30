@@ -1,9 +1,14 @@
 # micro-task Design Document
 
+This document defines the design for the micro-task command line interface task tracker. micro-task has been designed to
+track developer tasks in great detail. The developer can group their tasks into lists and groups, they can define
+projects with features and milestones to further group their tasks. With these projects, features and milestones they can
+define when their tasks are due and ensure that they are working on the most pressing data.
+
+What follows is a detailed design of micro-task and its many features and commands.
+
 
 ## 1. Considerations
-
-
 #### 1.1 Assumptions
 micro-task requires a Java VM of at least Java 14 installed.
 
@@ -59,27 +64,67 @@ commands layout
 
 #### 3.1 Adding New Data
 
+The ability to add new data to micro-task is a primary object of the application. It intended that the developer
+can quickly entire their new tasks and organize them quickly so that they may start working on them immediately.
+
+The following sections define what happens when the developer adds each type of data and how to do it.
+
 ##### 3.1.1 Task
 
-A new task can be added using the add command (add task).
+The most basic piece of data to track in micro-task is a task. When a new task has been entered, the task is added
+to the active context list or to the list specified with the command options.
+
+A task can be defined with the `add` command.
 
 ##### 3.1.2 Group (historically this has been "mk -g <group>", but maybe be move to "add -g <group>")
+
+A group is a collection of lists and other groups represented by a folder in the file system and contain a file
+called group.txt which defines its state.
+
 ##### 3.1.3 List
+
+A list is a collection of tasks.
+
 ##### 3.1.4 Project
+
+A project is a collection of specific tasks that need to be completed for a project.
+
+When the user creates a project a number of files will be created. First, a new group will be added in the `/projects/` group.
+This new group will be named after the project and will contain the features of the project.
+
+
+A project can be defined with the `add` command.
+
 ##### 3.1.5 Feature
+
+A feature is a way to define a set of tasks that belong to the same component of a project. These can be as narrow or broad as the user
+wishes them to be. micro-task imposes no limits on the number of features created, nor the number of tasks assigned to a feature.
+
+Features will be automatically created from groups and lists in a project group.
+
 ##### 3.1.5 Milestone
+
+A milestone defines a set of features that will be completed together. Usually this maps to a real world milestone with a due date. micro-task
+provides the user with a way to define a due date for a milestone and will use this due date in display data.
+
+A milestone can be defined with the `add` comand.
 
 #### 3.2 Working On Tasks
 
 ##### 3.2.1 Outside of Projects
 
+Not all tasks need to be assigned to features of a project. The user is free to create groups and lists of tasks that don't belong
+to any projects. When these tasks are being worked on there will be no active project, milestone or feature in the active context.
+
 ##### 3.2.2 On Projects
 
-###### 3.2.2.1 Milestones
+The user has several approaches to working on a project. They can start working on a feature or milestone specifically with the `start` command or
+they can start the project its self and see all of the tasks for that project.
 
-Milestones are a way to group features of a project into work units. A milestone can contain many
-features that must be completed for the project. The user enters
- 
+The behavior of the `tasks` command changes based on the active context. In the case of working on projects
+this means that if the user has decided to start the project with the `start` command, `tasks` will display all of the tasks for that project.
+If they have used the milestone or feature in the `start` command, only the tasks for those will be displayed, respectively.
+
 ## 4. File Structure
 
 ##### 4.1 Task
@@ -143,6 +188,9 @@ A project is a special form of group. Project folders are defined the same as gr
 A feature is a special version of either a group or list folder. A feature starts out as a list but can be converted to a group
 		if a sub-feature is added. A special feature.txt file is added to the group or list folder to give further details on the feature
 		and to indicate that the group or list is a feature.
+
+Features will be automatically created when groups or lists are created inside a project group. If a project is created
+from an existing group then all groups and lists in the project group will be turned into features.
 
 <b>Format (line by line):</b>
 
@@ -211,6 +259,22 @@ makes writing scripts that use micro-task easier.
 
 The start command allows the user to start a task, list or group.
 
+##### Sub-Commands
+| Sub-Command | Description |
+| ----------- | ----------- |
+| `task` | Start a task |
+| `list` | Start a list |
+| `group` | Start a group |
+| `project` | Start a project |
+| `feature` | Start a feature |
+| `milestone` | Start a milestone |
+
+##### Options
+| Option | Sub-Command(s) | Description |
+| ------ | -------------- | ----------- |
+| `-h`,`--help` | All | Print the help message for this command. |
+| `-f`,`--finish` | `task` | Finish the previous task when starting another. |
+
 #### 5.X Stop Command
 
 The stop command allows the user to stop the active task, list or group.
@@ -221,11 +285,26 @@ The finish command allows the user to finish a task, list, group, project, featu
 
 #### 5.X Move Command
 
+The move command allows the user to move tasks, lists, groups.
+
 #### 5.X Search Command
+
+The search command provides the user a way to find tasks that they are looking for. This command can be used to search
+the current list, another list or another group entirely.
 
 #### 5.X Tasks Command
 
+The task command displays tasks from the active context. This command can also be used to display tasks
+from other sources not specified by the active context.
+
+Type ID Description (normal mode)
+Type ID Project Feature Milestone Description (project mode)
+
 #### 5.X Times Command
+
+The times command allows the user to display time related data. This can be a simple command to display time spent
+in the current day, to a specific display of times for filtered data from months ago. This is perhaps the most
+complex command in all of micro-task.
 
 #### 5.X Update Command
 
