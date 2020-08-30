@@ -53,8 +53,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Set state for task 1 to Inactive\"");
+		order.verify(osInterface).gitCommit("Set state for task 1 to Inactive");
 	}
 
 	@Test

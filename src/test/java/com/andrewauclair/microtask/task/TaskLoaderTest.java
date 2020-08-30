@@ -33,7 +33,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		super.setup();
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
-		Mockito.when(osInterface.runGitCommand(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
+		Mockito.doThrow(new RuntimeException("TaskLoader should not run git commands")).when(osInterface).gitCommit(Mockito.anyString());
 
 //		Mockito.when(tasks.getActiveGroup()).thenReturn(new TaskGroup("/"));
 		loader = new TaskLoader(tasks, reader, localSettings, projects, osInterface);

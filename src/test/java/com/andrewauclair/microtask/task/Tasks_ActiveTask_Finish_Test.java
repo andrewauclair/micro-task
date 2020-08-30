@@ -98,8 +98,7 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Finished task 2 - 'Testing tasks 2'\"");
+		order.verify(osInterface).gitCommit("Finished task 2 - 'Testing tasks 2'");
 	}
 
 	@Test

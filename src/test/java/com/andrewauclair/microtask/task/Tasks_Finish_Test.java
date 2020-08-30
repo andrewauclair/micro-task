@@ -52,8 +52,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Finished task 1 - 'Test'\"");
+		order.verify(osInterface).gitCommit("Finished task 1 - 'Test'");
 	}
 	
 	@Test
@@ -133,8 +132,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/test/one/list.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Finished list '/test/one'\"");
+		order.verify(osInterface).gitCommit("Finished list '/test/one'");
 	}
 	
 	@Test
@@ -160,7 +158,6 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		InOrder order = Mockito.inOrder(osInterface);
 		
-		order.verify(osInterface).runGitCommand("git add tasks/test/group.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Finished group '/test/'\"");
+		order.verify(osInterface).gitCommit("Finished group '/test/'");
 	}
 }

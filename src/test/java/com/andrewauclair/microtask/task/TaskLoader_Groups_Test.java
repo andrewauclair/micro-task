@@ -24,7 +24,7 @@ class TaskLoader_Groups_Test extends TaskBaseTestCase {
 	protected void setup() throws IOException {
 		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
-		Mockito.when(osInterface.runGitCommand(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not run git commands"));
+		Mockito.doThrow(new RuntimeException("TaskLoader should not run git commands")).when(osInterface).gitCommit(Mockito.anyString());
 	}
 
 	@Test
@@ -49,7 +49,7 @@ class TaskLoader_Groups_Test extends TaskBaseTestCase {
 		
 		loader.load();
 
-		Mockito.verify(osInterface, Mockito.never()).runGitCommand(Mockito.anyString());
+		Mockito.verify(osInterface, Mockito.never()).gitCommit(Mockito.anyString());
 		Mockito.verify(osInterface, Mockito.never()).createOutputStream(Mockito.anyString());
 	}
 }

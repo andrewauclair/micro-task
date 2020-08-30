@@ -72,8 +72,12 @@ public class StatusConsole {
 		}
 
 		@Override
-		public boolean runGitCommand(String command) {
+		public boolean canCreateFiles() {
 			return false;
+		}
+
+		@Override
+		public void gitCommit(String message) {
 		}
 	};
 

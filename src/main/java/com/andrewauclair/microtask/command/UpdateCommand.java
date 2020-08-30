@@ -44,8 +44,7 @@ public final class UpdateCommand implements Runnable {
 
 		String currentVersion = Utils.writeCurrentVersion(osInterface);
 
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Updating files to version '" + currentVersion + "'\"");
+		osInterface.gitCommit("Updating files to version '" + currentVersion + "'");
 
 		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 

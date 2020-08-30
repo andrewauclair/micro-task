@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class Projects {
 		Project project = new Project(tasks, group);
 		projects.add(project);
 
+		save();
+
+		return project;
+	}
+
+	private void save() {
 		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/projects.txt"))) {
 			for (Project proj : projects) {
 				outputStream.println(proj.getGroup().getFullPath());
@@ -45,8 +52,6 @@ public class Projects {
 		catch (IOException e) {
 			e.printStackTrace(System.out);
 		}
-
-		return project;
 	}
 
 	public Project getProject(String name) {
@@ -68,6 +73,9 @@ public class Projects {
 			while (scanner.hasNextLine()) {
 				createProject(new ExistingGroupName(tasks, scanner.nextLine()));
 			}
+		}
+		catch (FileNotFoundException e) {
+			save();
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);

@@ -8,13 +8,25 @@ import java.time.ZoneId;
 import java.util.List;
 
 public interface OSInterface {
-	boolean runGitCommand(String command);
+//	boolean runGitAddAll();
+
+//	boolean runGitCommit(String message);
+
+//	boolean runGitCommand(String command);
+
+	void gitCommit(String message);
+
+	void gitPush();
+
+	void gitPull();
 
 	long currentSeconds();
 
 	ZoneId getZoneId();
 
 	DataOutputStream createOutputStream(String fileName) throws IOException;
+
+	boolean canCreateFiles();
 
 	InputStream createInputStream(String fileName) throws IOException;
 

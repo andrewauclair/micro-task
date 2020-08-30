@@ -59,9 +59,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/one/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved task 1 - 'Test 1' to list '/one'\"");
+		order.verify(osInterface).gitCommit("Moved task 1 - 'Test 1' to list '/one'");
 	}
 
 	@Test
@@ -114,8 +112,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.moveList(existingList("/test/one"), existingGroup("/"));
 
 		order.verify(osInterface).moveFolder("/test/one", "/one");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved list '/test/one' to group '/'\"");
+		order.verify(osInterface).gitCommit("Moved list '/test/one' to group '/'");
 	}
 
 	@Test
@@ -130,8 +127,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/"));
 
 		order.verify(osInterface).moveFolder("/one/", "/two/one/");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Moved group '/one/' to group '/two/'\"");
+		order.verify(osInterface).gitCommit("Moved group '/one/' to group '/two/'");
 	}
 
 	@Test

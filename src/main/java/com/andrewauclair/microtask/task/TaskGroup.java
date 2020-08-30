@@ -232,8 +232,7 @@ public final class TaskGroup implements TaskContainer {
 			throw new TaskException("Failed to move group folder.");
 		}
 
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'\"");
+		osInterface.gitCommit("Moved group '" + group.getFullPath() + "' to group '" + destGroup.getFullPath() + "'");
 
 		return newGroup;
 	}
@@ -254,8 +253,7 @@ public final class TaskGroup implements TaskContainer {
 			throw new TaskException("Failed to move list folder.");
 		}
 
-		osInterface.runGitCommand("git add .");
-		osInterface.runGitCommand("git commit -m \"Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'\"");
+		osInterface.gitCommit("Moved list '" + list.getFullPath() + "' to group '" + group.getFullPath() + "'");
 
 		return newList;
 	}

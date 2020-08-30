@@ -65,15 +65,11 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Testing task add command 1");
 		
-		order.verify(osInterface).runGitCommand("git add next-id.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
+		order.verify(osInterface).gitCommit("Added task 1 - 'Testing task add command 1'");
 
 		tasks.addTask("Testing task add command 2");
 		
-		order.verify(osInterface).runGitCommand("git add next-id.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - 'Testing task add command 2'\"");
+		order.verify(osInterface).gitCommit("Added task 2 - 'Testing task add command 2'");
 	}
 
 	@Test
@@ -85,9 +81,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Testing task add command 1");
 		
-		order.verify(osInterface).runGitCommand("git add next-id.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
+		order.verify(osInterface).gitCommit("Added task 1 - 'Testing task add command 1'");
 	}
 
 	@Test
@@ -157,7 +151,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_with_quotes_in_name_creates_git_message_with_escaped_quotes() {
 		tasks.addTask("Test \"Quotes\"");
 		
-		Mockito.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Test \\\"Quotes\\\"'\"");
+		Mockito.verify(osInterface).gitCommit("Added task 1 - 'Test \\\"Quotes\\\"'");
 	}
 
 	@Test
@@ -201,15 +195,11 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		tasks.addTask("Testing task add command 1", existingList("test"));
 		
-		order.verify(osInterface).runGitCommand("git add next-id.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/test/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 1 - 'Testing task add command 1'\"");
+		order.verify(osInterface).gitCommit("Added task 1 - 'Testing task add command 1'");
 
 		tasks.addTask("Testing task add command 2", existingList("test"));
 		
-		order.verify(osInterface).runGitCommand("git add next-id.txt");
-		order.verify(osInterface).runGitCommand("git add tasks/test/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Added task 2 - 'Testing task add command 2'\"");
+		order.verify(osInterface).gitCommit("Added task 2 - 'Testing task add command 2'");
 	}
 
 	@Test
