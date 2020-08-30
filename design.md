@@ -114,7 +114,7 @@ A milestone can be defined with the `add` comand.
 ##### 3.2.1 Outside of Projects
 
 Not all tasks need to be assigned to features of a project. The user is free to create groups and lists of tasks that don't belong
-to any projects. When these tasks are being worked on there will be no active project, milestone or feature in the active context.
+to any projects. When working on these tasks, there is no active project, milestone or feature in the active context.
 
 ##### 3.2.2 On Projects
 
