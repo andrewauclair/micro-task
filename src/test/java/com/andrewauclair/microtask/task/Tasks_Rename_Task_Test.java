@@ -62,8 +62,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 
 		tasks.renameTask(existingID(1), "Renaming task");
 		
-		order.verify(osInterface).runGitCommand("git add tasks/default/1.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Renamed task 1 - 'Renaming task'\"");
+		order.verify(osInterface).gitCommit("Renamed task 1 - 'Renaming task'");
 	}
 
 	@Test

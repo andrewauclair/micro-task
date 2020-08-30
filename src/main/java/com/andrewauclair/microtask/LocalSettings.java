@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -76,6 +77,9 @@ public class LocalSettings {
 		Properties properties = new Properties();
 		try {
 			properties.load(osInterface.createInputStream("settings.properties"));
+		}
+		catch (FileNotFoundException e) {
+			save();
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);

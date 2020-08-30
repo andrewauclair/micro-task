@@ -32,9 +32,7 @@ public class TaskRecurringUpdater {
 
 		tasks.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		new GitHelper(osInterface)
-				.withFile("tasks" + list + "/" + task.id + ".txt")
-				.commit("Set recurring for task " + task.id + " to " + recurring);
+		osInterface.gitCommit("Set recurring for task " + task.id + " to " + recurring);
 
 		return task;
 	}

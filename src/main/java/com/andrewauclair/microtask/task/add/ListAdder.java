@@ -44,8 +44,7 @@ public class ListAdder {
 
 			new TaskListFileWriter(newList, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Created list '" + newList.getFullPath() + "'");
+			osInterface.gitCommit("Created list '" + newList.getFullPath() + "'");
 		}
 	}
 }

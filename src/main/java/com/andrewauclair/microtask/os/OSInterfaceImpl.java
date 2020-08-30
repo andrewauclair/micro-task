@@ -3,6 +3,9 @@ package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Main;
+import com.andrewauclair.microtask.Utils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
@@ -10,7 +13,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.*;
-import java.lang.ProcessBuilder.Redirect;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,8 +25,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
-
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
 	public static boolean disableGit = false;
@@ -34,6 +34,51 @@ public class OSInterfaceImpl implements OSInterface {
 	private String lastInputFile = "";
 	private DataOutputStream statusOutput;
 	private LocalSettings localSettings;
+
+	private final Git repo;// = Git.init().setDirectory(new File("git-data")).call();
+
+	public OSInterfaceImpl() throws GitAPIException {
+		if (!disableGit) {
+			repo = initGitRepo();
+		}
+		else {
+			repo = null;
+		}
+	}
+
+	private Git initGitRepo() throws GitAPIException {
+		final Git repo;
+		File directory = new File("git-data");
+		boolean exists = directory.exists();
+
+		// if the directory doesn't exist JGit will create it for us
+		repo = Git.init().setDirectory(directory).call();
+
+		// write some info if the repo didn't exist
+		if (!exists) {
+			Utils.writeCurrentVersion(this);
+
+			try (PrintStream outputStream = new PrintStream(createOutputStream("git-data/next-id.txt"))) {
+				outputStream.print(1);
+			}
+			catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
+		}
+
+		String username = getEnvVar("username");
+
+		// set the user.name and user.email every time we start
+		repo.getRepository().getConfig().setString("user", null, "name", username);
+		repo.getRepository().getConfig().setString("user", null, "email", username + "@" + getEnvVar("computername"));
+		try {
+			repo.getRepository().getConfig().save();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return repo;
+	}
 
 	public void setLocalSettings(LocalSettings localSettings) {
 		this.localSettings = localSettings;
@@ -64,50 +109,115 @@ public class OSInterfaceImpl implements OSInterface {
 		System.out.println(TimeUnit.NANOSECONDS.toMillis(stop - start) + "ms");
 	}
 
+//	@Override
+//	public boolean runGitAddAll() {
+////		Git repo = new Git()
+//		return false;
+//	}
+
+//	@Override
+//	public boolean runGitCommit(String message) {
+//		return false;
+//	}
+
 	@Override
-	public boolean runGitCommand(String command) {
+	public void gitCommit(String message) {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
 		}
 
 		if (disableGit) {
-			return true;
+			return;
 		}
 
 		try {
-			ProcessBuilder pb = new ProcessBuilder();
-			pb.directory(new File("git-data"));
-			pb.command(command.split(" "));
-			pb.redirectInput(Redirect.INHERIT);
+			// add all files
+			repo.add()
+					.addFilepattern(".")
+					.call();
 
-			pb.redirectOutput(localSettings.isDebugEnabled() ? Redirect.INHERIT : Redirect.DISCARD);
-			pb.redirectError(Redirect.INHERIT);
-
-			Process p = pb.start();
-
-			long start = System.nanoTime();
-
-			int exitCode = p.waitFor();
-
-			long afterWait = System.nanoTime();
-			if (localSettings.isDebugEnabled()) {
-				System.out.print("After Wait: ");
-				printTimeDiff(start, afterWait);
-			}
-
-			if (exitCode != 0) {
-				System.out.println();
-				System.out.println(ANSI_FG_RED + "Error while executing \"" + command + "\"" + ConsoleColors.ANSI_RESET);
-				System.out.println();
-			}
+			repo.commit()
+					.setMessage(message)
+					.call();
 		}
-		catch (InterruptedException | IOException e) {
+		catch (GitAPIException e) {
 			e.printStackTrace();
-			return false;
 		}
-
-		return true;
 	}
+
+	@Override
+	public void gitPush() {
+		try {
+			repo.push().call();
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void gitPull() {
+		try {
+			repo.pull().call();
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	//	@Override
+//	public boolean runGitCommand(String command) {
+//		if (isJUnitTest()) {
+//			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
+//		}
+//
+//		if (disableGit) {
+//			return true;
+//		}
+//
+//		try {
+//			repo.commit()
+//					.setMessage("Message")
+//					.call();
+//		}
+//		catch (GitAPIException e) {
+//			e.printStackTrace();
+//		}
+//
+//		try {
+//			ProcessBuilder pb = new ProcessBuilder();
+//			pb.directory(new File("git-data"));
+//			pb.command(command.split(" "));
+//			pb.redirectInput(Redirect.INHERIT);
+//
+//			pb.redirectOutput(localSettings.isDebugEnabled() ? Redirect.INHERIT : Redirect.DISCARD);
+//			pb.redirectError(Redirect.INHERIT);
+//
+//			Process p = pb.start();
+//
+//			long start = System.nanoTime();
+//
+//			int exitCode = p.waitFor();
+//
+//			long afterWait = System.nanoTime();
+//			if (localSettings.isDebugEnabled()) {
+//				System.out.print("After Wait: ");
+//				printTimeDiff(start, afterWait);
+//			}
+//
+//			if (exitCode != 0) {
+//				System.out.println();
+//				System.out.println(ANSI_FG_RED + "Error while executing \"" + command + "\"" + ConsoleColors.ANSI_RESET);
+//				System.out.println();
+//			}
+//		}
+//		catch (InterruptedException | IOException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//
+//		return true;
+//	}
 
 	private static boolean isJUnitTest() {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
@@ -142,6 +252,11 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 
 		return new DataOutputStream(new FileOutputStream(file));
+	}
+
+	@Override
+	public boolean canCreateFiles() {
+		return true;
 	}
 
 	@Override

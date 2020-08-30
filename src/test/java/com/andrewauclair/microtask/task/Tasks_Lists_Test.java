@@ -106,8 +106,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Created list '/test/one'\"");
+		order.verify(osInterface).gitCommit("Created list '/test/one'");
 	}
 
 	@Test

@@ -82,8 +82,7 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Set state for group '/test/' to InProgress\"");
+		order.verify(osInterface).gitCommit("Set state for group '/test/' to InProgress");
 	}
 
 	@Test

@@ -43,12 +43,12 @@ public class UpdateRepoCommand implements Runnable {
 	@Override
 	public void run() {
 		if (args.to_remote) {
-			osInterface.runGitCommand("git push");
+			osInterface.gitPush();
 
 			System.out.println("Pushed changes to remote");
 		}
 		else if (args.from_remote) {
-			osInterface.runGitCommand("git pull");
+			osInterface.gitPull();
 
 			tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 

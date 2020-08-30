@@ -57,34 +57,10 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 
-		if (hasRepo()) {
-			createNewRepo(osInterface);
-		}
-		else {
-			addList(new NewTaskListName(this, "/default"), false);
+		if (!new TaskListFinder(this).hasList(new NewTaskListName(this, "/default"))) {
+			addList(new NewTaskListName(this, "/default"), osInterface.canCreateFiles());
 		}
 		activeList = new ExistingListName(this, "/default");
-	}
-
-	private boolean hasRepo() {
-		return !osInterface.fileExists("git-data");
-	}
-
-	private void createNewRepo(OSInterface osInterface) {
-		String username = osInterface.getEnvVar("username");
-
-		osInterface.createFolder("git-data");
-		osInterface.runGitCommand("git init");
-		osInterface.runGitCommand("git config user.name \"" + username + "\"");
-		osInterface.runGitCommand("git config user.email \"" + username + "@" + osInterface.getEnvVar("computername") + "\"");
-
-		Utils.writeCurrentVersion(osInterface);
-		writeNextID();
-
-		new GitHelper(osInterface)
-				.commit("Created new micro task instance.");
-
-		addList(new NewTaskListName(this, "default"), true);
 	}
 
 	public TaskFilterBuilder getFilterBuilder() {
@@ -106,6 +82,7 @@ public class Tasks {
 	}
 
 	public Task addTask(String task, ExistingListName list) {
+		// TODO This wastes an ID if the list or group is finished and we don't actually add the task
 		return getList(list).addTask(new NewID(this, incrementID()), task);
 	}
 
@@ -117,7 +94,7 @@ public class Tasks {
 		long nextID = this.nextID++;
 
 		writeNextID();
-		osInterface.runGitCommand("git add next-id.txt");
+//		osInterface.runGitCommand("git add next-id.txt");
 
 		return nextID;
 	}
@@ -312,8 +289,7 @@ public class Tasks {
 			return;
 		}
 
-		new GitHelper(osInterface)
-				.commit("Renamed list '" + currentName + "' to '" + newName + "'");
+		osInterface.gitCommit("Renamed list '" + currentName + "' to '" + newName + "'");
 	}
 
 	public void renameGroup(ExistingGroupName currentGroup, NewTaskGroupName newGroup) {
@@ -402,8 +378,7 @@ public class Tasks {
 		}
 
 		if (createFiles) {
-			new GitHelper(osInterface)
-					.commit("Created group '" + groupName + "'");
+			osInterface.gitCommit("Created group '" + groupName + "'");
 		}
 
 		return newGroup;
@@ -463,9 +438,7 @@ public class Tasks {
 
 		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
 
-		new GitHelper(osInterface)
-				.withFile("tasks" + list + "/" + task.id + ".txt")
-				.commit("Set state for task " + task.id + " to " + state);
+		osInterface.gitCommit("Set state for task " + task.id + " to " + state);
 
 		return task;
 	}
@@ -487,8 +460,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskListFileWriter(newList, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set project for list '" + listName + "' to '" + project + "'");
+			osInterface.gitCommit("Set project for list '" + listName + "' to '" + project + "'");
 		}
 	}
 
@@ -516,8 +488,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskGroupFileWriter(newGroup, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
+			osInterface.gitCommit("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
 		}
 	}
 
@@ -538,8 +509,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskListFileWriter(newList, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set feature for list '" + listName + "' to '" + feature + "'");
+			osInterface.gitCommit("Set feature for list '" + listName + "' to '" + feature + "'");
 		}
 	}
 
@@ -567,8 +537,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskGroupFileWriter(newGroup, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'");
+			osInterface.gitCommit("Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'");
 		}
 	}
 
@@ -586,8 +555,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskGroupFileWriter(taskGroup, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set state for group '" + taskGroup.getFullPath() + "' to " + state);
+			osInterface.gitCommit("Set state for group '" + taskGroup.getFullPath() + "' to " + state);
 		}
 	}
 
@@ -605,8 +573,7 @@ public class Tasks {
 		if (createFiles) {
 			new TaskListFileWriter(newList, osInterface).write();
 
-			new GitHelper(osInterface)
-					.commit("Set state for list '" + newList.getFullPath() + "' to " + state);
+			osInterface.gitCommit("Set state for list '" + newList.getFullPath() + "' to " + state);
 		}
 	}
 
@@ -640,9 +607,7 @@ public class Tasks {
 
 		new TaskListFileWriter(newList, osInterface).write();
 
-		new GitHelper(osInterface)
-				.withFile("tasks" + newList.getFullPath() + "/list.txt")
-				.commit("Finished list '" + newList.getFullPath() + "'");
+		osInterface.gitCommit("Finished list '" + newList.getFullPath() + "'");
 
 		return newList;
 	}
@@ -662,9 +627,7 @@ public class Tasks {
 
 		new TaskGroupFileWriter(taskGroup, osInterface).write();
 
-		new GitHelper(osInterface)
-				.withFile("tasks" + taskGroup.getFullPath() + "group.txt")
-				.commit("Finished group '" + taskGroup.getFullPath() + "'");
+		osInterface.gitCommit("Finished group '" + taskGroup.getFullPath() + "'");
 
 		return taskGroup;
 	}

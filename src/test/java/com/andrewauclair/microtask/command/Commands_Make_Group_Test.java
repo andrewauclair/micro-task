@@ -34,8 +34,7 @@ class Commands_Make_Group_Test extends CommandsBaseTestCase {
 		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/group.txt");
 		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/group.txt");
 		inOrder.verify(osInterface).createOutputStream("git-data/tasks/test/one/two/three/group.txt");
-		inOrder.verify(osInterface).runGitCommand("git add .");
-		inOrder.verify(osInterface).runGitCommand("git commit -m \"Created group '/test/one/two/three/'\"");
+		inOrder.verify(osInterface).gitCommit("Created group '/test/one/two/three/'");
 
 		TestUtils.assertOutput(listStream,
 				"",

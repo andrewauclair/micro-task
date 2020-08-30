@@ -240,6 +240,6 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 
 		tasks.addList(newList("/one/three"), true);
 		
-		Mockito.verify(osInterface, never()).runGitCommand("git commit -m \"Created group '/one/'\"");
+		Mockito.verify(osInterface, never()).gitCommit("Created group '/one/'");
 	}
 }

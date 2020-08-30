@@ -72,9 +72,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.stopTask();
 
 		InOrder order = Mockito.inOrder(osInterface);
-		
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Stopped task 2 - 'Test 2'\"");
+
+		order.verify(osInterface).gitCommit("Stopped task 2 - 'Test 2'");
 	}
 
 	@Test
@@ -175,9 +174,8 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.stopTask();
 
 		InOrder order = Mockito.inOrder(osInterface);
-		
-		order.verify(osInterface).runGitCommand("git add tasks/default/2.txt");
-		order.verify(osInterface).runGitCommand("git commit -m \"Stopped task 2 - 'Test 2'\"");
+
+		order.verify(osInterface).gitCommit("Stopped task 2 - 'Test 2'");
 	}
 
 	@Test

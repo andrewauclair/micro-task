@@ -27,7 +27,7 @@ class TaskBaseTestCase {
 	@BeforeEach
 	protected void setup() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
-		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
+//		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 

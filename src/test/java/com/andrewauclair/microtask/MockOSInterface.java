@@ -15,17 +15,24 @@ public class MockOSInterface implements OSInterface {
 	private long time = 1000;
 	private boolean incrementTime = true;
 
-	@Override
-	public boolean runGitCommand(String command) {
-		return false;
-	}
-
 	public void setTime(long time) {
 		this.time = time;
 	}
 
 	public void setIncrementTime(boolean incrementTime) {
 		this.incrementTime = incrementTime;
+	}
+
+	@Override
+	public void gitCommit(String message) {
+	}
+
+	@Override
+	public void gitPush() {
+	}
+
+	@Override
+	public void gitPull() {
 	}
 
 	@Override
@@ -48,6 +55,11 @@ public class MockOSInterface implements OSInterface {
 	public DataOutputStream createOutputStream(String fileName) throws IOException {
 		// throws IOException for tests even though it's not used
 		return null;
+	}
+
+	@Override
+	public boolean canCreateFiles() {
+		return true;
 	}
 
 	@SuppressWarnings("RedundantThrows")

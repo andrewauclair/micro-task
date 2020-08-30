@@ -70,8 +70,7 @@ final class AliasCommand implements Runnable {
 
 					writeAliasesFile();
 
-					osInterface.runGitCommand("git add .");
-					osInterface.runGitCommand("git commit -m \"Added alias '" + name + "' for command '" + args.command + "'\"");
+					osInterface.gitCommit("Added alias '" + name + "' for command '" + args.command + "'");
 				}
 				else {
 					System.out.println();
@@ -98,8 +97,7 @@ final class AliasCommand implements Runnable {
 
 					writeAliasesFile();
 
-					osInterface.runGitCommand("git add .");
-					osInterface.runGitCommand("git commit -m \"Updated alias '" + name + "' to command '" + args.update + "'\"");
+					osInterface.gitCommit("Updated alias '" + name + "' to command '" + args.update + "'");
 				}
 				else {
 					System.out.println();
@@ -129,8 +127,7 @@ final class AliasCommand implements Runnable {
 
 				writeAliasesFile();
 
-				osInterface.runGitCommand("git add .");
-				osInterface.runGitCommand("git commit -m \"Removed alias '" + name + "' for command '" + aliasCommand + "'\"");
+				osInterface.gitCommit("Removed alias '" + name + "' for command '" + aliasCommand + "'");
 			}
 			else {
 				System.out.println("Alias '" + name + "' not found.");

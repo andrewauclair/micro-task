@@ -76,8 +76,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		order.verify(osInterface).createOutputStream("git-data/tasks/test/two/three/five/list.txt");
 		order.verify(writer).writeTask(task6, "git-data/tasks/test/two/three/five/6.txt");
 		order.verify(osInterface).createOutputStream("git-data/task-data-version.txt");
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Updating files to version '19.1.5'\"");
+		order.verify(osInterface).gitCommit("Updating files to version '19.1.5'");
 
 		assertOutput(
 				"Updated all files.",
@@ -148,8 +147,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).runGitCommand("git add .");
-		order.verify(osInterface).runGitCommand("git commit -m \"Updating files to version 'Unknown'\"");
+		order.verify(osInterface).gitCommit("Updating files to version 'Unknown'");
 
 		assertOutput(
 				"Updated all files.",
