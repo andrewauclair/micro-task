@@ -3,9 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -19,6 +17,9 @@ final class ActiveCommand implements Runnable {
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
+	@Option(names = {"--context"}, description = "Display the active context.")
+	private boolean context;
+
 	ActiveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
@@ -26,9 +27,66 @@ final class ActiveCommand implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Active group is '" + tasks.getActiveGroup().getFullPath() + "'");
+		if (context) {
+			ActiveContext activeContext = tasks.getActiveContext();
+
+			System.out.println("Active Context");
+			System.out.println();
+
+			if (activeContext.getActiveTaskID() == ActiveContext.NO_ACTIVE_TASK) {
+				System.out.println("task:      none");
+			}
+			else {
+				System.out.println("task:      " + activeContext.getActiveTaskID());
+			}
+
+			if (activeContext.getActiveList().isPresent()) {
+				System.out.println("list:      " + activeContext.getActiveList().get().absoluteName());
+			}
+			else {
+				System.out.println("list:      none");
+			}
+
+			if (activeContext.getActiveGroup().isPresent()) {
+				System.out.println("group:     " + activeContext.getActiveGroup().get().absoluteName());
+			}
+			else {
+				System.out.println("group:     none");
+			}
+
+			if (activeContext.getActiveProject().isPresent()) {
+				System.out.println("project:   " + activeContext.getActiveProject().get().getName());
+			}
+			else {
+				System.out.println("project:   none");
+			}
+
+			if (activeContext.getActiveFeature().isPresent()) {
+				System.out.println("feature:   " + activeContext.getActiveFeature().get().getName());
+			}
+			else {
+				System.out.println("feature:   none");
+			}
+
+			if (activeContext.getActiveMilestone().isPresent()) {
+				System.out.println("milestone: " + activeContext.getActiveMilestone().get().getName());
+			}
+			else {
+				System.out.println("milestone: none");
+			}
+
+			if (activeContext.getActiveTags().isEmpty()) {
+				System.out.println("tags:      none");
+			}
+			else {
+				System.out.println("tags:      " + String.join(", ", activeContext.getActiveTags()));
+			}
+			System.out.println();
+			return;
+		}
+		System.out.println("Current group is '" + tasks.getCurrentGroup().getFullPath() + "'");
 		System.out.println();
-		System.out.println("Active list is '" + tasks.getActiveList() + "'");
+		System.out.println("Current list is '" + tasks.getCurrentList() + "'");
 		System.out.println();
 
 		try {

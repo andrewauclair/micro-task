@@ -2,6 +2,10 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.project.ExistingProject;
+import com.andrewauclair.microtask.project.NewFeature;
+import com.andrewauclair.microtask.project.NewProject;
+import com.andrewauclair.microtask.project.Project;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -88,15 +92,15 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
-		assertEquals(existingList("/test"), tasks.getActiveList());
+		assertEquals(existingList("/test"), tasks.getCurrentList());
 
 		tasks.addTask("Test 2");
 
 		tasks.startTask(existingID(1), false);
 
-		assertEquals(existingList("/default"), tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getCurrentList());
 	}
 
 	@Test
@@ -104,9 +108,9 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 1");
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
-		assertEquals(existingList("/test"), tasks.getActiveList());
+		assertEquals(existingList("/test"), tasks.getCurrentList());
 
 		tasks.addTask("Test 2");
 
@@ -165,11 +169,11 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.addGroup(newGroup("/one/two/three/"));
 		tasks.addList(newList("/one/two/three/test"), true);
 		
-		tasks.setActiveGroup(existingGroup("/one/two/three/"));
+		tasks.setCurrentGroup(existingGroup("/one/two/three/"));
 
 		tasks.addTask("Test");
 		
-		tasks.setActiveGroup(existingGroup("/one/two/"));
+		tasks.setCurrentGroup(existingGroup("/one/two/"));
 
 		Task task = tasks.startTask(existingID(1), false);
 
@@ -178,16 +182,33 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 	@Test
 	void starting_time_adds_times_with_project_and_feature_of_task() {
+		tasks.createGroup(newGroup("/projects/project-1/"));
+		tasks.createGroup(newGroup("/projects/project-2/"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+
+		project1.addFeature(new NewFeature(project1, "one"), true);
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask("Test");
-		tasks.setProject(existingList("/default"), "Project", true);
-		tasks.setFeature(existingList("/default"), "Feature", true);
+//		tasks.setProject(existingList("/default"), "Project", true);
+//		tasks.setFeature(existingList("/default"), "Feature", true);
 
 		tasks.startTask(existingID(1), false);
 
 		tasks.stopTask();
-		
-		tasks.setProject(existingList("/default"), "Project 2", true);
-		tasks.setFeature(existingList("/default"), "Feature 2", true);
+
+		tasks.moveTask(existingID(1), existingList("/projects/project-2/two"));
+
+//		tasks.setProject(existingList("/default"), "Project 2", true);
+//		tasks.setFeature(existingList("/default"), "Feature 2", true);
 
 		tasks.startTask(existingID(1), false);
 
@@ -195,10 +216,10 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 				new Task(1, "Test", TaskState.Active,
 						Arrays.asList(
 								new TaskTimes(1000),
-								new TaskTimes(2000, 3000, "Project", "Feature"),
-								new TaskTimes(4000, "Project 2", "Feature 2")
+								new TaskTimes(2000, 3000, "project-1", "one"),
+								new TaskTimes(4000, "project-2", "two")
 						),
-						false
+						false, Collections.emptyList()
 				)
 		);
 	}

@@ -2,7 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.task.TaskContainerState;
-import com.andrewauclair.microtask.task.TaskGroup;
 import com.andrewauclair.microtask.task.TaskList;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,7 +26,7 @@ class Commands_Finish_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void not_allowed_to_finish_active_list() {
-		tasks.setActiveList(existingList("/default"));
+		tasks.setCurrentList(existingList("/default"));
 
 		commands.execute(printStream, "finish --list /default");
 
@@ -43,10 +42,10 @@ class Commands_Finish_List_Test extends CommandsBaseTestCase {
 	void lists_with_tasks_that_are_not_finished_cannot_be_finished() {
 		tasks.addList(newList("/test"), true);
 
-		tasks.setActiveList(existingList("/test"));
+		tasks.setCurrentList(existingList("/test"));
 		tasks.addTask("Test 1");
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.setCurrentList(existingList("/default"));
 
 		commands.execute(printStream, "finish --list /test");
 

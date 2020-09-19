@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -28,6 +29,7 @@ class TaskLoader_Groups_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled("This actually seems redundant now that we throw exceptions for these function calls")
 	void task_loader_does_not_create_groups() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(

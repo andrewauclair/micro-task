@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -33,6 +34,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled
 	void load_state_for_groups() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
@@ -47,7 +49,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
-				createInputStream("", "", "InProgress")
+				createInputStream("InProgress")
 		);
 
 		loader.load();
@@ -56,7 +58,32 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 
 	}
 
+	// TODO We can remove this once the new version is out
 	@Test
+	@Disabled
+	void load_state_for_groups__legacy() throws IOException {
+		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("one", "git-data/tasks/one", true)
+				)
+		);
+
+		Mockito.when(osInterface.listFiles("git-data/tasks/one")).thenReturn(
+				Collections.singletonList(
+						new OSInterface.TaskFileInfo("group.txt", "git-data/tasks/one/group.txt", false)
+				)
+		);
+
+		Mockito.when(osInterface.createInputStream("git-data/tasks/one/group.txt")).thenReturn(
+				createInputStream("", "" , "InProgress")
+		);
+
+		loader.load();
+
+		assertEquals(TaskContainerState.InProgress, tasks.getGroup("/one/").getState());
+	}
+	@Test
+	@Disabled
 	void load_state_for_lists() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
@@ -71,7 +98,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/two/list.txt")).thenReturn(
-				createInputStream("", "", "InProgress")
+				createInputStream("InProgress")
 		);
 
 		loader.load();

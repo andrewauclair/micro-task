@@ -30,7 +30,7 @@ public class StatusConsole {
 	private String currentGroup;
 	private String currentList;
 	private String currentCommand = "times --today";
-	private final TaskLoader loader;
+	private final DataLoader loader;
 	private final Socket client;
 	private final Commands commands;
 	private final Terminal terminal;
@@ -87,13 +87,14 @@ public class StatusConsole {
 		System.out.println("Connected");
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
-		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		projects = new Projects(tasks, osInterface);
+		tasks.setProjects(projects);
+
 		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
+		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		terminal = TerminalBuilder.builder()
 				.system(true)
@@ -128,8 +129,8 @@ public class StatusConsole {
 
 		timer.schedule(timerTask, 1000, 1000);
 
-		currentGroup = tasks.getActiveGroup().getFullPath();
-		currentList = tasks.getActiveList().absoluteName();
+		currentGroup = tasks.getCurrentGroup().getFullPath();
+		currentList = tasks.getCurrentList().absoluteName();
 
 		final Kernel32 kernel32 = Kernel32.INSTANCE;
 
@@ -163,8 +164,8 @@ public class StatusConsole {
 						transferType = TransferType.valueOf(in.read());
 					}
 
-					tasks.setActiveGroup(new ExistingGroupName(tasks, currentGroup));
-					tasks.setActiveList(new ExistingListName(tasks, currentList));
+					tasks.setCurrentGroup(new ExistingGroupName(tasks, currentGroup));
+					tasks.setCurrentList(new ExistingListName(tasks, currentList));
 
 					try {
 						commands.execute(System.out, currentCommand);

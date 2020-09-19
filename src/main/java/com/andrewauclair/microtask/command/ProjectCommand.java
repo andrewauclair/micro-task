@@ -4,7 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.project.ExistingProjectName;
+import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.TaskContainer;
@@ -15,8 +15,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
@@ -33,7 +31,7 @@ public class ProjectCommand implements Runnable {
 	private boolean help;
 
 	@Option(names = {"-n", "--name"})
-	private ExistingProjectName name;
+	private ExistingProject name;
 
 	@Option(names = {"--progress"})
 	private boolean progress;
@@ -59,7 +57,7 @@ public class ProjectCommand implements Runnable {
 			System.out.println("Project progress for 'test'");
 			System.out.println();
 
-			Project project = projects.getProject(name.getName());
+			Project project = projects.getProject(name);
 
 			ConsoleTable table = new ConsoleTable(osInterface);
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, RIGHT, LEFT, RIGHT);

@@ -50,7 +50,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 	@ParameterizedTest
 	@ValueSource(strings = {"ch", "finish", "group", "move", "move", "search"})
 	void command_group_option_has_group_completer(String group) {
-		commands.execute(printStream, "mk -g /test/");
+		tasks.addGroup(newGroup("/test/"));
 
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
@@ -74,7 +74,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 
 	@Test
 	void set_group_group_option_has_group_completer() {
-		commands.execute(printStream, "mk -g /test/");
+		tasks.addGroup(newGroup("/test/"));
 
 		CommandLine cmd = commands.buildCommandLine("set");
 
@@ -86,7 +86,7 @@ class GroupCompleterTest extends CommandsBaseTestCase {
 
 	@Test
 	void move_command_dest_group_option_has_group_completer() {
-		commands.execute(printStream, "mk -g /test/");
+		tasks.addGroup(newGroup("/test/"));
 
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 

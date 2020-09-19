@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.MockOSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -23,6 +24,7 @@ class TaskBaseTestCase {
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	protected Tasks tasks;
+	protected Projects projects;
 
 	@BeforeEach
 	protected void setup() throws IOException {
@@ -37,6 +39,8 @@ class TaskBaseTestCase {
 		System.setOut(output);
 		
 		tasks = new Tasks(writer, output, osInterface);
+		projects = new Projects(tasks, osInterface);
+		tasks.setProjects(projects);
 //		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 	}
 

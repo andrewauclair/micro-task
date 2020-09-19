@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ListCompleterTest extends CommandsBaseTestCase {
 	@Test
 	void candidates_list_contains_all_lists() {
-		commands.execute(printStream, "mk -l alpha");
-		commands.execute(printStream, "mk -l bravo");
-		commands.execute(printStream, "mk -l /charlie");
+		tasks.addList(newList("alpha"), false);
+		tasks.addList(newList("bravo"), false);
+		tasks.addList(newList("charlie"), false);
 
 		final ListCompleter completer = new ListCompleter(tasks);
 
@@ -46,7 +46,7 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "add", "finish", "list", "move", "times"})
+	@ValueSource(strings = {"ch", "finish", "list", "move", "times"})
 	void command_list_option_has_list_completer(String command) {
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
@@ -54,6 +54,16 @@ class ListCompleterTest extends CommandsBaseTestCase {
 
 		assertNotNull(spec.optionsMap().get("--list").completionCandidates());
 		assertEquals("/default", spec.optionsMap().get("--list").completionCandidates().iterator().next());
+	}
+
+	@Test
+	void add_list_parameter_has_list_completer() {
+		CommandLine cmd = commands.buildCommandLine("add").getSubcommands().get("add").getSubcommands().get("list");
+
+		CommandLine.Model.PositionalParamSpec positionalParamSpec = cmd.getCommandSpec().positionalParameters().get(0);
+
+		assertNotNull(positionalParamSpec.completionCandidates());
+		assertEquals("/default", positionalParamSpec.completionCandidates().iterator().next());
 	}
 
 	@Test

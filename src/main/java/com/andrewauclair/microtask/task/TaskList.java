@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.util.*;
@@ -16,22 +17,22 @@ public final class TaskList implements TaskContainer {
 	private final OSInterface osInterface;
 	private final TaskWriter writer;
 
-	private final String project;
-	private final String feature;
+//	private final String project;
+//	private final String feature;
 
 	private final TaskContainerState state;
 
 	private final List<Task> tasks = new ArrayList<>();
 
-	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, String project, String feature, TaskContainerState state) {
+	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, TaskContainerState state) {
 		Objects.requireNonNull(parent);
 
 		this.name = name;
 		this.parent = parent;
 		this.osInterface = osInterface;
 		this.writer = writer;
-		this.project = project;
-		this.feature = feature;
+//		this.project = project;
+//		this.feature = feature;
 		this.state = state;
 
 		parentPath = parent.getFullPath();
@@ -71,15 +72,15 @@ public final class TaskList implements TaskContainer {
 				.anyMatch(task -> task.id == taskID);
 	}
 
-	@Override
-	public String getProject() {
-		return project;
-	}
-
-	@Override
-	public String getFeature() {
-		return feature;
-	}
+//	@Override
+//	public String getProject() {
+//		return project;
+//	}
+//
+//	@Override
+//	public String getFeature() {
+//		return feature;
+//	}
 
 	@Override
 	public TaskContainerState getState() {
@@ -91,35 +92,35 @@ public final class TaskList implements TaskContainer {
 	}
 
 	public TaskList rename(String name) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
 
-	TaskList changeProject(String project) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
-		list.tasks.addAll(tasks);
-
-		return list;
-	}
-
-	TaskList changeFeature(String feature) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
-		list.tasks.addAll(tasks);
-
-		return list;
-	}
+//	TaskList changeProject(String project) {
+//		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+//		list.tasks.addAll(tasks);
+//
+//		return list;
+//	}
+//
+//	TaskList changeFeature(String feature) {
+//		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+//		list.tasks.addAll(tasks);
+//
+//		return list;
+//	}
 
 	TaskList changeState(TaskContainerState state) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
 
 	TaskList changeParent(TaskGroup parent) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state);
 		list.tasks.addAll(tasks);
 
 		return list;
@@ -127,7 +128,7 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parentPath, tasks, osInterface, writer, project, feature, state);
+		return Objects.hash(name, fullPath, parentPath, tasks, osInterface, writer, state);
 	}
 
 	@Override
@@ -145,8 +146,8 @@ public final class TaskList implements TaskContainer {
 				Objects.equals(tasks, taskList.tasks) &&
 				Objects.equals(osInterface, taskList.osInterface) &&
 				Objects.equals(writer, taskList.writer) &&
-				Objects.equals(project, taskList.project) &&
-				Objects.equals(feature, taskList.feature) &&
+//				Objects.equals(project, taskList.project) &&
+//				Objects.equals(feature, taskList.feature) &&
 				Objects.equals(state, taskList.state);
 	}
 
@@ -156,8 +157,8 @@ public final class TaskList implements TaskContainer {
 				"name='" + name + '\'' +
 				", fullPath='" + fullPath + '\'' +
 				", tasks=" + tasks +
-				", project='" + project + '\'' +
-				", feature='" + feature + '\'' +
+//				", project='" + project + '\'' +
+//				", feature='" + feature + '\'' +
 				'}';
 	}
 
@@ -166,7 +167,7 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
 		}
 
-		Task task = new Task(id.get(), name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())));
+		Task task = new Task(id.get(), name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())), false, Collections.emptyList());
 
 		tasks.add(task);
 
@@ -184,11 +185,11 @@ public final class TaskList implements TaskContainer {
 		osInterface.gitCommit(comment + " " + task.description().replace("\"", "\\\""));
 	}
 
-	public Task startTask(ExistingID id, long startTime, Tasks tasks) {
+	public Task startTask(ExistingID id, long startTime, Tasks tasks, Projects projects) {
 		Task currentTask = getTask(id);
 
 		Task newActiveTask = new TaskBuilder(currentTask)
-				.start(startTime, tasks);
+				.start(startTime, tasks, projects);
 
 		replaceTask(currentTask, newActiveTask);
 

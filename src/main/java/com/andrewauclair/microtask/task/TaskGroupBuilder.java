@@ -6,11 +6,11 @@ public class TaskGroupBuilder {
 	private TaskGroup parent = null;
 	private TaskContainerState state = TaskContainerState.InProgress;
 
-	private String project = "";
-	private String feature = "";
+//	private String project = "";
+//	private String feature = "";
 
 	public static TaskGroup createRootGroup() {
-		return new TaskGroup(TaskGroup.ROOT_PATH, null, "", "", TaskContainerState.InProgress);
+		return new TaskGroup(TaskGroup.ROOT_PATH, null, TaskContainerState.InProgress);
 	}
 
 	public TaskGroupBuilder(TaskGroup group) {
@@ -18,6 +18,6 @@ public class TaskGroupBuilder {
 	}
 
 	public TaskGroup build() {
-		return new TaskGroup(name, parent, project, feature, state);
+		return new TaskGroup(name, parent, state);
 	}
 }

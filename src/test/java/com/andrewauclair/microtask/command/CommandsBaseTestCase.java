@@ -26,7 +26,6 @@ import java.io.*;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.linesOf;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandsBaseTestCase {
@@ -67,7 +66,7 @@ public class CommandsBaseTestCase {
 
 		tasks = new Tasks(writer, printStream, osInterface);
 		projects = new Projects(tasks, osInterface);
-//		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
+		tasks.setProjects(projects);
 
 		commands = new Commands(tasks, projects, gitLabReleases, localSettings, osInterface);
 	}
@@ -83,6 +82,10 @@ public class CommandsBaseTestCase {
 
 	void setTime(long time) {
 		osInterface.setTime(time);
+	}
+
+	Task addTask(String name) {
+		return tasks.addTask(name, existingList("/default"));
 	}
 
 	Task addTaskWithTimes(String name, long start, long stop) {

@@ -1,39 +1,40 @@
+// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.project.Project;
+import com.andrewauclair.microtask.project.NewProject;
 import org.junit.jupiter.api.Test;
 
 public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 	@Test
 	void show_progress_for_features() {
-		tasks.addGroup(newGroup("/test/"));
-		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.addGroup(newGroup("/projects/test/"));
+		tasks.addList(newList("/projects/test/one"), true);
+		tasks.setCurrentList(existingList("/projects/test/one"));
 
 		for (int i = 0; i < 10; i++) {
 			tasks.addTask("Test");
 		}
 
-		projects.createProject(existingGroup("/test/"));
+		projects.createProject(new NewProject(projects, "test"), true);
 
 		commands.execute(System.out, "project --name test --progress");
 
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features  0 /  1 [          ] 0%",
-				"Tasks     0 / 10 [          ] 0%",
+				"Features           0 /  1 [          ] 0%",
+				"Tasks              0 / 10 [          ] 0%",
 				"",
-				"/test/one 0 / 10 [          ] 0%",
+				"/projects/test/one 0 / 10 [          ] 0%",
 				""
 		);
 	}
 
 	@Test
 	void show_count_of_finished_tasks() {
-		tasks.addGroup(newGroup("/test/"));
-		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.addGroup(newGroup("/projects/test/"));
+		tasks.addList(newList("/projects/test/one"), true);
+		tasks.setCurrentList(existingList("/projects/test/one"));
 
 		for (int i = 0; i < 10; i++) {
 			tasks.addTask("Test");
@@ -42,63 +43,62 @@ public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 		tasks.finishTask(existingID(1));
 		tasks.finishTask(existingID(2));
 
-		projects.createProject(existingGroup("/test/"));
+		projects.createProject(new NewProject(projects, "test"), true);
 
 		commands.execute(System.out, "project --name test --progress");
 
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features  0 /  1 [          ]  0%",
-				"Tasks     2 / 10 [==        ] 20%",
+				"Features           0 /  1 [          ]  0%",
+				"Tasks              2 / 10 [==        ] 20%",
 				"",
-				"/test/one 2 / 10 [==        ] 20%",
+				"/projects/test/one 2 / 10 [==        ] 20%",
 				""
 		);
 	}
 
 	@Test
 	void displays_all_sub_features() {
-		tasks.addGroup(newGroup("/test/"));
-		tasks.addGroup(newGroup("/test/four/"));
-		tasks.addList(newList("/test/one"), true);
-		tasks.addList(newList("/test/two"), true);
-		tasks.addList(newList("/test/three"), true);
-		tasks.addList(newList("/test/four/five"), true);
+		tasks.addGroup(newGroup("/projects/test/four/"));
+		tasks.addList(newList("/projects/test/one"), true);
+		tasks.addList(newList("/projects/test/two"), true);
+		tasks.addList(newList("/projects/test/three"), true);
+		tasks.addList(newList("/projects/test/four/five"), true);
 
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/projects/test/one"));
 		tasks.addTask("Test");
 		tasks.addTask("Test");
 		tasks.addTask("Test");
-		tasks.setActiveList(existingList("/test/two"));
+		tasks.setCurrentList(existingList("/projects/test/two"));
 		tasks.addTask("Test");
 		tasks.addTask("Test");
-		tasks.setActiveList(existingList("/test/three"));
+		tasks.setCurrentList(existingList("/projects/test/three"));
 		tasks.addTask("Test");
 		tasks.addTask("Test");
 		tasks.addTask("Test");
 		tasks.addTask("Test");
-		tasks.setActiveList(existingList("/test/four/five"));
+		tasks.setCurrentList(existingList("/projects/test/four/five"));
 		tasks.addTask("Test");
 
 		tasks.finishTask(existingID(10));
-		tasks.finishList(existingList("/test/four/five"));
+		tasks.finishList(existingList("/projects/test/four/five"));
 
-		projects.createProject(existingGroup("/test/"));
+		projects.createProject(new NewProject(projects, "test"), true);
 
 		commands.execute(System.out, "project --name test --progress");
 
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features        1 /  5 [==        ]  20%",
-				"Tasks           1 / 10 [=         ]  10%",
+				"Features                 1 /  5 [==        ]  20%",
+				"Tasks                    1 / 10 [=         ]  10%",
 				"",
-				"/test/four/     1 /  1 [==========] 100%",
-				"/test/four/five 1 /  1 [==========] 100%",
-				"/test/one       0 /  3 [          ]   0%",
-				"/test/two       0 /  2 [          ]   0%",
-				"/test/three     0 /  4 [          ]   0%",
+				"/projects/test/four/     1 /  1 [==========] 100%",
+				"/projects/test/four/five 1 /  1 [==========] 100%",
+				"/projects/test/one       0 /  3 [          ]   0%",
+				"/projects/test/two       0 /  2 [          ]   0%",
+				"/projects/test/three     0 /  4 [          ]   0%",
 				""
 		);
 	}

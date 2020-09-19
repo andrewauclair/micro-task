@@ -28,10 +28,10 @@ final class ListCommand implements Runnable {
 
 	@Override
 	public void run() {
-		ExistingListName listName = list != null ? list : tasksData.getActiveList();
+		ExistingListName listName = list != null ? list : tasksData.getCurrentList();
 
 		if (list == null) {
-			System.out.println("Current list is '" + tasksData.getActiveList() + "'");
+			System.out.println("Current list is '" + tasksData.getCurrentList() + "'");
 		}
 		else {
 			System.out.println("List '" + listName + "'");
@@ -50,8 +50,8 @@ final class ListCommand implements Runnable {
 
 		int percent = (int) ((finishedCount / (double) totalCount) * 100);
 
-		System.out.print(String.format("%d / %d %s ", finishedCount, totalCount, progressBar(finishedCount, totalCount)));
-		System.out.println(String.format("%d%%", percent));
+		System.out.printf("%d / %d %s ", finishedCount, totalCount, progressBar(finishedCount, totalCount));
+		System.out.printf("%d%%%n", percent);
 		System.out.println();
 	}
 

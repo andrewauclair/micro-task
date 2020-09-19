@@ -31,11 +31,11 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 	@Test
 	void renaming_active_group_sets_active_group_to_new_group_name() {
 		tasks.addGroup(newGroup("/one/"));
-		tasks.setActiveGroup(existingGroup("/one/"));
+		tasks.setCurrentGroup(existingGroup("/one/"));
 
 		commands.execute(printStream, "rename group /one/ -n \"/two/\"");
 
-		assertEquals("/two/", tasks.getActiveGroup().getFullPath());
+		assertEquals("/two/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
@@ -43,7 +43,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/one/"));
 		tasks.addList(newList("/one/test"), true);
 
-		tasks.setActiveList(existingList("/one/test"));
+		tasks.setCurrentList(existingList("/one/test"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename group /one/ -n \"/two/\"");
@@ -56,7 +56,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/one/two/"));
 		tasks.addList(newList("/one/two/three"), true);
 
-		tasks.setActiveList(existingList("/one/two/three"));
+		tasks.setCurrentList(existingList("/one/two/three"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "rename group /one/ -n \"/test/\"");

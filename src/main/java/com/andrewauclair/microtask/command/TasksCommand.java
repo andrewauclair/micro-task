@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -45,10 +46,12 @@ public class TasksCommand implements Runnable {
 	private boolean verbose;
 
 	private final Tasks tasksData;
+	private final Projects projects;
 	private final OSInterface osInterface;
 
-	public TasksCommand(Tasks tasks, OSInterface osInterface) {
+	public TasksCommand(Tasks tasks, Projects projects, OSInterface osInterface) {
 		tasksData = tasks;
+		this.projects = projects;
 		this.osInterface = osInterface;
 	}
 
@@ -60,127 +63,227 @@ public class TasksCommand implements Runnable {
 		boolean recursive = this.recursive;
 		boolean finished = this.finished;
 
-		ExistingListName list = tasksData.getActiveList();
+		ExistingListName list = tasksData.getCurrentList();
 
 		if (this.list != null) {
 			list = this.list;
 		}
 
-		ExistingGroupName group = new ExistingGroupName(tasksData, tasksData.getActiveGroup().getFullPath());
+		ExistingGroupName group = new ExistingGroupName(tasksData, tasksData.getCurrentGroup().getFullPath());
 
+		if (tasksData.getActiveContext().getActiveGroup().isPresent()) {
+			group = tasksData.getActiveContext().getActiveGroup().get();
+			useGroup = true;
+		}
+
+		if (tasksData.getActiveContext().getActiveProject().isPresent()) {
+			String projectName = tasksData.getActiveContext().getActiveProject().get().getName();
+			Project project = projects.getProject(new ExistingProject(projects, projectName));
+
+			group = new ExistingGroupName(tasksData, project.getGroup().getFullPath());
+			useGroup = true;
+		}
+
+		Optional<Feature> feature = Optional.empty();
+		Optional<Project> project = Optional.empty();
+
+		if (tasksData.getActiveContext().getActiveFeature().isPresent()) {
+			ExistingFeature existingFeature = tasksData.getActiveContext().getActiveFeature().get();
+			project = Optional.of(projects.getProjectFromFeature(existingFeature));
+
+			feature = Optional.of(project.get().getFeature(existingFeature));
+		}
+
+		Optional<Milestone> milestone = Optional.empty();
+
+		if (tasksData.getActiveContext().getActiveMilestone().isPresent()) {
+			ExistingMilestone existingMilestone = tasksData.getActiveContext().getActiveMilestone().get();
+			project = Optional.of(projects.getProjectFromMilestone(existingMilestone));
+			milestone = Optional.of(project.get().getMilestone(existingMilestone));
+		}
+
+		// override the active group if the --group option is present
 		if (this.group != null) {
 			group = this.group;
 			useGroup = true;
 		}
 
-//		if (showTasks) {
-			if (!useGroup) {
-				if (finished) {
-					System.out.println("Finished tasks on list '" + list + "'");
+		boolean useTags = !tasksData.getActiveContext().getActiveTags().isEmpty();
+		List<String> tags = tasksData.getActiveContext().getActiveTags();
+
+		if (feature.isPresent()) {
+			group = new ExistingGroupName(tasksData, project.get().getGroup().getFullPath());
+			useGroup = true;
+
+			System.out.print("Tasks for active feature '" + feature.get().getName() + "' of project '" + project.get().getName() + "'");
+
+			if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+				System.out.print(" with tag(s): " + String.join(", ", tags));
+			}
+			System.out.println();
+		}
+		else if (milestone.isPresent()) {
+			group = new ExistingGroupName(tasksData, project.get().getGroup().getFullPath());
+			useGroup = true;
+
+			System.out.print("Tasks for active milestone '" + milestone.get().getName() + "' for project '" + project.get().getName() + "'");
+
+			if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+				System.out.print(" with tag(s): " + String.join(", ", tags));
+			}
+			System.out.println();
+		}
+		else if (!useGroup) {
+			if (finished) {
+				System.out.println("Finished tasks on list '" + list + "'");
+			}
+			else {
+				if (tasksData.getActiveContext().getActiveList().isPresent()) {
+					list = tasksData.getActiveContext().getActiveList().get();
+
+					System.out.print("Tasks on active list '" + list + "'");
+
+					if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+						System.out.print(" with tag(s): " + String.join(", ", tags));
+					}
+					System.out.println();
 				}
 				else {
 					System.out.println("Tasks on list '" + list + "'");
 				}
 			}
+		}
+		else {
+			if (tasksData.getActiveContext().getActiveGroup().isPresent()) {
+				System.out.print("Tasks in active group '" + group + "'");
+
+				if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+					System.out.print(" with tag(s): " + String.join(", ", tags));
+				}
+				System.out.println();
+			}
+			else if (tasksData.getActiveContext().getActiveProject().isPresent()) {
+				System.out.print("Tasks in active project '" + tasksData.getActiveContext().getActiveProject().get().getName() + "'");
+
+				if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+					System.out.print(" with tag(s): " + String.join(", ", tags));
+				}
+				System.out.println();
+			}
 			else {
 				System.out.println("Tasks in group '" + group + "'");
 			}
-			System.out.println();
+		}
+		System.out.println();
 
-			int limit = all ? Integer.MAX_VALUE : osInterface.getTerminalHeight() - 8;
+		int limit = all ? Integer.MAX_VALUE : osInterface.getTerminalHeight() - 8;
 
-			List<Task> tasks = new ArrayList<>();
+		List<Task> tasks = new ArrayList<>();
 
-			ConsoleTable table = new ConsoleTable(osInterface);
-			table.enableAlternatingColors();
+		ConsoleTable table = new ConsoleTable(osInterface);
+		table.enableAlternatingColors();
 
-			if (useGroup) {
-				table.setHeaders("List", "Type", "ID", "Description");
-				table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+		if (useGroup) {
+			table.setHeaders("List", "Type", "ID", "Description");
+			table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+		}
+		else {
+			table.setHeaders("Type", "ID", "Description");
+			table.setColumnAlignment(LEFT, RIGHT, LEFT);
+		}
+
+		if (verbose) {
+			table.enableWordWrap();
+		}
+
+		if (feature.isPresent()) {
+			tasks = feature.get().getTasks().stream()
+					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.collect(Collectors.toList());
+		}
+		else if (milestone.isPresent()) {
+			tasks = milestone.get().getTasks().stream()
+					.map(tasksData::getTask)
+					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.collect(Collectors.toList());
+		}
+		else if (useGroup) {
+			tasks = getTasks(tasksData.getGroup(group), finished, recursive).stream()
+					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.collect(Collectors.toList());
+		}
+		else {
+			List<Task> tasksList = tasksData.getTasksForList(list).stream()
+					.filter(task -> finished == (task.state == TaskState.Finished))
+					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.collect(Collectors.toList());
+
+			tasks.addAll(tasksList);
+		}
+
+		if (tasks.size() > limit) {
+			limit--;
+		}
+
+		table.setRowLimit(limit, true);
+
+		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
+
+		Optional<Task> activeTask = Optional.empty();
+
+		for (final Task task : tasks) {
+			if (task.state == TaskState.Active) {
+				activeTask = Optional.of(task);
 			}
 			else {
-				table.setHeaders("Type", "ID", "Description");
-				table.setColumnAlignment(LEFT, RIGHT, LEFT);
-			}
-
-			if (verbose) {
-				table.enableWordWrap();
-			}
-
-			if (useGroup) {
-				tasks = getTasks(tasksData.getGroup(group), finished, recursive);
-			}
-			else {
-				List<Task> tasksList = tasksData.getTasksForList(list).stream()
-						.filter(task -> finished == (task.state == TaskState.Finished))
-						.collect(Collectors.toList());
-
-				tasks.addAll(tasksList);
-			}
-
-			if (tasks.size() > limit) {
-				limit--;
-			}
-
-			table.setRowLimit(limit, true);
-
-			tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
-
-			Optional<Task> activeTask = Optional.empty();
-
-			for (final Task task : tasks) {
-				if (task.state == TaskState.Active) {
-					activeTask = Optional.of(task);
-				}
-				else {
-					TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
-					String name = listForTask.getFullPath().replace(group.absoluteName(), "");
-
-					addTaskToTable(table, task, name, useGroup);
-				}
-			}
-
-			if (activeTask.isPresent()) {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-				addTaskToTable(table, activeTask.get(), name, useGroup);
+				addTaskToTable(table, task, name, useGroup);
 			}
+		}
 
-			int totalTasks = tasks.size();
+		if (activeTask.isPresent()) {
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-			if (totalTasks > 0) {
-				table.print();
+			addTaskToTable(table, activeTask.get(), name, useGroup);
+		}
+
+		int totalTasks = tasks.size();
+
+		if (totalTasks > 0) {
+			table.print();
+		}
+
+		long totalRecurring = tasks.stream()
+				.filter(Task::isRecurring)
+				.count();
+
+		if (totalTasks > limit) {
+			System.out.println();
+			System.out.println("(" + (totalTasks - limit) + " more tasks.)");
+		}
+		else if (totalTasks == 0) {
+			System.out.println("No tasks.");
+		}
+
+		if (totalTasks > 0) {
+			System.out.println();
+			System.out.print(ANSI_BOLD);
+			if (finished) {
+				System.out.print("Total Finished Tasks: " + totalTasks);
 			}
+			else {
+				System.out.print("Total Tasks: " + totalTasks);
 
-			long totalRecurring = tasks.stream()
-					.filter(Task::isRecurring)
-					.count();
-
-			if (totalTasks > limit) {
-				System.out.println();
-				System.out.println("(" + (totalTasks - limit) + " more tasks.)");
-			}
-			else if (totalTasks == 0) {
-				System.out.println("No tasks.");
-			}
-
-			if (totalTasks > 0) {
-				System.out.println();
-				System.out.print(ANSI_BOLD);
-				if (finished) {
-					System.out.print("Total Finished Tasks: " + totalTasks);
+				if (totalRecurring > 0) {
+					System.out.print(" (" + totalRecurring + " Recurring)");
 				}
-				else {
-					System.out.print("Total Tasks: " + totalTasks);
-
-					if (totalRecurring > 0) {
-						System.out.print(" (" + totalRecurring + " Recurring)");
-					}
-				}
-				System.out.print(ANSI_RESET);
-				System.out.println();
 			}
+			System.out.print(ANSI_RESET);
+			System.out.println();
+		}
 //		}
 		System.out.println();
 	}

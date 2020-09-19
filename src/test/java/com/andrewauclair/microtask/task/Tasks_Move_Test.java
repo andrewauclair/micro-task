@@ -66,7 +66,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void can_move_task_on_different_list() {
 		Task task = tasks.addTask("Task to move");
 		tasks.addList(newList("one"), true);
-		tasks.setActiveList(existingList("one"));
+		tasks.setCurrentList(existingList("one"));
 
 		tasks.moveTask(existingID(1), new ExistingListName(tasks, "one"));
 
@@ -134,11 +134,11 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	void moving_active_list_changes_active_list_name() {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/test/one"));
 
 		tasks.moveList(existingList("/test/one"), existingGroup("/"));
 
-		assertEquals(existingList("/one"), tasks.getActiveList());
+		assertEquals(existingList("/one"), tasks.getCurrentList());
 	}
 
 	@Test
@@ -146,11 +146,11 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		tasks.createGroup(newGroup("/one/"));
 		tasks.createGroup(newGroup("/two/"));
 
-		tasks.setActiveGroup(existingGroup("/one/"));
+		tasks.setCurrentGroup(existingGroup("/one/"));
 
 		tasks.moveGroup(existingGroup("/one/"), existingGroup("/two/"));
 
-		assertEquals("/two/one/", tasks.getActiveGroup().getFullPath());
+		assertEquals("/two/one/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
@@ -193,7 +193,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/test/one"));
 
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveList(existingList("/test/one"), existingGroup("/")));
 
@@ -207,7 +207,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		Mockito.doThrow(IOException.class).when(osInterface).moveFolder(Mockito.anyString(), Mockito.anyString());
 
 		tasks.createGroup(newGroup("/test/one/"));
-		tasks.setActiveGroup(existingGroup("/test/one/"));
+		tasks.setCurrentGroup(existingGroup("/test/one/"));
 
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.moveGroup(existingGroup("/test/one/"), existingGroup("/")));
 

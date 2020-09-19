@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.util.Optional;
@@ -10,7 +11,6 @@ public class TaskFinder {
 	private final Tasks tasks;
 
 	public TaskFinder(Tasks tasks) {
-
 		this.tasks = tasks;
 	}
 
@@ -32,39 +32,41 @@ public class TaskFinder {
 		return listForTask.get();
 	}
 
-	public String getProjectForTask(ExistingID taskID) {
-		TaskList listForTask = findListForTask(taskID);
-
-		String project = listForTask.getProject();
-
-		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
-
-		while (project.isEmpty()) {
-			project = group.getProject();
-
-			if (group.getFullPath().equals("/")) {
-				break;
-			}
-			group = tasks.getGroup(group.getParent());
-		}
-		return project;
-	}
-
-	public String getFeatureForTask(ExistingID taskID) {
-		TaskList listForTask = findListForTask(taskID);
-
-		String feature = listForTask.getFeature();
-
-		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
-
-		while (feature.isEmpty()) {
-			feature = group.getFeature();
-
-			if (group.getFullPath().equals("/")) {
-				break;
-			}
-			group = tasks.getGroup(group.getParent());
-		}
-		return feature;
-	}
+//	public String getProjectForTask(ExistingID taskID) {
+//		TaskList listForTask = findListForTask(taskID);
+//
+//		String project = "";//listForTask.getProject();
+//
+//		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
+//
+////		return projects.getProjectForList(listForTask);
+////		while (project.isEmpty()) {
+////			project = group.getProject();
+////
+////			if (group.getFullPath().equals("/")) {
+////				break;
+////			}
+////			group = tasks.getGroup(group.getParent());
+////		}
+//		return project;
+//	}
+//
+//	public String getFeatureForTask(ExistingID taskID) {
+//		TaskList listForTask = findListForTask(taskID);
+//
+//		String feature = "";//listForTask.getFeature();
+//
+//		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
+//
+////		return projects.getFeatureForList(listForTask);
+////		while (feature.isEmpty()) {
+////			feature = group.getFeature();
+////
+////			if (group.getFullPath().equals("/")) {
+////				break;
+////			}
+////			group = tasks.getGroup(group.getParent());
+////		}
+//		return feature;
+//	}
 }

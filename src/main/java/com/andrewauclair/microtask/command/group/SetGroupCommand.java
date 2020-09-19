@@ -22,20 +22,20 @@ public class SetGroupCommand implements Runnable {
 	private ExistingGroupName group;
 
 	private static class Args {
-		@ArgGroup(exclusive = false)
-		private ProjectFeature projectFeature;
+//		@ArgGroup(exclusive = false)
+//		private ProjectFeature projectFeature;
 
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 		private boolean in_progress;
 	}
 
-	static final class ProjectFeature {
-		@Option(names = {"-p", "--project"}, description = "The project to set.")
-		String project;
-
-		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
-		String feature;
-	}
+//	static final class ProjectFeature {
+//		@Option(names = {"-p", "--project"}, description = "The project to set.")
+//		String project;
+//
+//		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
+//		String feature;
+//	}
 
 	@ArgGroup(exclusive = false, multiplicity = "1")
 	Args args;
@@ -46,9 +46,9 @@ public class SetGroupCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (args.projectFeature != null) {
-			handleProjectAndFeature();
-		}
+//		if (args.projectFeature != null) {
+//			handleProjectAndFeature();
+//		}
 
 		if (args.in_progress) {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
@@ -66,19 +66,19 @@ public class SetGroupCommand implements Runnable {
 		System.out.println();
 	}
 
-	private void handleProjectAndFeature() {
-		if (args.projectFeature.project != null) {
-			String project = this.args.projectFeature.project;
-			tasks.setProject(group, project, true);
-
-			System.out.println("Set project for group '" + group + "' to '" + project + "'");
-		}
-
-		if (args.projectFeature.feature != null) {
-			String feature = this.args.projectFeature.feature;
-			tasks.setFeature(group, feature, true);
-
-			System.out.println("Set feature for group '" + group + "' to '" + feature + "'");
-		}
-	}
+//	private void handleProjectAndFeature() {
+//		if (args.projectFeature.project != null) {
+//			String project = this.args.projectFeature.project;
+//			tasks.setProject(group, project, true);
+//
+//			System.out.println("Set project for group '" + group + "' to '" + project + "'");
+//		}
+//
+//		if (args.projectFeature.feature != null) {
+//			String feature = this.args.projectFeature.feature;
+//			tasks.setFeature(group, feature, true);
+//
+//			System.out.println("Set feature for group '" + group + "' to '" + feature + "'");
+//		}
+//	}
 }

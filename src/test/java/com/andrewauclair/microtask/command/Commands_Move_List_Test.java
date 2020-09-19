@@ -17,7 +17,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/one/test/"));
 		tasks.addList(newList("/one/two/three"), true);
 		tasks.addList(newList("/one/test/five"), true);
-		tasks.setActiveList(existingList("/one/two/three"));
+		tasks.setCurrentList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 
@@ -41,7 +41,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 		tasks.addList(newList("/one/two/three"), true);
 		tasks.addList(newList("/one/test/five"), true);
-		tasks.setActiveList(existingList("/one/two/three"));
+		tasks.setCurrentList(existingList("/one/two/three"));
 
 		tasks.addTask("Test 1");
 
@@ -64,7 +64,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/one/test/"));
 		tasks.addList(newList("/one/two/three"), true);
 		tasks.addList(newList("/one/test/five"), true);
-		tasks.setActiveList(existingList("/one/two/three"));
+		tasks.setCurrentList(existingList("/one/two/three"));
 
 		Task task = tasks.addTask("Test 1");
 

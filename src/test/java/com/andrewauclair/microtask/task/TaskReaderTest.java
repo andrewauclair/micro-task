@@ -44,7 +44,7 @@ class TaskReaderTest {
 						new TaskTimes(123),
 						new TaskTimes(1234, "Project", "Feature")
 				),
-				false
+				false, Collections.emptyList()
 		);
 
 		assertEquals(expectedTask, task);
@@ -71,7 +71,7 @@ class TaskReaderTest {
 				Collections.singletonList(
 						new TaskTimes(123)
 				),
-				true
+				true, Collections.emptyList()
 		);
 
 		assertEquals(expectedTask, task);

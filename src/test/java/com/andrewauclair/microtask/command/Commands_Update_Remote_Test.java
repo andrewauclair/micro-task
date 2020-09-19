@@ -29,7 +29,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 	@Test
 	void update_from_remote_runs_git_pull() throws IOException {
-		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+		tasks.addGroup(newGroup("/projects/"));
 
 		commands.execute(printStream, "update repo --from-remote");
 
@@ -57,7 +57,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/list.txt")).thenReturn(
-				createInputStream("Project X", "Feature Y", "InProgress")
+				createInputStream("InProgress")
 		);
 
 		InputStream inputStream = createInputStream(

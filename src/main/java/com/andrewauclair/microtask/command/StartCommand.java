@@ -1,64 +1,20 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.*;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-import java.util.List;
-import java.util.Optional;
-
-@Command(name = "start", description = "Start a task.")
+@Command(name = "start", synopsisSubcommandLabel = "COMMAND", description = "Start a task, list, group, project, feature or milestone.")
 final class StartCommand implements Runnable {
-	private final Tasks tasks;
-	private final OSInterface osInterface;
-
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@Parameters(index = "0", description = "The task to start.")
-	private ExistingID id;
-
-	@Option(names = {"-f", "--finish"}, description = "Finish the active task.")
-	private boolean finish;
-
-	StartCommand(Tasks tasks, OSInterface osInterface) {
-		this.tasks = tasks;
-		this.osInterface = osInterface;
-	}
+	@CommandLine.Spec
+	private CommandLine.Model.CommandSpec spec;
 
 	@Override
 	public void run() {
-		Optional<Task> activeTask = Optional.empty();
-		if (tasks.hasActiveTask()) {
-			activeTask = Optional.of(tasks.getActiveTask());
-		}
-
-		Task task = tasks.startTask(id, finish);
-
-		if (activeTask.isPresent()) {
-			if (finish) {
-				System.out.println("Finished task " + activeTask.get().description());
-				System.out.println();
-				System.out.print("Task finished in: ");
-				System.out.println(new TaskDuration(activeTask.get(), osInterface));
-			}
-			else {
-				System.out.println("Stopped task " + activeTask.get().description());
-			}
-
-			System.out.println();
-		}
-
-		System.out.println("Started task " + task.description());
-		System.out.println();
-
-		List<TaskTimes> times = task.getStartStopTimes();
-		TaskTimes startTime = times.get(times.size() - 1);
-
-		System.out.println(startTime.description(osInterface.getZoneId()));
-		System.out.println();
+		spec.commandLine().usage(System.out);
 	}
 }

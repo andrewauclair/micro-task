@@ -1,10 +1,12 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -37,29 +39,38 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
-		tasks.setFeature(existingGroup("/"), "Short Feat", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Short Proj", true);
-		tasks.setFeature(existingList("/one"), "Longer Feature Name", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/projects/projects-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/projects/projects-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/projects/projects-2/two"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/projects/projects-2/two")
 				)
 		);
 
@@ -71,10 +82,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verifyNoMoreInteractions();
 
 		assertOutput(
-				"Time            Project               Feature",
+				"Time            Project     Feature",
 				"",
-				"   6h 12m  0s   Longer Project Name   Short Feat",
-				"   2h 21m 35s   Short Proj            Short Feat Longer Feature Name",
+				"   6h 12m  0s   project-1   one",
+				"   2h 21m 35s   project-2   two",
 				"",
 				"1d 0h 33m 35s   Total",
 				""
@@ -88,40 +99,43 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 		Task task6 = new Task(6, "Test 5", TaskState.Inactive, addTime);
 
-		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setProject(existingList("/default"), "Short Proj", true);
-		tasks.setFeature(existingList("/default"), "UI", true);
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-1/two"), true);
+		tasks.addList(newList("/projects/project-1/meetings"), true);
 
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		project1.addFeature(new NewFeature(project1, "two"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "two")).addList(new ExistingListName(tasks, "/projects/project-1/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Short Proj", true);
-		tasks.setFeature(existingList("/one"), "Longer Feature Name", true);
-
+		tasks.setCurrentList(existingList("/projects/project-1/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
-		tasks.addGroup(newGroup("/two/"));
-		tasks.addList(newList("/two/three"), true);
-		tasks.setActiveList(existingList("/two/three"));
-		tasks.setProject(existingList("/two/three"), "Three Proj", true);
+		tasks.setCurrentList(existingList("/projects/project-1/meetings"));
 
 		tasks.addTask(task6);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(5000, task6, "/two/three")
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/projects/project-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/projects/project-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/projects/project-1/two"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/projects/project-1/two"),
+						new TaskTimesFilter.TaskTimeFilterResult(5000, task6, "/meetings")
 				)
 		);
 
@@ -133,11 +147,11 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verifyNoMoreInteractions();
 
 		assertOutput(
-				"Time            Project      Feature",
+				"Time            Project     Feature",
 				"",
-				"   6h 12m  0s   Short Proj   UI",
-				"   2h 21m 35s   Short Proj   Longer Feature Name",
-				"   1h 23m 20s   Three Proj   " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"   6h 12m  0s   project-1   one",
+				"   2h 21m 35s   project-1   two",
+				"   1h 23m 20s   project-1   " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
 				"1d 1h 56m 55s   Total",
 				""
@@ -151,27 +165,40 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
-		tasks.setFeature(existingGroup("/"), "Impl", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.createGroup(newGroup("/projects/project-1/feature-1/"));
+
+		tasks.addList(newList("/projects/project-1/feature-1/one"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "feature-1"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "feature-1")).addGroup(existingGroup("/projects/project-1/feature-1/"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/feature-1/one"));
+
+//		tasks.setProject(existingGroup("/"), "Longer Project Name", true);
+//		tasks.setFeature(existingGroup("/"), "Impl", true);
+
+		tasks.setCurrentList(existingList("/projects/project-1/feature-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
+//		tasks.addList(newList("/one"), true);
+//		tasks.setCurrentList(existingList("/one"));
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/projects/project-1/feature-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(21699, task2, "/projects/project-1/feature-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/projects/project-1/feature-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/projects/project-1/feature-1/one")
 				)
 		);
 
@@ -183,9 +210,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		order.verifyNoMoreInteractions();
 
 		assertOutput(
-				"Time            Project               Feature",
+				"Time            Project     Feature",
 				"",
-				"1d 0h 33m 35s   Longer Project Name   Impl",
+				"1d 0h 33m 35s   project-1   feature-1",
 				"",
 				"1d 0h 33m 35s   Total",
 				""
@@ -199,20 +226,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -222,10 +258,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
+						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/projects/project-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/projects/project-1/one"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/projects/project-2/two"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/projects/project-2/two")
 				)
 		);
 
@@ -240,8 +276,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -255,20 +291,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -296,8 +341,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -314,20 +359,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -349,7 +403,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/default")
 				)
 		);
 
@@ -362,8 +416,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -379,20 +433,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -414,8 +477,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -431,20 +494,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -466,8 +538,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -483,20 +555,29 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+		projects.createProject(new NewProject(projects, "project-1"), true);
+		projects.createProject(new NewProject(projects, "project-2"), true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.addList(newList("/projects/project-1/one"), true);
+		tasks.addList(newList("/projects/project-2/two"), true);
+
+		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
+		project1.addFeature(new NewFeature(project1, "one"), true);
+
+		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+
+		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
+		project2.addFeature(new NewFeature(project2, "two"), true);
+
+		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+
+		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-		tasks.setProject(existingList("/one"), "Project 2", true);
-		tasks.setFeature(existingList("/one"), "Feature 2", true);
-
+		tasks.setCurrentList(existingList("/projects/project-2/two"));
 		tasks.addTask(task3);
 		tasks.addTask(task5);
 
@@ -518,7 +599,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/default")
 				)
 		);
 
@@ -531,8 +612,8 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project     Feature",
 				"",
-				"2h 21m 35s   Project 2   Feature 1 Feature 2",
-				"1h 12m  0s   Project 1   Feature 1",
+				"2h 21m 35s   project-2   two",
+				"1h 12m  0s   project-1   one",
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -543,7 +624,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void tasks_with_no_project_or_feature_say_none() {
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.setCurrentList(existingList("/default"));
 
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
@@ -574,16 +655,16 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
 		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
 		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
 
-		tasks.setFeature(existingGroup("/"), "Feature 1", true);
+//		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.setCurrentList(existingList("/default"));
 		tasks.addTask(task1);
 		tasks.addTask(task2);
 
 		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
+		tasks.setCurrentList(existingList("/one"));
 
 		tasks.addTask(task3);
 		tasks.addTask(task5);
@@ -602,49 +683,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Time         Project   Feature",
 				"",
-				"3h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + "   Feature 1",
-				"",
-				"3h 33m 35s   Total",
-				""
-		);
-	}
-
-	@Test
-	void task_with_no_feature_says_none() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
-
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true);
-
-		tasks.setProject(existingGroup("/"), "Project 1", true);
-
-		tasks.setActiveList(existingList("/default"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
-
-		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
-
-		tasks.addTask(task3);
-		tasks.addTask(task5);
-
-		when(mockTaskTimesFilter.getData()).thenReturn(
-				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, task1, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, task2, "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, task3, "/one"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, task5, "/one")
-				)
-		);
-
-		commands.execute(printStream, "times --proj-feat --all-time");
-
-		assertOutput(
-				"Time         Project     Feature",
-				"",
-				"3h 33m 35s" + "   Project 1   " + ANSI_REVERSED + "None" + ANSI_RESET,
+				"3h 33m 35s   " + ANSI_REVERSED + "None" + ANSI_RESET + "   " + ANSI_REVERSED + "None" + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""
@@ -653,7 +692,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void prints_0_total_when_no_tasks_are_found() {
-		tasks.setProject(existingGroup("/"), "Project 1", true);
+//		tasks.setProject(existingGroup("/"), "Project 1", true);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(Collections.emptyList());
 

@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.os.StatusConsole;
 public final class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length > 0 && args[0].equals("status")) {
+			OSInterfaceImpl.disableGit = true; // don't use git on the status console
 			new StatusConsole();
 
 			System.exit(0);

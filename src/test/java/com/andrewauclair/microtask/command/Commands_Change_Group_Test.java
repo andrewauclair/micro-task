@@ -13,13 +13,13 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "ch -g /test/one/two/three/");
 
-		assertEquals("/test/one/two/three/", tasks.getActiveGroup().getFullPath());
+		assertEquals("/test/one/two/three/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
 	void switch_to_relative_group() {
 		tasks.createGroup(newGroup("/one/two/three/"));
-		tasks.setActiveGroup(existingGroup("/one/two/"));
+		tasks.setCurrentGroup(existingGroup("/one/two/"));
 
 		commands.execute(printStream, "ch -g three/");
 
@@ -40,7 +40,7 @@ class Commands_Change_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void invalid_group_path() {
-		commands.execute(printStream, "ch -g /project/test");
+		commands.execute(printStream, "ch -g /projects/test");
 
 		assertOutput(
 				"Invalid value for option '--group': Group name must end in /",

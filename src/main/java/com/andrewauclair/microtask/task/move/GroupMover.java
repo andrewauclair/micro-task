@@ -18,12 +18,12 @@ public class GroupMover {
 	public void moveGroup(ExistingGroupName group, ExistingGroupName destGroup) {
 		TaskGroup groupToMove = tasks.getGroup(group);
 
-		TaskGroup activeGroup = tasks.getActiveGroup();
+		TaskGroup activeGroup = tasks.getCurrentGroup();
 
 		TaskGroup newGroup = tasks.getGroup(groupToMove.getParent()).moveGroup(groupToMove, tasks.getGroup(destGroup), System.out, osInterface);
 
 		if (activeGroup.getFullPath().equals(groupToMove.getFullPath())) {
-			tasks.setActiveGroup(new ExistingGroupName(tasks, newGroup.getFullPath()));
+			tasks.setCurrentGroup(new ExistingGroupName(tasks, newGroup.getFullPath()));
 		}
 	}
 }

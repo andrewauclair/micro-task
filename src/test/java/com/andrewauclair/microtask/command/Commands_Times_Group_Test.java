@@ -26,12 +26,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList(newList("/one/test"), true);
 		tasks.addList(newList("/two/data"), true);
 
-		tasks.setActiveList(existingList("/one/impl"));
+		tasks.setCurrentList(existingList("/one/impl"));
 		tasks.addTask("Test 1");
 		tasks.startTask(existingID(1), false);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup(existingGroup("/"));
+		tasks.setCurrentList(existingList("/default"));
+		tasks.setCurrentGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -40,14 +40,14 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/impl"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/impl"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/test")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/one/test")
 				)
 		);
 
 		commands.execute(printStream, "times --group one/");
 
 		TaskGroup group = new TaskGroup("/one/");
-		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));
+		group.addChild(new TaskList("/one/data", group, osInterface, writer, TaskContainerState.InProgress));
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
@@ -77,12 +77,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList(newList("/one/test"), true);
 		tasks.addList(newList("/two/data"), true);
 
-		tasks.setActiveList(existingList("/one/impl"));
+		tasks.setCurrentList(existingList("/one/impl"));
 		tasks.addTask("Test 1");
 		tasks.startTask(existingID(1), false);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup(existingGroup("/"));
+		tasks.setCurrentList(existingList("/default"));
+		tasks.setCurrentGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -91,14 +91,14 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/impl"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/impl"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/one/test")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/one/test")
 				)
 		);
 
 		commands.execute(printStream, "times --group one/ -v");
 
 		TaskGroup group = new TaskGroup("/one/");
-		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));
+		group.addChild(new TaskList("/one/data", group, osInterface, writer, TaskContainerState.InProgress));
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
@@ -128,12 +128,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList(newList("/one/data"), true);
 		tasks.addList(newList("/two/data"), true);
 
-		tasks.setActiveList(existingList("/one/data"));
+		tasks.setCurrentList(existingList("/one/data"));
 		tasks.addTask("Test 1");
 		tasks.startTask(existingID(1), false);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup(existingGroup("/"));
+		tasks.setCurrentList(existingList("/default"));
+		tasks.setCurrentGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -142,14 +142,14 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/two/data")
 				)
 		);
 
 		commands.execute(printStream, "times --group one/ --group /two/");
 
 		TaskGroup group = new TaskGroup("/one/");
-		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));
+		group.addChild(new TaskList("/one/data", group, osInterface, writer, TaskContainerState.InProgress));
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
@@ -179,12 +179,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList(newList("/one/data"), true);
 		tasks.addList(newList("/two/data"), true);
 
-		tasks.setActiveList(existingList("/one/data"));
+		tasks.setCurrentList(existingList("/one/data"));
 		tasks.addTask("Test 1");
 		tasks.startTask(existingID(1), false);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup(existingGroup("/"));
+		tasks.setCurrentList(existingList("/default"));
+		tasks.setCurrentGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -193,14 +193,14 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/two/data")
 				)
 		);
 
 		commands.execute(printStream, "times --group one/ --group /two/ -v");
 
 		TaskGroup group = new TaskGroup("/one/");
-		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));
+		group.addChild(new TaskList("/one/data", group, osInterface, writer, TaskContainerState.InProgress));
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);
@@ -231,12 +231,12 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 		tasks.addList(newList("/one/data"), true);
 		tasks.addList(newList("/two/data"), true);
 
-		tasks.setActiveList(existingList("/one/data"));
+		tasks.setCurrentList(existingList("/one/data"));
 		tasks.addTask("Test 1");
 		tasks.startTask(existingID(1), false);
 
-		tasks.setActiveList(existingList("/default"));
-		tasks.setActiveGroup(existingGroup("/"));
+		tasks.setCurrentList(existingList("/default"));
+		tasks.setCurrentGroup(existingGroup("/"));
 
 		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
 
@@ -245,14 +245,14 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/two/data")
 				)
 		);
 
 		commands.execute(printStream, "times --total --group one/ --group /two/");
 
 		TaskGroup group = new TaskGroup("/one/");
-		group.addChild(new TaskList("/one/data", group, osInterface, writer, "", "", TaskContainerState.InProgress));
+		group.addChild(new TaskList("/one/data", group, osInterface, writer, TaskContainerState.InProgress));
 
 		InOrder order = Mockito.inOrder(mockTaskFilterBuilder, mockTaskTimesFilter);
 		order.verify(mockTaskFilterBuilder, times(1)).createFilter(tasks);

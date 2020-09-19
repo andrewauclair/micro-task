@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task.update;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
@@ -10,14 +11,16 @@ import com.andrewauclair.microtask.task.Tasks;
 
 import java.util.Optional;
 
-import static com.andrewauclair.microtask.task.Tasks.NO_ACTIVE_TASK;
+import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 
 public class TaskStateUpdater {
 	private final Tasks tasks;
+	private final Projects projects;
 	private final OSInterface osInterface;
 
-	public TaskStateUpdater(Tasks tasks, OSInterface osInterface) {
+	public TaskStateUpdater(Tasks tasks, Projects projects, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.projects = projects;
 		this.osInterface = osInterface;
 	}
 
@@ -44,8 +47,8 @@ public class TaskStateUpdater {
 		}
 
 		tasks.setActiveTaskID(currentTask.id);
-		tasks.setActiveList(tasks.getActiveTaskList());
-		tasks.setActiveGroup(tasks.getActiveTaskList().parentGroupName());
+		tasks.setCurrentList(tasks.getActiveTaskList());
+		tasks.setCurrentGroup(tasks.getActiveTaskList().parentGroupName());
 
 		long startTime = osInterface.currentSeconds();
 
@@ -54,7 +57,7 @@ public class TaskStateUpdater {
 			startTime = lastTask.get().getStartStopTimes().get(size - 1).stop;
 		}
 
-		return tasks.getList(tasks.getActiveTaskList()).startTask(new ExistingID(tasks, tasks.getActiveTaskID()), startTime, tasks);
+		return tasks.getList(tasks.getActiveTaskList()).startTask(new ExistingID(tasks, tasks.getActiveTaskID()), startTime, tasks, projects);
 	}
 
 	public Task stopTask() {

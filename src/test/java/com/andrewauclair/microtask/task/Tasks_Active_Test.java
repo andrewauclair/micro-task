@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 
+import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,7 +33,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		Task activeTask = tasks.getActiveTask();
 
@@ -48,6 +49,6 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 	@Test
 	void no_active_task() {
-		assertEquals(Tasks.NO_ACTIVE_TASK, tasks.getActiveTaskID());
+		assertEquals(NO_ACTIVE_TASK, tasks.getActiveTaskID());
 	}
 }

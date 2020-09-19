@@ -13,7 +13,7 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 
 	@Test
 	void switching_to_new_list_switches_the_list_text_on_prompt() {
-		commands.execute(printStream, "mk -l test");
+		commands.execute(printStream, "add list test");
 		commands.execute(printStream, "ch -l test");
 
 		assertEquals("/test - none>", commands.getPrompt());
@@ -32,9 +32,9 @@ class Commands_Prompt_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addList(newList("/test/one/two"), true);
 		tasks.addList(newList("/test/three"), true);
-		tasks.setActiveList(existingList("/test/three"));
+		tasks.setCurrentList(existingList("/test/three"));
 		
-		tasks.setActiveGroup(existingGroup("/test/one/"));
+		tasks.setCurrentGroup(existingGroup("/test/one/"));
 		
 		assertEquals("/test/one/ - none>", commands.getPrompt());
 	}

@@ -2,10 +2,10 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.add.ListAdder;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.TaskGroupFileWriter;
@@ -28,6 +28,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
 // TODO Maybe this file becomes TasksData and really only contains the rootGroup, activeGroup, activeTaskID, activeList and nextID variables
@@ -36,17 +37,15 @@ import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
 @SuppressWarnings("CanBeFinal")
 public class Tasks {
-	public static final int NO_ACTIVE_TASK = -1;
-
 	final OSInterface osInterface;
 	private final PrintStream output;
 	private final TaskWriter writer;
 
+	private Projects projects;
+
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
-	private ExistingGroupName activeGroup = new ExistingGroupName(this, ROOT_PATH);
-	private long activeTaskID = NO_ACTIVE_TASK;
-	private ExistingListName activeList;
+	private final ActiveContext activeContext = new ActiveContext(this);
 
 	private long nextID = 1;
 
@@ -57,12 +56,15 @@ public class Tasks {
 		this.output = output;
 		this.osInterface = osInterface;
 
-		if (!new TaskListFinder(this).hasList(new NewTaskListName(this, "/default"))) {
+		if (!new TaskListFinder(this).hasList(new TaskListName(this, "/default") {})) {
 			addList(new NewTaskListName(this, "/default"), osInterface.canCreateFiles());
 		}
-		activeList = new ExistingListName(this, "/default");
+		activeContext.setCurrentList(new ExistingListName(this, "/default"));
 	}
 
+	public void setProjects(Projects projects) {
+		this.projects = projects;
+	}
 	public TaskFilterBuilder getFilterBuilder() {
 		return filterBuilder;
 	}
@@ -78,7 +80,7 @@ public class Tasks {
 	// TODO This is really only used in the tests, maybe we shouldn't have it
 	// TODO I'd like to convert as many tests as possible over to using the /default list, they don't need to be making so many lists
 	public Task addTask(String task) {
-		return addTask(task, activeList);
+		return addTask(task, activeContext.getCurrentList());
 	}
 
 	public Task addTask(String task, ExistingListName list) {
@@ -151,10 +153,6 @@ public class Tasks {
 	}
 
 	public TaskList getListForTask(ExistingID id) {
-		TaskFinder finder = new TaskFinder(this);
-//		if (!finder.hasTaskWithID(id)) {
-//			throw new TaskException("Task " + id + " does not exist.");
-//		}
 		return findListForTask(id);
 	}
 
@@ -168,7 +166,7 @@ public class Tasks {
 	}
 
 	public boolean hasActiveTask() {
-		return activeTaskID != NO_ACTIVE_TASK;
+		return activeContext.getActiveTaskID() != NO_ACTIVE_TASK;
 	}
 
 	public Task finishTask() {
@@ -231,38 +229,38 @@ public class Tasks {
 	}
 
 	public Task startTask(ExistingID id, boolean finishActive) {
-		TaskStateUpdater updater = new TaskStateUpdater(this, osInterface);
+		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
 		return updater.startTask(id, finishActive);
 	}
 
 	public Task stopTask() {
-		TaskStateUpdater updater = new TaskStateUpdater(this, osInterface);
+		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
 		return updater.stopTask();
 	}
 
 	public List<Task> getTasks() {
-		return getList(activeList).getTasks();
+		return getList(activeContext.getCurrentList()).getTasks();
 	}
 
 	public ExistingListName getActiveTaskList() {
-		if (activeTaskID == NO_ACTIVE_TASK) {
+		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		return new ExistingListName(this, getListForTask(new ExistingID(this, activeTaskID)).getFullPath());
+		return new ExistingListName(this, getListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath());
 	}
 
 	public Task finishTask(ExistingID id) {
-		TaskStateUpdater updater = new TaskStateUpdater(this, osInterface);
+		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
 		return updater.finishTask(id);
 	}
 
 	public Task getActiveTask() {
-		if (activeTaskID == NO_ACTIVE_TASK) {
+		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		TaskList list = findListForTask(new ExistingID(this, activeTaskID));
+		TaskList list = findListForTask(new ExistingID(this, activeContext.getActiveTaskID()));
 
-		return list.getTask(new ExistingID(this, activeTaskID));
+		return list.getTask(new ExistingID(this, activeContext.getActiveTaskID()));
 	}
 
 	public void renameList(ExistingListName currentName, NewTaskListName newName) {
@@ -275,10 +273,11 @@ public class Tasks {
 		}
 
 		group.removeChild(currentList);
-		group.addChild(currentList.rename(newName.shortName()));
+		TaskList renamedList = currentList.rename(newName.shortName());
+		group.addChild(renamedList);
 
-		if (activeList.equals(currentName)) {
-			activeList = new ExistingListName(this, newName.absoluteName());
+		if (activeContext.getCurrentList().equals(currentName)) {
+			activeContext.setCurrentList(new ExistingListName(this, newName.absoluteName()));
 		}
 
 		try {
@@ -295,7 +294,7 @@ public class Tasks {
 	public void renameGroup(ExistingGroupName currentGroup, NewTaskGroupName newGroup) {
 		TaskGroup group = getGroup(currentGroup);
 
-		boolean isActiveGroup = activeGroup.absoluteName().equals(group.getFullPath());
+		boolean isCurrentGroup = activeContext.getCurrentGroup().absoluteName().equals(group.getFullPath());
 
 		if (group.getState() == TaskContainerState.Finished) {
 			throw new TaskException("Group '" + group.getFullPath() + "' has been finished and cannot be renamed.");
@@ -314,8 +313,8 @@ public class Tasks {
 			e.printStackTrace(output);
 		}
 
-		if (isActiveGroup) {
-			activeGroup = new ExistingGroupName(this, newGroup.absoluteName());
+		if (isCurrentGroup) {
+			activeContext.setCurrentGroup(new ExistingGroupName(this, newGroup.absoluteName()));
 		}
 	}
 
@@ -325,24 +324,28 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
 		}
 
-		getList(activeList).addTask(task);
+		getList(activeContext.getCurrentList()).addTask(task);
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeTaskID = task.id;
+			activeContext.setActiveTaskID(task.id);
 		}
 	}
 
-	public ExistingListName getActiveList() {
-		return activeList;
+	public ActiveContext getActiveContext() {
+		return activeContext;
+	}
+
+	public ExistingListName getCurrentList() {
+		return activeContext.getCurrentList();
 	}
 
 	public void setActiveTaskID(long activeTaskID) {
-		this.activeTaskID = activeTaskID;
+		activeContext.setActiveTaskID(activeTaskID);
 	}
 
-	public void setActiveList(ExistingListName listName) {
-		activeList = listName;
+	public void setCurrentList(ExistingListName listName) {
+		activeContext.setCurrentList(listName);
 	}
 
 	public TaskGroup addGroup(NewTaskGroupName groupName) {
@@ -366,7 +369,7 @@ public class Tasks {
 				throw new TaskException("Group '" + groupName + "' cannot be created because group '" + parentGroup.getFullPath() + "' has been finished.");
 			}
 
-			newGroup = new TaskGroup(group, parentGroup, "", "", TaskContainerState.InProgress);
+			newGroup = new TaskGroup(group, parentGroup, TaskContainerState.InProgress);
 			currentParent = newGroup.getFullPath();
 
 			if (!parentGroup.containsGroup(newGroup)) {
@@ -389,12 +392,31 @@ public class Tasks {
 	}
 
 	public long getActiveTaskID() {
-		return activeTaskID;
+		return activeContext.getActiveTaskID();
 	}
 
 	public Task setRecurring(ExistingID id, boolean recurring) {
 		TaskRecurringUpdater updater = new TaskRecurringUpdater(this, osInterface);
 		return updater.updateRecurring(id, recurring);
+	}
+
+	public Task setTags(ExistingID id, List<String> tags) {
+		Task origTask = getTask(id);
+		TaskBuilder builder = new TaskBuilder(origTask);
+
+		tags.forEach(builder::withTag);
+
+		Task task = builder.build();
+
+		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
+		replaceTask(new ExistingListName(this, list), origTask, task);
+
+		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		writer.writeTask(task, file);
+
+		osInterface.gitCommit("Set tag(s) for task " + task.id + " to " + String.join(", ", tags));
+
+		return task;
 	}
 
 	public Task getTask(ExistingID id) {
@@ -436,109 +458,12 @@ public class Tasks {
 		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
 		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
-		writer.writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
+		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		writer.writeTask(task, file);
 
 		osInterface.gitCommit("Set state for task " + task.id + " to " + state);
 
 		return task;
-	}
-
-	public void setProject(ExistingListName listName, String project, boolean createFiles) {
-		TaskList list = getList(listName);
-
-		if (list.getState() == TaskContainerState.Finished) {
-			throw new TaskException("Cannot set project on list '" + list.getFullPath() + "' because it has been finished.");
-		}
-
-		TaskGroup group = getGroupForList(listName);
-
-		group.removeChild(list);
-
-		TaskList newList = list.changeProject(project);
-		group.addChild(newList);
-
-		if (createFiles) {
-			new TaskListFileWriter(newList, osInterface).write();
-
-			osInterface.gitCommit("Set project for list '" + listName + "' to '" + project + "'");
-		}
-	}
-
-	public void setProject(ExistingGroupName groupName, String project, boolean createFiles) {
-		TaskGroup group = getGroup(groupName);
-
-		if (group.getState() == TaskContainerState.Finished) {
-			throw new TaskException("Cannot set project on group '" + group.getFullPath() + "' because it has been finished.");
-		}
-
-		TaskGroup newGroup;
-		if (group == rootGroup) {
-			rootGroup = group.changeProject(project);
-			newGroup = rootGroup;
-		}
-		else {
-			TaskGroup parent = getGroup(group.getParent());
-
-			parent.removeChild(group);
-
-			newGroup = group.changeProject(project);
-			parent.addChild(newGroup);
-		}
-
-		if (createFiles) {
-			new TaskGroupFileWriter(newGroup, osInterface).write();
-
-			osInterface.gitCommit("Set project for group '" + group.getFullPath() + "' to '" + project + "'");
-		}
-	}
-
-	public void setFeature(ExistingListName listName, String feature, boolean createFiles) {
-		TaskList list = getList(listName);
-
-		if (list.getState() == TaskContainerState.Finished) {
-			throw new TaskException("Cannot set feature on list '" + listName + "' because it has been finished.");
-		}
-
-		TaskGroup group = getGroupForList(listName);
-
-		group.removeChild(list);
-
-		TaskList newList = list.changeFeature(feature);
-		group.addChild(newList);
-
-		if (createFiles) {
-			new TaskListFileWriter(newList, osInterface).write();
-
-			osInterface.gitCommit("Set feature for list '" + listName + "' to '" + feature + "'");
-		}
-	}
-
-	public void setFeature(ExistingGroupName groupName, String feature, boolean createFiles) {
-		TaskGroup group = getGroup(groupName);
-
-		if (group.getState() == TaskContainerState.Finished) {
-			throw new TaskException("Cannot set feature on group '" + group.getFullPath() + "' because it has been finished.");
-		}
-
-		TaskGroup newGroup;
-		if (group == rootGroup) {
-			rootGroup = group.changeFeature(feature);
-			newGroup = rootGroup;
-		}
-		else {
-			TaskGroup parent = getGroup(group.getParent());
-
-			parent.removeChild(group);
-
-			newGroup = group.changeFeature(feature);
-			parent.addChild(newGroup);
-		}
-
-		if (createFiles) {
-			new TaskGroupFileWriter(newGroup, osInterface).write();
-
-			osInterface.gitCommit("Set feature for group '" + newGroup.getFullPath() + "' to '" + feature + "'");
-		}
 	}
 
 	public void setGroupState(ExistingGroupName groupName, TaskContainerState state, boolean createFiles) {
@@ -577,14 +502,14 @@ public class Tasks {
 		}
 	}
 
-	public TaskGroup setActiveGroup(ExistingGroupName groupName) {
-		activeGroup = groupName;
+	public TaskGroup setCurrentGroup(ExistingGroupName groupName) {
+		activeContext.setCurrentGroup(groupName);
 
-		return getGroup(activeGroup);
+		return getGroup(activeContext.getCurrentGroup());
 	}
 
-	public TaskGroup getActiveGroup() {
-		return getGroup(activeGroup);
+	public TaskGroup getCurrentGroup() {
+		return getGroup(activeContext.getCurrentGroup());
 	}
 
 	public TaskGroup getRootGroup() {
@@ -632,10 +557,10 @@ public class Tasks {
 		return taskGroup;
 	}
 
-	public boolean load(TaskLoader loader, Commands commands) {
+	public boolean load(DataLoader loader, Commands commands) {
 		rootGroup = TaskGroupBuilder.createRootGroup();
-		activeGroup = new ExistingGroupName(this, ROOT_PATH);
-		activeTaskID = NO_ACTIVE_TASK;
+		activeContext.setCurrentGroup(new ExistingGroupName(this, ROOT_PATH));
+		activeContext.setActiveTaskID(NO_ACTIVE_TASK);
 
 		try {
 			nextID = getStartingID();
@@ -647,9 +572,9 @@ public class Tasks {
 					.findFirst();
 
 			if (activeTask.isPresent()) {
-				activeTaskID = activeTask.get().id;
-				activeList = new ExistingListName(this, findListForTask(new ExistingID(this, activeTaskID)).getFullPath());
-				activeGroup = new ExistingGroupName(this, getGroupForList(activeList).getFullPath());
+				activeContext.setActiveTaskID(activeTask.get().id);
+				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
+				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}
 		}
 		catch (Exception e) {

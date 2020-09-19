@@ -37,7 +37,7 @@ public class Commands_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addList(newList("/test/one/two"), true);
 
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "group --group /");
 
@@ -59,7 +59,7 @@ public class Commands_Group_Test extends CommandsBaseTestCase {
 
 		tasks.createGroup(newGroup("/one/two/"));
 		tasks.createGroup(newGroup("/one/three/"));
-		tasks.setActiveGroup(existingGroup("/one/two/"));
+		tasks.setCurrentGroup(existingGroup("/one/two/"));
 		tasks.addList(newList("charlie"), true);
 		tasks.addList(newList("bravo"), true);
 		tasks.addList(newList("alpha"), true);
@@ -84,7 +84,7 @@ public class Commands_Group_Test extends CommandsBaseTestCase {
 
 		tasks.finishList(existingList("/test/two"));
 
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "group");
 
@@ -101,7 +101,7 @@ public class Commands_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addGroup(newGroup("/test/two/"));
 
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		tasks.finishGroup(existingGroup("/test/two/"));
 
@@ -122,7 +122,7 @@ public class Commands_Group_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("/test/three"), true);
 		tasks.addList(newList("/test/four"), true);
 
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		tasks.finishGroup(existingGroup("/test/two/"));
 		tasks.finishList(existingList("/test/four"));

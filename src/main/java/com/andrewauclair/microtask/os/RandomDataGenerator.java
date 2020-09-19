@@ -76,7 +76,7 @@ public class RandomDataGenerator implements Runnable {
 			NewTaskListName listName = new NewTaskListName(tasks, animals.get(0));
 			animals.remove(0);
 			tasks.addList(listName, true);
-			tasks.setActiveList(new ExistingListName(tasks, listName.absoluteName()));
+			tasks.setCurrentList(new ExistingListName(tasks, listName.absoluteName()));
 
 			System.out.println("Created list '" + listName + "'");
 		}

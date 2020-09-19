@@ -20,8 +20,8 @@ public class ListMover {
 		TaskList currentList = tasks.getList(list);
 		TaskList newList = tasks.getGroupForList(list).moveList(currentList, tasks.getGroup(group.absoluteName()), System.out, osInterface);
 
-		if (tasks.getActiveList().equals(list)) {
-			tasks.setActiveList(new ExistingListName(tasks, newList.getFullPath()));
+		if (tasks.getCurrentList().equals(list)) {
+			tasks.setCurrentList(new ExistingListName(tasks, newList.getFullPath()));
 		}
 	}
 }

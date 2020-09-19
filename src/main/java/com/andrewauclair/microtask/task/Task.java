@@ -13,20 +13,24 @@ public final class Task {
 	private final List<TaskTimes> taskTimes;
 	private final boolean recurring;
 
+	private final List<String> tags;
+
 	public Task(long id, String task, TaskState state, List<TaskTimes> times) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
 		recurring = false;
+		tags = Collections.emptyList();
 	}
 
-	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring) {
+	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring, List<String> tags) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
 		taskTimes = Collections.unmodifiableList(times);
 		this.recurring = recurring;
+		this.tags = tags;
 	}
 
 	public List<TaskTimes> getAllTimes() {
@@ -55,7 +59,7 @@ public final class Task {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, taskTimes, recurring);
+		return Objects.hash(id, task, state, taskTimes, recurring, tags);
 	}
 
 	@Override
@@ -72,7 +76,8 @@ public final class Task {
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
 				Objects.equals(taskTimes, otherTask.taskTimes) &&
-				recurring == otherTask.recurring;
+				recurring == otherTask.recurring &&
+				Objects.equals(tags, otherTask.tags);
 	}
 
 	@Override
@@ -83,6 +88,7 @@ public final class Task {
 				", state=" + state +
 				", taskTimes=" + taskTimes +
 				", recurring=" + recurring +
+				", tags=" + tags +
 				'}';
 	}
 
@@ -92,5 +98,9 @@ public final class Task {
 
 	public boolean isRecurring() {
 		return recurring;
+	}
+
+	public List<String> getTags() {
+		return tags;
 	}
 }

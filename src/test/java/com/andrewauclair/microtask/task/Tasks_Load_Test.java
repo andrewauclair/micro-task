@@ -18,7 +18,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColo
 import static org.junit.jupiter.api.Assertions.*;
 
 class Tasks_Load_Test extends TaskBaseTestCase {
-	private final TaskLoader loader = Mockito.mock(TaskLoader.class);
+	private final DataLoader loader = Mockito.mock(DataLoader.class);
 	private final Commands commands = Mockito.mock(Commands.class);
 
 	@Test
@@ -82,7 +82,7 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	void tasks_clears_all_data_before_loading() {
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addList(newList("/test/one/two"), true);
-		tasks.setActiveList(existingList("/test/one/two"));
+		tasks.setCurrentList(existingList("/test/one/two"));
 		tasks.addTask("Test");
 
 		tasks.load(loader, commands);
@@ -98,25 +98,25 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	void tasks_sets_active_task_id_list_group() throws IOException {
 		tasks.addTask("Test");
 		tasks.startTask(existingID(1), false);
-		
+
 		Mockito.doAnswer(invocationOnMock -> {
 			tasks.addList(newList("/default"), true);
 			tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
 			tasks.addGroup(newGroup("/test/"));
 			tasks.addList(newList("/test/data"), true);
-			tasks.setActiveList(existingList("/test/data"));
+			tasks.setCurrentList(existingList("/test/data"));
 			tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
-			tasks.setActiveList(existingList("/default"));
+			tasks.setCurrentList(existingList("/default"));
 			return true;
 		}).when(loader).load();
-		
+
 		tasks.load(loader, commands);
-		
+
 		assertEquals(2, tasks.getActiveTaskID());
-		assertEquals(existingList("/test/data"), tasks.getActiveList());
-		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
+		assertEquals(existingList("/test/data"), tasks.getCurrentList());
+		assertEquals("/test/", tasks.getCurrentGroup().getFullPath());
 	}
-	
+
 	@Test
 	void tasks_load_returns_false_when_load_failed() throws IOException {
 		Mockito.doThrow(TaskException.class).when(loader).load();
@@ -143,11 +143,11 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 	@Test
 	void tasks_load_resets_active_group() {
 		tasks.createGroup(newGroup("/one/"));
-		tasks.setActiveGroup(existingGroup("/one/"));
+		tasks.setCurrentGroup(existingGroup("/one/"));
 
 		tasks.load(loader, commands);
 
-		assertEquals("/", tasks.getActiveGroup().getFullPath());
+		assertEquals("/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
@@ -160,6 +160,6 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 		tasks.addList(newList("/default"), true);
 
 		assertFalse(tasks.hasActiveTask());
-		assertEquals(existingList("/default"), tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getCurrentList());
 	}
 }

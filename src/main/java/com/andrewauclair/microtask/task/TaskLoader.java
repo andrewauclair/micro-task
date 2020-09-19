@@ -82,14 +82,24 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		tasks.addList(new NewTaskListName(tasks, name), false);
-		tasks.setActiveList(new ExistingListName(tasks, name));
+		tasks.setCurrentList(new ExistingListName(tasks, name));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			tasks.setProject(tasks.getActiveList(), scanner.nextLine(), false);
-			tasks.setFeature(tasks.getActiveList(), scanner.nextLine(), false);
-			tasks.setListState(tasks.getActiveList(), TaskContainerState.valueOf(scanner.nextLine()), false);
+			String line = scanner.nextLine();
+			TaskContainerState state;
+
+			try {
+				state = TaskContainerState.valueOf(line);
+			}
+			catch (IllegalArgumentException e) {
+				// legacy
+				scanner.nextLine();
+				state = TaskContainerState.valueOf(scanner.nextLine());
+			}
+
+			tasks.setListState(tasks.getCurrentList(), state, false);
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);
@@ -102,14 +112,24 @@ public class TaskLoader {
 		String name = fileInfo.getFileName();
 
 		TaskGroup group = tasks.addGroup(new NewTaskGroupName(tasks, name + "/"));
-		tasks.setActiveGroup(new ExistingGroupName(tasks, name + "/"));
+		tasks.setCurrentGroup(new ExistingGroupName(tasks, name + "/"));
 
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			tasks.setProject(new ExistingGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
-			tasks.setFeature(new ExistingGroupName(tasks, group.getFullPath()), scanner.nextLine(), false);
-			tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), TaskContainerState.valueOf(scanner.nextLine()), false);
+			String line = scanner.nextLine();
+			TaskContainerState state;
+
+			try {
+				state = TaskContainerState.valueOf(line);
+			}
+			catch (IllegalArgumentException e) {
+				// legacy
+				scanner.nextLine();
+				state = TaskContainerState.valueOf(scanner.nextLine());
+			}
+
+			tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), state, false);
 		}
 		catch (IOException e) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
@@ -117,7 +137,7 @@ public class TaskLoader {
 		}
 
 		loadTasks(fileInfo.getPath(), true);
-		tasks.setActiveGroup(new ExistingGroupName(tasks, tasks.getActiveGroup().getParent()));
+		tasks.setCurrentGroup(new ExistingGroupName(tasks, tasks.getCurrentGroup().getParent()));
 	}
 
 	private boolean isGroupFolder(String folder) {

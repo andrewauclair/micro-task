@@ -38,12 +38,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set list ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h] <list>",
-				"      <list>                The list to set.",
-				"  -f, --feature=<feature>   The feature to set.",
-				"  -h, --help                Show this help message.",
-				"      --in-progress         Set the list state to in progress.",
-				"  -p, --project=<project>   The project to set."
+				"Usage:  set list ([--in-progress]) [-h] <list>",
+						"      <list>          The list to set.",
+						"  -h, --help          Show this help message.",
+						"      --in-progress   Set the list state to in progress."
 		);
 	}
 
@@ -52,12 +50,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set group ([--in-progress] [[-p=<project>] [-f=<feature>]]) [-h] <group>",
-				"      <group>               The group to set.",
-				"  -f, --feature=<feature>   The feature to set.",
-				"  -h, --help                Show this help message.",
-				"      --in-progress         Set the list state to in progress.",
-				"  -p, --project=<project>   The project to set."
+				"Usage:  set group ([--in-progress]) [-h] <group>",
+						"      <group>         The group to set.",
+						"  -h, --help          Show this help message.",
+						"      --in-progress   Set the list state to in progress."
 		);
 	}
 }

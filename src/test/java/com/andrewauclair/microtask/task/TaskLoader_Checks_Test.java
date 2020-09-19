@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -34,6 +35,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled("Moved to DataLoader, need to delete this")
 	void task_loader_throws_exception_for_unknown_file_in_list_folder() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(
@@ -59,6 +61,7 @@ class TaskLoader_Checks_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	@Disabled("Moved to DataLoader, need to delete this")
 	void task_loader_throws_exception_for_unknown_file_in_group_folder() throws IOException {
 		Mockito.when(osInterface.listFiles("git-data/tasks")).thenReturn(
 				Collections.singletonList(

@@ -52,7 +52,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void task_is_saved_to_a_folder_for_the_current_list() {
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		Task task = tasks.addTask("Testing task");
 
@@ -77,7 +77,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("Testing task add command 1");
 		
@@ -108,7 +108,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
@@ -124,13 +124,13 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
 		Task finishedTask = tasks.finishTask();
 
-		tasks.setActiveList(existingList("default"));
+		tasks.setCurrentList(existingList("default"));
 
 		assertThat(tasks.getTasks()).containsOnly(finishedTask);
 	}
@@ -138,7 +138,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void adding_task_that_is_active_sets_it_as_the_active_task() {
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
 
@@ -205,9 +205,9 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	@Test
 	void add_task_to_nested_list() {
 		tasks.createGroup(newGroup("/test/one/"));
-		tasks.setActiveGroup(existingGroup("/test/one/"));
+		tasks.setCurrentGroup(existingGroup("/test/one/"));
 		tasks.addList(newList("two"), true);
-		tasks.setActiveList(existingList("two"));
+		tasks.setCurrentList(existingList("two"));
 
 		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
 
@@ -248,7 +248,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void add_throws_exception_if_task_with_id_already_exists_on_a_different_list() {
 		tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
-		tasks.setActiveList(existingList("one"));
+		tasks.setCurrentList(existingList("one"));
 		
 		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
 

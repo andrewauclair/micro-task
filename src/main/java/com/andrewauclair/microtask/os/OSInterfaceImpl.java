@@ -1,10 +1,11 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
-import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.Utils;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -23,7 +24,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
@@ -33,9 +34,8 @@ public class OSInterfaceImpl implements OSInterface {
 
 	private String lastInputFile = "";
 	private DataOutputStream statusOutput;
-	private LocalSettings localSettings;
 
-	private final Git repo;// = Git.init().setDirectory(new File("git-data")).call();
+	private final Git repo;
 
 	public OSInterfaceImpl() throws GitAPIException {
 		if (!disableGit) {
@@ -80,10 +80,6 @@ public class OSInterfaceImpl implements OSInterface {
 		return repo;
 	}
 
-	public void setLocalSettings(LocalSettings localSettings) {
-		this.localSettings = localSettings;
-	}
-
 	public Terminal terminal() throws IOException {
 		return TerminalBuilder.builder()
 				.system(true)
@@ -105,25 +101,10 @@ public class OSInterfaceImpl implements OSInterface {
 		this.terminal = terminal;
 	}
 
-	private void printTimeDiff(long start, long stop) {
-		System.out.println(TimeUnit.NANOSECONDS.toMillis(stop - start) + "ms");
-	}
-
-//	@Override
-//	public boolean runGitAddAll() {
-////		Git repo = new Git()
-//		return false;
-//	}
-
-//	@Override
-//	public boolean runGitCommit(String message) {
-//		return false;
-//	}
-
 	@Override
 	public void gitCommit(String message) {
 		if (isJUnitTest()) {
-			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
+			throw new RuntimeException("Shouldn't use gitCommit in tests.");
 		}
 
 		if (disableGit) {
@@ -131,17 +112,26 @@ public class OSInterfaceImpl implements OSInterface {
 		}
 
 		try {
-			// add all files
-			repo.add()
-					.addFilepattern(".")
+			Status status = repo.status()
 					.call();
+
+			// add all files
+			AddCommand add = repo.add();
+
+			Set<String> changes = status.getUncommittedChanges();
+			changes.addAll(status.getUntracked());
+
+			for (final String change : changes) {
+				add.addFilepattern(change);
+			}
+			add.call();
 
 			repo.commit()
 					.setMessage(message)
 					.call();
 		}
 		catch (GitAPIException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 
@@ -164,60 +154,6 @@ public class OSInterfaceImpl implements OSInterface {
 			e.printStackTrace();
 		}
 	}
-
-	//	@Override
-//	public boolean runGitCommand(String command) {
-//		if (isJUnitTest()) {
-//			throw new RuntimeException("Shouldn't use runGitCommand in tests.");
-//		}
-//
-//		if (disableGit) {
-//			return true;
-//		}
-//
-//		try {
-//			repo.commit()
-//					.setMessage("Message")
-//					.call();
-//		}
-//		catch (GitAPIException e) {
-//			e.printStackTrace();
-//		}
-//
-//		try {
-//			ProcessBuilder pb = new ProcessBuilder();
-//			pb.directory(new File("git-data"));
-//			pb.command(command.split(" "));
-//			pb.redirectInput(Redirect.INHERIT);
-//
-//			pb.redirectOutput(localSettings.isDebugEnabled() ? Redirect.INHERIT : Redirect.DISCARD);
-//			pb.redirectError(Redirect.INHERIT);
-//
-//			Process p = pb.start();
-//
-//			long start = System.nanoTime();
-//
-//			int exitCode = p.waitFor();
-//
-//			long afterWait = System.nanoTime();
-//			if (localSettings.isDebugEnabled()) {
-//				System.out.print("After Wait: ");
-//				printTimeDiff(start, afterWait);
-//			}
-//
-//			if (exitCode != 0) {
-//				System.out.println();
-//				System.out.println(ANSI_FG_RED + "Error while executing \"" + command + "\"" + ConsoleColors.ANSI_RESET);
-//				System.out.println();
-//			}
-//		}
-//		catch (InterruptedException | IOException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//
-//		return true;
-//	}
 
 	private static boolean isJUnitTest() {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
