@@ -31,7 +31,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		tasks.finishTask(existingID(2));
 
 		tasks.addList(newList("/one"), true);
-		tasks.setActiveList(existingList("/one"));
+		tasks.setCurrentList(existingList("/one"));
 
 		commands.execute(printStream, "list --list /default");
 

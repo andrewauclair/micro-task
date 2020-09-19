@@ -16,8 +16,8 @@ public final class TaskGroup implements TaskContainer {
 	private final TaskGroup parent;
 	private final String parentPath;
 
-	private final String project;
-	private final String feature;
+//	private final String project;
+//	private final String feature;
 
 	private final TaskContainerState state;
 
@@ -26,20 +26,20 @@ public final class TaskGroup implements TaskContainer {
 	public TaskGroup(String name) {
 		this.name = name;
 		fullPath = name;
-		project = "";
-		feature = "";
+//		project = "";
+//		feature = "";
 		parent = null;
 		parentPath = null;
 		state = TaskContainerState.InProgress;
 	}
 
 	// name is relative and the parent is the absolute path of the parent
-	TaskGroup(String name, TaskGroup parent, String project, String feature, TaskContainerState state) {
+	TaskGroup(String name, TaskGroup parent, TaskContainerState state) {
 		this.name = name;
 		this.parent = parent;
 
-		this.project = project;
-		this.feature = feature;
+//		this.project = project;
+//		this.feature = feature;
 
 		this.state = state;
 
@@ -92,21 +92,23 @@ public final class TaskGroup implements TaskContainer {
 		return Collections.unmodifiableList(children);
 	}
 
-	@Override
-	public String getProject() {
-		if (parent != null && project.isEmpty()) {
-			return parent.getProject();
-		}
-		return project;
-	}
-
-	@Override
-	public String getFeature() {
-		if (parent != null && feature.isEmpty()) {
-			return parent.getFeature();
-		}
-		return feature;
-	}
+//	@Override
+//	public String getProject() {
+//		return "";
+////		if (parent != null && project.isEmpty()) {
+////			return parent.getProject();
+////		}
+////		return project;
+//	}
+//
+//	@Override
+//	public String getFeature() {
+//		return "";
+////		if (parent != null && feature.isEmpty()) {
+////			return parent.getFeature();
+////		}
+////		return feature;
+//	}
 
 	@Override
 	public TaskContainerState getState() {
@@ -115,7 +117,7 @@ public final class TaskGroup implements TaskContainer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parentPath, children, project, feature, state);
+		return Objects.hash(name, fullPath, parentPath, children, state);
 	}
 
 	@Override
@@ -131,8 +133,8 @@ public final class TaskGroup implements TaskContainer {
 				Objects.equals(fullPath, taskGroup.fullPath) &&
 				Objects.equals(parentPath, taskGroup.parentPath) &&
 				Objects.equals(children, taskGroup.children) &&
-				Objects.equals(project, taskGroup.project) &&
-				Objects.equals(feature, taskGroup.feature) &&
+//				Objects.equals(project, taskGroup.project) &&
+//				Objects.equals(feature, taskGroup.feature) &&
 				Objects.equals(state, taskGroup.state);
 	}
 
@@ -143,8 +145,8 @@ public final class TaskGroup implements TaskContainer {
 				", fullPath='" + fullPath + '\'' +
 				", parent='" + (parent == null ? "" : parent.getFullPath()) + '\'' +
 				", children=" + children +
-				", project='" + project + '\'' +
-				", feature='" + feature + '\'' +
+//				", project='" + project + '\'' +
+//				", feature='" + feature + '\'' +
 				'}';
 	}
 
@@ -153,10 +155,19 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	public boolean containsListAbsolute(String name) {
-		return children.stream()
-				.filter(child -> child instanceof TaskList)
-				.map(child -> (TaskList) child)
-				.anyMatch(list -> list.getFullPath().equals(name));
+		for (final TaskContainer child : children) {
+			if (child instanceof TaskList list) {
+				if (list.getFullPath().equals(name)) {
+					return true;
+				}
+			}
+			else if (child instanceof TaskGroup group) {
+				if (group.containsListAbsolute(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// finds lists by their absolute name
@@ -190,7 +201,7 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	public TaskGroup rename(String newName) {
-		TaskGroup group = new TaskGroup(newName, parent, project, feature, state);
+		TaskGroup group = new TaskGroup(newName, parent, state);
 
 		buildNewChildren(group);
 
@@ -219,7 +230,7 @@ public final class TaskGroup implements TaskContainer {
 	public TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
 		removeChild(group);
 
-		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.getProject(), group.getFeature(), group.state);
+		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.state);
 		group.getChildren().forEach(newGroup::addChild);
 
 		destGroup.addChild(newGroup);
@@ -240,7 +251,7 @@ public final class TaskGroup implements TaskContainer {
 	public TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
 		removeChild(list);
 
-		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), list.getProject(), list.getFeature(), TaskContainerState.InProgress);
+		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), TaskContainerState.InProgress);
 		list.getTasks().forEach(newList::addTask);
 
 		group.addChild(newList);
@@ -266,29 +277,29 @@ public final class TaskGroup implements TaskContainer {
 		children.add(child);
 	}
 
-	TaskGroup changeProject(String project) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-		group.children.addAll(children);
-
-		return group;
-	}
-
-	TaskGroup changeFeature(String feature) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-		group.children.addAll(children);
-
-		return group;
-	}
+//	TaskGroup changeProject(String project) {
+//		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+//		group.children.addAll(children);
+//
+//		return group;
+//	}
+//
+//	TaskGroup changeFeature(String feature) {
+//		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+//		group.children.addAll(children);
+//
+//		return group;
+//	}
 
 	TaskGroup changeState(TaskContainerState state) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+		TaskGroup group = new TaskGroup(name, parent, state);
 		group.children.addAll(children);
 
 		return group;
 	}
 
 	private TaskGroup changeParent(TaskGroup parent) {
-		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
+		TaskGroup group = new TaskGroup(name, parent, state);
 
 		buildNewChildren(group);
 

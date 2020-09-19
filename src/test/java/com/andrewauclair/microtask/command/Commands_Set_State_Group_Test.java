@@ -60,8 +60,6 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 		assertOutput(
 				outputStream,
 
-				"",
-				"",
 				"InProgress"
 		);
 	}

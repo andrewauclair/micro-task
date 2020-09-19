@@ -7,10 +7,7 @@ import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.TaskLoader;
-import com.andrewauclair.microtask.task.TaskReader;
-import com.andrewauclair.microtask.task.TaskWriter;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.Kernel32;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
@@ -37,17 +34,18 @@ public class MainConsole extends CommonConsole {
 
 	public MainConsole() throws Exception {
 		LocalSettings localSettings = new LocalSettings(osInterface);
-		osInterface.setLocalSettings(localSettings);
 
 		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
 		projects = new Projects(tasks, osInterface);
+		tasks.setProjects(projects);
+
 		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
 
 		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		osInterface.openStatusLink();
 
-		boolean loadSuccessful = tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
+		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
 			UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
@@ -97,7 +95,13 @@ public class MainConsole extends CommonConsole {
 					System.out.println(terminal.getSize());
 				}
 				else {
+					final long startTime = System.currentTimeMillis();
+
 					commands.execute(System.out, command);
+
+					final long endTime = System.currentTimeMillis();
+
+					System.out.println("Time to execute command '" + command + "': " + (endTime - startTime));
 				}
 			}
 			catch (UserInterruptException ignored) {
@@ -115,8 +119,8 @@ public class MainConsole extends CommonConsole {
 	}
 
 	private void sendCurrentStatus() {
-		osInterface.sendStatusMessage(TransferType.CURRENT_GROUP, tasks.getActiveGroup().getFullPath());
-		osInterface.sendStatusMessage(TransferType.CURRENT_LIST, tasks.getActiveList().absoluteName());
+		osInterface.sendStatusMessage(TransferType.CURRENT_GROUP, tasks.getCurrentGroup().getFullPath());
+		osInterface.sendStatusMessage(TransferType.CURRENT_LIST, tasks.getCurrentList().absoluteName());
 		osInterface.sendStatusMessage(TransferType.END_TRANSFER);
 	}
 

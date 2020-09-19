@@ -1,11 +1,11 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.picocli;
 
-import com.andrewauclair.microtask.project.ExistingProjectName;
+import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.Projects;
 import picocli.CommandLine;
 
-public class ExistingProjectNameTypeConverter implements CommandLine.ITypeConverter<ExistingProjectName> {
+public class ExistingProjectNameTypeConverter implements CommandLine.ITypeConverter<ExistingProject> {
 	private final Projects projects;
 
 	public ExistingProjectNameTypeConverter(Projects projects) {
@@ -13,9 +13,9 @@ public class ExistingProjectNameTypeConverter implements CommandLine.ITypeConver
 	}
 
 	@Override
-	public ExistingProjectName convert(String value) {
+	public ExistingProject convert(String value) {
 		try {
-			return new ExistingProjectName(projects, value);
+			return new ExistingProject(projects, value);
 		}
 		catch (RuntimeException e) {
 			throw new CommandLine.TypeConversionException(e.getMessage());

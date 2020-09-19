@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.task.DataLoader;
 import com.andrewauclair.microtask.task.TaskLoader;
 import com.andrewauclair.microtask.task.TaskReader;
 import com.andrewauclair.microtask.task.Tasks;
@@ -50,7 +51,7 @@ public class UpdateRepoCommand implements Runnable {
 		else if (args.from_remote) {
 			osInterface.gitPull();
 
-			tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
+			tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
 			System.out.println("Pulled changes from remote");
 		}

@@ -8,6 +8,7 @@ import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -34,6 +35,7 @@ import static java.util.stream.Collectors.toMap;
 @Command(name = "times", description = "Display times for tasks, lists or groups.")
 public final class TimesCommand implements Runnable {
 	private final Tasks tasks;
+	private final Projects projects;
 	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
@@ -78,8 +80,9 @@ public final class TimesCommand implements Runnable {
 	@Option(names = {"-v", "--verbose"}, description = "Display times with verbose output.")
 	private boolean verbose;
 
-	TimesCommand(Tasks tasks, OSInterface osInterface) {
+	TimesCommand(Tasks tasks, Projects projects, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.projects = projects;
 		this.osInterface = osInterface;
 	}
 
@@ -470,34 +473,6 @@ public final class TimesCommand implements Runnable {
 		}
 	}
 
-	public String getFeatureForTask(ExistingID taskID) {
-		TaskList listForTask = tasks.findListForTask(taskID);
-
-		String feature = listForTask.getFeature();
-
-		TaskGroup group = tasks.getGroupForList(new ExistingListName(tasks, listForTask.getFullPath()));
-
-		while (group != null) {
-			if (feature.isEmpty()) {
-				feature = group.getFeature();
-			}
-			else if (!group.getFeature().isEmpty()) {
-				feature = group.getFeature() + " " + feature;
-			}
-
-			if (group.getFullPath().equals("/")) {
-				break;
-			}
-			if (!group.getParent().equals("/")) {
-				group = tasks.getGroup(group.getParent());
-			}
-			else {
-				group = null;
-			}
-		}
-		return feature;
-	}
-
 	private void displayProjectsFeatures(TaskTimesFilter filter) {
 		Map<ProjFeatOutput, Long> outputs = new HashMap<>();
 
@@ -507,8 +482,9 @@ public final class TimesCommand implements Runnable {
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, task.task.id));
-			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
+			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks, task.task.id)));
+//			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
+			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.task.id)));
 
 			if (project.isEmpty()) {
 				project = "None";

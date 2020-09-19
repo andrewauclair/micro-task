@@ -91,8 +91,8 @@ public class LocalSettings {
 		hoursInDay = Integer.parseInt(properties.getProperty("hours_in_day", "8"));
 		estimatedTimePerTask = Long.parseLong(properties.getProperty("estimated_time_per_task", "30000"));
 
-		tasks.setActiveList(new ExistingListName(tasks, activeList));
-		tasks.setActiveGroup(new ExistingGroupName(tasks, activeGroup));
+		tasks.setCurrentList(new ExistingListName(tasks, activeList));
+		tasks.setCurrentGroup(new ExistingGroupName(tasks, activeGroup));
 	}
 
 	private void save() {

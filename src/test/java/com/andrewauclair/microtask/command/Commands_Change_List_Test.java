@@ -13,7 +13,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "ch -l test-tasks");
 
-		assertEquals(existingList("/test-tasks"), tasks.getActiveList());
+		assertEquals(existingList("/test-tasks"), tasks.getCurrentList());
 
 		assertOutput(
 				"Switched to list '/test-tasks'",
@@ -28,7 +28,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "ch -l /test/one");
 
-		assertEquals(existingList("/test/one"), tasks.getActiveList());
+		assertEquals(existingList("/test/one"), tasks.getCurrentList());
 
 		assertOutput(
 				"Switched to list '/test/one'",
@@ -40,7 +40,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 	void switch_to_nested_list() {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "ch -l one");
 
@@ -57,7 +57,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "ch -l /test/one");
 
-		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
+		assertEquals("/test/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
@@ -68,8 +68,8 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 				"Invalid value for option '--list': List '/test' does not exist.",
 				""
 		);
-		assertEquals(existingList("/default"), tasks.getActiveList());
-		assertEquals("/", tasks.getActiveGroup().getFullPath());
+		assertEquals(existingList("/default"), tasks.getCurrentList());
+		assertEquals("/", tasks.getCurrentGroup().getFullPath());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class Commands_Change_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void invalid_list_path() {
-		commands.execute(printStream, "ch -l /project/test/");
+		commands.execute(printStream, "ch -l /projects/test/");
 
 		assertOutput(
 				"Invalid value for option '--list': List name must not end in /",

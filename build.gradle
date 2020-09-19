@@ -24,10 +24,6 @@ dependencies {
     compile 'org.fusesource.jansi:jansi:1.18'
     compile 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
     compile 'org.slf4j:slf4j-simple:1.7.9'
-    //compile 'org.slf4j:slf4j-api:1.7.1'
-//    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
-//    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
-//    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0-M1'
 
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'

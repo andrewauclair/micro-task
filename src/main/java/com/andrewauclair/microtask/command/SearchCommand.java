@@ -42,7 +42,7 @@ final class SearchCommand implements Runnable {
 		Stream<Task> stream;
 
 		if (group) {
-			stream = tasks.getActiveGroup().getTasks().stream();
+			stream = tasks.getCurrentGroup().getTasks().stream();
 		}
 		else {
 			stream = tasks.getTasks().stream();

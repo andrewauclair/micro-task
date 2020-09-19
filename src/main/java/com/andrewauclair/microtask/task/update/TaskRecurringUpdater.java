@@ -30,7 +30,8 @@ public class TaskRecurringUpdater {
 		String list = tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath();
 		tasks.replaceTask(new ExistingListName(tasks, list), optionalTask, task);
 
-		tasks.getWriter().writeTask(task, "git-data/tasks" + list + "/" + task.id + ".txt");
+		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		tasks.getWriter().writeTask(task, file);
 
 		osInterface.gitCommit("Set recurring for task " + task.id + " to " + recurring);
 

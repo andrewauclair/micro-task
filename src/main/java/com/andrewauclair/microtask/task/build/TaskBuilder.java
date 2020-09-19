@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task.build;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public final class TaskBuilder {
 	private String task;
 	private TaskState state;
 	private boolean recurring;
+	private final List<String> tags = new ArrayList<>();
 
 	public TaskBuilder(long id) {
 		this.id = id;
@@ -24,6 +26,7 @@ public final class TaskBuilder {
 		state = task.state;
 		taskTimes.addAll(task.getAllTimes());
 		recurring = task.isRecurring();
+		tags.addAll(task.getTags());
 	}
 
 	public TaskBuilder withName(String name) {
@@ -52,14 +55,24 @@ public final class TaskBuilder {
 		return this;
 	}
 
-	public Task start(long start, Tasks tasks) {
-		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(new ExistingID(tasks, id)), new TaskFinder(tasks).getFeatureForTask(new ExistingID(tasks, id))));
+	public TaskBuilder withTag(String tag) {
+		tags.add(tag);
+		return this;
+	}
+
+	public Task start(long start, Tasks tasks, Projects projects) {
+		ExistingID existingID = new ExistingID(tasks, id);
+		TaskList list = new TaskFinder(tasks).findListForTask(existingID);
+		String project = projects.getProjectForList(list);
+		String feature = projects.getFeatureForList(list);
+//		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(existingID), new TaskFinder(tasks).getFeatureForTask(existingID)));
+		taskTimes.add(new TaskTimes(start, project, feature));
 		state = TaskState.Active;
 		return build();
 	}
 
 	public Task build() {
-		return new Task(id, task, state, taskTimes, recurring);
+		return new Task(id, task, state, taskTimes, recurring, tags);
 	}
 
 	public Task finish(long stop) {

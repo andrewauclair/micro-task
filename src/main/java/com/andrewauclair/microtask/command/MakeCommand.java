@@ -49,9 +49,9 @@ final class MakeCommand implements Runnable {
 				System.out.println("Project '" + args.project.shortName() + "' already exists.");
 			}
 			else {
-				Project project = projects.createProject(args.project);
-
-				System.out.println("Created project '" + project.getName() + "'");
+//				Project project = projects.createProject(args.project);
+//
+//				System.out.println("Created project '" + project.getName() + "'");
 			}
 			System.out.println();
 		}

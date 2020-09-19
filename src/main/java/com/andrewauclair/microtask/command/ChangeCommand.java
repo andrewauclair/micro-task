@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -33,8 +34,8 @@ final class ChangeCommand implements Runnable {
 	@Override
 	public void run() {
 		if (args.list != null) {
-			tasks.setActiveList(args.list);
-			tasks.setActiveGroup(args.list.parentGroupName());
+			tasks.setCurrentList(args.list);
+			tasks.setCurrentGroup(args.list.parentGroupName());
 
 			localSettings.setActiveList(args.list);
 			localSettings.setActiveGroup(args.list.parentGroupName());
@@ -42,7 +43,7 @@ final class ChangeCommand implements Runnable {
 			System.out.println("Switched to list '" + args.list + "'");
 		}
 		else if (args.group != null) {
-			tasks.setActiveGroup(args.group);
+			tasks.setCurrentGroup(args.group);
 
 			localSettings.setActiveGroup(args.group);
 
@@ -64,6 +65,6 @@ final class ChangeCommand implements Runnable {
 		private ExistingGroupName group;
 
 		@Option(names = {"-p", "--project"}, description = "The project to change to.")
-		private String project;
+		private ExistingProject project;
 	}
 }

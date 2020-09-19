@@ -1,18 +1,15 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.project.NewProject;
 import org.junit.jupiter.api.Test;
 
 class Commands_Project_Test extends CommandsBaseTestCase {
 	@Test
 	void list_projects() {
-		tasks.addGroup(newGroup("/test/"));
-		tasks.addGroup(newGroup("/one/"));
-		tasks.addGroup(newGroup("/two/"));
-
-		projects.createProject(existingGroup("/test/"));
-		projects.createProject(existingGroup("/one/"));
-		projects.createProject(existingGroup("/two/"));
+		projects.createProject(new NewProject(projects, "test"), true);
+		projects.createProject(new NewProject(projects, "one"), true);
+		projects.createProject(new NewProject(projects, "two"), true);
 
 		commands.execute(printStream, "project --list");
 

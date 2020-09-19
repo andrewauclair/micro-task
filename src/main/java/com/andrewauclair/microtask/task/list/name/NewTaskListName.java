@@ -15,7 +15,6 @@ public class NewTaskListName extends TaskListName {
 		TaskListFinder finder = new TaskListFinder(tasks);
 		
 		if (finder.hasList(this)) {
-//		if (tasks.hasListWithName(absoluteName())) {
 			throw new TaskException("List '" + absoluteName() + "' already exists.");
 		}
 	}

@@ -22,8 +22,8 @@ class Task_toString_Test {
 						new TaskTimes(3456, 5555),
 						new TaskTimes(8473, "Project", "Feature")
 				),
-				true
+				true, Collections.emptyList()
 		);
-		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, project='', feature='', 3456 - 5555, project='', feature='', 8473, project='Project', feature='Feature'], recurring=true}", task.toString());
+		assertEquals("Task{id=1, task='Test', state=Active, taskTimes=[1234 - 2345, project='', feature='', 3456 - 5555, project='', feature='', 8473, project='Project', feature='Feature'], recurring=true, tags=[]}", task.toString());
 	}
 }

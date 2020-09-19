@@ -280,7 +280,7 @@ class LocalSettings_Test {
 
 		localSettings.load(tasks);
 
-		assertEquals(new ExistingListName(tasks, "/test/one"), tasks.getActiveList());
-		assertEquals("/test/", tasks.getActiveGroup().getFullPath());
+		assertEquals(new ExistingListName(tasks, "/test/one"), tasks.getCurrentList());
+		assertEquals("/test/", tasks.getCurrentGroup().getFullPath());
 	}
 }

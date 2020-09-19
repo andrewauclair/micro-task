@@ -1,3 +1,4 @@
+// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.MockOSInterface;
@@ -31,16 +32,13 @@ class ProjectBaseTestCase {
 	@BeforeEach
 	void setup() throws IOException {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenReturn(new DataOutputStream(new ByteArrayOutputStream()));
-//		Mockito.when(osInterface.runGitCommand(Mockito.any())).thenReturn(true);
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 
 		tasks = new Tasks(writer, new PrintStream(outputStream), osInterface);
-//		tasks.addList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
 
 		projects = new Projects(tasks, osInterface);
-		tasks.addGroup(newGroup("test/"));
-		project = projects.createProject(existingGroup("test/"));
+		project = projects.createProject(new NewProject(projects, "micro-task"), true);
 	}
 
 	public ExistingListName existingList(String name) {

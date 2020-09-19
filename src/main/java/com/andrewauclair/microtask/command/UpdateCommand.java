@@ -39,14 +39,13 @@ public final class UpdateCommand implements Runnable {
 	}
 
 	public static void updateFiles(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Projects projects, Commands commands) {
-
 		updateGroupFiles(tasks, tasks.getRootGroup(), osInterface);
 
 		String currentVersion = Utils.writeCurrentVersion(osInterface);
 
 		osInterface.gitCommit("Updating files to version '" + currentVersion + "'");
 
-		tasks.load(new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
+		tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
 		System.out.println("Updated all files.");
 		System.out.println();

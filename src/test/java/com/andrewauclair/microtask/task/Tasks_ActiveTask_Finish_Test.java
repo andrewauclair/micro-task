@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,7 +31,7 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 		assertEquals(1, tasks.getActiveTaskID());
 		tasks.finishTask(existingID(1));
 
-		assertEquals(Tasks.NO_ACTIVE_TASK, tasks.getActiveTaskID());
+		assertEquals(NO_ACTIVE_TASK, tasks.getActiveTaskID());
 	}
 
 	@Test

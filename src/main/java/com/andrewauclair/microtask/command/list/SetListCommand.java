@@ -25,20 +25,20 @@ public class SetListCommand implements Runnable {
 	Args args;
 
 	private static class Args {
-		@ArgGroup(exclusive = false)
-		private ProjectFeature projectFeature;
+//		@ArgGroup(exclusive = false)
+//		private ProjectFeature projectFeature;
 
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 		private boolean in_progress;
 	}
 
-	static final class ProjectFeature {
-		@Option(names = {"-p", "--project"}, description = "The project to set.")
-		String project;
-
-		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
-		String feature;
-	}
+//	static final class ProjectFeature {
+//		@Option(names = {"-p", "--project"}, description = "The project to set.")
+//		String project;
+//
+//		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
+//		String feature;
+//	}
 
 	public SetListCommand(Tasks tasks) {
 		this.tasks = tasks;
@@ -46,9 +46,9 @@ public class SetListCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (args.projectFeature != null) {
-			handleProjectAndFeature();
-		}
+//		if (args.projectFeature != null) {
+//			handleProjectAndFeature();
+//		}
 
 		if (args.in_progress) {
 			TaskList list = tasks.getListByName(this.list);
@@ -66,19 +66,19 @@ public class SetListCommand implements Runnable {
 		System.out.println();
 	}
 
-	private void handleProjectAndFeature() {
-		if (args.projectFeature.project != null) {
-			String project = this.args.projectFeature.project;
-			tasks.setProject(list, project, true);
-
-			System.out.println("Set project for list '" + list + "' to '" + project + "'");
-		}
-
-		if (args.projectFeature.feature != null) {
-			String feature = this.args.projectFeature.feature;
-			tasks.setFeature(list, feature, true);
-
-			System.out.println("Set feature for list '" + list + "' to '" + feature + "'");
-		}
-	}
+//	private void handleProjectAndFeature() {
+//		if (args.projectFeature.project != null) {
+//			String project = this.args.projectFeature.project;
+//			tasks.setProject(list, project, true);
+//
+//			System.out.println("Set project for list '" + list + "' to '" + project + "'");
+//		}
+//
+//		if (args.projectFeature.feature != null) {
+//			String feature = this.args.projectFeature.feature;
+//			tasks.setFeature(list, feature, true);
+//
+//			System.out.println("Set feature for list '" + list + "' to '" + feature + "'");
+//		}
+//	}
 }

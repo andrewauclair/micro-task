@@ -27,7 +27,7 @@ public class TaskGroupName {
 
 	private String absoluteName(Tasks tasks, String name) {
 		if (!name.startsWith(ROOT_PATH)) {
-			return tasks.getActiveGroup().getFullPath() + name;
+			return tasks.getCurrentGroup().getFullPath() + name;
 		}
 		return name;
 	}

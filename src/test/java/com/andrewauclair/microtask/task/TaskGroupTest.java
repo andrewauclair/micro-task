@@ -11,7 +11,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	void task_group_can_contain_other_task_groups() {
 		TaskGroup group = new TaskGroup("/test");
 		
-		TaskGroup child = new TaskGroup("two", group, "", "", TaskContainerState.InProgress);
+		TaskGroup child = new TaskGroup("two", group, TaskContainerState.InProgress);
 		group.addChild(child);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -23,7 +23,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	void task_group_can_contain_task_lists() {
 		TaskGroup group = new TaskGroup("test");
 		
-		TaskList list = new TaskList("test", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress);
+		TaskList list = new TaskList("test", new TaskGroup("/"), osInterface, writer, TaskContainerState.InProgress);
 		group.addChild(list);
 		
 		assertThat(group.getChildren()).containsOnly(
@@ -42,36 +42,36 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void create_task_group() {
 		TaskGroup parent = new TaskGroup("/two/three/");
-		TaskGroup group = new TaskGroup("one", parent, "Project", "Feature", TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("one", parent, TaskContainerState.InProgress);
 
 		assertEquals("one", group.getName());
 		assertEquals("/two/three/one/", group.getFullPath());
-		assertEquals("Project", group.getProject());
-		assertEquals("Feature", group.getFeature());
+//		assertEquals("Project", group.getProject());
+//		assertEquals("Feature", group.getFeature());
 	}
 
 	@Test
 	void to_string() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature", TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress);
 		
-		assertEquals("TaskGroup{name='test', fullPath='/test/', parent='/', children=[], project='Project', feature='Feature'}", group.toString());
+		assertEquals("TaskGroup{name='test', fullPath='/test/', parent='/', children=[]}", group.toString());
 	}
 
 	@Test
 	void to_string_with_null_parent() {
-		TaskGroup group = new TaskGroup("/", null, "Project", "Feature", TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("/", null, TaskContainerState.InProgress);
 
-		assertEquals("TaskGroup{name='/', fullPath='/', parent='', children=[], project='Project', feature='Feature'}", group.toString());
+		assertEquals("TaskGroup{name='/', fullPath='/', parent='', children=[]}", group.toString());
 	}
 	
 	@Test
 	void rename() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, "Project", "Feature", TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress);
 		
 		TaskGroup renamed = group.rename("one");
 		
-		assertEquals("TaskGroup{name='one', fullPath='/one/', parent='/', children=[], project='Project', feature='Feature'}", renamed.toString());
+		assertEquals("TaskGroup{name='one', fullPath='/one/', parent='/', children=[]}", renamed.toString());
 	}
 }

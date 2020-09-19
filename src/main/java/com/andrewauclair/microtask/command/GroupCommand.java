@@ -31,7 +31,7 @@ public class GroupCommand implements Runnable {
 
 	@Override
 	public void run() {
-		TaskGroup taskGroup = tasks.getActiveGroup();
+		TaskGroup taskGroup = tasks.getCurrentGroup();
 
 		if (group != null) {
 			taskGroup = tasks.getGroup(group);
@@ -63,7 +63,7 @@ public class GroupCommand implements Runnable {
 	}
 
 	private void printListRelative(TaskList list, boolean finished) {
-		if (list.getFullPath().equals(tasks.getActiveList().absoluteName())) {
+		if (list.getFullPath().equals(tasks.getCurrentList().absoluteName())) {
 			System.out.print("* ");
 			ConsoleColors.println(System.out, ANSI_FG_GREEN, list.getName());
 		}

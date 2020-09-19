@@ -164,47 +164,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		}
 		return taskLengths.get(index - taskLengths.size());
 	}
-	
-	//	@Test
-	void verify_setup_data() {
-		// there's so much data here that I want to verify that we've configured it all correctly before trusting it
-		assertThat(tasks.getTasksForList(existingList("/default"))).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, createTaskTimes(1), false),
-				new Task(2, "Test 2", TaskState.Inactive, createTaskTimes(2), false),
-				new Task(3, "Test 3", TaskState.Inactive, createTaskTimes(3), false),
-				new Task(4, "Test 4", TaskState.Inactive, createTaskTimes(4), false),
-				new Task(5, "Test 5", TaskState.Inactive, createTaskTimes(5), false),
-				new Task(6, "Test 6", TaskState.Inactive, createTaskTimes(6), false),
-				new Task(7, "Test 7", TaskState.Inactive, createTaskTimes(7), false),
-				new Task(8, "Test 8", TaskState.Inactive, createTaskTimes(8), false),
-				new Task(9, "Test 9", TaskState.Inactive, createTaskTimes(9), false)
-		);
-		
-		assertThat(tasks.getTasksForList(existingList("/one/test"))).containsOnly(
-				new Task(10, "Test 10", TaskState.Inactive, createTaskTimes(10), false),
-				new Task(11, "Test 11", TaskState.Inactive, createTaskTimes(11), false),
-				new Task(12, "Test 12", TaskState.Inactive, createTaskTimes(12), false),
-				new Task(13, "Test 13", TaskState.Inactive, createTaskTimes(13), false),
-				new Task(14, "Test 14", TaskState.Inactive, createTaskTimes(14), false),
-				new Task(15, "Test 15", TaskState.Inactive, createTaskTimes(15), false),
-				new Task(16, "Test 16", TaskState.Inactive, createTaskTimes(16), false),
-				new Task(17, "Test 17", TaskState.Inactive, createTaskTimes(17), false),
-				new Task(18, "Test 18", TaskState.Inactive, createTaskTimes(18), false)
-		);
-		
-		assertThat(tasks.getTasksForList(existingList("/two/three/stuff"))).containsOnly(
-				new Task(19, "Test 19", TaskState.Inactive, createTaskTimes(19), false),
-				new Task(20, "Test 20", TaskState.Inactive, createTaskTimes(20), false),
-				new Task(21, "Test 21", TaskState.Inactive, createTaskTimes(21), false),
-				new Task(22, "Test 22", TaskState.Inactive, createTaskTimes(22), false),
-				new Task(23, "Test 23", TaskState.Inactive, createTaskTimes(23), false),
-				new Task(24, "Test 24", TaskState.Inactive, createTaskTimes(24), false),
-				new Task(25, "Test 25", TaskState.Inactive, createTaskTimes(25), false),
-				new Task(26, "Test 26", TaskState.Inactive, createTaskTimes(26), false),
-				new Task(27, "Test 27", TaskState.Inactive, createTaskTimes(27), false)
-		);
-	}
-	
+
 	private TaskTimes createTimes(long start, long length) {
 		return new TaskTimes(start, start + length);
 	}
@@ -216,14 +176,14 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void TaskFilterResult_toString() {
-		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, taskTimes=[1000 - 2000, project='', feature=''], recurring=false}, list='/default'}",
+		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, taskTimes=[1000 - 2000, project='', feature=''], recurring=false, tags=[]}, list='/default'}",
 				new TaskTimesFilter.TaskTimeFilterResult(1000, new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
 	}
 	
 	@Test
 	void includes_only_tasks_for_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR)), false));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)), false);
+		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
@@ -239,8 +199,8 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_only_times_from_correct_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR)), false));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)), false);
+		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)));
 		tasks.addTask(task2);
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
@@ -256,11 +216,11 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void ignores_active_task_on_latest_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR)), false));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)), false);
+		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
-		tasks.addTask(new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june24_8_am)), false));
+		tasks.addTask(new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june24_8_am))));
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
@@ -275,11 +235,11 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_active_task_using_current_time_as_stop() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR)), false));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)), false);
+		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
+		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
-		Task task3 = new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june17_8_am + SECONDS_IN_DAY)), false);
+		Task task3 = new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june17_8_am + SECONDS_IN_DAY)));
 		tasks.addTask(task3);
 		
 		Mockito.when(osInterface.currentSeconds()).thenReturn(june17_8_am + SECONDS_IN_DAY + HOUR + MINUTE);
@@ -304,13 +264,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/test/one"));
 		
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 		
 		tasks.addList(newList("/test/two"), true);
-		tasks.setActiveList(existingList("/test/two"));
+		tasks.setCurrentList(existingList("/test/two"));
 		
 		tasks.addTask("Test 5");
 		
@@ -332,13 +292,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/test/one"));
 
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 
 		tasks.addList(newList("/test/two"), true);
-		tasks.setActiveList(existingList("/test/two"));
+		tasks.setCurrentList(existingList("/test/two"));
 
 		Task task5 = tasks.addTask("Test 5");
 
@@ -370,21 +330,21 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 		tasks.addList(newList("/two/impl"), true);
 		tasks.addList(newList("/two/test"), true);
 
-		tasks.setActiveList(existingList("/one/impl"));
+		tasks.setCurrentList(existingList("/one/impl"));
 
 		Task task1 = tasks.addTask("Test 1");
 		Task task2 = tasks.addTask("Test 2");
 
-		tasks.setActiveList(existingList("/one/test"));
+		tasks.setCurrentList(existingList("/one/test"));
 
 		Task task3 = tasks.addTask("Test 3");
 		Task task4 = tasks.addTask("Test 4");
 
-		tasks.setActiveList(existingList("/two/impl"));
+		tasks.setCurrentList(existingList("/two/impl"));
 		tasks.addTask("Test 5");
 		tasks.addTask("Test 6");
 
-		tasks.setActiveList(existingList("/two/test"));
+		tasks.setCurrentList(existingList("/two/test"));
 		tasks.addTask("Test 7");
 		tasks.addTask("Test 8");
 

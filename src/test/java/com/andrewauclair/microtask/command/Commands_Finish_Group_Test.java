@@ -34,7 +34,7 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
 
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "finish --group /test/");
 
@@ -51,10 +51,10 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
 
-		tasks.setActiveList(existingList("/test/one"));
+		tasks.setCurrentList(existingList("/test/one"));
 		tasks.addTask("Test 1");
 
-		tasks.setActiveList(existingList("/default"));
+		tasks.setCurrentList(existingList("/default"));
 
 		commands.execute(printStream, "finish --group /test/");
 

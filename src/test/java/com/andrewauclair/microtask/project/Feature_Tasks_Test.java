@@ -9,11 +9,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Feature_Tasks_Test extends ProjectBaseTestCase {
 	@Test
 	void feature_contains_tasks_for_list() {
-		Feature feature = new Feature(tasks, "one", null);
+		Feature feature = new Feature(osInterface, project, tasks, "one", null);
 
 		tasks.addGroup(newGroup("/one/"));
 		tasks.addList(newList("/one/two"), true);
-		tasks.setActiveList(existingList("/one/two"));
+		tasks.setCurrentList(existingList("/one/two"));
 
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
@@ -30,18 +30,18 @@ public class Feature_Tasks_Test extends ProjectBaseTestCase {
 
 	@Test
 	void feature_contains_tasks_from_group() {
-		Feature feature = new Feature(tasks, "one", null);
+		Feature feature = new Feature(osInterface, project, tasks, "one", null);
 
 		tasks.addGroup(newGroup("/one/"));
 		tasks.addList(newList("/one/two"), true);
-		tasks.setActiveList(existingList("/one/two"));
+		tasks.setCurrentList(existingList("/one/two"));
 
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 
 		tasks.addGroup(newGroup("/one/test/"));
 		tasks.addList(newList("/one/test/three"), true);
-		tasks.setActiveList(existingList("/one/test/three"));
+		tasks.setCurrentList(existingList("/one/test/three"));
 
 		Task task3 = tasks.addTask("Test");
 
@@ -56,18 +56,18 @@ public class Feature_Tasks_Test extends ProjectBaseTestCase {
 
 	@Test
 	void feature_does_not_count_tasks_twice() {
-		Feature feature = new Feature(tasks, "one", null);
+		Feature feature = new Feature(osInterface, project, tasks, "one", null);
 
 		tasks.addGroup(newGroup("/one/"));
 		tasks.addList(newList("/one/two"), true);
-		tasks.setActiveList(existingList("/one/two"));
+		tasks.setCurrentList(existingList("/one/two"));
 
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 
 		tasks.addGroup(newGroup("/one/test/"));
 		tasks.addList(newList("/one/test/three"), true);
-		tasks.setActiveList(existingList("/one/test/three"));
+		tasks.setCurrentList(existingList("/one/test/three"));
 
 		Task task3 = tasks.addTask("Test");
 

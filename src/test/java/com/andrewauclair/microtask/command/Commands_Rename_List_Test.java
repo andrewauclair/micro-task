@@ -24,7 +24,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 	void renaming_a_nested_list() {
 		tasks.createGroup(newGroup("/test/"));
 		tasks.addList(newList("test/one"), true);
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "rename list one -n \"two\"");
 
@@ -41,7 +41,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 		tasks.createGroup(newGroup("/test/"));
 		tasks.createGroup(newGroup("/friday/"));
 		tasks.addList(newList("/test/one"), true);
-		tasks.setActiveGroup(existingGroup("/friday/"));
+		tasks.setCurrentGroup(existingGroup("/friday/"));
 
 		commands.execute(printStream, "rename list /test/one -n \"two\"");
 
@@ -58,7 +58,7 @@ class Commands_Rename_List_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/new/"));
 		tasks.addList(newList("/test/one"), true);
 		tasks.addList(newList("/test/new/two"), true);
-		tasks.setActiveGroup(existingGroup("/test/"));
+		tasks.setCurrentGroup(existingGroup("/test/"));
 
 		commands.execute(printStream, "rename list one -n \"/test/two\"");
 

@@ -133,7 +133,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Task task = tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
@@ -150,7 +150,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		Mockito.reset(writer);
 
@@ -167,7 +167,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(2), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		Mockito.reset(osInterface);
 
@@ -185,13 +185,13 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("Task 2");
 
 		Task stoppedTask = tasks.stopTask();
 
-		tasks.setActiveList(existingList("default"));
+		tasks.setCurrentList(existingList("default"));
 
 		assertThat(tasks.getTasks()).containsOnly(stoppedTask);
 	}

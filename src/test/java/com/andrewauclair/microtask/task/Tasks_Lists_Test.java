@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class Tasks_Lists_Test extends TaskBaseTestCase {
 	@Test
 	void starting_list_is_default() {
-		assertEquals(existingList("/default"), tasks.getActiveList());
+		assertEquals(existingList("/default"), tasks.getCurrentList());
 	}
 
 	@Test
@@ -63,12 +63,12 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		tasks.addTask("default List Task 2");
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 
 		tasks.addTask("test List Task 1");
 		tasks.addTask("test List Task 2");
 
-		tasks.setActiveList(existingList("default"));
+		tasks.setCurrentList(existingList("default"));
 
 		assertThat(tasks.getTasksForList(existingList("default"))).containsOnly(
 				new Task(1, "default List Task 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
@@ -92,8 +92,6 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
 
 		TestUtils.assertOutput(listStream,
-				"",
-				"",
 				"InProgress",
 				""
 		);
@@ -145,7 +143,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 	@Test
 	void setCurrentList_throws_exception_when_list_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList(existingList("/one")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setCurrentList(existingList("/one")));
 		
 		assertEquals("List '/one' does not exist.", taskException.getMessage());
 	}
@@ -153,14 +151,14 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	@Test
 	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
 	void setCurrentList_throws_exception_when_group_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setActiveList(existingList("/one/two")));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setCurrentList(existingList("/one/two")));
 		
 		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
 	}
 	
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, "", "", TaskContainerState.InProgress);
+		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, TaskContainerState.InProgress);
 		TaskException taskException = assertThrows(TaskException.class, () -> list.finishTask(existingID(3)));
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());

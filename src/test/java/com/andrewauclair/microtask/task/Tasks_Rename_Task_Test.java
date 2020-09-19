@@ -81,7 +81,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");
 		tasks.addList(newList("testing-rename"), true);
-		tasks.setActiveList(existingList("testing-rename"));
+		tasks.setCurrentList(existingList("testing-rename"));
 		
 		Task renameTask = tasks.renameTask(existingID(1), "Renamed this task");
 

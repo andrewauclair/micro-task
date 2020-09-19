@@ -22,14 +22,16 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
-		tasks.setActiveList(existingList("one"));
+		tasks.setCurrentList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
 		Task task5 = tasks.addTask("Test");
 
+		tasks.createGroup(newGroup("/projects/"));
+
 		tasks.createGroup(newGroup("/test/two/three/"));
 		tasks.addList(newList("/test/two/three/five"), true);
-		tasks.setActiveList(existingList("/test/two/three/five"));
+		tasks.setCurrentList(existingList("/test/two/three/five"));
 
 		Task task6 = tasks.addTask("Test");
 
@@ -57,7 +59,8 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		ByteArrayOutputStream testTwoThreeGroup = new ByteArrayOutputStream();
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/two/three/group.txt")).thenReturn(new DataOutputStream(testTwoThreeGroup));
 
-		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+		ByteArrayOutputStream projectGroup = new ByteArrayOutputStream();
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/group.txt")).thenReturn(new DataOutputStream(projectGroup));
 
 		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
@@ -88,48 +91,36 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		assertOutput(
 				defaultList,
 
-				"",
-				"",
 				"InProgress"
 		);
 
 		assertOutput(
 				oneList,
 
-				"",
-				"",
 				"InProgress"
 		);
 
 		assertOutput(
 				fiveList,
 
-				"",
-				"",
 				"InProgress"
 		);
 
 		assertOutput(
 				testGroup,
 
-				"",
-				"",
 				"InProgress"
 		);
 
 		assertOutput(
 				testTwoGroup,
 
-				"",
-				"",
 				"InProgress"
 		);
 
 		assertOutput(
 				testTwoThreeGroup,
 
-				"",
-				"",
 				"InProgress"
 		);
 	}
@@ -142,6 +133,8 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenReturn(new DataOutputStream(output));
 
 		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
+		tasks.addGroup(newGroup("/projects/"));
 
 		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 
@@ -160,6 +153,8 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenThrow(IOException.class);
 
 		Mockito.when(osInterface.createInputStream("git-data/projects.txt")).thenReturn(createInputStream(""));
+
+		tasks.addGroup(newGroup("/projects/"));
 
 		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
 

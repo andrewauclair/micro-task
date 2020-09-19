@@ -68,7 +68,7 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishGroup() {
-		if (tasks.getGroup(this.options.group.absoluteName()).getFullPath().equals(tasks.getActiveGroup().getFullPath())) {
+		if (tasks.getGroup(this.options.group.absoluteName()).getFullPath().equals(tasks.getCurrentGroup().getFullPath())) {
 			System.out.println("Group to finish must not be active.");
 		}
 		else if (tasks.getGroup(this.options.group.absoluteName()).getTasks().stream()
@@ -85,7 +85,7 @@ final class FinishCommand implements Runnable {
 	}
 
 	private void finishList() {
-		if (this.options.list.equals(tasks.getActiveList())) {
+		if (this.options.list.equals(tasks.getCurrentList())) {
 			System.out.println("List to finish must not be active.");
 		}
 		else if (tasks.getListByName(this.options.list).getTasks().stream()

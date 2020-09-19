@@ -26,7 +26,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_file() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)), false);
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -43,7 +43,7 @@ class TaskWriterTest {
 	
 	@Test
 	void write_recurring_task() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true);
+		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, Collections.emptyList());
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(

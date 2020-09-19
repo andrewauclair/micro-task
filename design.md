@@ -1,6 +1,6 @@
 # micro-task Design Document
 
-This document defines the design for the micro-task command line interface task tracker. micro-task has been designed to
+This document defines the design for micro-task, a command line interface task tracker. micro-task has been designed to
 track developer tasks in great detail. The developer can group their tasks into lists and groups, they can define
 projects with features and milestones to further group their tasks. With these projects, features and milestones they can
 define when their tasks are due and ensure that they are working on the most pressing data.
@@ -16,7 +16,7 @@ micro-task requires a Java VM of at least Java 14 installed.
 *In this section describe any constraints on the system that have a significant impact on the design of the system.*
 
 #### 1.3 System Environment
-Currently micro-task is only designed for Windows 10.
+Currently, micro-task is only designed for Windows 10.
 
 ## 2. Architecture
 
@@ -27,7 +27,7 @@ Some subcommands are broken out into their own classes due to their complexity.
  
 ##### 2.2 Data Manipulation
 
-The com.andrewauclair.microtask.task package contains a large number of tasks responsible for manipulating data related to tasks.
+The com.andrewauclair.microtask.task package contains classes responsible for manipulating data related to tasks.
 
 TODO - Define how and where we manipulate projects, features and milestones when they are developed.
 
@@ -64,32 +64,35 @@ commands layout
 
 #### 3.1 Adding New Data
 
-The ability to add new data to micro-task is a primary object of the application. It intended that the developer
-can quickly entire their new tasks and organize them quickly so that they may start working on them immediately.
+The primary focus of micro-task, and the first thing a user will do, is add new data. This might be done by adding a new list,
+group, project, feature or task. All of these operations should be simple and quick to execute. Adding new data should be the data
+instantly accessible to the user.
 
 The following sections define what happens when the developer adds each type of data and how to do it.
 
 ##### 3.1.1 Task
 
-The most basic piece of data to track in micro-task is a task. When a new task has been entered, the task is added
+The most basic piece of data to track in micro-task is a task. When entering a new task, the task is added
 to the active context list or to the list specified with the command options.
 
 A task can be defined with the `add` command.
 
-##### 3.1.2 Group (historically this has been "mk -g <group>", but maybe be move to "add -g <group>")
+##### 3.1.2 Group
 
-A group is a collection of lists and other groups represented by a folder in the file system and contain a file
-called group.txt which defines its state.
+A group is a collection of lists and other groups represented by a folder in the file system and contains a group.txt file
+which defines its state. Groups might also contain a project.txt file, defining that the group is a project.
 
 ##### 3.1.3 List
 
-A list is a collection of tasks.
+A list is a collection of tasks, also represented by a folder in the file system and containing a list.txt file
+which defines its state. Lists might also contain a feature.txt file, defining that the list is a feature. The list can
+only be a feature if its parent group is a project.
 
 ##### 3.1.4 Project
 
-A project is a collection of specific tasks that need to be completed for a project.
+A project is a collection of specific features and tasks that need to be completed for a project.
 
-When the user creates a project a number of files will be created. First, a new group will be added in the `/projects/` group.
+When the user creates a project, a number of files will be created. First, a new group will be added in the `/projects/` group.
 This new group will be named after the project and will contain the features of the project.
 
 
@@ -102,12 +105,24 @@ wishes them to be. micro-task imposes no limits on the number of features create
 
 Features will be automatically created from groups and lists in a project group.
 
-##### 3.1.5 Milestone
+##### 3.1.6 Milestone
 
 A milestone defines a set of features that will be completed together. Usually this maps to a real world milestone with a due date. micro-task
 provides the user with a way to define a due date for a milestone and will use this due date in display data.
 
-A milestone can be defined with the `add` comand.
+A milestone can be defined with the `add` command.
+
+##### 3.1.7 Tags
+
+Tags separate data on lists. This helps the user by requiring fewer lists to make sets of tasks unique. Tags can be set in the active
+context to help further filter the active tasks. Tags are defined by the user and can be set to any string of text.
+
+Unless tags are specified when adding a task, the active context tags will be used. This allows the user to quickly add tasks
+with tags.
+
+
+TODO - Something might have to be done about how to switch the active context tags easier.
+
 
 #### 3.2 Working On Tasks
 
@@ -141,6 +156,9 @@ micro-task stores task data in a text file defined by its task ID. For example, 
 | `<blank>` | |
 | `note <time> <text>` | Any number of notes can be defined here. |
 | `<blank>` | |
+| `custom` | |
+| `<type>` `<value>` | Used for storing custom values defined by the user. |
+| `end-custom` | |
 | `add <time>` | The time at which the task was added. |
 | | Start and stop are repeated together as many<br> times as the task is worked on. |
 | `start <time>` | The time that the task was started.<br>  |
@@ -149,29 +167,35 @@ micro-task stores task data in a text file defined by its task ID. For example, 
 
 ##### 4.2 List
 
-A list is a folder with its given name. For example, the list /default is stored in the default folder. Inside of this list folder there is any number of task files (task-<id>.txt) and a list.txt file that designates the folder as a list and defines list specific information.
+A list is a folder with its given name. For example, the list /default uses the default folder. Inside of this list folder there is any number of task files (task-<id>.txt), and a list.txt file that designates the folder as a list and defines list specific information.
+
+Lists contain a flag to indicator they are a feature. This is done so that the user can have non-feature lists inside of a project.
 
 <b>Format (line by line):</b>
 
 | Line | Description |
 | ---- | ----------- |
 | `state <enum>` | `InProgress` or `Finished` |
+| `note <time> <text>` | Any number of notes related to the list. |
 
-##### 4.2 Group
+##### 4.3 Group
 
 A group is a folder with its given name, just like a list. For example, the group /projects/ is stored in the projects folder.
 		Inside of this group folder there is any number of list folders and a group.txt file that designates the folder as a group and defines
 		group specific information, similar to lists.
 
+Groups contain a flag to indicator they are a feature. This is done so that the user can have non-feature groups inside of a project.
+
 <b>Format (line by line):</b>
 
 | Line | Description |
 | ---- | ----------- |
 | `state <enum>` | `InProgress` or `Finished` |
+| `note <time> <text>` | Any number of notes related to the group. |
 
-##### 4.2 Project
+##### 4.4 Project
 
-A project is a special form of group. Project folders are defined the same as group folders with an additional file, project.txt.
+A project is a special form of group. Project folders will be defined the same as group folders with an additional file, project.txt.
 		The project.txt file defines a more detailed name for the project along with other information, such as any number of notes added
 		by the user.
 		
@@ -180,12 +204,11 @@ A project is a special form of group. Project folders are defined the same as gr
 | Line | Description |
 | ---- | ----------- |
 | `name <text>` | Name of the project. This is more descriptive than the short name used for the file name. |
-| `state <enum>` | `InProgress` or `Finished` |
-| `note <time> <text>` | Any number of notes related to the project. |
 
-##### 4.2 Feature
 
-A feature is a special version of either a group or list folder. A feature starts out as a list but can be converted to a group
+##### 4.5 Feature
+
+A feature is a special version of either a group or list folder. A feature starts out as a list, but can be converted to a group
 		if a sub-feature is added. A special feature.txt file is added to the group or list folder to give further details on the feature
 		and to indicate that the group or list is a feature.
 
@@ -196,14 +219,14 @@ from an existing group then all groups and lists in the project group will be tu
 
 | Line | Description |
 | ---- | ----------- |
-| `state <enum>` | `InProgress` or `Finished` |
-| `note <time> <text>` | Any number of notes related to the feature. |
+| `name <text>` | Name of the feature. This is more descriptive than the short name used for the file name. |
 
-##### 4.2 Milestone
+
+##### 4.6 Milestone
 
 Milestones are stored in a special milestones folder in the project group folder. For example /projects/<project>/milestones. This
 		milestones folder is neither a list, nor a group. Instead the milestones folder is special and milestones is a reserved keyword that
-		can not be used as a list or group name. In this folder are milestone files, these are named like so: milestone-<id>.txt. These files
+		cannot be used as a list or group name. In this folder are milestone files, these are named like so: milestone-<id>.txt. These files
 		contain data relating to the milestone. For now this data is just the features that belong to the milestone, a description and an optional
 		due date.
 
@@ -215,8 +238,21 @@ Milestones are stored in a special milestones folder in the project group folder
 | `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 | `note <time> <text>` | Any number of notes related to the milestone. |
 
+##### 4.7 Archive
+
+With the data defined above, it would be easy to write a ton of folders and files to the file system. Only the active data
+will ever be modified, and the inactive data wastes space. Space can be saved by archiving inactive data into large files
+stored elsewhere in the file system. Data will be archived automatically when finishing a project and requires no thought or 
+interaction from the user. Below is the format for an archive file.
+
+File name `project-<id>.txt`
+
+| Line | Description |
+| `file <path>` | The name of the file whose contains are to follow. |
+| `<file contents>` | The contents of the file. |
+
 ## 5. Command Line Interface
-micro-task is designed to run standalone from the command line or as an interactive program that continously takes input.
+micro-task is designed to run standalone from the command line or as an interactive program that continuously takes input.
 When running in the interactive mode the user can see additional status data.
 
 #### 5.X Standalone Mode
@@ -257,7 +293,21 @@ makes writing scripts that use micro-task easier.
 
 #### 5.X Start Command
 
-The start command allows the user to start a task, list or group.
+The start command allows the user to start a task, list, group, project, feature or milestone.
+
+Active tasks act independently of any other active context item. Setting the active list, group, project or feature
+will not change the active task.
+
+When starting a list the active group will be cleared. When starting a group the active list will be cleared. When starting
+a project the active list and group will be cleared.
+
+Starting a feature will set the active project to that feature's project.
+
+Starting a milestone will set the active project to that milestone's project.
+
+The active project, feature and milestone are also independent like the active task. When starting a list or group
+the active project, feature and milestone will not change. This makes it convenient to work outside of the project briefly
+without having to set up the active context again.
 
 ##### Sub-Commands
 | Sub-Command | Description |
@@ -282,6 +332,21 @@ The stop command allows the user to stop the active task, list or group.
 #### 5.X Finish Command
 
 The finish command allows the user to finish a task, list, group, project, feature or milestone.
+
+#### 5.X Change Command
+
+The change command allows the user to switch the current list or group. This allows for some easier navigation
+when adding new lists, groups or tasks instead of specifying the list or group in every command.
+
+##### Options
+| Sub-Command | Descrption |
+| ----------- | ---------- |
+| `list`      | List to switch to |
+| `group`     | Group to switch to |
+
+| Option | Sub-Command(s) | Description |
+| ------ | -------------- | ----------- |
+| `-h`,`--help` | All | Print the message for this command. |
 
 #### 5.X Move Command
 

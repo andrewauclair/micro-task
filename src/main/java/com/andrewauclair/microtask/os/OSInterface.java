@@ -8,12 +8,6 @@ import java.time.ZoneId;
 import java.util.List;
 
 public interface OSInterface {
-//	boolean runGitAddAll();
-
-//	boolean runGitCommit(String message);
-
-//	boolean runGitCommand(String command);
-
 	void gitCommit(String message);
 
 	void gitPush();

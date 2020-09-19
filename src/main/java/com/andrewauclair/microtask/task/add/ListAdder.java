@@ -35,7 +35,7 @@ public class ListAdder {
 			throw new TaskException("List '" + absoluteList + "' cannot be created because group '" + group.getFullPath() + "' has been finished.");
 		}
 
-		TaskList newList = new TaskList(listName.shortName(), group, osInterface, writer, "", "", TaskContainerState.InProgress);
+		TaskList newList = new TaskList(listName.shortName(), group, osInterface, writer, TaskContainerState.InProgress);
 
 		group.addChild(newList);
 

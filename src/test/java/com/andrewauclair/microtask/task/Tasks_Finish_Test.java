@@ -24,7 +24,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		tasks.startTask(existingID(1), false);
 		
-		tasks.setActiveList(existingList("one"));
+		tasks.setCurrentList(existingList("one"));
 		
 		tasks.addTask("Test 2");
 		
@@ -42,7 +42,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		
 		tasks.startTask(existingID(1), false);
 		
-		tasks.setActiveList(existingList("one"));
+		tasks.setCurrentList(existingList("one"));
 		
 		tasks.addTask("Test 2");
 		
@@ -62,7 +62,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(1), false);
 		
 		tasks.addList(newList("test"), true);
-		tasks.setActiveList(existingList("test"));
+		tasks.setCurrentList(existingList("test"));
 		
 		Task task = tasks.finishTask(existingID(1));
 		
@@ -119,7 +119,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.finishList(existingList("/test/one"));
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"" + NL + NL + "Finished" + NL
+				"Finished" + NL
 		);
 	}
 	
@@ -146,7 +146,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.finishGroup(existingGroup("/test/"));
 		
 		assertThat(outputStream.toString()).isEqualTo(
-				"" + NL + NL + "Finished" + NL
+				"Finished" + NL
 		);
 	}
 	
