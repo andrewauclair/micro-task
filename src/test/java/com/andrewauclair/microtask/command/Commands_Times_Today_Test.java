@@ -54,11 +54,11 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 		assertOutput(
 				"Times for day 06/17/2019",
 				"",
-				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "   " + u + "Description" + r + "              ",
-				ANSI_BG_GRAY + "1h 49m 15s    F    30  Test 3                                                   " + ANSI_RESET,
-				"1h  1m 39s         20  Test 2                                                   ",
-				ANSI_BG_GRAY + "   32m 20s   R    500  Testing a longer name in the times command because it'..." + ANSI_RESET,
-				ANSI_BG_GREEN + "   10m 21s  *      10  Test 1                                                   " + ANSI_RESET,
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "   " + u + "Description" + r + "             ",
+				ANSI_BG_GRAY + "1h 49m 15s    F    30  Test 3                                                  " + ANSI_RESET,
+				"1h  1m 39s         20  Test 2                                                  ",
+				ANSI_BG_GRAY + "   32m 20s   R    500  Testing a longer name in the times command because it..." + ANSI_RESET,
+				ANSI_BG_GREEN + "   10m 21s  *      10  Test 1                                                  " + ANSI_RESET,
 				"",
 				"3h 33m 35s   Total",
 				""

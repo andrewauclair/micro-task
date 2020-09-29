@@ -220,9 +220,9 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				"data  this really long string of data in the last column will require wrapping  ",
-				"      around in the cell when it is displayed                                   ",
-				"data  this is a normal string                                                   "
+				"data  this really long string of data in the last column will require wrapping ",
+				"      around in the cell when it is displayed                                  ",
+				"data  this is a normal string                                                  "
 		);
 	}
 
@@ -241,10 +241,10 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				ANSI_BG_GRAY + "data  this really long string of data in the last column will require wrapping  ",
-				"      around in the cell when it is displayed                                   " + ANSI_RESET,
-				"data  this really long string of data in the last column will require wrapping  ",
-				"      around in the cell when it is displayed                                   "
+				ANSI_BG_GRAY + "data  this really long string of data in the last column will require wrapping ",
+				"      around in the cell when it is displayed                                  " + ANSI_RESET,
+				"data  this really long string of data in the last column will require wrapping ",
+				"      around in the cell when it is displayed                                  "
 		);
 	}
 
@@ -258,9 +258,9 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				"data  this really long string of data in the last column will require wrapping  ",
-				"      around in the cell when it is displayed                                   ",
-				"data  this is a normal string                                                   "
+				"data  this really long string of data in the last column will require wrapping ",
+				"      around in the cell when it is displayed                                  ",
+				"data  this is a normal string                                                  "
 		);
 	}
 
@@ -274,9 +274,9 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				"data  this is a really long string of data in the last column which will require",
-				"      wrapping around in the cell when it is displayed                          ",
-				"data  this is a normal string                                                   "
+				"data  this is a really long string of data in the last column which will       ",
+				"      require wrapping around in the cell when it is displayed                 ",
+				"data  this is a normal string                                                  "
 		);
 	}
 
@@ -292,10 +292,10 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				ANSI_BG_GRAY + "data  this is a really long string of data in the last column which will require",
-				"      wrapping around in the cell when it is displayed                          " + ANSI_RESET,
-				"data  this is a normal string                                                   ",
-				ANSI_BG_GRAY + "data  this is a normal string                                                   " + ANSI_RESET
+				ANSI_BG_GRAY + "data  this is a really long string of data in the last column which will       ",
+				"      require wrapping around in the cell when it is displayed                 " + ANSI_RESET,
+				"data  this is a normal string                                                  ",
+				ANSI_BG_GRAY + "data  this is a normal string                                                  " + ANSI_RESET
 		);
 	}
 
@@ -311,11 +311,11 @@ public class ConsoleTable_Test {
 		table.print();
 
 		assertOutput(
-				"data  This is a really long string of values that will wrap several times 1, 2, ",
-				"      3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  ",
-				"      23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,   ",
-				"      41, 42, 43, 44, 45, 46, 47, 48, 49, 50                                    ",
-				"data  this is a normal string                                                   "
+				"data  This is a really long string of values that will wrap several times 1, 2,",
+				"      3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, ",
+				"      23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,  ",
+				"      41, 42, 43, 44, 45, 46, 47, 48, 49, 50                                   ",
+				"data  this is a normal string                                                  "
 		);
 	}
 
@@ -332,9 +332,9 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r + "                           ",
-				"                 this is a longer string that will wrap around to the next line ",
-				"                 even with the spaces in front                                  "
+				u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r + "                          ",
+				"                 this is a longer string that will wrap around to the next line",
+				"                 even with the spaces in front                                 "
 		);
 	}
 

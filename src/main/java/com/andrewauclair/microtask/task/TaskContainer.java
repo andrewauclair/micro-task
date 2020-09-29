@@ -13,9 +13,5 @@ public interface TaskContainer {
 
 	Optional<TaskList> findListForTask(ExistingID id);
 
-	// TODO Removing these for now because I'm ripping out all the old project/feature stuff
-//	String getProject();
-//	String getFeature();
-
 	TaskContainerState getState();
 }

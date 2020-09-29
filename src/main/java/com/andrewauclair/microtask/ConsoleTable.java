@@ -77,7 +77,7 @@ public class ConsoleTable {
 
 		int startRow = getStartRow();
 
-		int terminalWidth = osInterface.getTerminalWidth();
+		int terminalWidth = osInterface.getTerminalWidth() - 1;
 
 		if (headers.size() > 0) {
 			StringBuilder line = new StringBuilder();

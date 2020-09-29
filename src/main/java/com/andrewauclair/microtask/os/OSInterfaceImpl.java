@@ -33,7 +33,8 @@ public class OSInterfaceImpl implements OSInterface {
 	public Terminal terminal = null;
 
 	private String lastInputFile = "";
-	private DataOutputStream statusOutput;
+//	private DataOutputStream statusOutput;
+	private List<Socket> clients = new ArrayList<>();
 
 	private final Git repo;
 
@@ -89,12 +90,13 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	public void openStatusLink() throws IOException {
-		System.out.println("Waiting for client on " + InetAddress.getLocalHost() + ":5678");
+		System.out.println("Waiting for clients on " + InetAddress.getLocalHost() + ":5678");
 
 		ServerSocket server = new ServerSocket(5678);
-		Socket accept = server.accept();
 
-		statusOutput = new DataOutputStream(accept.getOutputStream());
+		while (true) {
+			clients.add(server.accept());
+		}
 	}
 
 	void setTerminal(Terminal terminal) {
@@ -297,7 +299,9 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public void sendStatusMessage(StatusConsole.TransferType transferType) {
 		try {
-			statusOutput.write(transferType.ordinal());
+			for (final Socket client : clients) {
+				client.getOutputStream().write(transferType.ordinal());
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);
@@ -307,8 +311,11 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public void sendStatusMessage(StatusConsole.TransferType transferType, String data) {
 		try {
-			statusOutput.write(transferType.ordinal());
-			statusOutput.writeUTF(data);
+			for (final Socket client : clients) {
+				DataOutputStream output = new DataOutputStream(client.getOutputStream());
+				output.write(transferType.ordinal());
+				output.writeUTF(data);
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);

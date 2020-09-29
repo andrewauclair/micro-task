@@ -11,6 +11,9 @@ import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.Kernel32;
 import org.jline.reader.*;
 import org.jline.terminal.Terminal;
+import org.jline.utils.AttributedString;
+import org.jline.utils.InfoCmp;
+import org.jline.utils.OSUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -43,7 +46,15 @@ public class MainConsole extends CommonConsole {
 
 		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
-		osInterface.openStatusLink();
+		Thread listen = new Thread(() -> {
+			try {
+				osInterface.openStatusLink();
+			}
+			catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
+		});
+		listen.start();
 
 		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
@@ -95,13 +106,7 @@ public class MainConsole extends CommonConsole {
 					System.out.println(terminal.getSize());
 				}
 				else {
-					final long startTime = System.currentTimeMillis();
-
 					commands.execute(System.out, command);
-
-					final long endTime = System.currentTimeMillis();
-
-					System.out.println("Time to execute command '" + command + "': " + (endTime - startTime));
 				}
 			}
 			catch (UserInterruptException ignored) {
@@ -112,7 +117,6 @@ public class MainConsole extends CommonConsole {
 			catch (IOException e) {
 				e.printStackTrace();
 			}
-
 
 			sendCurrentStatus();
 		}

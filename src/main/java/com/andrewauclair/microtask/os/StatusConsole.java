@@ -1,6 +1,7 @@
 // Copyright (C) 2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
+import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
@@ -8,15 +9,18 @@ import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.Native;
+import com.sun.jna.Structure;
+import com.sun.jna.platform.win32.*;
+import com.sun.jna.win32.StdCallLibrary;
+import com.sun.jna.win32.W32APIOptions;
+import org.fusesource.hawtjni.runtime.ArgFlag;
+import org.fusesource.hawtjni.runtime.JniArg;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.utils.AttributedString;
-import org.jline.utils.Status;
+import org.jline.utils.InfoCmp;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,8 +28,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.*;
 
+import static java.lang.Boolean.FALSE;
+import static org.fusesource.jansi.internal.Kernel32.GetStdHandle;
+import static org.fusesource.jansi.internal.Kernel32.STD_OUTPUT_HANDLE;
+
 public class StatusConsole {
 	private final String CONSOLE_TITLE = "micro task status";
+	private final boolean directoryDisplay;
 
 	private String currentGroup;
 	private String currentList;
@@ -35,7 +44,52 @@ public class StatusConsole {
 	private final Commands commands;
 	private final Terminal terminal;
 	private final LineReader lineReader;
-	private final Status status;
+//	private final Status status;
+
+	public enum DisplayType {
+		ACTIVE_TASK("active-task", 0),
+		ACTIVE_LIST("active-list", 1),
+		ACTIVE_GROUP("active-group", 2),
+		ACTIVE_PROJECT("active-project", 3),
+		ACTIVE_FEATURE("active-feature", 4),
+		ACTIVE_MILESTONE("active-milestone", 5),
+		ACTIVE_TAGS("active-tags", 6),
+		ACTIVE_CONTEXT("active-context", 7), // special value that displays the filed value, if any, options: list, group, project, feature, milestone
+		CURRENT_LIST("current-list", 8);
+//		CURRENT_GROUP(),
+//		ACTIVE_TASK_TIME_NOW(),
+//		ACTIVE_TASK_TIME_TODAY(),
+//		ACTIVE_TASK_TIME_WEEK(),
+//		ACTIVE_TASK_TIME_ALL(),
+//		CURRENT_LIST_TIME_WEEK(),
+//		CURRENT_LIST_TIME_ALL(),
+
+		private final String name;
+		private final int value;
+
+		DisplayType(String name, int value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		public static DisplayType valueof(String name) {
+			for (final DisplayType value : values()) {
+				if (value.name.equals(name)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public static DisplayType valueOf(int value) {
+			for (final DisplayType displayType : values()) {
+				if (displayType.value == value) {
+					return displayType;
+				}
+			}
+			return null;
+		}
+	}
 
 	public enum TransferType {
 		COMMAND(0),
@@ -81,8 +135,11 @@ public class StatusConsole {
 		}
 	};
 
-	public StatusConsole() throws Exception {
+	public StatusConsole(boolean directoryDisplay) throws Exception {
+		this.directoryDisplay = directoryDisplay;
 		client = new Socket("localhost", 5678);
+
+		hidecursor();
 
 		System.out.println("Connected");
 
@@ -113,21 +170,20 @@ public class StatusConsole {
 		System.setIn(terminal.input());
 		System.setOut(new PrintStream(terminal.output()));
 
-		status = Status.getStatus(terminal);
-		status.setBorder(true);
+		if (!directoryDisplay) {
+			updateStatus(terminal);
 
-		updateStatus(status, terminal);
+			Timer timer = new Timer();
 
-		Timer timer = new Timer();
+			TimerTask timerTask = new TimerTask() {
+				@Override
+				public void run() {
+					updateStatus(terminal);
+				}
+			};
 
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				updateStatus(status, terminal);
-			}
-		};
-
-		timer.schedule(timerTask, 1000, 1000);
+			timer.schedule(timerTask, 1000, 1000);
+		}
 
 		currentGroup = tasks.getCurrentGroup().getFullPath();
 		currentList = tasks.getCurrentList().absoluteName();
@@ -166,26 +222,61 @@ public class StatusConsole {
 
 					tasks.setCurrentGroup(new ExistingGroupName(tasks, currentGroup));
 					tasks.setCurrentList(new ExistingListName(tasks, currentList));
-
-					try {
-						commands.execute(System.out, currentCommand);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
 				}
-				updateStatus(status, terminal);
+				if (directoryDisplay) {
+					displayDirectory();
+				}
+				else {
+					updateStatus(terminal);
+				}
 			}
 		}
 		catch (IOException ignored) {
 		}
 	}
 
-	private void updateStatus(Status status, Terminal terminal) {
+	private void displayDirectory() {
+		int height = osInterface.getTerminalHeight();
+		int lines = 3;
+
+		System.out.println("Current group: " + tasks.getCurrentGroup().getFullPath());
+		System.out.println();
+
+		ConsoleTable table = new ConsoleTable(osInterface);
+		table.setHeaders("Total", "Finished", "Active", "Recurring", "List / Group");
+
+		for (final TaskContainer child : tasks.getCurrentGroup().getChildren()) {
+			List<Task> tasks = child.getTasks();
+
+			int total = tasks.size();
+			long finished = tasks.stream()
+					.filter(task -> task.state == TaskState.Finished)
+					.count();
+			long active = total - finished;
+			long recurring = tasks.stream()
+					.filter(Task::isRecurring)
+					.count();
+
+			String name = child instanceof TaskGroup ? child.getName() + "/" : child.getName();
+			table.addRow(String.valueOf(total), String.valueOf(finished), String.valueOf(active), String.valueOf(recurring), name);
+
+			lines++;
+		}
+
+		table.print();
+
+		for (int i = 0; i < height - lines - 1; i++) {
+			System.out.println();
+		}
+	}
+
+	private void updateStatus(Terminal terminal) {
 		synchronized (tasks) {
+			terminal.puts(InfoCmp.Capability.cursor_address, 0, 0);
+
 			int width = osInterface.getTerminalWidth();
 
-			List<AttributedString> as = new ArrayList<>();
+			List<String> as = new ArrayList<>();
 
 			if (tasks.hasActiveTask()) {
 				String description = tasks.getActiveTask().description();
@@ -230,17 +321,23 @@ public class StatusConsole {
 				line2 += timeToday;
 				line3 += allTime;
 
-				as.add(new AttributedString(padString(terminal, description)));
-				as.add(new AttributedString(padString(terminal, line2)));
-				as.add(new AttributedString(padString(terminal, line3)));
+				as.add(padString(terminal, description));
+				as.add(padString(terminal, line2));
+				as.add(padString(terminal, line3));
 			}
 			else {
-				as.add(new AttributedString(padString(terminal, "No active task")));
-				as.add(new AttributedString(padString(terminal, "")));
-				as.add(new AttributedString(padString(terminal, "Current Group: " + currentGroup + "  Current List: " + currentList)));
+				as.add(padString(terminal, "No active task"));
+				as.add(padString(terminal, ""));
+				as.add(padString(terminal, "Current Group: " + currentGroup + "  Current List: " + currentList));
 			}
 
-			status.update(as);
+			for (final String a : as) {
+				System.out.println(a);
+			}
+
+			for (int i = 0; i < osInterface.getTerminalHeight() - 4; i++) {
+//				System.out.println();
+			}
 		}
 	}
 
@@ -324,5 +421,46 @@ public class StatusConsole {
 			return;
 		}
 		User32.INSTANCE.SetForegroundWindow(hWnd);
+	}
+
+	// typedef struct _CONSOLE_CURSOR_INFO {
+	//   DWORD dwSize;
+	//   BOOL  bVisible;
+	// } CONSOLE_CURSOR_INFO, *PCONSOLE_CURSOR_INFO;
+	public static class CONSOLE_CURSOR_INFO extends Structure {
+		public int dwSize;
+		public boolean bVisible;
+
+		public static class ByReference extends CONSOLE_CURSOR_INFO implements
+		                                                                                                     Structure.ByReference {
+		}
+
+		private static String[] fieldOrder = { "dwSize", "bVisible" };
+
+		@Override
+		protected java.util.List<String> getFieldOrder() {
+			return java.util.Arrays.asList(fieldOrder);
+		}
+	}
+
+	public interface Kernel32 extends StdCallLibrary, WinNT, Wincon {
+
+		/** The instance. */
+		Kernel32 INSTANCE = Native.load("kernel32", Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
+
+		boolean SetConsoleCursorInfo(@JniArg(cast = "HANDLE",flags = {ArgFlag.POINTER_ARG}) long handle, CONSOLE_CURSOR_INFO.ByReference info);
+	}
+
+	void hidecursor()
+	{
+		final StatusConsole.Kernel32 kernel32 = StatusConsole.Kernel32.INSTANCE;
+
+		long handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_CURSOR_INFO.ByReference info = new CONSOLE_CURSOR_INFO.ByReference();
+		info.dwSize = 100;
+		info.bVisible = false;
+		boolean set = kernel32.SetConsoleCursorInfo(handle, info);
+
+		System.out.println("Hide cursor: " + set);
 	}
 }
