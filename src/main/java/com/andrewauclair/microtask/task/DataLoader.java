@@ -10,8 +10,7 @@ import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Scanner;
 
 public class DataLoader {
@@ -46,6 +45,28 @@ public class DataLoader {
 					loadList(folder, fileInfo);
 				}
 			}
+			else if (isArchiveFile(fileInfo)) {
+				if (inGroup) {
+					// currently we do not support archiving entire lists
+					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
+				}
+
+				try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(osInterface.createInputStream(fileInfo.getPath())))) {
+					String line = bufferedReader.readLine();
+
+					do {
+						int lastSlash = line.lastIndexOf('/');
+						int lastDot = line.indexOf(".txt");
+
+						long id = Long.parseLong(line.substring(lastSlash + 1, lastDot));
+
+						Task task = reader.readTask(id, bufferedReader);
+						tasks.addTask(task);
+
+						line = bufferedReader.readLine();
+					} while (line != null);
+				}
+			}
 			else if (isTaskFile(fileInfo)) {
 				if (inGroup) {
 					throw new TaskException("Unexpected file '" + fileInfo.getPath() + "'");
@@ -78,6 +99,10 @@ public class DataLoader {
 				!fileInfo.getFileName().equals("project.txt") &&
 				!fileInfo.getFileName().equals("feature.txt") &&
 				!fileInfo.getFileName().startsWith("milestone");
+	}
+
+	private boolean isArchiveFile(OSInterface.TaskFileInfo fileInfo) {
+		return fileInfo.getFileName().equals("archive.txt");
 	}
 
 	private void loadList(String folder, OSInterface.TaskFileInfo fileInfo) throws IOException {

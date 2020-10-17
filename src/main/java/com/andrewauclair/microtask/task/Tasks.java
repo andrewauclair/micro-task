@@ -461,6 +461,8 @@ public class Tasks {
 		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
 		writer.writeTask(task, file);
 
+		findListForTask(new ExistingID(this, task.id)).writeArchive();
+
 		osInterface.gitCommit("Set state for task " + task.id + " to " + state);
 
 		return task;
