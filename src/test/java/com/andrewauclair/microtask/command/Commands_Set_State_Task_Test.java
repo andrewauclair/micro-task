@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,5 +73,26 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 				"Task 1 - 'Test' must be finished first",
 				""
 		);
+	}
+
+	@Test
+	void setting_task_back_to_inactive_moves_it_out_of_archive() throws IOException {
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.finishTask(existingID(1));
+		tasks.finishTask(existingID(2));
+		tasks.finishTask(existingID(3));
+
+		Mockito.reset(writer);
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
+
+		commands.execute(printStream, "set task 1 --inactive");
+
+		Mockito.verify(writer).writeTask(tasks.getTask(existingID(1)), "git-data/tasks/default/1.txt");
+		Mockito.verify(writer).writeTask(tasks.getTask(existingID(2)), archiveStream);
+		Mockito.verify(writer).writeTask(tasks.getTask(existingID(3)), archiveStream);
 	}
 }

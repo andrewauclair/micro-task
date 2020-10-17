@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,21 +81,39 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	void finishing_task_tells_task_writer_to_write_file() {
+	void finishing_task_tells_task_writer_to_write_file() throws IOException {
 		tasks.startTask(existingID(1), false);
 
 		Mockito.reset(writer);
 
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
+
 		Task task = tasks.finishTask();
 
-		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
+		Mockito.verify(writer).writeTask(task, archiveStream);
 	}
 
 	@Test
-	void finishing_task_tells_git_control_to_add_file_and_commit() {
+	void finishing_task_removes_existing_task_file() throws IOException {
+		tasks.startTask(existingID(1), false);
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
+
+		tasks.finishTask();
+
+		Mockito.verify(osInterface).removeFile("git-data/tasks/default/1.txt");
+	}
+
+	@Test
+	void finishing_task_tells_git_control_to_add_file_and_commit() throws IOException {
 		tasks.startTask(existingID(2), false);
 
 		Mockito.reset(osInterface);
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
 
 		tasks.finishTask();
 

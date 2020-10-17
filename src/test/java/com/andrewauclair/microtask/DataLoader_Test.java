@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
@@ -123,19 +124,46 @@ public class DataLoader_Test {
 		featureTwo.entities.add(new DataFile("feature.txt", "two", ""));
 		featureTwo.entities.add(new DataFile("list.txt", "InProgress", ""));
 
-		featureOne.entities.add(new DataFile("1.txt", "Test",
+		featureTwo.entities.add(new DataFile("1.txt", "Test",
 				"Active",
 				"false",
 				"",
 				"",
-				"add 500"));
+				"add 500",
+				"END"));
 
 		featureOne.entities.add(new DataFile("2.txt", "Test",
-				"Active",
+				"Inactive",
 				"false",
 				"",
 				"",
-				"add 1000"));
+				"add 1000",
+				"END"));
+		featureOne.entities.add(new DataFile("archive.txt",
+				"git-data/tasks/projects/micro-task/one/3.txt",
+				"Test Finished",
+				"Finished",
+				"false",
+				"",
+				"",
+				"add 1001",
+				"END",
+				"git-data/tasks/projects/micro-task/one/4.txt",
+				"Test Finished 2",
+				"Finished",
+				"false",
+				"",
+				"",
+				"add 1002",
+				"END",
+				"git-data/tasks/projects/micro-task/one/5.txt",
+				"Test Finished 3",
+				"Finished",
+				"false",
+				"",
+				"",
+				"add 1003",
+				"END"));
 
 		meetings.entities.add(new DataFile("list.txt", "InProgress"));
 
@@ -221,7 +249,26 @@ public class DataLoader_Test {
 		//			new Task(2, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		assertThat(project.getMilestone(new ExistingMilestone(project, "20.9.3")).getTasks()).containsOnly(
 				new ExistingID(tasks, 1L),
-				new ExistingID(tasks, 2L)
+				new ExistingID(tasks, 2L),
+				new ExistingID(tasks, 3L),
+				new ExistingID(tasks, 4L),
+				new ExistingID(tasks, 5L)
+		);
+	}
+
+	@Test
+	void load_micro_task_feature_one_tasks() throws IOException {
+		createMocks();
+
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+
+		dataLoader.load();
+
+		assertThat(tasks.getTasksForList(new ExistingListName(tasks, "/projects/micro-task/one"))).containsOnly(
+				new Task(2, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
+				new Task(3, "Test Finished", TaskState.Finished, Collections.singletonList(new TaskTimes(1001))),
+				new Task(4, "Test Finished 2", TaskState.Finished, Collections.singletonList(new TaskTimes(1002))),
+				new Task(5, "Test Finished 3", TaskState.Finished, Collections.singletonList(new TaskTimes(1003)))
 		);
 	}
 

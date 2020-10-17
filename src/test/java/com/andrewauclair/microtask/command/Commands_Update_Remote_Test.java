@@ -65,7 +65,9 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 				"Inactive",
 				"false",
 				"",
-				"add 1000"
+				"add 1000",
+				"END",
+				""
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/test/1.txt")).thenReturn(inputStream);

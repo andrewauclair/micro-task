@@ -30,7 +30,8 @@ class TaskReaderTest {
 				"add 123",
 				"start 1234",
 				"Project",
-				"Feature"
+				"Feature",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/tasks/default/1.txt")).thenReturn(inputStream);
@@ -58,7 +59,8 @@ class TaskReaderTest {
 				"true",
 				"Project",
 				"Feature",
-				"add 123"
+				"add 123",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -85,7 +87,8 @@ class TaskReaderTest {
 				"false",
 				"",
 				"",
-				"add 123"
+				"add 123",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -119,7 +122,8 @@ class TaskReaderTest {
 				"start 3333",
 				"",
 				"",
-				""
+				"",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -155,7 +159,8 @@ class TaskReaderTest {
 				"start 3333",
 				"",
 				"",
-				"stop 5555"
+				"stop 5555",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -191,7 +196,8 @@ class TaskReaderTest {
 				"start 3333",
 				"Project 2",
 				"Feature 2",
-				"stop 5555"
+				"stop 5555",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -228,7 +234,8 @@ class TaskReaderTest {
 				"start 3333",
 				"Project 2",
 				"Feature 2",
-				"stop 5555"
+				"stop 5555",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
@@ -261,7 +268,8 @@ class TaskReaderTest {
 				"",
 				"",
 				"stop 3456",
-				"finish 3456"
+				"finish 3456",
+				"END"
 		);
 
 		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);

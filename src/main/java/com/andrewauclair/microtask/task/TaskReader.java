@@ -4,7 +4,9 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 @SuppressWarnings("CanBeFinal")
@@ -16,11 +18,20 @@ public class TaskReader {
 	}
 
 	Task readTask(long id, String fileName) throws IOException {
-		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(osInterface.createInputStream(fileName)))) {
+			return readTask(id, reader);
+		}
+//		catch (IOException e) {
+//			e.printStackTrace(System.out);
+//		}
+	}
+
+	Task readTask(long id, BufferedReader reader) throws IOException {
+//		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
 			TaskBuilder builder = new TaskBuilder(id)
-					.withName(scanner.nextLine())
-					.withState(TaskState.valueOf(scanner.nextLine()))
-					.withRecurring(Boolean.parseBoolean(scanner.nextLine()));
+					.withName(reader.readLine())
+					.withState(TaskState.valueOf(reader.readLine()))
+					.withRecurring(Boolean.parseBoolean(reader.readLine()));
 
 			long start = 0;
 			long stop = TaskTimes.TIME_NOT_SET;
@@ -30,8 +41,11 @@ public class TaskReader {
 
 			boolean foundStartTime = false;
 
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
+			String line = reader.readLine();
+
+//			while (line != null && !line.startsWith("END")) {
+			do {
+//				line = reader.readLine();
 
 				if (line.startsWith("start")) {
 					start = Integer.parseInt(line.substring(6));
@@ -39,8 +53,8 @@ public class TaskReader {
 
 					foundStartTime = true;
 
-					timeProject = scanner.nextLine();
-					timeFeature = scanner.nextLine();
+					timeProject = reader.readLine();
+					timeFeature = reader.readLine();
 				}
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
@@ -57,13 +71,15 @@ public class TaskReader {
 
 					builder.withTime(new TaskTimes(finish));
 				}
-			}
+
+				line = reader.readLine();
+			} while (line != null && !line.startsWith("END"));
 
 			if (foundStartTime && stop == TaskTimes.TIME_NOT_SET) {
 				builder.withTime(new TaskTimes(start, stop, timeProject, timeFeature));
 			}
 
 			return builder.build();
-		}
+//		}
 	}
 }

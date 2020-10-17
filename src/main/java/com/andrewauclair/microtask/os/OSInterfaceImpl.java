@@ -209,10 +209,14 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public void removeFile(String fileName) {
-		boolean delete = new File(fileName).delete();
+		File file = new File(fileName);
 
-		if (!delete) {
-			throw new RuntimeException("Failed to delete " + fileName);
+		if (file.exists()) {
+			boolean delete = new File(fileName).delete();
+
+			if (!delete) {
+				throw new RuntimeException("Failed to delete " + fileName);
+			}
 		}
 	}
 

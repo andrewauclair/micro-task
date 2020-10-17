@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
-	void finish_writes_file_on_correct_list() {
+	void finish_writes_file_on_correct_list() throws IOException {
 		tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
 		
@@ -29,14 +29,39 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 		
 		Mockito.reset(writer);
-		
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
+
 		Task task = tasks.finishTask();
-		
-		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
+
+		Mockito.verify(writer).writeTask(task, archiveStream);
 	}
-	
+
 	@Test
-	void finish_tells_git_control_to_add_correct_files() {
+	void finish_multiple_files_and_write_archive() throws IOException {
+		tasks.addList(newList("one"), true);
+
+		tasks.setCurrentList(existingList("one"));
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/one/archive.txt")).thenReturn(archiveStream);
+
+		Task task1 = tasks.finishTask(existingID(1));
+
+		Mockito.reset(writer);
+
+		Task task2 = tasks.finishTask(existingID(2));
+
+		Mockito.verify(writer).writeTask(task1, archiveStream);
+		Mockito.verify(writer).writeTask(task2, archiveStream);
+	}
+
+	@Test
+	void finish_tells_git_control_to_add_correct_files() throws IOException {
 		tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
 		
@@ -47,6 +72,9 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		tasks.addTask("Test 2");
 		
 		Mockito.reset(osInterface);
+
+		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
 		
 		tasks.finishTask();
 		

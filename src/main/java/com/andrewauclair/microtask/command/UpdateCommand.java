@@ -66,8 +66,15 @@ public final class UpdateCommand implements Runnable {
 				writer.write();
 
 				for (final Task task : list.getTasks()) {
-					tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+					if (task.state == TaskState.Finished) {
+						osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+					}
+					else {
+						tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+					}
 				}
+
+				list.writeArchive();
 			}
 		}
 	}

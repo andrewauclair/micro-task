@@ -35,12 +35,29 @@ class TaskWriterTest {
 				"false",
 				"",
 				"add 1234",
+				"END",
 				""
 		);
 
 		assertTrue(writeTask);
 	}
-	
+
+	@Test
+	void write_task_contents_to_specific_output_stream() {
+		Task task = new Task(5, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
+		writer.writeTask(task, outputStream);
+
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"",
+				"add 1234",
+				"END",
+				""
+		);
+	}
 	@Test
 	void write_recurring_task() {
 		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, Collections.emptyList());
@@ -52,6 +69,7 @@ class TaskWriterTest {
 				"true",
 				"",
 				"add 1000",
+				"END",
 				""
 		);
 
@@ -78,6 +96,7 @@ class TaskWriterTest {
 				"Project 1",
 				"",
 				"stop 4567",
+				"END",
 				""
 		);
 		assertTrue(writeTask);
@@ -103,6 +122,7 @@ class TaskWriterTest {
 				"",
 				"Feature 1",
 				"stop 4567",
+				"END",
 				""
 		);
 		assertTrue(writeTask);
@@ -128,6 +148,7 @@ class TaskWriterTest {
 				"Project 1",
 				"Feature 1",
 				"stop 4567",
+				"END",
 				""
 		);
 		assertTrue(writeTask);
@@ -147,6 +168,7 @@ class TaskWriterTest {
 				"start 2345",
 				"",
 				"",
+				"END",
 				""
 		);
 
@@ -168,6 +190,7 @@ class TaskWriterTest {
 				"",
 				"",
 				"stop 4567",
+				"END",
 				""
 		);
 		assertTrue(writeTask);
@@ -198,6 +221,7 @@ class TaskWriterTest {
 				"start 3333",
 				"",
 				"",
+				"END",
 				""
 		);
 
@@ -229,6 +253,7 @@ class TaskWriterTest {
 				"",
 				"",
 				"stop 5555",
+				"END",
 				""
 		);
 
@@ -260,6 +285,7 @@ class TaskWriterTest {
 				"Project 2",
 				"Feature 2",
 				"stop 5555",
+				"END",
 				""
 		);
 		assertTrue(writeTask);
@@ -287,6 +313,7 @@ class TaskWriterTest {
 				"",
 				"stop 4567",
 				"finish 5678",
+				"END",
 				""
 		);
 		assertTrue(writeTask);

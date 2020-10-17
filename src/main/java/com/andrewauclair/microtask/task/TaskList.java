@@ -6,7 +6,10 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class TaskList implements TaskContainer {
 	private final String name;
@@ -16,9 +19,6 @@ public final class TaskList implements TaskContainer {
 
 	private final OSInterface osInterface;
 	private final TaskWriter writer;
-
-//	private final String project;
-//	private final String feature;
 
 	private final TaskContainerState state;
 
@@ -31,8 +31,6 @@ public final class TaskList implements TaskContainer {
 		this.parent = parent;
 		this.osInterface = osInterface;
 		this.writer = writer;
-//		this.project = project;
-//		this.feature = feature;
 		this.state = state;
 
 		parentPath = parent.getFullPath();
@@ -72,16 +70,6 @@ public final class TaskList implements TaskContainer {
 				.anyMatch(task -> task.id == taskID);
 	}
 
-//	@Override
-//	public String getProject() {
-//		return project;
-//	}
-//
-//	@Override
-//	public String getFeature() {
-//		return feature;
-//	}
-
 	@Override
 	public TaskContainerState getState() {
 		return state;
@@ -97,20 +85,6 @@ public final class TaskList implements TaskContainer {
 
 		return list;
 	}
-
-//	TaskList changeProject(String project) {
-//		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
-//		list.tasks.addAll(tasks);
-//
-//		return list;
-//	}
-//
-//	TaskList changeFeature(String feature) {
-//		TaskList list = new TaskList(name, parent, osInterface, writer, project, feature, state);
-//		list.tasks.addAll(tasks);
-//
-//		return list;
-//	}
 
 	TaskList changeState(TaskContainerState state) {
 		TaskList list = new TaskList(name, parent, osInterface, writer, state);
@@ -146,8 +120,6 @@ public final class TaskList implements TaskContainer {
 				Objects.equals(tasks, taskList.tasks) &&
 				Objects.equals(osInterface, taskList.osInterface) &&
 				Objects.equals(writer, taskList.writer) &&
-//				Objects.equals(project, taskList.project) &&
-//				Objects.equals(feature, taskList.feature) &&
 				Objects.equals(state, taskList.state);
 	}
 
@@ -157,8 +129,6 @@ public final class TaskList implements TaskContainer {
 				"name='" + name + '\'' +
 				", fullPath='" + fullPath + '\'' +
 				", tasks=" + tasks +
-//				", project='" + project + '\'' +
-//				", feature='" + feature + '\'' +
 				'}';
 	}
 
@@ -179,6 +149,32 @@ public final class TaskList implements TaskContainer {
 
 	private void writeTask(Task task) {
 		writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+	}
+
+	public void writeArchive() {
+		List<Task> finished = tasks.stream()
+				.filter(task -> task.state == TaskState.Finished)
+				.collect(Collectors.toList());
+
+		if (finished.size() > 0) {
+			try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + getFullPath() + "/archive.txt")) {
+				for (final Task task : finished) {
+					String fileName = "git-data/tasks" + getFullPath() + "/" + task.id + ".txt";
+					osInterface.removeFile(fileName);
+
+					outputStream.writeBytes(fileName);
+					outputStream.writeBytes("\n");
+					writer.writeTask(task, outputStream);
+				}
+			}
+			catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
+		}
+		else {
+			// delete an archive.txt if it exists
+			osInterface.removeFile("git-data/tasks" + getFullPath() + "/archive.txt");
+		}
 	}
 
 	private void addAndCommit(Task task, String comment) {
@@ -252,7 +248,7 @@ public final class TaskList implements TaskContainer {
 
 		replaceTask(currentTask, finishedTask);
 
-		writeTask(finishedTask);
+		writeArchive();
 		addAndCommit(finishedTask, "Finished task");
 
 		return finishedTask;
