@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
@@ -28,7 +29,7 @@ class TaskLoader_TaskContainerState_Test extends TaskBaseTestCase {
 
 		loader = new TaskLoader(tasks, reader, localSettings, projects, osInterface);
 
-		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
+		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> newTask(invocation.getArgument(0), "Test", TaskState.Inactive, 0));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.doThrow(new RuntimeException("TaskLoader should not run git commands")).when(osInterface).gitCommit(Mockito.anyString());
 	}

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -176,14 +177,14 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void TaskFilterResult_toString() {
-		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, taskTimes=[1000 - 2000, project='', feature=''], recurring=false, tags=[]}, list='/default'}",
-				new TaskTimesFilter.TaskTimeFilterResult(1000, new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
+		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, addTime=1000, finishTime=None, startStopTimes=[1000 - 2000, project='', feature=''], recurring=false, due=605800, tags=[]}, list='/default'}",
+				new TaskTimesFilter.TaskTimeFilterResult(1000, newTask(1, "Test", TaskState.Inactive, 1000, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
 	}
 	
 	@Test
 	void includes_only_tasks_for_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
@@ -199,8 +200,8 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_only_times_from_correct_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)));
+		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Arrays.asList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)));
 		tasks.addTask(task2);
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
@@ -216,11 +217,11 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void ignores_active_task_on_latest_day() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
-		tasks.addTask(new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june24_8_am))));
+		tasks.addTask(newTask(3, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june24_8_am))));
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
@@ -235,11 +236,11 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_active_task_using_current_time_as_stop() {
-		tasks.addTask(new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am, HOUR))));
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(1000), createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
 		tasks.addTask(task2);
 		
-		Task task3 = new Task(3, "Test 3", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(june17_8_am + SECONDS_IN_DAY)));
+		Task task3 = newTask(3, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june17_8_am + SECONDS_IN_DAY)));
 		tasks.addTask(task3);
 		
 		Mockito.when(osInterface.currentSeconds()).thenReturn(june17_8_am + SECONDS_IN_DAY + HOUR + MINUTE);

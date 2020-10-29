@@ -10,7 +10,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.Utils.NL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,7 +97,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		Task task = tasks.finishTask(existingID(1));
 		
 		assertEquals(
-				new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000, 3000), new TaskTimes(3000))),
+				newTask(1, "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))),
 				task
 		);
 	}

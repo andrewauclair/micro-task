@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -135,6 +136,7 @@ public class DataLoader_Test {
 		featureOne.entities.add(new DataFile("2.txt", "Test",
 				"Inactive",
 				"false",
+				"due 605800",
 				"",
 				"",
 				"add 1000",
@@ -144,6 +146,7 @@ public class DataLoader_Test {
 				"Test Finished",
 				"Finished",
 				"false",
+				"due 605801",
 				"",
 				"",
 				"add 1001",
@@ -152,6 +155,7 @@ public class DataLoader_Test {
 				"Test Finished 2",
 				"Finished",
 				"false",
+				"due 605802",
 				"",
 				"",
 				"add 1002",
@@ -160,6 +164,7 @@ public class DataLoader_Test {
 				"Test Finished 3",
 				"Finished",
 				"false",
+				"due 605803",
 				"",
 				"",
 				"add 1003",
@@ -265,10 +270,10 @@ public class DataLoader_Test {
 		dataLoader.load();
 
 		assertThat(tasks.getTasksForList(new ExistingListName(tasks, "/projects/micro-task/one"))).containsOnly(
-				new Task(2, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
-				new Task(3, "Test Finished", TaskState.Finished, Collections.singletonList(new TaskTimes(1001))),
-				new Task(4, "Test Finished 2", TaskState.Finished, Collections.singletonList(new TaskTimes(1002))),
-				new Task(5, "Test Finished 3", TaskState.Finished, Collections.singletonList(new TaskTimes(1003)))
+				newTask(2, "Test", TaskState.Inactive, 1000),
+				newTask(3, "Test Finished", TaskState.Finished, 1001),
+				newTask(4, "Test Finished 2", TaskState.Finished, 1002),
+				newTask(5, "Test Finished 3", TaskState.Finished, 1003)
 		);
 	}
 

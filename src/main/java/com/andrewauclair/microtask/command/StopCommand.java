@@ -54,7 +54,7 @@ final class StopCommand implements Runnable {
 			System.out.println("Stopped task " + task.description());
 			System.out.println();
 
-			List<TaskTimes> times = task.getAllTimes();
+			List<TaskTimes> times = task.startStopTimes;
 			TaskTimes stopTime = times.get(times.size() - 1);
 
 			System.out.println(stopTime.description(parent.osInterface.getZoneId()));

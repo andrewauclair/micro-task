@@ -7,7 +7,9 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +24,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Task oldTask = tasks.startTask(existingID(2), false);
 
-		Task expectedOldTask = new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
+		Task expectedOldTask = newTask(2, "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 		assertEquals(expectedOldTask, tasks.getActiveTask());
 		assertEquals(expectedOldTask, oldTask);
 
@@ -34,7 +36,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		assertEquals("No active task.", taskException.getMessage());
 
-		assertEquals(new Task(2, "Test 2", TaskState.Inactive, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234, 4567))), stoppedTask);
+		assertEquals(newTask(2, "Test 2", TaskState.Inactive, 2000, Collections.singletonList(new TaskTimes(1234, 4567))), stoppedTask);
 		assertThat(tasks.getTasks()).doesNotContain(oldTask);
 		assertThat(tasks.getTasks()).contains(stoppedTask);
 	}
@@ -87,9 +89,9 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task task = tasks.stopTask();
-		
-		assertThat(task.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, task.addTime);
+		assertThat(task.startStopTimes).containsOnly(
 				new TaskTimes(1234, 4567)
 		);
 	}
@@ -113,14 +115,14 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task stop2 = tasks.stopTask();
-		
-		assertThat(stop1.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, stop1.addTime);
+		assertThat(stop1.startStopTimes).containsOnly(
 				new TaskTimes(1234, 2345)
 		);
-		
-		assertThat(stop2.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, stop2.addTime);
+		assertThat(stop2.startStopTimes).containsOnly(
 				new TaskTimes(1234, 2345),
 				new TaskTimes(3456, 4567)
 		);

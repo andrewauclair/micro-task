@@ -10,10 +10,13 @@ import java.util.List;
 
 public final class TaskBuilder {
 	private final long id;
-	private final List<TaskTimes> taskTimes = new ArrayList<>();
 	private String task;
 	private TaskState state;
+	private long addTime;
+	private long finishTime = TaskTimes.TIME_NOT_SET;
+	private final List<TaskTimes> startStopTimes = new ArrayList<>();
 	private boolean recurring;
+	private long dueTime;
 	private final List<String> tags = new ArrayList<>();
 
 	public TaskBuilder(long id) {
@@ -24,12 +27,15 @@ public final class TaskBuilder {
 		id = task.id;
 		this.task = task.task;
 		state = task.state;
-		taskTimes.addAll(task.getAllTimes());
-		recurring = task.isRecurring();
-		tags.addAll(task.getTags());
+		addTime = task.addTime;
+		finishTime = task.finishTime;
+		startStopTimes.addAll(task.startStopTimes);
+		recurring = task.recurring;
+		dueTime = task.dueTime;
+		tags.addAll(task.tags);
 	}
 
-	public TaskBuilder withName(String name) {
+	public TaskBuilder withTask(String name) {
 		if (state == TaskState.Finished) {
 			throw new TaskException("Task " + id + " cannot be renamed because it has been finished.");
 		}
@@ -39,19 +45,35 @@ public final class TaskBuilder {
 
 	public TaskBuilder withState(TaskState state) {
 		if (this.state == TaskState.Finished && state != TaskState.Finished) {
-			taskTimes.remove(taskTimes.size() - 1);
+//			startStopTimes.remove(startStopTimes.size() - 1);
+			finishTime = TaskTimes.TIME_NOT_SET;
 		}
 		this.state = state;
 		return this;
 	}
 
-	public TaskBuilder withTime(TaskTimes time) {
-		taskTimes.add(time);
+	public TaskBuilder withAddTime(long addTime) {
+		this.addTime = addTime;
+		return this;
+	}
+
+	public TaskBuilder withFinishTime(long finishTime) {
+		this.finishTime = finishTime;
+		return this;
+	}
+
+	public TaskBuilder withStartStopTime(TaskTimes time) {
+		startStopTimes.add(time);
 		return this;
 	}
 
 	public TaskBuilder withRecurring(boolean recurring) {
 		this.recurring = recurring;
+		return this;
+	}
+
+	public TaskBuilder withDueTime(long dueTime) {
+		this.dueTime = dueTime;
 		return this;
 	}
 
@@ -65,33 +87,32 @@ public final class TaskBuilder {
 		TaskList list = new TaskFinder(tasks).findListForTask(existingID);
 		String project = projects.getProjectForList(list);
 		String feature = projects.getFeatureForList(list);
-//		taskTimes.add(new TaskTimes(start, new TaskFinder(tasks).getProjectForTask(existingID), new TaskFinder(tasks).getFeatureForTask(existingID)));
-		taskTimes.add(new TaskTimes(start, project, feature));
+		startStopTimes.add(new TaskTimes(start, project, feature));
 		state = TaskState.Active;
 		return build();
 	}
 
 	public Task build() {
-		return new Task(id, task, state, taskTimes, recurring, tags);
+		return new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 	}
 
-	public Task finish(long stop) {
+	public Task finish(long finishTime) {
 		if (state == TaskState.Active) {
-			addStopTime(stop);
+			addStopTime(finishTime);
 		}
 		state = TaskState.Finished;
 
 		// finish time
-		taskTimes.add(new TaskTimes(stop));
+		this.finishTime = finishTime;
 
 		return build();
 	}
 
 	private void addStopTime(long stop) {
-		TaskTimes lastTime = taskTimes.remove(taskTimes.size() - 1);
+		TaskTimes lastTime = startStopTimes.remove(startStopTimes.size() - 1);
 
 		TaskTimes stopTime = new TaskTimes(lastTime.start, stop, lastTime.project, lastTime.feature);
-		taskTimes.add(stopTime);
+		startStopTimes.add(stopTime);
 	}
 
 	public Task stop(long stop) {

@@ -109,7 +109,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "add":
 				cmdLine.addSubcommand("add",
 						new CommandLine(new AddCommand(), factory)
-								.addSubcommand(new AddTaskCommand(tasks, this))
+								.addSubcommand(new AddTaskCommand(tasks, this, osInterface))
 								.addSubcommand(new AddListCommand(tasks))
 								.addSubcommand(new AddGroupCommand(tasks))
 								.addSubcommand(new AddProjectCommand(projects))
@@ -139,7 +139,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "set":
 				cmdLine.addSubcommand("set",
 						new CommandLine(new SetCommand(), factory)
-								.addSubcommand(new SetTaskCommand(tasks))
+								.addSubcommand(new SetTaskCommand(tasks, osInterface))
 								.addSubcommand(new SetListCommand(tasks))
 								.addSubcommand(new SetGroupCommand(tasks))
 				);

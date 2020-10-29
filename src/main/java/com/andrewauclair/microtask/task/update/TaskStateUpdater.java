@@ -4,10 +4,7 @@ package com.andrewauclair.microtask.task.update;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.ExistingID;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 
 import java.util.Optional;
 
@@ -53,8 +50,20 @@ public class TaskStateUpdater {
 		long startTime = osInterface.currentSeconds();
 
 		if (lastTask.isPresent()) {
-			int size = lastTask.get().getStartStopTimes().size();
-			startTime = lastTask.get().getStartStopTimes().get(size - 1).stop;
+			//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+			int size = lastTask.get().startStopTimes.size();
+			//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+			startTime = lastTask.get().startStopTimes.get(size - 1).stop;
 		}
 
 		return tasks.getList(tasks.getActiveTaskList()).startTask(new ExistingID(tasks, tasks.getActiveTaskID()), startTime, tasks, projects);

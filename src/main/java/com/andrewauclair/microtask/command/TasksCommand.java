@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.*;
@@ -11,7 +12,9 @@ import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 
+import java.time.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,8 +23,7 @@ import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_BLACK;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.*;
 
 public class TasksCommand implements Runnable {
 	@CommandLine.Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
@@ -198,24 +200,24 @@ public class TasksCommand implements Runnable {
 
 		if (feature.isPresent()) {
 			tasks = feature.get().getTasks().stream()
-					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.filter(task -> !useTags || task.tags.containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else if (milestone.isPresent()) {
 			tasks = milestone.get().getTasks().stream()
 					.map(tasksData::getTask)
-					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.filter(task -> !useTags || task.tags.containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else if (useGroup) {
 			tasks = getTasks(tasksData.getGroup(group), finished, recursive).stream()
-					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.filter(task -> !useTags || task.tags.containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else {
 			List<Task> tasksList = tasksData.getTasksForList(list).stream()
 					.filter(task -> finished == (task.state == TaskState.Finished))
-					.filter(task -> !useTags || task.getTags().containsAll(tags))
+					.filter(task -> !useTags || task.tags.containsAll(tags))
 					.collect(Collectors.toList());
 
 			tasks.addAll(tasksList);
@@ -227,9 +229,16 @@ public class TasksCommand implements Runnable {
 
 		table.setRowLimit(limit, true);
 
-		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
-
 		Optional<Task> activeTask = Optional.empty();
+		List<Task> dueTasks = tasksData.getActiveContext().hasAnyContext() ? new ArrayList<>() : getDueTasks();
+
+		// remove any tasks that are duplicated between tasks and dueTasks
+		for (final Task dueTask : dueTasks) {
+			tasks.removeIf(dueTask::equals);
+		}
+
+		dueTasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
+		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
 
 		for (final Task task : tasks) {
 			if (task.state == TaskState.Active) {
@@ -239,15 +248,23 @@ public class TasksCommand implements Runnable {
 				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-				addTaskToTable(table, task, name, useGroup);
+				addTaskToTable(table, task, name, false, useGroup);
 			}
+		}
+
+		tasks.addAll(dueTasks);
+
+		for (Task dueTask : dueTasks) {
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
+			addTaskToTable(table, dueTask, name, true, useGroup);
 		}
 
 		if (activeTask.isPresent()) {
 			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-			addTaskToTable(table, activeTask.get(), name, useGroup);
+			addTaskToTable(table, activeTask.get(), name, false, useGroup);
 		}
 
 		int totalTasks = tasks.size();
@@ -257,7 +274,7 @@ public class TasksCommand implements Runnable {
 		}
 
 		long totalRecurring = tasks.stream()
-				.filter(Task::isRecurring)
+				.filter(task -> task.recurring)
 				.count();
 
 		if (totalTasks > limit) {
@@ -288,7 +305,29 @@ public class TasksCommand implements Runnable {
 		System.out.println();
 	}
 
-	private void addTaskToTable(ConsoleTable table, Task task, String listName, boolean printListName) {
+	private List<Task> getDueTasks() {
+		long epochSecond = osInterface.currentSeconds();
+
+		Instant instant = Instant.ofEpochSecond(epochSecond);
+
+		ZoneId zoneId = osInterface.getZoneId();
+		LocalDate today = LocalDate.ofInstant(instant, zoneId);
+		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
+		LocalDateTime nextMidnight = midnight.plusDays(1);
+		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
+
+		List<Task> dueTasks = new ArrayList<>();
+
+		for (Task task : tasksData.getAllTasks()) {
+			if (task.dueTime < midnightStop) {
+				dueTasks.add(task);
+			}
+		}
+
+		return dueTasks;
+	}
+
+	private void addTaskToTable(ConsoleTable table, Task task, String listName, boolean due, boolean printListName) {
 		boolean active = task.id == tasksData.getActiveTaskID();
 
 		String type = "";
@@ -299,7 +338,7 @@ public class TasksCommand implements Runnable {
 			type = " ";
 		}
 
-		if (task.isRecurring()) {
+		if (task.recurring) {
 			type += "R";
 		}
 		else {
@@ -313,11 +352,20 @@ public class TasksCommand implements Runnable {
 			type += " ";
 		}
 
+		ConsoleColors.ConsoleBackgroundColor bgColor = ANSI_BG_BLACK;
+
+		if (active) {
+			bgColor = ANSI_BG_GREEN;
+		}
+		else if (due) {
+			bgColor = ANSI_BG_RED;
+		}
+
 		if (printListName) {
-			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, listName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, listName, type, String.valueOf(task.id), task.task);
 		}
 		else {
-			table.addRow(active ? ANSI_BG_GREEN : ANSI_BG_BLACK, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, type, String.valueOf(task.id), task.task);
 		}
 	}
 

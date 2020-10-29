@@ -37,6 +37,8 @@ import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
 @SuppressWarnings("CanBeFinal")
 public class Tasks {
+	public static final long DEFAULT_DUE_TIME = 604_800L;
+
 	final OSInterface osInterface;
 	private final PrintStream output;
 	private final TaskWriter writer;
@@ -92,11 +94,10 @@ public class Tasks {
 		return getGroupForList(listName).getListAbsolute(listName.absoluteName());
 	}
 
-	private long incrementID() {
+	public long incrementID() {
 		long nextID = this.nextID++;
 
 		writeNextID();
-//		osInterface.runGitCommand("git add next-id.txt");
 
 		return nextID;
 	}
@@ -324,7 +325,7 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
 		}
 
-		getList(activeContext.getCurrentList()).addTask(task);
+		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
@@ -439,6 +440,12 @@ public class Tasks {
 	}
 
 	public void replaceTask(ExistingListName listName, Task oldTask, Task newTask) {
+		TaskList list = getList(listName);
+		list.removeTask(oldTask);
+		list.addTaskNoWriteCommit(newTask);
+	}
+
+	public void replaceTaskAndCommit(ExistingListName listName, Task oldTask, Task newTask) {
 		TaskList list = getList(listName);
 		list.removeTask(oldTask);
 		list.addTask(newTask);

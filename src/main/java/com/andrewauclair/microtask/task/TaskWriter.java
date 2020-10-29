@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -33,12 +32,19 @@ public class TaskWriter {
 
 		printStream.println(task.task);
 		printStream.println(task.state);
-		printStream.println(task.isRecurring());
+		printStream.println(task.recurring);
+		printStream.println("due " + task.dueTime);
 		printStream.println();
 
-		writeTime(printStream, "add", task.getAddTime().start);
+		writeTime(printStream, "add", task.addTime);
 
-		List<TaskTimes> taskTimes = task.getStartStopTimes();
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		List<TaskTimes> taskTimes = task.startStopTimes;
 
 		for (TaskTimes time : taskTimes) {
 			writeTime(printStream, "start", time.start);
@@ -51,8 +57,8 @@ public class TaskWriter {
 			}
 		}
 
-		if (task.getFinishTime().isPresent()) {
-			writeTime(printStream, "finish", task.getFinishTime().get().start);
+		if (task.finishTime != TaskTimes.TIME_NOT_SET) {
+			writeTime(printStream, "finish", task.finishTime);
 		}
 		printStream.println("END");
 	}

@@ -31,7 +31,7 @@ public class TaskTimesFilter {
 		for (Task task : allTasks) {
 			long totalTime = 0;
 
-			for (TaskTimes time : task.getStartStopTimes()) {
+			for (TaskTimes time : task.startStopTimes) {
 				totalTime += time.getDuration(osInterface);
 			}
 
@@ -79,7 +79,7 @@ public class TaskTimesFilter {
 		for (Task task : allTasks) {
 			long totalTime = 0;
 
-			for (TaskTimes time : task.getStartStopTimes()) {
+			for (TaskTimes time : task.startStopTimes) {
 				if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 					totalTime += time.getDuration(osInterface);
 				}

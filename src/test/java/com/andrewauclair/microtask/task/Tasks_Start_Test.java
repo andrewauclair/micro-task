@@ -13,6 +13,8 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
+import static com.andrewauclair.microtask.TestUtils.newTaskBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,8 +29,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task newActiveTask = tasks.startTask(existingID(task.id), false);
 
-		Task oldTask = new Task(2, "Testing task start command", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
-		Task activeTask = new Task(2, "Testing task start command", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
+		Task oldTask = newTask(2, "Testing task start command", TaskState.Inactive, 0);
+		Task activeTask = newTask(2, "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -76,13 +78,19 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
 		Task task = tasks.startTask(existingID(1), false);
-		
-		assertThat(task.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, task.addTime);
+		assertThat(task.startStopTimes).containsOnly(
 				new TaskTimes(1234, Long.MIN_VALUE)
 		);
 
-		assertThat(task.getStartStopTimes()).containsOnly(
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		assertThat(task.startStopTimes).containsOnly(
 				new TaskTimes(1234, Long.MIN_VALUE)
 		);
 	}
@@ -159,8 +167,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(2), true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1000), new TaskTimes(3000, 1561078202L), new TaskTimes(1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1561078202L)))
+				newTask(1, "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))),
+				newTaskBuilder(2, "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
 		);
 	}
 
@@ -177,7 +185,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task task = tasks.startTask(existingID(1), false);
 
-		assertEquals(new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1000), new TaskTimes(2000))), task);
+		assertEquals(newTask(1, "Test", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(2000))), task);
 	}
 
 	@Test
@@ -213,20 +221,19 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(1), false);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test", TaskState.Active,
+				newTask(1, "Test", TaskState.Active,
+						1000,
 						Arrays.asList(
-								new TaskTimes(1000),
 								new TaskTimes(2000, 3000, "project-1", "one"),
 								new TaskTimes(4000, "project-2", "two")
-						),
-						false, Collections.emptyList()
+						)
 				)
 		);
 	}
 	
 	@Test
 	void finished_tasks_cannot_be_started() {
-		tasks.addTask(new Task(1, "Test", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345))));
+		tasks.addTask(newTask(1, "Test", TaskState.Finished, 1234, Collections.singletonList(new TaskTimes(2345))));
 		
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(existingID(1), false));
 		

@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.andrewauclair.microtask.TestUtils.createInputStream;
+import static com.andrewauclair.microtask.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Versions 1-3 have been retired
@@ -40,13 +40,11 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/tasks/default/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Active,
-				Arrays.asList(
-						new TaskTimes(123),
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123,
+				Collections.singletonList(
 						new TaskTimes(1234, "Project", "Feature")
-				),
-				false, Collections.emptyList()
-		);
+				)
+		).withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -69,12 +67,36 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Active,
-				Collections.singletonList(
-						new TaskTimes(123)
-				),
-				true, Collections.emptyList()
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123)
+				.withRecurring(true)
+				.withDueTime(0)
+				.build();
+
+		assertEquals(expectedTask, task);
+	}
+
+	@Test
+	void read_task_with_due_date() throws IOException {
+		InputStream inputStream = createInputStream(
+				"Test",
+				"Active",
+				"false",
+				"due 1234567",
+				"",
+				"",
+				"add 123",
+				"END"
 		);
+
+		Mockito.when(osInterface.createInputStream("git-data/1.txt")).thenReturn(inputStream);
+
+		TaskReader reader = new TaskReader(osInterface);
+
+		Task task = reader.readTask(1, "git-data/1.txt");
+
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123)
+				.withDueTime(1234567)
+				.build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -97,11 +119,8 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Active,
-				Collections.singletonList(
-						new TaskTimes(123)
-				)
-		);
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123)
+				.withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -132,13 +151,12 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Active,
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				)
-		);
+		).withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -169,13 +187,12 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)
-		);
+		).withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -206,13 +223,12 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
 				)
-		);
+		).withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}
@@ -244,9 +260,8 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Inactive,
+		Task expectedTask = newTask(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567, "start", "stop"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
 				)
@@ -278,9 +293,9 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = new Task(1, "Test", TaskState.Finished,
-				Arrays.asList(new TaskTimes(1234), new TaskTimes(2345, 3456), new TaskTimes(3456))
-		);
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Finished, 1234, 3456,
+				Collections.singletonList(new TaskTimes(2345, 3456))
+		).withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
 	}

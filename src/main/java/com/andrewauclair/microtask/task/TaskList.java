@@ -132,12 +132,24 @@ public final class TaskList implements TaskContainer {
 				'}';
 	}
 
+	public boolean canAddTask() {
+		return getState() != TaskContainerState.Finished;
+	}
+
 	public Task addTask(NewID id, String name) {
 		if (getState() == TaskContainerState.Finished) {
 			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
 		}
 
-		Task task = new Task(id.get(), name, TaskState.Inactive, Collections.singletonList(new TaskTimes(osInterface.currentSeconds())), false, Collections.emptyList());
+		long addTime = osInterface.currentSeconds();
+
+		Task task = new TaskBuilder(id.get())
+				.withTask(name)
+				.withState(TaskState.Inactive)
+				.withAddTime(addTime)
+				.withRecurring(false)
+				.withDueTime(addTime + 604_800L)
+				.build();
 
 		tasks.add(task);
 
@@ -207,16 +219,23 @@ public final class TaskList implements TaskContainer {
 	}
 
 	private void replaceTask(Task oldTask, Task newTask) {
-		removeTask(oldTask);
-		addTask(newTask);
+		tasks.remove(oldTask);
+		tasks.add(newTask);
 	}
 
 	void removeTask(Task task) {
 		tasks.remove(task);
 	}
 
+	public void addTaskNoWriteCommit(Task task) {
+		tasks.add(task);
+	}
+
 	public void addTask(Task task) {
 		tasks.add(task);
+
+		writeTask(task);
+		addAndCommit(task, "Added task");
 	}
 
 	public Task stopTask(ExistingID id) {
@@ -236,7 +255,7 @@ public final class TaskList implements TaskContainer {
 	public Task finishTask(ExistingID id) {
 		Task currentTask = getTask(id);
 
-		if (currentTask.isRecurring()) {
+		if (currentTask.recurring) {
 			throw new TaskException("Recurring tasks cannot be finished.");
 		}
 
@@ -271,8 +290,10 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Task " + id.get() + " cannot be moved because it has been finished.");
 		}
 
-		removeTask(task);
-		list.addTask(task);
+//		removeTask(task);
+//		list.addTask(task);
+		tasks.remove(task);
+		list.tasks.add(task);
 
 		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
 
@@ -286,7 +307,7 @@ public final class TaskList implements TaskContainer {
 		Task currentTask = getTask(id);
 
 		Task renamedTask = new TaskBuilder(currentTask)
-				.withName(task)
+				.withTask(task)
 				.build();
 
 		replaceTask(currentTask, renamedTask);

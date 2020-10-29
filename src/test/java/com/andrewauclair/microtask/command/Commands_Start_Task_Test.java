@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,8 +43,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 		tasks.startTask(existingID(1), false);
 		Task stopTask = tasks.stopTask();
 
-		assertThat(stopTask.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+		assertEquals(1000, stopTask.addTime);
+		assertThat(stopTask.startStopTimes).containsOnly(
 				new TaskTimes(2000, 3000)
 		);
 
@@ -78,8 +80,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(1561078202L)))
+				newTask(1, "Test 1", TaskState.Inactive, 1234, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
+				newTask(2, "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(
@@ -106,8 +108,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start task 2 --finish");
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Test 1", TaskState.Finished, Arrays.asList(new TaskTimes(1234), new TaskTimes(1234, 1561078202L), new TaskTimes(1561078202L))),
-				new Task(2, "Test 2", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(1561078202L)))
+				newTask(1, "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
+				newTask(2, "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(

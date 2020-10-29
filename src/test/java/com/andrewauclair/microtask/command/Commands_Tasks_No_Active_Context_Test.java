@@ -2,15 +2,17 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
+import com.andrewauclair.microtask.task.TaskState;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.stream.IntStream;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
+import static com.andrewauclair.microtask.TestUtils.newTaskBuilder;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GRAY;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
+import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.*;
 
 class Commands_Tasks_No_Active_Context_Test extends CommandsBaseTestCase {
 	@Test
@@ -499,6 +501,36 @@ class Commands_Tasks_No_Active_Context_Test extends CommandsBaseTestCase {
 				"          being cut off at the edge                                            " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 4 (1 Recurring)" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
+	void due_tasks_are_displayed_when_having_no_active_context() {
+		tasks.addTask(newTask(1, "Test", TaskState.Active, 1000));
+
+		// add the due tasks to a list we aren't looking at
+		tasks.addList(newList("/test"), true);
+		tasks.setCurrentList(existingList("/test"));
+
+		tasks.addTask(newTaskBuilder(2, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000).build());
+		tasks.addTask(newTaskBuilder(3, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000).build());
+
+		tasks.setCurrentList(existingList("/default"));
+
+		commands.execute(printStream, "tasks");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Tasks on list '/default'",
+				"",
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "   ",
+				ANSI_BG_RED +   "       3  Test Due Today" + ANSI_RESET,
+				ANSI_BG_GREEN + "*      1  Test          " + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
 		);
 	}

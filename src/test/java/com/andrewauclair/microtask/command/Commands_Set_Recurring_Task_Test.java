@@ -16,7 +16,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 
 		Task task = tasks.getTask(existingID(1));
 
-		assertTrue(task.isRecurring());
+		assertTrue(task.recurring);
 
 		assertOutput(
 				"Set recurring for task 1 - 'Test 1' to true",
@@ -32,7 +32,7 @@ class Commands_Set_Recurring_Task_Test extends CommandsBaseTestCase {
 
 		Task task = tasks.getTask(existingID(1));
 
-		assertFalse(task.isRecurring());
+		assertFalse(task.recurring);
 
 		assertOutput(
 				"Set recurring for task 1 - 'Test 1' to false",

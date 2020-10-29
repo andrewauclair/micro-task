@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED;
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,11 +102,11 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		Mockito.doAnswer(invocationOnMock -> {
 			tasks.addList(newList("/default"), true);
-			tasks.addTask(new Task(1, "Test", TaskState.Finished, Collections.singletonList(new TaskTimes(1000))));
+			tasks.addTask(newTask(1, "Test", TaskState.Finished, 1000));
 			tasks.addGroup(newGroup("/test/"));
 			tasks.addList(newList("/test/data"), true);
 			tasks.setCurrentList(existingList("/test/data"));
-			tasks.addTask(new Task(2, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000))));
+			tasks.addTask(newTask(2, "Test", TaskState.Active, 1000));
 			tasks.setCurrentList(existingList("/default"));
 			return true;
 		}).when(loader).load();
