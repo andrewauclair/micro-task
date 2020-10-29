@@ -54,12 +54,18 @@ final class DayCommand implements Runnable {
 
 		if (start) {
 			if (data.size() > 0) {
-				for (final TaskTimes startStopTime : data.get(0).task.getStartStopTimes()) {
+				//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+				for (final TaskTimes startStopTime : data.get(0).task.startStopTimes) {
 					if (startStopTime.start >= midnightStart) {
 						DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
 						String eodStr = Instant.ofEpochSecond(startStopTime.start).atZone(zoneId).format(dateTimeFormatter);
 
-						System.out.println(String.format("Day started at %s", eodStr));
+						System.out.println("Day started at " + eodStr);
 
 						break;
 					}

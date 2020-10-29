@@ -14,6 +14,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +24,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 
-		Task expectedTask = new Task(1, "Testing task add command", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)));
+		Task expectedTask = newTask(1, "Testing task add command", TaskState.Inactive, 1000);
 
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
@@ -86,7 +87,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void tasks_allows_us_to_add_an_actual_task_object_for_reloading_from_a_file() {
-		Task task = new Task(4, "Testing", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task task = newTask(4, "Testing", TaskState.Inactive, 0);
 		tasks.addTask(task);
 
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -140,7 +141,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList(newList("test"), true);
 		tasks.setCurrentList(existingList("test"));
 
-		Task task = new Task(1, "Test", TaskState.Active, Collections.singletonList(new TaskTimes(1000)));
+		Task task = newTask(1, "Test", TaskState.Active, 1000);
 
 		tasks.addTask(task);
 
@@ -160,7 +161,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Test", existingList("one"));
 
 		assertThat(tasks.getTasksForList(existingList("one"))).containsOnly(
-				new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+				newTask(1, "Test", TaskState.Inactive, 1000)
 		);
 	}
 
@@ -209,10 +210,10 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList(newList("two"), true);
 		tasks.setCurrentList(existingList("two"));
 
-		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
+		tasks.addTask(newTask(1, "Test", TaskState.Inactive, 0));
 
 		assertThat(tasks.getTasksForList(existingList("/test/one/two"))).containsOnly(
-				new Task(1, "Test", TaskState.Inactive, Collections.emptyList())
+				newTask(1, "Test", TaskState.Inactive, 0)
 		);
 	}
 
@@ -237,9 +238,9 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 	@Test
 	void add_throws_exception_if_task_with_id_already_exists() {
-		tasks.addTask(new Task(1, "Test throw", TaskState.Inactive, Collections.singletonList(new TaskTimes(0))));
+		tasks.addTask(newTask(1, "Test throw", TaskState.Inactive, 0));
 		
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.addTask(newTask(1, "Throws here", TaskState.Inactive, 0)));
 		
 		assertEquals("Task with ID 1 already exists.", taskException.getMessage());
 	}
@@ -250,7 +251,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addList(newList("one"), true);
 		tasks.setCurrentList(existingList("one"));
 		
-		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(new Task(1, "Throws here", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)))));
+		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask(newTask(1, "Throws here", TaskState.Inactive, 0)));
 
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}

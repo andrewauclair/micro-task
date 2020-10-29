@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Commands_Move_Task_Test extends CommandsBaseTestCase {
@@ -20,7 +21,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move --task 1 --dest-list one");
 
 		assertThat(tasks.getTasksForList(existingList("/one"))).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+				newTask(1, "Test 1", TaskState.Inactive, 1000)
 		);
 
 		assertOutput(
@@ -42,7 +43,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move --task 1 --dest-list /one/test/five");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
+				newTask(1, "Test 1", TaskState.Inactive, 1000)
 		);
 
 		assertOutput(
@@ -66,9 +67,9 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move --task 1,2,3 --dest-list /one/test/five");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				new Task(1, "Test 1", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
-				new Task(2, "Test 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(2000))),
-				new Task(3, "Test 3", TaskState.Inactive, Collections.singletonList(new TaskTimes(3000)))
+				newTask(1, "Test 1", TaskState.Inactive, 1000),
+				newTask(2, "Test 2", TaskState.Inactive, 2000),
+				newTask(3, "Test 3", TaskState.Inactive, 3000)
 		);
 
 		assertOutput(

@@ -7,7 +7,6 @@ import com.andrewauclair.microtask.task.build.TaskBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 
 @SuppressWarnings("CanBeFinal")
 public class TaskReader {
@@ -29,7 +28,7 @@ public class TaskReader {
 	Task readTask(long id, BufferedReader reader) throws IOException {
 //		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
 			TaskBuilder builder = new TaskBuilder(id)
-					.withName(reader.readLine())
+					.withTask(reader.readLine())
 					.withState(TaskState.valueOf(reader.readLine()))
 					.withRecurring(Boolean.parseBoolean(reader.readLine()));
 
@@ -59,24 +58,28 @@ public class TaskReader {
 				else if (line.startsWith("stop")) {
 					stop = Integer.parseInt(line.substring(5));
 
-					builder.withTime(new TaskTimes(start, stop, timeProject, timeFeature));
+					builder.withStartStopTime(new TaskTimes(start, stop, timeProject, timeFeature));
 				}
 				else if (line.startsWith("add")) {
 					long add = Integer.parseInt(line.substring(4));
 
-					builder.withTime(new TaskTimes(add));
+					builder.withAddTime(add);
 				}
 				else if (line.startsWith("finish")) {
 					long finish = Integer.parseInt(line.substring(7));
 
-					builder.withTime(new TaskTimes(finish));
+					builder.withFinishTime(finish);
 				}
+				else if (line.startsWith("due")) {
+					long due = Long.parseLong(line.substring(4));
 
+					builder.withDueTime(due);
+				}
 				line = reader.readLine();
 			} while (line != null && !line.startsWith("END"));
 
 			if (foundStartTime && stop == TaskTimes.TIME_NOT_SET) {
-				builder.withTime(new TaskTimes(start, stop, timeProject, timeFeature));
+				builder.withStartStopTime(new TaskTimes(start, stop, timeProject, timeFeature));
 			}
 
 			return builder.build();

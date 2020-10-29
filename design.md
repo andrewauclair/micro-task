@@ -153,6 +153,7 @@ micro-task stores task data in a text file defined by its task ID. For example, 
 | `name <text>` | a string defining the name of the task. |
 | `state <enum>` | One of `Inactive`, `Active`, `Finished` |
 | `recurring <bool>` | Either `true` or `false`, indicating <br>that the task is recurring and there for <br>cannot be finished. |
+| `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 | `<blank>` | |
 | `note <time> <text>` | Any number of notes can be defined here. |
 | `<blank>` | |
@@ -204,7 +205,7 @@ A project is a special form of group. Project folders will be defined the same a
 | Line | Description |
 | ---- | ----------- |
 | `name <text>` | Name of the project. This is more descriptive than the short name used for the file name. |
-
+| `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 
 ##### 4.5 Feature
 
@@ -220,7 +221,7 @@ from an existing group then all groups and lists in the project group will be tu
 | Line | Description |
 | ---- | ----------- |
 | `name <text>` | Name of the feature. This is more descriptive than the short name used for the file name. |
-
+| `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 
 ##### 4.6 Milestone
 

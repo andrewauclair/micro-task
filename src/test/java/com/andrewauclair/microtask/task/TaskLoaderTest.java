@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,7 +32,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 	@BeforeEach
 	protected void setup() throws IOException {
 		super.setup();
-		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> new Task(invocation.getArgument(0), "Test", TaskState.Inactive, Collections.emptyList()));
+		Mockito.when(reader.readTask(Mockito.anyLong(), Mockito.anyString())).thenAnswer(invocation -> newTask(invocation.getArgument(0), "Test", TaskState.Inactive, 0));
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("TaskLoader should not write files"));
 		Mockito.doThrow(new RuntimeException("TaskLoader should not run git commands")).when(osInterface).gitCommit(Mockito.anyString());
 
@@ -91,7 +92,7 @@ class TaskLoaderTest extends TaskBaseTestCase {
 		order.verify(projects).load();
 
 		assertEquals(expectedList, tasks.getCurrentList());
-		assertThat(tasks.getAllTasks()).containsOnly(new Task(1, "Test", TaskState.Inactive, Collections.emptyList()));
+		assertThat(tasks.getAllTasks()).containsOnly(newTask(1, "Test", TaskState.Inactive, 0));
 		assertEquals("/test", tasks.getListForTask(existingID(1)).getFullPath());
 	}
 	
@@ -171,10 +172,10 @@ class TaskLoaderTest extends TaskBaseTestCase {
 //		order.verify(tasks).addTask(task2);
 		order.verify(localSettings).load(tasks);
 
-		Task task1 = new Task(1, "Test", TaskState.Inactive, Collections.emptyList());
-		Task task2 = new Task(2, "Test", TaskState.Inactive, Collections.emptyList());
-		Task task3 = new Task(3, "Test", TaskState.Inactive, Collections.emptyList());
-		Task task4 = new Task(4, "Test", TaskState.Inactive, Collections.emptyList());
+		Task task1 = newTask(1, "Test", TaskState.Inactive, 0);
+		Task task2 = newTask(2, "Test", TaskState.Inactive, 0);
+		Task task3 = newTask(3, "Test", TaskState.Inactive, 0);
+		Task task4 = newTask(4, "Test", TaskState.Inactive, 0);
 
 		assertThat(tasks.getList(existingList("/one/two")).getTasks()).containsOnly(
 				task3,

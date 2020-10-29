@@ -53,7 +53,13 @@ public class StartTaskCommand implements Runnable {
 		System.out.println("Started task " + task.description());
 		System.out.println();
 
-		List<TaskTimes> times = task.getStartStopTimes();
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		List<TaskTimes> times = task.startStopTimes;
 		TaskTimes startTime = times.get(times.size() - 1);
 
 		System.out.println(startTime.description(osInterface.getZoneId()));

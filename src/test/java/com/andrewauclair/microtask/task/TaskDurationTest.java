@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskDurationTest {
@@ -24,7 +25,6 @@ class TaskDurationTest {
 	@Test
 	void duration_for_multiple_tasks_is_total_duration() {
 		List<TaskTimes> times = Arrays.asList(
-				new TaskTimes(1000),
 				new TaskTimes(1561078202, 1561079202),
 				new TaskTimes(1561080202, 1561081202),
 				new TaskTimes(1561082202, 1561083202),
@@ -32,7 +32,7 @@ class TaskDurationTest {
 				new TaskTimes(1561083202)
 		);
 		
-		Task task = new Task(1, "Test", TaskState.Inactive, times);
+		Task task = newTask(1, "Test", TaskState.Inactive, 1000, times);
 		
 		osInterface.setTime(1561083288);
 		

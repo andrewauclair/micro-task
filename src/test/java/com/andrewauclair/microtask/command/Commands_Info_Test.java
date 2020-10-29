@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
+
 class Commands_Info_Test extends CommandsBaseTestCase {
 	@BeforeEach
 	public void setup() throws IOException {
@@ -33,12 +35,11 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void info_command_prints_data_related_to_a_task() {
-		tasks.addTask(new Task(1, "Test", TaskState.Finished, Arrays.asList(
-				new TaskTimes(1000), // add
+		tasks.addTask(newTask(1, "Test", TaskState.Finished, 1000, 8000,
+				Arrays.asList(
 				new TaskTimes(2000, 3000),
-				new TaskTimes(6000, 8000),
-				new TaskTimes(8000) // finish
-		), false, Collections.emptyList()));
+				new TaskTimes(6000, 8000)
+		)));
 
 		commands.execute(printStream, "info 1");
 
@@ -62,11 +63,11 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void inactive_tasks_do_not_print_a_finish_time() {
-		tasks.addTask(new Task(1, "Test", TaskState.Inactive, Arrays.asList(
-				new TaskTimes(1000), // add
+		tasks.addTask(newTask(1, "Test", TaskState.Inactive, 1000,
+				Arrays.asList(
 				new TaskTimes(2000, 3000),
 				new TaskTimes(6000, 8000)
-		), false, Collections.emptyList()));
+		)));
 
 		commands.execute(printStream, "info 1");
 
@@ -88,11 +89,11 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_task_displays_no_stop_time() {
-		tasks.addTask(new Task(1, "Test", TaskState.Active, Arrays.asList(
-				new TaskTimes(1000), // add
+		tasks.addTask(newTask(1, "Test", TaskState.Active, 1000,
+				Arrays.asList(
 				new TaskTimes(2000, 3000),
 				new TaskTimes(6000)
-		), false, Collections.emptyList()));
+		)));
 
 		commands.execute(printStream, "info 1");
 

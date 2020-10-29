@@ -1,65 +1,35 @@
 // Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public final class Task {
 	public final long id;
 	public final String task;
 	public final TaskState state;
-	private final List<TaskTimes> taskTimes;
-	private final boolean recurring;
+	public final long addTime;
+	public final long finishTime;
+	public final List<TaskTimes> startStopTimes;
+	public final boolean recurring;
+	public final long dueTime;
 
-	private final List<String> tags;
+	public final List<String> tags;
 
-	public Task(long id, String task, TaskState state, List<TaskTimes> times) {
+	public Task(long id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
 		this.id = id;
 		this.task = task;
 		this.state = state;
-		taskTimes = Collections.unmodifiableList(times);
-		recurring = false;
-		tags = Collections.emptyList();
-	}
-
-	public Task(long id, String task, TaskState state, List<TaskTimes> times, boolean recurring, List<String> tags) {
-		this.id = id;
-		this.task = task;
-		this.state = state;
-		taskTimes = Collections.unmodifiableList(times);
+		this.addTime = addTime;
+		this.finishTime = finishTime;
+		this.startStopTimes = Collections.unmodifiableList(startStopTimes);
 		this.recurring = recurring;
-		this.tags = tags;
-	}
-
-	public List<TaskTimes> getAllTimes() {
-		return taskTimes;
-	}
-
-	public TaskTimes getAddTime() {
-		return taskTimes.get(0);
-	}
-
-	public List<TaskTimes> getStartStopTimes() {
-		// exclude add and finish when finished
-		if (state == TaskState.Finished) {
-			return taskTimes.subList(1, taskTimes.size() - 1);
-		}
-		// exclude add
-		return taskTimes.subList(1, taskTimes.size());
-	}
-
-	public Optional<TaskTimes> getFinishTime() {
-		if (state == TaskState.Finished) {
-			return Optional.ofNullable(taskTimes.get(taskTimes.size() - 1));
-		}
-		return Optional.empty();
+		this.dueTime = dueTime;
+		this.tags = Collections.unmodifiableList(tags);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, taskTimes, recurring, tags);
+		return Objects.hash(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 	}
 
 	@Override
@@ -75,8 +45,11 @@ public final class Task {
 		return id == otherTask.id &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
-				Objects.equals(taskTimes, otherTask.taskTimes) &&
+				addTime == otherTask.addTime &&
+				finishTime == otherTask.finishTime &&
+				Objects.equals(startStopTimes, otherTask.startStopTimes) &&
 				recurring == otherTask.recurring &&
+				dueTime == otherTask.dueTime &&
 				Objects.equals(tags, otherTask.tags);
 	}
 
@@ -86,21 +59,16 @@ public final class Task {
 				"id=" + id +
 				", task='" + task + '\'' +
 				", state=" + state +
-				", taskTimes=" + taskTimes +
+				", addTime=" + addTime +
+				", finishTime=" + (finishTime == TaskTimes.TIME_NOT_SET ? "None" : finishTime) +
+				", startStopTimes=" + startStopTimes +
 				", recurring=" + recurring +
+				", due=" + dueTime +
 				", tags=" + tags +
 				'}';
 	}
 
 	public String description() {
 		return id + " - '" + task + "'";
-	}
-
-	public boolean isRecurring() {
-		return recurring;
-	}
-
-	public List<String> getTags() {
-		return tags;
 	}
 }

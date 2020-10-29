@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static org.mockito.Mockito.*;
@@ -34,12 +35,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void basic_times_command_for_projects_and_features() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -94,13 +95,13 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void feature_names_when_parent_group_has_no_feature() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
-		Task task6 = new Task(6, "Test 5", TaskState.Inactive, addTime);
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task6 = newTask(6, "Test 5", TaskState.Inactive, addTime);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 
@@ -160,12 +161,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void features_are_inherited_from_parent() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 
@@ -221,12 +222,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void project_feature_times_today() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -286,12 +287,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void project_feature_times_yesterday() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -354,12 +355,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void basic_times_for_the_day__only_uses_times_from_given_day__midnight_to_midnight(String parameters) {
 		setTime(june18_8_am);
 
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -400,10 +401,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
 
@@ -428,12 +429,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_output_for_entire_week() {
 		setTime(june17_8_am);
 
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -489,12 +490,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_output_for_entire_month() {
 		setTime(june17_8_am);
 
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -550,12 +551,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void times_projects_for_a_previous_time_week() {
 		setTime(june18_8_am);
 
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -596,10 +597,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, new Task(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, new Task(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, new Task(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList()), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
 
@@ -622,13 +623,13 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void tasks_with_no_project_or_feature_say_none() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
 		tasks.setCurrentList(existingList("/default"));
 
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Collections.singletonList(
@@ -650,12 +651,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 	@Test
 	void task_with_no_project_says_none() {
-		List<TaskTimes> addTime = Collections.singletonList(new TaskTimes(0));
+		long addTime = 0;
 
-		Task task1 = new Task(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = new Task(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = new Task(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = new Task(5, "Test 5", TaskState.Inactive, addTime, true, Collections.emptyList());
+		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 //		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 

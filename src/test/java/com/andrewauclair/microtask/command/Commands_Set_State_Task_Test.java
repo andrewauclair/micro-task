@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
@@ -42,7 +43,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set task 1 --inactive");
 
-		Mockito.verify(writer).writeTask(new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))), "git-data/tasks/default/1.txt");
+		Mockito.verify(writer).writeTask(newTask(1, "Test", TaskState.Inactive, 1000), "git-data/tasks/default/1.txt");
 	}
 
 	@Test

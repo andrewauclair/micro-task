@@ -11,6 +11,8 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
+import static com.andrewauclair.microtask.TestUtils.newTaskBuilder;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,13 +28,14 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_file() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
+		Task task = newTask(1, "Test", TaskState.Inactive, 1234);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
 				"Test",
 				"Inactive",
 				"false",
+				"due 606034",
 				"",
 				"add 1234",
 				"END",
@@ -44,7 +47,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_specific_output_stream() {
-		Task task = new Task(5, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1234)));
+		Task task = newTask(5, "Test", TaskState.Inactive,1234);
 		writer.writeTask(task, outputStream);
 
 
@@ -52,6 +55,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 606034",
 				"",
 				"add 1234",
 				"END",
@@ -60,13 +64,36 @@ class TaskWriterTest {
 	}
 	@Test
 	void write_recurring_task() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)), true, Collections.emptyList());
+		Task task = newTask(1, "Test", TaskState.Inactive, 1000, true);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
 				"Test",
 				"Inactive",
 				"true",
+				"due 605800",
+				"",
+				"add 1000",
+				"END",
+				""
+		);
+
+		assertTrue(writeTask);
+	}
+
+	@Test
+	void write_task_due_date() {
+		Task task = newTaskBuilder(1, "Test", TaskState.Inactive, 1000)
+				.withDueTime(5876)
+				.build();
+
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"due 5876",
 				"",
 				"add 1000",
 				"END",
@@ -78,9 +105,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_project() {
-		Task task = new Task(1, "Test", TaskState.Inactive,
-				Arrays.asList(
-						new TaskTimes(123),
+		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+				Collections.singletonList(
 						new TaskTimes(1234, 4567, "Project 1", "")
 				)
 		);
@@ -90,6 +116,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -104,9 +131,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_feature() {
-		Task task = new Task(1, "Test", TaskState.Inactive,
-				Arrays.asList(
-						new TaskTimes(123),
+		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+				Collections.singletonList(
 						new TaskTimes(1234, 4567, "", "Feature 1")
 				)
 		);
@@ -116,6 +142,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -130,9 +157,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_project_and_feature() {
-		Task task = new Task(1, "Test", TaskState.Inactive,
-				Arrays.asList(
-						new TaskTimes(123),
+		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+				Collections.singletonList(
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1")
 				)
 		);
@@ -142,6 +168,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -156,13 +183,14 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_time() {
-		Task task = new Task(1, "Test", TaskState.Active, Arrays.asList(new TaskTimes(1234), new TaskTimes(2345)));
+		Task task = newTask(1, "Test", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(2345)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
 				"Test",
 				"Active",
 				"false",
+				"due 606034",
 				"",
 				"add 1234",
 				"start 2345",
@@ -177,13 +205,14 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_and_stop_times() {
-		Task task = new Task(1, "Test", TaskState.Inactive, Arrays.asList(new TaskTimes(123), new TaskTimes(1234, 4567)));
+		Task task = newTask(1, "Test", TaskState.Inactive, 123, Collections.singletonList(new TaskTimes(1234, 4567)));
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -198,9 +227,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_stop_and_start_again() {
-		Task task = new Task(1, "Test", TaskState.Active,
+		Task task = newTask(1, "Test", TaskState.Active, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				)
@@ -212,6 +240,7 @@ class TaskWriterTest {
 				"Test",
 				"Active",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -230,9 +259,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_multiple_starts_and_stops() {
-		Task task = new Task(1, "Test", TaskState.Inactive,
+		Task task = newTask(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)
@@ -243,6 +271,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -262,9 +291,8 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_multiple_times_with_multiple_different_projects_and_features() {
-		Task task = new Task(1, "Test", TaskState.Inactive,
+		Task task = newTask(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
-						new TaskTimes(123),
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
 				)
@@ -275,6 +303,7 @@ class TaskWriterTest {
 				"Test",
 				"Inactive",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -293,11 +322,9 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_finish_time() {
-		Task task = new Task(1, "Test", TaskState.Finished,
-				Arrays.asList(
-						new TaskTimes(123),
-						new TaskTimes(1234, 4567),
-						new TaskTimes(5678)
+		Task task = newTask(1, "Test", TaskState.Finished, 123, 5678,
+				Collections.singletonList(
+						new TaskTimes(1234, 4567)
 				)
 		);
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
@@ -306,6 +333,7 @@ class TaskWriterTest {
 				"Test",
 				"Finished",
 				"false",
+				"due 604923",
 				"",
 				"add 123",
 				"start 1234",
@@ -325,7 +353,7 @@ class TaskWriterTest {
 
 		System.setOut(new PrintStream(outputStream));
 
-		Task task = new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(0)));
+		Task task = newTask(1, "Test", TaskState.Inactive, 0);
 		assertFalse(writer.writeTask(task, "test.txt"));
 
 		assertOutput(

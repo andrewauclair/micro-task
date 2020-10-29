@@ -19,9 +19,9 @@ public class ActiveContext {
 	private long activeTaskID = NO_ACTIVE_TASK;
 	private ExistingListName activeList = null;
 	private ExistingGroupName activeGroup = null;
-	private ExistingProject activeProject;
-	private ExistingFeature activeFeature;
-	private ExistingMilestone activeMilestone;
+	private ExistingProject activeProject = null;
+	private ExistingFeature activeFeature = null;
+	private ExistingMilestone activeMilestone = null;
 	private List<String> activeTags = Collections.emptyList();
 
 	private ExistingListName currentList;
@@ -29,6 +29,15 @@ public class ActiveContext {
 
 	public ActiveContext(Tasks tasks) {
 		currentGroup = new ExistingGroupName(tasks, ROOT_PATH);
+	}
+
+	public boolean hasAnyContext() {
+		return activeList != null ||
+				activeGroup != null ||
+				activeProject != null ||
+				activeFeature != null ||
+				activeMilestone != null ||
+				!activeTags.isEmpty();
 	}
 
 	public void setActiveTaskID(long taskID) {

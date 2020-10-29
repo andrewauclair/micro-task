@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.*;
 
-import static java.lang.Boolean.FALSE;
 import static org.fusesource.jansi.internal.Kernel32.GetStdHandle;
 import static org.fusesource.jansi.internal.Kernel32.STD_OUTPUT_HANDLE;
 
@@ -254,7 +253,7 @@ public class StatusConsole {
 					.count();
 			long active = total - finished;
 			long recurring = tasks.stream()
-					.filter(Task::isRecurring)
+					.filter(task -> task.recurring)
 					.count();
 
 			String name = child instanceof TaskGroup ? child.getName() + "/" : child.getName();
@@ -354,7 +353,13 @@ public class StatusConsole {
 
 		long totalTime = 0;
 
-		for (TaskTimes time : task.getStartStopTimes()) {
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		for (TaskTimes time : task.startStopTimes) {
 			if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 				totalTime += time.getDuration(osInterface);
 			}
@@ -364,7 +369,19 @@ public class StatusConsole {
 	}
 
 	private long getTimeCurrent(Task task) {
-		TaskTimes taskTimes = task.getStartStopTimes().get(task.getStartStopTimes().size() - 1);
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		TaskTimes taskTimes = task.startStopTimes.get(task.startStopTimes.size() - 1);
 
 		return osInterface.currentSeconds() - taskTimes.start;
 	}
@@ -388,7 +405,13 @@ public class StatusConsole {
 
 	private long getElapsedTime(Task task) {
 		long total = 0;
-		for (TaskTimes time : task.getStartStopTimes()) {
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		for (TaskTimes time : task.startStopTimes) {
 			if (time.stop != TaskTimes.TIME_NOT_SET) {
 				total += time.stop - time.start;
 			}

@@ -32,7 +32,7 @@ final class NextCommand implements Runnable {
 		List<Task> tasks = this.tasks.getAllTasks().stream()
 				.sorted(Comparator.comparingLong(o -> o.id))
 				.filter(task -> task.state != TaskState.Finished)
-				.filter(task -> !task.isRecurring())
+				.filter(task -> !task.recurring)
 				.limit(max)
 				.collect(Collectors.toList());
 

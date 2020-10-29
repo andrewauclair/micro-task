@@ -50,13 +50,19 @@ final class InfoCommand implements Runnable {
 
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 
-		System.out.print(Instant.ofEpochSecond(task.getAddTime().start).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
+		System.out.print(Instant.ofEpochSecond(task.addTime).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
 		System.out.println(" -- added");
 		System.out.println();
 
 		int count = 1;
 
-		for (TaskTimes startStopTime : task.getStartStopTimes()) {
+		//		// exclude add and finish when finished
+//		if (state == TaskState.Finished) {
+//			return startStopTimes.subList(1, startStopTimes.size() - 1);
+//		}
+//		// exclude add
+//		return startStopTimes.subList(1, startStopTimes.size());
+		for (TaskTimes startStopTime : task.startStopTimes) {
 			System.out.print(Instant.ofEpochSecond(startStopTime.start).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
 			System.out.print(" - ");
 
@@ -71,8 +77,8 @@ final class InfoCommand implements Runnable {
 
 		System.out.println();
 
-		if (task.getFinishTime().isPresent()) {
-			System.out.print(Instant.ofEpochSecond(task.getFinishTime().get().start).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
+		if (task.finishTime != TaskTimes.TIME_NOT_SET) {
+			System.out.print(Instant.ofEpochSecond(task.finishTime).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
 			System.out.println(" -- finished");
 			System.out.println();
 		}

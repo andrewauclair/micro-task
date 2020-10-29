@@ -20,12 +20,25 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void set_task_due_date() {
+		tasks.addTask("Test");
+
+		commands.execute(printStream, "set task 1 --due 1w");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 01/07/1970 06:33:20 PM",
+				""
+		);
+	}
+
+	@Test
 	void set_task_command_help() {
 		commands.execute(printStream, "set task --help");
 
 		assertOutput(
-				"Usage:  set task [-hr] [--inactive] [--not-recurring] <id>",
+				"Usage:  set task [-hr] [--inactive] [--not-recurring] [--due=<due>] <id>",
 				"      <id>              Task to set.",
+				"      --due=<due>       Due time of the task.",
 				"  -h, --help            Show this help message.",
 				"      --inactive        Set task state to inactive.",
 				"      --not-recurring   Set task to non-recurring.",

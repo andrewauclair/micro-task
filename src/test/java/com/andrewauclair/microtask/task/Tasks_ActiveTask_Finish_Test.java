@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,8 +40,8 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Testing tasks", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
-				new Task(2, "Testing tasks 2", TaskState.Inactive, Collections.singletonList(new TaskTimes(2000)))
+				newTask(1, "Testing tasks", TaskState.Inactive, 1000),
+				newTask(2, "Testing tasks 2", TaskState.Inactive, 2000)
 		);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
@@ -51,10 +52,10 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = new Task(2, "Testing tasks 2", TaskState.Finished, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234, 4567), new TaskTimes(4567)));
+		Task finishedTask = newTask(2, "Testing tasks 2", TaskState.Finished, 2000, 4567, Arrays.asList(new TaskTimes(1234, 4567)));
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new Task(1, "Testing tasks", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
+				newTask(1, "Testing tasks", TaskState.Inactive,1000),
 				finishedTask
 		);
 
@@ -133,11 +134,11 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task task = tasks.finishTask();
-		
-		assertThat(task.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
-				new TaskTimes(1234, 4567),
-				new TaskTimes(4567)
+
+		assertEquals(1000, task.addTime);
+		assertEquals(4567, task.finishTime);
+		assertThat(task.startStopTimes).containsOnly(
+				new TaskTimes(1234, 4567)
 		);
 	}
 
@@ -160,17 +161,17 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 		Mockito.when(osInterface.currentSeconds()).thenReturn(4567L);
 
 		Task finishTask = tasks.finishTask();
-		
-		assertThat(stop.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, stop.addTime);
+		assertThat(stop.startStopTimes).containsOnly(
 				new TaskTimes(1234, 2345)
 		);
-		
-		assertThat(finishTask.getAllTimes()).containsOnly(
-				new TaskTimes(1000),
+
+		assertEquals(1000, finishTask.addTime);
+		assertEquals(4567, finishTask.finishTime);
+		assertThat(finishTask.startStopTimes).containsOnly(
 				new TaskTimes(1234, 2345),
-				new TaskTimes(3456, 4567),
-				new TaskTimes(4567)
+				new TaskTimes(3456, 4567)
 		);
 	}
 }

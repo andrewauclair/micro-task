@@ -29,7 +29,6 @@ import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
-import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor.ANSI_FG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
 @Command(name = "times", description = "Display times for tasks, lists or groups.")
@@ -253,7 +252,7 @@ public final class TimesCommand implements Runnable {
 				type += " ";
 			}
 
-			if (task.isRecurring()) {
+			if (task.recurring) {
 				type += "R";
 			}
 			else {

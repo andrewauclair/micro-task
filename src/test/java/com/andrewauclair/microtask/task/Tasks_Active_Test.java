@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +23,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 		tasks.startTask(existingID(2), false);
 
-		Task activeTask = new Task(2, "Testing 2", TaskState.Active, Arrays.asList(new TaskTimes(2000), new TaskTimes(1234)));
+		Task activeTask = newTask(2, "Testing 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 	}

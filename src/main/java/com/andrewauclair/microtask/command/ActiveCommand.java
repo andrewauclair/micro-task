@@ -97,7 +97,7 @@ final class ActiveCommand implements Runnable {
 			System.out.println("Active task is on the '" + tasks.getActiveTaskList() + "' list");
 			System.out.println();
 
-			List<TaskTimes> times = task.getAllTimes();
+			List<TaskTimes> times = task.startStopTimes;
 			TaskTimes activeTime = times.get(times.size() - 1);
 
 			activeTime = new TaskTimes(activeTime.start, osInterface.currentSeconds());

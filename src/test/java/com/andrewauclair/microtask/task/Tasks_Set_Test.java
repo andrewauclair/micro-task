@@ -2,16 +2,11 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +22,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		Mockito.verify(writer).writeTask(task, "git-data/tasks/default/1.txt");
 
-		assertTrue(task.isRecurring());
+		assertTrue(task.recurring);
 	}
 
 	// TODO Fix
@@ -93,7 +88,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 		
 		order.verify(osInterface).gitCommit("Set recurring for task 1 to false");
 
-		assertFalse(task.isRecurring());
+		assertFalse(task.recurring);
 	}
 
 	@Test
@@ -107,7 +102,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		order.verify(osInterface).gitCommit("Set tag(s) for task 1 to one, two");
 
-		assertThat(task.getTags()).containsOnly("one", "two");
+		assertThat(task.tags).containsOnly("one", "two");
 	}
 	@Test
 	void exception_is_thrown_when_trying_to_set_recurring_on_finished_task() {
@@ -120,7 +115,7 @@ class Tasks_Set_Test extends TaskBaseTestCase {
 
 		assertEquals("Cannot set task 1 recurring state. The task has been finished.", taskException.getMessage());
 
-		assertFalse(task.isRecurring());
+		assertFalse(task.recurring);
 
 		Mockito.verifyNoInteractions(writer, osInterface);
 	}
