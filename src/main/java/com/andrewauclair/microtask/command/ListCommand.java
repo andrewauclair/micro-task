@@ -51,7 +51,8 @@ final class ListCommand implements Runnable {
 		int percent = (int) ((finishedCount / (double) totalCount) * 100);
 
 		System.out.printf("%d / %d %s ", finishedCount, totalCount, progressBar(finishedCount, totalCount));
-		System.out.printf("%d %%%n", percent);
+		System.out.printf("%d %%", percent);
+		System.out.println();
 		System.out.println();
 	}
 
