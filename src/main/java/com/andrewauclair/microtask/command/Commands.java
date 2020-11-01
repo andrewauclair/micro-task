@@ -91,7 +91,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("ch", new ChangeCommand(tasks, projects, localSettings));
 		commands.put("day", new DayCommand(tasks, localSettings, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
-		commands.put("next", new NextCommand(tasks));
+		commands.put("next", new NextCommand(tasks, osInterface));
 		commands.put("info", new InfoCommand(tasks, projects, osInterface));
 		commands.put("focus", new FocusCommand(osInterface));
 		commands.put("status", new StatusCommand(this, osInterface));
@@ -228,7 +228,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "alias":
 				return new AliasCommand(this, osInterface);
 			case "next":
-				return new NextCommand(tasks);
+				return new NextCommand(tasks, osInterface);
 			case "info":
 				return new InfoCommand(tasks, projects, osInterface);
 			case "focus":
