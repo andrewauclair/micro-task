@@ -71,7 +71,7 @@ public class ProjectCommand implements Runnable {
 					"/",
 					String.valueOf(project.getFeatureCount()),
 					progressBar(project.getFinishedFeatureCount(), project.getFeatureCount()),
-					String.format("%d%%", (int) ((project.getFinishedFeatureCount() / (double) project.getFeatureCount()) * 100))
+					String.format("%d %%", (int) ((project.getFinishedFeatureCount() / (double) project.getFeatureCount()) * 100))
 			);
 			table.addRow(
 					"Tasks",
@@ -79,7 +79,7 @@ public class ProjectCommand implements Runnable {
 					"/",
 					String.valueOf(project.getTaskCount()),
 					progressBar(project.getFinishedTaskCount(), project.getTaskCount()),
-					String.format("%d%%", (int) ((project.getFinishedTaskCount() / (double) project.getTaskCount()) * 100))
+					String.format("%d %%", (int) ((project.getFinishedTaskCount() / (double) project.getTaskCount()) * 100))
 			);
 			table.addRow();
 //			output.add(Collections.emptyList());
@@ -108,7 +108,7 @@ public class ProjectCommand implements Runnable {
 					"/",
 					String.valueOf(child.getTasks().size()),
 					progressBar(finished, child.getTasks().size()),
-					String.format("%d%%", percent)
+					String.format("%d %%", percent)
 			);
 
 			if (child instanceof TaskGroup childGroup) {

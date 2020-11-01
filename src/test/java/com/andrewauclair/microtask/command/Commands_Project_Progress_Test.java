@@ -22,10 +22,10 @@ public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features           0 /  1 [          ] 0%",
-				"Tasks              0 / 10 [          ] 0%",
+				"Features           0 /  1 [          ] 0 %",
+				"Tasks              0 / 10 [          ] 0 %",
 				"",
-				"/projects/test/one 0 / 10 [          ] 0%",
+				"/projects/test/one 0 / 10 [          ] 0 %",
 				""
 		);
 	}
@@ -50,10 +50,10 @@ public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features           0 /  1 [          ]  0%",
-				"Tasks              2 / 10 [==        ] 20%",
+				"Features           0 /  1 [          ]  0 %",
+				"Tasks              2 / 10 [==        ] 20 %",
 				"",
-				"/projects/test/one 2 / 10 [==        ] 20%",
+				"/projects/test/one 2 / 10 [==        ] 20 %",
 				""
 		);
 	}
@@ -91,14 +91,14 @@ public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Project progress for 'test'",
 				"",
-				"Features                 1 /  5 [==        ]  20%",
-				"Tasks                    1 / 10 [=         ]  10%",
+				"Features                 1 /  5 [==        ]  20 %",
+				"Tasks                    1 / 10 [=         ]  10 %",
 				"",
-				"/projects/test/four/     1 /  1 [==========] 100%",
-				"/projects/test/four/five 1 /  1 [==========] 100%",
-				"/projects/test/one       0 /  3 [          ]   0%",
-				"/projects/test/two       0 /  2 [          ]   0%",
-				"/projects/test/three     0 /  4 [          ]   0%",
+				"/projects/test/four/     1 /  1 [==========] 100 %",
+				"/projects/test/four/five 1 /  1 [==========] 100 %",
+				"/projects/test/one       0 /  3 [          ]   0 %",
+				"/projects/test/two       0 /  2 [          ]   0 %",
+				"/projects/test/three     0 /  4 [          ]   0 %",
 				""
 		);
 	}

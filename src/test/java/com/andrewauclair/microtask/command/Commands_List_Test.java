@@ -17,7 +17,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Current list is '/default'",
 				"",
-				"Progress: 2 / 10 [==        ] 20%",
+				"Progress: 2 / 10 [==        ] 20 %",
 				""
 		);
 	}
@@ -38,7 +38,7 @@ class Commands_List_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"List '/default'",
 				"",
-				"Progress: 2 / 10 [==        ] 20%",
+				"Progress: 2 / 10 [==        ] 20 %",
 				""
 		);
 	}
