@@ -255,7 +255,7 @@ public class TasksCommand implements Runnable {
 		tasks.addAll(dueTasks);
 
 		for (Task dueTask : dueTasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 			addTaskToTable(table, dueTask, name, true, useGroup);
 		}
@@ -319,7 +319,7 @@ public class TasksCommand implements Runnable {
 		List<Task> dueTasks = new ArrayList<>();
 
 		for (Task task : tasksData.getAllTasks()) {
-			if (task.dueTime < midnightStop) {
+			if (task.state != TaskState.Finished && !task.recurring && task.dueTime < midnightStop) {
 				dueTasks.add(task);
 			}
 		}
