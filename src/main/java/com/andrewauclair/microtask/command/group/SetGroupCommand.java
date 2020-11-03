@@ -2,18 +2,26 @@
 package com.andrewauclair.microtask.command.group;
 
 import com.andrewauclair.microtask.jline.GroupCompleter;
-import com.andrewauclair.microtask.task.TaskContainerState;
-import com.andrewauclair.microtask.task.TaskGroup;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 @CommandLine.Command(name = "group")
 public class SetGroupCommand implements Runnable {
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
@@ -22,34 +30,23 @@ public class SetGroupCommand implements Runnable {
 	private ExistingGroupName group;
 
 	private static class Args {
-//		@ArgGroup(exclusive = false)
-//		private ProjectFeature projectFeature;
-
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 		private boolean in_progress;
-	}
 
-//	static final class ProjectFeature {
-//		@Option(names = {"-p", "--project"}, description = "The project to set.")
-//		String project;
-//
-//		@Option(names = {"-f", "--feature"}, description = "The feature to set.")
-//		String feature;
-//	}
+		@Option(names = {"--due"}, description = "Set the due time for all tasks in the group.")
+		private String due;
+	}
 
 	@ArgGroup(exclusive = false, multiplicity = "1")
 	Args args;
 
-	public SetGroupCommand(Tasks tasks) {
+	public SetGroupCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 
 	@Override
 	public void run() {
-//		if (args.projectFeature != null) {
-//			handleProjectAndFeature();
-//		}
-
 		if (args.in_progress) {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
@@ -62,23 +59,31 @@ public class SetGroupCommand implements Runnable {
 				System.out.println("Group '" + group.getFullPath() + "' must be finished first");
 			}
 		}
+		else if (args.due != null) {
+			Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
+
+			ZoneId zoneId = osInterface.getZoneId();
+
+			LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
+
+			// I think it's dumb to need the "P" in front, but this parses what I want for now
+			long dueTime = baseDate.plus(Period.parse("P" + args.due)).atZone(zoneId).toEpochSecond();
+
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
+
+			TaskGroup group = tasks.getGroup(this.group.absoluteName());
+
+			for (final Task task : group.getTasks()) {
+				tasks.replaceTask(new ExistingListName(tasks, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()),
+						task, new TaskBuilder(task)
+								.withDueTime(dueTime)
+								.build());
+
+				System.out.println("Set due date for task " + task.description() + " to " + eodStr);
+			}
+		}
 
 		System.out.println();
 	}
-
-//	private void handleProjectAndFeature() {
-//		if (args.projectFeature.project != null) {
-//			String project = this.args.projectFeature.project;
-//			tasks.setProject(group, project, true);
-//
-//			System.out.println("Set project for group '" + group + "' to '" + project + "'");
-//		}
-//
-//		if (args.projectFeature.feature != null) {
-//			String feature = this.args.projectFeature.feature;
-//			tasks.setFeature(group, feature, true);
-//
-//			System.out.println("Set feature for group '" + group + "' to '" + feature + "'");
-//		}
-//	}
 }
