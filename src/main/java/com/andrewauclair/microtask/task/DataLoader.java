@@ -36,6 +36,8 @@ public class DataLoader {
 	}
 
 	private void loadTasks(String folder, boolean inGroup) throws IOException {
+		TaskList list = inGroup ? null : tasks.getList(tasks.getActiveContext().getCurrentList());
+
 		for (OSInterface.TaskFileInfo fileInfo : osInterface.listFiles(folder)) {
 			if (fileInfo.isDirectory()) {
 				if (isGroupFolder(fileInfo.getPath())) {
@@ -61,7 +63,7 @@ public class DataLoader {
 						long id = Long.parseLong(line.substring(lastSlash + 1, lastDot));
 
 						Task task = reader.readTask(id, bufferedReader);
-						tasks.addTask(task);
+						tasks.addTask(task, list, false);
 
 						line = bufferedReader.readLine();
 					} while (line != null);
@@ -76,7 +78,7 @@ public class DataLoader {
 				long id = idFromFileName(fileInfo, fileName);
 
 				Task task = reader.readTask(id, fileInfo.getPath());
-				tasks.addTask(task);
+				tasks.addTask(task, list, false);
 			}
 		}
 	}
