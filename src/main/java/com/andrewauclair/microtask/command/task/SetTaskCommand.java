@@ -66,7 +66,7 @@ public class SetTaskCommand implements Runnable {
 			// I think it's dumb to need the "P" in front, but this parses what I want for now
 			long dueTime = baseDate.plus(Period.parse("P" + due)).atZone(zoneId).toEpochSecond();
 
-			tasks.replaceTask(new ExistingListName(tasks, tasks.getListForTask(id).getName()),
+			tasks.replaceTask(new ExistingListName(tasks, tasks.getListForTask(id).getFullPath()),
 					tasks.getTask(id), new TaskBuilder(tasks.getTask(id))
 					.withDueTime(dueTime)
 					.build());

@@ -21,6 +21,9 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 
 	@Test
 	void set_task_due_date() {
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.setCurrentList(existingList("/gr/gd/one"));
 		tasks.addTask("Test");
 
 		commands.execute(printStream, "set task 1 --due 1w");
@@ -63,8 +66,9 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set group ([--in-progress]) [-h] <group>",
+				"Usage:  set group ([--in-progress] [--due=<due>]) [-h] <group>",
 						"      <group>         The group to set.",
+						"      --due=<due>     Set the due time for all tasks in the group.",
 						"  -h, --help          Show this help message.",
 						"      --in-progress   Set the list state to in progress."
 		);
