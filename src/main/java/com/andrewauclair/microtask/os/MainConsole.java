@@ -36,16 +36,6 @@ public class MainConsole extends CommonConsole {
 	private final TaskLoader loader;
 
 	public MainConsole() throws Exception {
-		LocalSettings localSettings = new LocalSettings(osInterface);
-
-		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
-		projects = new Projects(tasks, osInterface);
-		tasks.setProjects(projects);
-
-		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
-
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
-
 		Thread listen = new Thread(() -> {
 			try {
 				osInterface.openStatusLink();
@@ -55,6 +45,16 @@ public class MainConsole extends CommonConsole {
 			}
 		});
 		listen.start();
+
+		LocalSettings localSettings = new LocalSettings(osInterface);
+
+		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
+		projects = new Projects(tasks, osInterface);
+		tasks.setProjects(projects);
+
+		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
+
+		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 
