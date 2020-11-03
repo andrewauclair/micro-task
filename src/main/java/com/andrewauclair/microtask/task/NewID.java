@@ -8,9 +8,8 @@ public class NewID {
 
 	public NewID(Tasks tasks, long id) {
 		this.id = id;
-		TaskFinder finder = new TaskFinder(tasks);
 
-		if (finder.hasTaskWithID(id)) {
+		if (tasks.hasTaskWithID(id)) {
 			throw new TaskException("Task " + id + " already exist.");
 		}
 	}

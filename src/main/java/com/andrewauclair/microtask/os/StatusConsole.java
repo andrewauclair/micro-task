@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.*;
 
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
+import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
 import static org.fusesource.jansi.internal.Kernel32.GetStdHandle;
 import static org.fusesource.jansi.internal.Kernel32.STD_OUTPUT_HANDLE;
 
@@ -243,6 +245,7 @@ public class StatusConsole {
 
 		ConsoleTable table = new ConsoleTable(osInterface);
 		table.setHeaders("Total", "Finished", "Active", "Recurring", "List / Group");
+		table.setColumnAlignment(RIGHT, RIGHT, RIGHT, RIGHT, LEFT);
 
 		for (final TaskContainer child : tasks.getCurrentGroup().getChildren()) {
 			List<Task> tasks = child.getTasks();

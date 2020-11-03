@@ -74,8 +74,7 @@ class Commands_Update_Remote_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "update repo --from-remote");
 
-		TaskFinder finder = new TaskFinder(tasks);
-		assertTrue(finder.hasTaskWithID(1));
+		assertTrue(tasks.hasTaskWithID(1));
 	}
 
 	@Test

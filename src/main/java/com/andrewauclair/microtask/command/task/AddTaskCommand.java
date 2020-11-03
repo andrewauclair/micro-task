@@ -95,7 +95,7 @@ public class AddTaskCommand implements Runnable {
 
 			Task task = builder.build();
 
-			taskList.addTask(task);
+			tasks.addTask(task, taskList, true);
 
 			System.out.println("Added task " + task.description());
 

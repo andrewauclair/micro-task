@@ -14,14 +14,14 @@ public class TaskFinder {
 		this.tasks = tasks;
 	}
 
-	public boolean hasTaskWithID(long id) {
-		for (String listName : tasks.getAllListNames()) {
-			if (tasks.getList(new ExistingListName(tasks, listName)).containsTask(id)) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean hasTaskWithID(long id) {
+//		for (String listName : tasks.getAllListNames()) {
+//			if (tasks.getList(new ExistingListName(tasks, listName)).containsTask(id)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	// TODO Is there a way that we could create a custom stream to do stuff like this where we loop through everything?
 	public TaskList findListForTask(ExistingID id) {

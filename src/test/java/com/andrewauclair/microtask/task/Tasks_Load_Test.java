@@ -88,8 +88,7 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		tasks.load(loader, commands);
 
-		TaskFinder finder = new TaskFinder(tasks);
-		assertFalse(finder.hasTaskWithID(1));
+		assertFalse(tasks.hasTaskWithID(1));
 
 		TaskGroupFinder groupFinder = new TaskGroupFinder(tasks);
 		assertFalse(groupFinder.hasGroupPath(new TaskGroupName(tasks, "/test/one/")));

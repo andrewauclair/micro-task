@@ -22,10 +22,7 @@ import com.andrewauclair.microtask.task.update.TaskStateUpdater;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
@@ -46,6 +43,8 @@ public class Tasks {
 	private Projects projects;
 
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
+
+	private final Set<Long> existingTasks = new HashSet<>();
 
 	private final ActiveContext activeContext = new ActiveContext(this);
 
@@ -87,7 +86,14 @@ public class Tasks {
 
 	public Task addTask(String task, ExistingListName list) {
 		// TODO This wastes an ID if the list or group is finished and we don't actually add the task
-		return getList(list).addTask(new NewID(this, incrementID()), task);
+		TaskList taskList = getList(list);
+//		if (taskList.getState() != TaskContainerState.Finished) {
+		long newID = incrementID();
+		NewID id = new NewID(this, newID);
+		existingTasks.add(newID);
+		return taskList.addTask(id, task);
+//		}
+//		return null;
 	}
 
 	public TaskList getList(ExistingListName listName) {
@@ -319,13 +325,38 @@ public class Tasks {
 		}
 	}
 
+	public boolean hasTaskWithID(long id) {
+		return existingTasks.contains(id);
+	}
+
 	public void addTask(Task task) {
-		TaskFinder finder = new TaskFinder(this);
-		if (finder.hasTaskWithID(task.id)) {
+		if (hasTaskWithID(task.id)) {
 			throw new TaskException("Task with ID " + task.id + " already exists.");
 		}
 
+		existingTasks.add(task.id);
+
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
+
+		// used to set the active task when reloading from the files
+		if (task.state == TaskState.Active) {
+			activeContext.setActiveTaskID(task.id);
+		}
+	}
+
+	public void addTask(Task task, TaskList list, boolean commit) {
+		if (hasTaskWithID(task.id)) {
+			throw new TaskException("Task with ID " + task.id + " already exists.");
+		}
+
+		existingTasks.add(task.id);
+
+		if (commit) {
+			list.addTask(task);
+		}
+		else {
+			list.addTaskNoWriteCommit(task);
+		}
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
@@ -567,6 +598,8 @@ public class Tasks {
 	}
 
 	public boolean load(DataLoader loader, Commands commands) {
+		resetIDs();
+
 		rootGroup = TaskGroupBuilder.createRootGroup();
 		activeContext.setCurrentGroup(new ExistingGroupName(this, ROOT_PATH));
 		activeContext.setActiveTaskID(NO_ACTIVE_TASK);
@@ -607,5 +640,9 @@ public class Tasks {
 		catch (Exception ignored) {
 		}
 		return 1;
+	}
+
+	private void resetIDs() {
+		existingTasks.clear();
 	}
 }

@@ -10,9 +10,8 @@ public class ExistingID {
 
 	public ExistingID(Tasks tasks, long id) {
 		this.id = id;
-		TaskFinder finder = new TaskFinder(tasks);
 
-		if (!finder.hasTaskWithID(id)) {
+		if (!tasks.hasTaskWithID(id)) {
 			throw new TaskException("Task " + id + " does not exist.");
 		}
 	}
