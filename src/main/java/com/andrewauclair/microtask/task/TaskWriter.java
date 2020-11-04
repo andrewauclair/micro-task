@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -17,8 +18,8 @@ public class TaskWriter {
 	}
 
 	public boolean writeTask(Task task, String fileName) {
-		try {
-			writeTask(task, osInterface.createOutputStream(fileName));
+		try (DataOutputStream stream = osInterface.createOutputStream(fileName)){
+			writeTask(task, stream);
 			return true;
 		}
 		catch (IOException e) {
