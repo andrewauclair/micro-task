@@ -75,13 +75,12 @@ public class SetGroupCommand implements Runnable {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
 			for (final Task task : group.getTasks()) {
-				tasks.replaceTask(new ExistingListName(tasks, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()),
-						task, new TaskBuilder(task)
-								.withDueTime(dueTime)
-								.build());
+				tasks.setDueDate(new ExistingID(tasks, task.id), dueTime);
 
 				System.out.println("Set due date for task " + task.description() + " to " + eodStr);
 			}
+
+			osInterface.gitCommit("Set due date for multiple tasks to " + eodStr);
 		}
 
 		System.out.println();

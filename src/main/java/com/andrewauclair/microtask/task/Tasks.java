@@ -506,6 +506,19 @@ public class Tasks {
 		return task;
 	}
 
+	public void setDueDate(ExistingID id, long dueTime) {
+		Task existingTask = getTask(id);
+		Task task = new TaskBuilder(existingTask)
+				.withDueTime(dueTime)
+				.build();
+
+		String list = findListForTask(id).getFullPath();
+		replaceTask(new ExistingListName(this, list), existingTask, task);
+
+		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		writer.writeTask(task, file);
+	}
+
 	public void setGroupState(ExistingGroupName groupName, TaskContainerState state, boolean createFiles) {
 		TaskGroup group = getGroup(groupName);
 

@@ -66,13 +66,12 @@ public class SetTaskCommand implements Runnable {
 			// I think it's dumb to need the "P" in front, but this parses what I want for now
 			long dueTime = baseDate.plus(Period.parse("P" + due)).atZone(zoneId).toEpochSecond();
 
-			tasks.replaceTask(new ExistingListName(tasks, tasks.getListForTask(id).getFullPath()),
-					tasks.getTask(id), new TaskBuilder(tasks.getTask(id))
-					.withDueTime(dueTime)
-					.build());
+			tasks.setDueDate(id, dueTime);
 
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
+
+			osInterface.gitCommit("Set due date for task " + tasks.getTask(id).description() + " to " + eodStr);
 
 			System.out.println("Set due date for task " + tasks.getTask(id).description() + " to " + eodStr);
 		}
