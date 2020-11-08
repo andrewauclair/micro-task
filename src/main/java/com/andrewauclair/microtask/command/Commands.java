@@ -140,7 +140,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				cmdLine.addSubcommand("set",
 						new CommandLine(new SetCommand(), factory)
 								.addSubcommand(new SetTaskCommand(tasks, osInterface))
-								.addSubcommand(new SetListCommand(tasks))
+								.addSubcommand(new SetListCommand(tasks, osInterface))
 								.addSubcommand(new SetGroupCommand(tasks, osInterface))
 				);
 				break;

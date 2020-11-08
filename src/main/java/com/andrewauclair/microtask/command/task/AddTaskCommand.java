@@ -41,6 +41,9 @@ public class AddTaskCommand implements Runnable {
 	@CommandLine.Option(names = {"--due"}, description = "Due time of the task. Defaults to 1 week.")
 	private String due;
 
+	@CommandLine.Option(names = {"--due-today"}, description = "Task is due today.")
+	private Boolean dueToday;
+
 	@CommandLine.Option(names = {"-s", "--start"}, description = "Start the task immediately.")
 	private boolean start;
 
@@ -59,6 +62,11 @@ public class AddTaskCommand implements Runnable {
 
 		if (this.list != null) {
 			list = this.list;
+		}
+
+		if (dueToday != null) {
+			// set the due date to 0d, which is "today" in the Period.parse method
+			due = "0w";
 		}
 
 		TaskList taskList = tasks.getList(list);

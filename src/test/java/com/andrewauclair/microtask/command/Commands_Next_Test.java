@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -165,7 +166,7 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 				"",
 				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "                              ",
 				ANSI_BG_GRAY + "/default   1  Very long titles will be wrapped at the side of the screen       ",
-				"              instead of being cut off at the edge                             "  + ANSI_RESET,
+				"              instead of being cut off at the edge                             " + ANSI_RESET,
 				"/default   2  Very long titles will be wrapped at the side of the screen       ",
 				"              instead of being cut off at the edge                             ",
 				""
@@ -354,23 +355,57 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void next_command_displays_due_tasks_with_due_option() {
+		tasks.addTask(new TaskBuilder(1)
+				.withTask("Test 1")
+				.withDueTime(100000)
+				.build());
+
+		tasks.addTask(new TaskBuilder(2)
+				.withTask("Test 2")
+				.withDueTime(90000)
+				.build());
+
+		tasks.addTask(new TaskBuilder(3)
+				.withTask("Test 3")
+				.withDueTime(80000)
+				.build());
+
+		commands.execute(printStream, "next -c 5 --due");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Next 3 Due Tasks to Complete",
+				"",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "  " + u + "Due" + r + "                 ",
+				ANSI_BG_GRAY + "/default   3  Test 3       01/01/1970 04:13:20 PM" + ANSI_RESET,
+				"/default   2  Test 2       01/01/1970 07:00:00 PM",
+				ANSI_BG_GRAY + "/default   1  Test 1       01/01/1970 09:46:40 PM" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
 	void next_command_help() {
 		commands.execute(printStream, "next --help");
 
 		assertOutput(
-				"Usage:  next [-hv] [-c=<count>] [--exclude-group=<excludeGroup>]...",
-						"             [--exclude-list=<excludeList>]... [--group=<group>]...",
-						"             [--list=<list>]...",
-						"Display the next tasks to be completed.",
-						"  -c, --count=<count>   Number of tasks to display.",
-						"      --exclude-group=<excludeGroup>",
-						"                        Group to exclude from the next search.",
-						"      --exclude-list=<excludeList>",
-						"                        List to exclude from the next search.",
-						"      --group=<group>   Group to include in the next search.",
-						"  -h, --help            Show this help message.",
-						"      --list=<list>     List to include in the next search.",
-						"  -v, --verbose         Display the full description of a task."
+				"Usage:  next [-hv] [--due] [-c=<count>] [--exclude-group=<excludeGroup>]...",
+				"             [--exclude-list=<excludeList>]... [--group=<group>]...",
+				"             [--list=<list>]...",
+				"Display the next tasks to be completed.",
+				"  -c, --count=<count>   Number of tasks to display.",
+				"      --due             Show tasks that are due.",
+				"      --exclude-group=<excludeGroup>",
+				"                        Group to exclude from the next search.",
+				"      --exclude-list=<excludeList>",
+				"                        List to exclude from the next search.",
+				"      --group=<group>   Group to include in the next search.",
+				"  -h, --help            Show this help message.",
+				"      --list=<list>     List to include in the next search.",
+				"  -v, --verbose         Display the full description of a task."
 		);
 	}
 }

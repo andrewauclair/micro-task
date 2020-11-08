@@ -41,6 +41,9 @@ public class SetTaskCommand implements Runnable {
 	@CommandLine.Option(names = {"--due"}, description = "Due time of the task.")
 	private String due;
 
+	@CommandLine.Option(names = {"--due-today"}, description = "Set due date of task as today.")
+	private Boolean dueToday;
+
 	@CommandLine.Option(names = {"--add-tags"}, split = ",", description = "Tags to add to task.")
 	private List<String> addTags;
 
@@ -63,6 +66,11 @@ public class SetTaskCommand implements Runnable {
 			tasks.setRecurring(id, false);
 
 			System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to false");
+		}
+
+		if (dueToday != null) {
+			// set the due date to 0d, which is "today" in the Period.parse method
+			due = "0d";
 		}
 
 		if (due != null) {

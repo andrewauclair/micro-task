@@ -35,17 +35,32 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void set_task_due_today() {
+		tasks.addTask("Test");
+
+		osInterface.setTime(50000);
+
+		commands.execute(printStream, "set task 1 --due-today");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 01/01/1970 07:53:20 AM",
+				""
+		);
+	}
+
+	@Test
 	void set_task_command_help() {
 		commands.execute(printStream, "set task --help");
 
 		assertOutput(
-				"Usage:  set task [-hr] [--inactive] [--not-recurring] [--due=<due>]",
-						"                 [--add-tags=<addTags>[,<addTags>...]]...",
+				"Usage:  set task [-hr] [--due-today] [--inactive] [--not-recurring]",
+						"                 [--due=<due>] [--add-tags=<addTags>[,<addTags>...]]...",
 						"                 [--remove-tags=<removeTags>[,<removeTags>...]]... <id>",
 						"      <id>              Task to set.",
 						"      --add-tags=<addTags>[,<addTags>...]",
 						"                        Tags to add to task.",
 						"      --due=<due>       Due time of the task.",
+						"      --due-today       Set due date of task as today.",
 						"  -h, --help            Show this help message.",
 						"      --inactive        Set task state to inactive.",
 						"      --not-recurring   Set task to non-recurring.",
@@ -56,12 +71,43 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void set_list_due_date() {
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.setCurrentList(existingList("/gr/gd/one"));
+		tasks.addTask("Test");
+
+		commands.execute(printStream, "set list /gr/gd/one --due 1w");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 01/07/1970 06:33:20 PM",
+				""
+		);
+	}
+
+	@Test
+	void set_list_due_today() {
+		tasks.addTask("Test");
+
+		osInterface.setTime(50000);
+
+		commands.execute(printStream, "set list /default --due-today");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 01/01/1970 07:53:20 AM",
+				""
+		);
+	}
+
+	@Test
 	void set_list_command_help() {
 		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set list ([--in-progress]) [-h] <list>",
+				"Usage:  set list ([--in-progress] [--due=<due>] [--due-today]) [-h] <list>",
 						"      <list>          The list to set.",
+						"      --due=<due>     Set the due time for all tasks in the list.",
+						"      --due-today     Set the due time for all tasks in the list to today.",
 						"  -h, --help          Show this help message.",
 						"      --in-progress   Set the list state to in progress."
 		);
@@ -72,9 +118,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set group ([--in-progress] [--due=<due>]) [-h] <group>",
+				"Usage:  set group ([--in-progress] [--due=<due>] [--due-today]) [-h] <group>",
 						"      <group>         The group to set.",
 						"      --due=<due>     Set the due time for all tasks in the group.",
+						"      --due-today     Set the due time for all tasks in the group to today.",
 						"  -h, --help          Show this help message.",
 						"      --in-progress   Set the list state to in progress."
 		);

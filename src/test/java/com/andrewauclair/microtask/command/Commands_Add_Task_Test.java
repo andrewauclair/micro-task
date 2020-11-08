@@ -61,12 +61,33 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-			new TaskBuilder(1)
-			.withTask("Test")
-			.withState(TaskState.Inactive)
-				.withAddTime(1000)
-				.withDueTime(1000 + (604_800L * 2))
-				.build()
+				new TaskBuilder(1)
+						.withTask("Test")
+						.withState(TaskState.Inactive)
+						.withAddTime(1000)
+						.withDueTime(1000 + (604_800L * 2))
+						.build()
+		);
+	}
+
+	@Test
+	void add_task_with_due_date_of_today() {
+		osInterface.setTime(50000);
+
+		commands.execute(printStream, "add task \"Test\" --due-today");
+
+		assertOutput(
+				"Added task 1 - 'Test'",
+				""
+		);
+
+		assertThat(tasks.getTasks()).containsOnly(
+				new TaskBuilder(1)
+						.withTask("Test")
+						.withState(TaskState.Inactive)
+						.withAddTime(50000)
+						.withDueTime(50000)
+						.build()
 		);
 	}
 
