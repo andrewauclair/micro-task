@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.Main;
 import com.andrewauclair.microtask.Utils;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jline.terminal.Terminal;
@@ -127,6 +128,20 @@ public class OSInterfaceImpl implements OSInterface {
 				add.addFilepattern(change);
 			}
 			add.call();
+
+			Set<String> removeFiles = status.getMissing();
+
+			// jgit doesn't delete files through the add command like git does from the command line
+			// so we need to use the git rm command to remove any missing files
+			// if a file is missing, that means that the code removed the file and it needs to be deleted
+			if (!removeFiles.isEmpty()) {
+				RmCommand removeCmd = repo.rm();
+
+				for (final String file : removeFiles) {
+					removeCmd.addFilepattern(file);
+				}
+				removeCmd.call();
+			}
 
 			repo.commit()
 					.setMessage(message)
