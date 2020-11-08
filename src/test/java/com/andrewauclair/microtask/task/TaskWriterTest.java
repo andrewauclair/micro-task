@@ -41,7 +41,32 @@ class TaskWriterTest {
 				"END",
 				""
 		);
+		assertTrue(writeTask);
+	}
 
+	@Test
+	void write_task_with_tags() {
+		Task task = newTaskBuilder(1, "Test", TaskState.Inactive, 1234)
+				.withTag("one")
+				.withTag("two")
+				.withTag("three")
+				.build();
+		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
+
+		assertOutput(
+				"Test",
+				"Inactive",
+				"false",
+				"due 606034",
+				"",
+				"tag one",
+				"tag two",
+				"tag three",
+				"",
+				"add 1234",
+				"END",
+				""
+		);
 		assertTrue(writeTask);
 	}
 

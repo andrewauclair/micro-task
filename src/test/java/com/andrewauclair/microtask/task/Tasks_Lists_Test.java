@@ -150,26 +150,10 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	}
 	
 	@Test
-	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
-	void setCurrentList_throws_exception_when_group_does_not_exist() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.setCurrentList(existingList("/one/two")));
-		
-		assertEquals("Group '/one/' does not exist.", taskException.getMessage());
-	}
-	
-	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
 		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, TaskContainerState.InProgress);
 		TaskException taskException = assertThrows(TaskException.class, () -> list.finishTask(existingID(3)));
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());
-	}
-	
-	@Test
-	@Disabled("Using the ExistingID class means this will never work again as is")
-	void findListForTask_throws_exception_if_list_is_not_found() {
-		TaskException taskException = assertThrows(TaskException.class, () -> tasks.findListForTask(existingID(1)));
-		
-		assertEquals("List for task 1 was not found.", taskException.getMessage());
 	}
 }

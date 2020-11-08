@@ -37,14 +37,13 @@ public class TaskWriter {
 		printStream.println("due " + task.dueTime);
 		printStream.println();
 
+		if (!task.tags.isEmpty()) {
+			task.tags.forEach(tag -> printStream.println("tag " + tag));
+			printStream.println();
+		}
+
 		writeTime(printStream, "add", task.addTime);
 
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 		List<TaskTimes> taskTimes = task.startStopTimes;
 
 		for (TaskTimes time : taskTimes) {

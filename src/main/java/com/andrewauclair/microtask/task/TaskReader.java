@@ -20,69 +20,70 @@ public class TaskReader {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(osInterface.createInputStream(fileName)))) {
 			return readTask(id, reader);
 		}
-//		catch (IOException e) {
-//			e.printStackTrace(System.out);
-//		}
 	}
 
 	Task readTask(long id, BufferedReader reader) throws IOException {
 //		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
-			TaskBuilder builder = new TaskBuilder(id)
-					.withTask(reader.readLine())
-					.withState(TaskState.valueOf(reader.readLine()))
-					.withRecurring(Boolean.parseBoolean(reader.readLine()));
+		TaskBuilder builder = new TaskBuilder(id)
+				.withTask(reader.readLine())
+				.withState(TaskState.valueOf(reader.readLine()))
+				.withRecurring(Boolean.parseBoolean(reader.readLine()));
 
-			long start = 0;
-			long stop = TaskTimes.TIME_NOT_SET;
+		long start = 0;
+		long stop = TaskTimes.TIME_NOT_SET;
 
-			String timeProject = "";
-			String timeFeature = "";
+		String timeProject = "";
+		String timeFeature = "";
 
-			boolean foundStartTime = false;
+		boolean foundStartTime = false;
 
-			String line = reader.readLine();
+		String line = reader.readLine();
 
 //			while (line != null && !line.startsWith("END")) {
-			do {
+		do {
 //				line = reader.readLine();
 
-				if (line.startsWith("start")) {
-					start = Integer.parseInt(line.substring(6));
-					stop = TaskTimes.TIME_NOT_SET;
+			if (line.startsWith("start")) {
+				start = Integer.parseInt(line.substring(6));
+				stop = TaskTimes.TIME_NOT_SET;
 
-					foundStartTime = true;
+				foundStartTime = true;
 
-					timeProject = reader.readLine();
-					timeFeature = reader.readLine();
-				}
-				else if (line.startsWith("stop")) {
-					stop = Integer.parseInt(line.substring(5));
+				timeProject = reader.readLine();
+				timeFeature = reader.readLine();
+			}
+			else if (line.startsWith("stop")) {
+				stop = Integer.parseInt(line.substring(5));
 
-					builder.withStartStopTime(new TaskTimes(start, stop, timeProject, timeFeature));
-				}
-				else if (line.startsWith("add")) {
-					long add = Integer.parseInt(line.substring(4));
-
-					builder.withAddTime(add);
-				}
-				else if (line.startsWith("finish")) {
-					long finish = Integer.parseInt(line.substring(7));
-
-					builder.withFinishTime(finish);
-				}
-				else if (line.startsWith("due")) {
-					long due = Long.parseLong(line.substring(4));
-
-					builder.withDueTime(due);
-				}
-				line = reader.readLine();
-			} while (line != null && !line.startsWith("END"));
-
-			if (foundStartTime && stop == TaskTimes.TIME_NOT_SET) {
 				builder.withStartStopTime(new TaskTimes(start, stop, timeProject, timeFeature));
 			}
+			else if (line.startsWith("add")) {
+				long add = Integer.parseInt(line.substring(4));
 
-			return builder.build();
-//		}
+				builder.withAddTime(add);
+			}
+			else if (line.startsWith("finish")) {
+				long finish = Integer.parseInt(line.substring(7));
+
+				builder.withFinishTime(finish);
+			}
+			else if (line.startsWith("due")) {
+				long due = Long.parseLong(line.substring(4));
+
+				builder.withDueTime(due);
+			}
+			else if (line.startsWith("tag")) {
+				String tag = line.substring(4);
+
+				builder.withTag(tag);
+			}
+			line = reader.readLine();
+		} while (line != null && !line.startsWith("END"));
+
+		if (foundStartTime && stop == TaskTimes.TIME_NOT_SET) {
+			builder.withStartStopTime(new TaskTimes(start, stop, timeProject, timeFeature));
+		}
+
+		return builder.build();
 	}
 }

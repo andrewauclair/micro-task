@@ -151,7 +151,12 @@ public class TasksCommand implements Runnable {
 					System.out.println();
 				}
 				else {
-					System.out.println("Tasks on list '" + list + "'");
+					System.out.print("Tasks on list '" + list + "'");
+
+					if (!tasksData.getActiveContext().getActiveTags().isEmpty()) {
+						System.out.print(" with tag(s): " + String.join(", ", tags));
+					}
+					System.out.println();
 				}
 			}
 		}

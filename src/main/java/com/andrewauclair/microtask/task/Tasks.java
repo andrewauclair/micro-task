@@ -436,6 +436,8 @@ public class Tasks {
 		Task origTask = getTask(id);
 		TaskBuilder builder = new TaskBuilder(origTask);
 
+		builder.clearTags();
+
 		tags.forEach(builder::withTag);
 
 		Task task = builder.build();

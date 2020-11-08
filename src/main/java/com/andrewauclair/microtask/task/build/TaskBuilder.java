@@ -77,6 +77,11 @@ public final class TaskBuilder {
 		return this;
 	}
 
+	public TaskBuilder clearTags() {
+		tags.clear();
+		return this;
+	}
+
 	public TaskBuilder withTag(String tag) {
 		tags.add(tag);
 		return this;
