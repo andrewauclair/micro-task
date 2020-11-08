@@ -35,6 +35,9 @@ public class SetGroupCommand implements Runnable {
 
 		@Option(names = {"--due"}, description = "Set the due time for all tasks in the group.")
 		private String due;
+
+		@Option(names = {"--due-today"}, description = "Set the due time for all tasks in the group to today.")
+		private Boolean dueToday;
 	}
 
 	@ArgGroup(exclusive = false, multiplicity = "1")
@@ -47,6 +50,10 @@ public class SetGroupCommand implements Runnable {
 
 	@Override
 	public void run() {
+		if (args.dueToday != null) {
+			args.due = "0d";
+		}
+
 		if (args.in_progress) {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
 

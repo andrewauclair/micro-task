@@ -9,6 +9,9 @@ import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +30,9 @@ final class NextCommand implements Runnable {
 
 	@Option(names = {"-c", "--count"}, description = "Number of tasks to display.")
 	private int count;
+
+	@Option(names = {"--due"}, description = "Show tasks that are due.")
+	private boolean due;
 
 	@Option(names = {"-v", "--verbose"}, description = "Display the full description of a task.")
 	private boolean verbose;
@@ -66,7 +72,11 @@ final class NextCommand implements Runnable {
 				.limit(max)
 				.collect(Collectors.toList());
 
-		System.out.print("Next " + tasks.size() + " Tasks to Complete");
+		if (due) {
+			tasks.sort(Comparator.comparingLong(o -> o.dueTime));
+		}
+
+		System.out.print("Next " + tasks.size() + (due ? " Due" : "") + " Tasks to Complete");
 
 		if (list != null || group != null || excludeGroup != null || excludeList != null) {
 			String includeList = "";
@@ -133,19 +143,41 @@ final class NextCommand implements Runnable {
 		ConsoleTable table = new ConsoleTable(osInterface);
 		table.enableAlternatingColors();
 
-		table.setHeaders("List", "ID", "Description");
-		table.setColumnAlignment(LEFT, RIGHT, LEFT);
+		if (due) {
+			table.setHeaders("List", "ID", "Description", "Due");
+			table.setColumnAlignment(LEFT, RIGHT, LEFT, LEFT);
+		}
+		else {
+			table.setHeaders("List", "ID", "Description");
+			table.setColumnAlignment(LEFT, RIGHT, LEFT);
+		}
 
 		if (verbose) {
 			table.enableWordWrap();
 		}
 
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+		ZoneId zoneId = osInterface.getZoneId();
+
 		for (final Task task : tasks) {
 			if (task.state == TaskState.Active) {
-				table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+				if (due) {
+					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
+					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task, dueStr);
+				}
+				else {
+					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+				}
 			}
 			else {
-				table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+				if (due) {
+					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
+					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task, dueStr);
+
+				}
+				else {
+					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+				}
 			}
 		}
 
