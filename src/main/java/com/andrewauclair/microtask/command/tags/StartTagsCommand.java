@@ -13,7 +13,7 @@ public class StartTagsCommand implements Runnable {
 	@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@CommandLine.Parameters(description = "The tag(s) to start.")
+	@CommandLine.Parameters(description = "The tag(s) to start.", split = ",")
 	private List<String> tags;
 
 	public StartTagsCommand(Tasks tasks) {

@@ -255,14 +255,6 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		assertEquals("Task with ID 1 already exists.", runtimeException.getMessage());
 	}
-	
-	@Test
-	@Disabled("This now throws a list does not exist exception, I don't think we need to check this once we make addTask take an ExistingTaskListName instance")
-	void add_throws_exception_if_group_does_not_exist() {
-		TaskException runtimeException = assertThrows(TaskException.class, () -> tasks.addTask("Test", existingList("/one/two")));
-		
-		assertEquals("Group '/one/' does not exist.", runtimeException.getMessage());
-	}
 
 	@Test
 	void next_id_increments_after_add() {

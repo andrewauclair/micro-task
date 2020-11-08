@@ -50,6 +50,38 @@ class TaskReaderTest {
 	}
 
 	@Test
+	void read_task_with_tags() throws IOException {
+		InputStream inputStream = createInputStream(
+				"Test",
+				"Active",
+				"false",
+				"",
+				"tag one",
+				"tag two",
+				"tag three",
+				"",
+				"add 123",
+				"",
+				"END"
+		);
+
+		Mockito.when(osInterface.createInputStream("git-data/tasks/default/1.txt")).thenReturn(inputStream);
+
+		TaskReader reader = new TaskReader(osInterface);
+
+		Task task = reader.readTask(1, "git-data/tasks/default/1.txt");
+
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Active, 123)
+				.withDueTime(0)
+				.withTag("one")
+				.withTag("two")
+				.withTag("three")
+				.build();
+
+		assertEquals(expectedTask, task);
+	}
+
+	@Test
 	void read_recurring_task() throws IOException {
 		InputStream inputStream = createInputStream(
 				"Test",
@@ -234,7 +266,7 @@ class TaskReaderTest {
 	}
 
 	@Test
-	@Disabled("Disabled until we address issue #305 in release 20.4.19")
+//	@Disabled("Disabled until we address issue #305 in release 20.4.19")
 	void read_task_with_project_feature_that_match_other_known_strings() throws IOException {
 		InputStream inputStream = createInputStream(
 				"Test",
@@ -260,12 +292,14 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(1, "git-data/1.txt");
 
-		Task expectedTask = newTask(1, "Test", TaskState.Inactive, 123,
+		Task expectedTask = newTaskBuilder(1, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567, "start", "stop"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
 				)
-		);
+		)
+				.withDueTime(0)
+				.build();
 
 		assertEquals(expectedTask, task);
 	}

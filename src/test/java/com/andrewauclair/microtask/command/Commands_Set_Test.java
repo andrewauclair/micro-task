@@ -39,13 +39,19 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set task --help");
 
 		assertOutput(
-				"Usage:  set task [-hr] [--inactive] [--not-recurring] [--due=<due>] <id>",
-				"      <id>              Task to set.",
-				"      --due=<due>       Due time of the task.",
-				"  -h, --help            Show this help message.",
-				"      --inactive        Set task state to inactive.",
-				"      --not-recurring   Set task to non-recurring.",
-				"  -r, --recurring       Set task to recurring."
+				"Usage:  set task [-hr] [--inactive] [--not-recurring] [--due=<due>]",
+						"                 [--add-tags=<addTags>[,<addTags>...]]...",
+						"                 [--remove-tags=<removeTags>[,<removeTags>...]]... <id>",
+						"      <id>              Task to set.",
+						"      --add-tags=<addTags>[,<addTags>...]",
+						"                        Tags to add to task.",
+						"      --due=<due>       Due time of the task.",
+						"  -h, --help            Show this help message.",
+						"      --inactive        Set task state to inactive.",
+						"      --not-recurring   Set task to non-recurring.",
+						"  -r, --recurring       Set task to recurring.",
+						"      --remove-tags=<removeTags>[,<removeTags>...]",
+						"                        Tags to remove from task."
 		);
 	}
 

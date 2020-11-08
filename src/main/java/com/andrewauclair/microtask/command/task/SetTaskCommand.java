@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @CommandLine.Command(name = "task")
 public class SetTaskCommand implements Runnable {
@@ -34,10 +36,16 @@ public class SetTaskCommand implements Runnable {
 	private Boolean not_recurring;
 
 	@CommandLine.Option(names = {"--inactive"}, description = "Set task state to inactive.")
-	private boolean inactive;
+	private Boolean inactive;
 
 	@CommandLine.Option(names = {"--due"}, description = "Due time of the task.")
 	private String due;
+
+	@CommandLine.Option(names = {"--add-tags"}, split = ",", description = "Tags to add to task.")
+	private List<String> addTags;
+
+	@CommandLine.Option(names = {"--remove-tags"}, split = ",", description = "Tags to remove from task.")
+	private List<String> removeTags;
 
 	public SetTaskCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -56,7 +64,8 @@ public class SetTaskCommand implements Runnable {
 
 			System.out.println("Set recurring for task " + tasks.getTask(id).description() + " to false");
 		}
-		else if (due != null) {
+
+		if (due != null) {
 			Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
 
 			ZoneId zoneId = osInterface.getZoneId();
@@ -75,8 +84,28 @@ public class SetTaskCommand implements Runnable {
 
 			System.out.println("Set due date for task " + tasks.getTask(id).description() + " to " + eodStr);
 		}
-		else {
-			Task task = tasks.getTask(id);
+
+		Task task = tasks.getTask(id);
+
+		if (addTags != null) {
+			List<String> tags = new ArrayList<>(task.tags);
+			tags.addAll(addTags);
+
+			tasks.setTags(id, tags);
+
+			System.out.println("Task " + id.get() + ", add tag(s): " + String.join(", ", addTags));
+		}
+
+		if (removeTags != null) {
+			List<String> tags = new ArrayList<>(task.tags);
+			tags.removeAll(removeTags);
+
+			tasks.setTags(id, tags);
+
+			System.out.println("Task " + id.get() + ", remove tag(s): " + String.join(", ", removeTags));
+		}
+
+		if (inactive != null) {
 
 			if (task.state == TaskState.Finished) {
 				task = tasks.setTaskState(id, TaskState.Inactive);

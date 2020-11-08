@@ -5,7 +5,6 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.DataLoader;
-import com.andrewauclair.microtask.task.TaskLoader;
 import com.andrewauclair.microtask.task.TaskReader;
 import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine;

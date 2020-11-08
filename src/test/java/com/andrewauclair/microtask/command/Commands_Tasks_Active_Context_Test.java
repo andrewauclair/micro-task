@@ -105,6 +105,27 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void only_active_tags_in_context() {
+		tasks.setCurrentList(existingList("/projects/micro-task/one"));
+		tasks.getActiveContext().setActiveTags(Arrays.asList("alpha", "bravo"));
+
+		commands.execute(printStream, "tasks");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Tasks on list '/projects/micro-task/one' with tag(s): alpha, bravo",
+				"",
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
+				ANSI_BG_GRAY + "       4  Task 4     " + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
 	void tasks_in_active_group() {
 		tasks.getActiveContext().setActiveGroup(existingGroup("/projects/micro-task/"));
 

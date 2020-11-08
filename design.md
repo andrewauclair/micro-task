@@ -155,6 +155,8 @@ micro-task stores task data in a text file defined by its task ID. For example, 
 | `recurring <bool>` | Either `true` or `false`, indicating <br>that the task is recurring and there for <br>cannot be finished. |
 | `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 | `<blank>` | |
+| `tag <tag>` | Any number of tags can be defined here. |
+| `<blank>` | |
 | `note <time> <text>` | Any number of notes can be defined here. |
 | `<blank>` | |
 | `custom` | |

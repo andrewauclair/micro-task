@@ -33,7 +33,6 @@ public class MainConsole extends CommonConsole {
 	private final Commands commands;
 	private final Tasks tasks;
 	private final Projects projects;
-	private final TaskLoader loader;
 
 	public MainConsole() throws Exception {
 		Thread listen = new Thread(() -> {
@@ -53,8 +52,6 @@ public class MainConsole extends CommonConsole {
 		tasks.setProjects(projects);
 
 		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
-
-		loader = new TaskLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
 		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 

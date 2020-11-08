@@ -44,16 +44,6 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 	}
 	
 	@Test
-	@Disabled("This test isn't needed now. But I'm not deleting it yet because I need a reminder to make sure we're fully testing the TaskGroupName part that adds the root path.")
-	void group_paths_need_to_start_with_root() {
-		TaskGroupFinder finder = new TaskGroupFinder(tasks);
-
-		TaskException taskException = assertThrows(TaskException.class, () -> finder.hasGroupPath(new TaskGroupName(tasks, "test")));
-		
-		assertEquals("Group path must start with root (/).", taskException.getMessage());
-	}
-	
-	@Test
 	void create_new_group() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
@@ -196,26 +186,6 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getGroupForList(existingList("/test")));
 
 		assertEquals("List '/test' does not exist.", taskException.getMessage());
-	}
-
-	@Test
-	@Disabled
-	void group_gets_project_from_parent_if_project_is_an_empty_string() {
-		TaskGroup parent = new TaskGroup("root", null, TaskContainerState.InProgress);
-		TaskGroup child = new TaskGroup("child", parent, TaskContainerState.InProgress);
-
-		// TODO Fix
-//		assertEquals("Project", child.getProject());
-	}
-
-	@Test
-	@Disabled
-	void group_gets_feature_from_parent_if_feature_is_an_empty_string() {
-		TaskGroup parent = new TaskGroup("root", null, TaskContainerState.InProgress);
-		TaskGroup child = new TaskGroup("child", parent, TaskContainerState.InProgress);
-
-		// TODO Fix
-//		assertEquals("Feature", child.getFeature());
 	}
 	
 	@Test
