@@ -178,7 +178,9 @@ public class DataLoader {
 		}
 
 		if (osInterface.fileExists(folder + "/" + name + "/project.txt")) {
-			projects.createProject(new NewProject(projects, name), false);
+			if (!projects.hasProject(name)) {
+				projects.createProject(new NewProject(projects, name), false);
+			}
 		}
 
 		loadTasks(fileInfo.getPath(), true);
