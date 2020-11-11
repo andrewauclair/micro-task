@@ -143,7 +143,9 @@ public class DataLoader {
 
 			Project project = projects.getProject(new ExistingProject(projects, projectForList));
 
-			project.addFeature(new NewFeature(project, name), false);
+			if (!project.hasFeature(name)) {
+				project.addFeature(new NewFeature(project, name), false);
+			}
 		}
 
 		loadTasks(fileInfo.getPath(), false);
