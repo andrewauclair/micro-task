@@ -73,7 +73,12 @@ final class NextCommand implements Runnable {
 				.collect(Collectors.toList());
 
 		if (due) {
-			tasks.sort(Comparator.comparingLong(o -> o.dueTime));
+			tasks.sort(new Comparator<Task>() {
+				@Override
+				public int compare(Task o1, Task o2) {
+					return Long.compare(o2.dueTime, o1.dueTime);
+				}
+			});
 		}
 
 		System.out.print("Next " + tasks.size() + (due ? " Due" : "") + " Tasks to Complete");
