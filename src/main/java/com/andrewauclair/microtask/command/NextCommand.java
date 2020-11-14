@@ -144,7 +144,7 @@ final class NextCommand implements Runnable {
 		table.enableAlternatingColors();
 
 		if (due) {
-			table.setHeaders("List", "ID", "Description", "Due");
+			table.setHeaders("List", "ID", "Due", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, LEFT);
 		}
 		else {
@@ -156,14 +156,14 @@ final class NextCommand implements Runnable {
 			table.enableWordWrap();
 		}
 
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		ZoneId zoneId = osInterface.getZoneId();
 
 		for (final Task task : tasks) {
 			if (task.state == TaskState.Active) {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task, dueStr);
+					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
 				}
 				else {
 					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
@@ -172,7 +172,7 @@ final class NextCommand implements Runnable {
 			else {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task, dueStr);
+					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
 
 				}
 				else {

@@ -379,10 +379,10 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 3 Due Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "  " + u + "Due" + r + "                 ",
-				ANSI_BG_GRAY + "/default   3  Test 3       01/01/1970 04:13:20 PM" + ANSI_RESET,
-				"/default   2  Test 2       01/01/1970 07:00:00 PM",
-				ANSI_BG_GRAY + "/default   1  Test 1       01/01/1970 09:46:40 PM" + ANSI_RESET,
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Due" + r + "         " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   3  01/01/1970  Test 3     " + ANSI_RESET,
+				"/default   2  01/01/1970  Test 2     ",
+				ANSI_BG_GRAY + "/default   1  01/01/1970  Test 1     " + ANSI_RESET,
 				""
 		);
 	}
