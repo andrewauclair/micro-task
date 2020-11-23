@@ -29,11 +29,17 @@ public class ConsoleTable {
 	boolean alternateColors = false;
 	boolean wordWrap = false;
 	boolean printLastRows = false;
+	boolean showLastRows = true;
+
 	private int spacing = 2;
 	private int rowLimit = Integer.MAX_VALUE;
 
 	public ConsoleTable(OSInterface osInterface) {
 		this.osInterface = osInterface;
+	}
+
+	public void showFirstRows() {
+		showLastRows = false;
 	}
 
 	public void setHeaders(String... headers) {
@@ -242,6 +248,9 @@ public class ConsoleTable {
 	}
 
 	private int getStartRow() {
+		if (!showLastRows) {
+			return 0; // always start at the first row in this case
+		}
 		return cells.size() > rowLimit && printLastRows ? cells.size() - rowLimit : 0;
 	}
 

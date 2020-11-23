@@ -371,7 +371,17 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 				.withDueTime(80000)
 				.build());
 
-		commands.execute(printStream, "next -c 5 --due");
+		tasks.addTask(new TaskBuilder(4)
+				.withTask("Test 4")
+				.withDueTime(70000)
+				.build());
+
+		tasks.addTask(new TaskBuilder(5)
+				.withTask("Test 5")
+				.withDueTime(60000)
+				.build());
+
+		commands.execute(printStream, "next -c 3 --due");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
 		String r = ANSI_RESET;
@@ -380,8 +390,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 				"Next 3 Due Tasks to Complete",
 				"",
 				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Due" + r + "         " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  01/01/1970  Test 1     " + ANSI_RESET,
-				"/default   2  01/01/1970  Test 2     ",
+				ANSI_BG_GRAY + "/default   5  01/01/1970  Test 5     " + ANSI_RESET,
+				"/default   4  01/01/1970  Test 4     ",
 				ANSI_BG_GRAY + "/default   3  01/01/1970  Test 3     " + ANSI_RESET,
 				""
 		);

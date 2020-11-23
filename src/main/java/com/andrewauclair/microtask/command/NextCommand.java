@@ -69,16 +69,25 @@ final class NextCommand implements Runnable {
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
 				.filter(this::includeTask)
-				.limit(max)
+//				.limit(max)
 				.collect(Collectors.toList());
 
 		if (due) {
+			tasks = tasks.stream()
+					.skip(tasks.size() - max)
+					.collect(Collectors.toList());
+
 			tasks.sort(new Comparator<Task>() {
 				@Override
 				public int compare(Task o1, Task o2) {
-					return Long.compare(o2.dueTime, o1.dueTime);
+					return Long.compare(o1.dueTime, o2.dueTime);
 				}
 			});
+		}
+		else {
+			tasks = tasks.stream()
+					.limit(max)
+					.collect(Collectors.toList());
 		}
 
 		System.out.print("Next " + tasks.size() + (due ? " Due" : "") + " Tasks to Complete");
@@ -149,6 +158,7 @@ final class NextCommand implements Runnable {
 		table.enableAlternatingColors();
 
 		if (due) {
+			table.showFirstRows();
 			table.setHeaders("List", "ID", "Due", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, LEFT);
 		}
