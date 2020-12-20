@@ -13,10 +13,8 @@ import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
@@ -43,6 +41,9 @@ public class TasksCommand implements Runnable {
 
 	@CommandLine.Option(names = {"--all"}, description = "List all tasks.")
 	private boolean all;
+
+	@CommandLine.Option(names = {"--due-before"}, description = "Show tasks due before this date.")
+	private Date due_before;
 
 	@CommandLine.Option(names = {"-v", "--verbose"}, description = "Display verbose information.")
 	private boolean verbose;
@@ -113,7 +114,11 @@ public class TasksCommand implements Runnable {
 		boolean useTags = !tasksData.getActiveContext().getActiveTags().isEmpty();
 		List<String> tags = tasksData.getActiveContext().getActiveTags();
 
-		if (feature.isPresent()) {
+		if  (due_before != null) {
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			System.out.println("Tasks due before " + dateTimeFormatter.format(due_before.toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime()));
+		}
+		else if (feature.isPresent()) {
 			group = new ExistingGroupName(tasksData, project.get().getGroup().getFullPath());
 			useGroup = true;
 
@@ -242,6 +247,10 @@ public class TasksCommand implements Runnable {
 			tasks.removeIf(dueTask::equals);
 		}
 
+		if (due_before != null) {
+			tasks.clear();
+		}
+
 		dueTasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
 		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
 
@@ -313,9 +322,17 @@ public class TasksCommand implements Runnable {
 	private List<Task> getDueTasks() {
 		long epochSecond = osInterface.currentSeconds();
 
+		ZoneId zoneId = osInterface.getZoneId();
+
+		if (due_before != null) {
+			LocalDate due_date = LocalDate.ofInstant(due_before.toInstant(), zoneId);
+			LocalDateTime due_date_midnight = LocalDateTime.of(due_date, LocalTime.MIDNIGHT);
+			long due_midnight = due_date_midnight.atZone(zoneId).toEpochSecond();
+			epochSecond = due_midnight;
+		}
+
 		Instant instant = Instant.ofEpochSecond(epochSecond);
 
-		ZoneId zoneId = osInterface.getZoneId();
 		LocalDate today = LocalDate.ofInstant(instant, zoneId);
 		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
 		LocalDateTime nextMidnight = midnight.plusDays(1);
