@@ -274,6 +274,9 @@ public class StatusConsole {
 
 	private void updateStatus(Terminal terminal) {
 		synchronized (tasks) {
+			int height = osInterface.getTerminalHeight();
+			int lines = 3;
+
 			terminal.puts(InfoCmp.Capability.cursor_address, 0, 0);
 
 			int width = osInterface.getTerminalWidth();
@@ -337,8 +340,8 @@ public class StatusConsole {
 				System.out.println(a);
 			}
 
-			for (int i = 0; i < osInterface.getTerminalHeight() - 4; i++) {
-//				System.out.println();
+			for (int i = 0; i < height - lines - 1; i++) {
+				System.out.println();
 			}
 		}
 	}
