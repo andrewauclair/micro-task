@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.project.*;
+import com.andrewauclair.microtask.task.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -109,6 +110,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		tasks.setCurrentList(existingList("/projects/micro-task/one"));
 		tasks.getActiveContext().setActiveTags(Arrays.asList("alpha", "bravo"));
 
+		Task active_task = tasks.addTask("Active task");
+		tasks.startTask(existingID(active_task.id), false);
+
 		commands.execute(printStream, "tasks");
 
 		String u = ConsoleColors.ANSI_UNDERLINE;
@@ -119,8 +123,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 				"",
 				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
 				ANSI_BG_GRAY + "       4  Task 4     " + ANSI_RESET,
+				ANSI_BG_GREEN + "*     10  Active task" + ANSI_RESET,
 				"",
-				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
 		);
 	}

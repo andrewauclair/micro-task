@@ -233,6 +233,10 @@ public class TasksCommand implements Runnable {
 			tasks.addAll(tasksList);
 		}
 
+		if (tasksData.hasActiveTask() && !tasks.contains(tasksData.getActiveTask())) {
+			tasks.add(tasksData.getActiveTask());
+		}
+
 		if (tasks.size() > limit) {
 			limit--;
 		}
