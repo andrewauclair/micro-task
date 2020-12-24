@@ -18,6 +18,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -34,7 +35,7 @@ public class OSInterfaceImpl implements OSInterface {
 	public Terminal terminal = null;
 
 	private String lastInputFile = "";
-//	private DataOutputStream statusOutput;
+	//	private DataOutputStream statusOutput;
 	private List<Socket> clients = new ArrayList<>();
 
 	private final Git repo;
@@ -317,27 +318,51 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public void sendStatusMessage(StatusConsole.TransferType transferType) {
+		List<Socket> sockets_to_remove = new ArrayList<>();
+
 		try {
 			for (final Socket client : clients) {
-				client.getOutputStream().write(transferType.ordinal());
+				try {
+					client.getOutputStream().write(transferType.ordinal());
+				}
+				catch (SocketException e) {
+					// remove the client
+					sockets_to_remove.add(client);
+				}
 			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);
+		}
+
+		for (Socket socket : sockets_to_remove) {
+			clients.remove(socket);
 		}
 	}
 
 	@Override
 	public void sendStatusMessage(StatusConsole.TransferType transferType, String data) {
+		List<Socket> sockets_to_remove = new ArrayList<>();
+
 		try {
 			for (final Socket client : clients) {
-				DataOutputStream output = new DataOutputStream(client.getOutputStream());
-				output.write(transferType.ordinal());
-				output.writeUTF(data);
+				try {
+					DataOutputStream output = new DataOutputStream(client.getOutputStream());
+					output.write(transferType.ordinal());
+					output.writeUTF(data);
+				}
+				catch (SocketException e) {
+					// remove the client
+					sockets_to_remove.add(client);
+				}
 			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.out);
+		}
+
+		for (Socket socket : sockets_to_remove) {
+			clients.remove(socket);
 		}
 	}
 
