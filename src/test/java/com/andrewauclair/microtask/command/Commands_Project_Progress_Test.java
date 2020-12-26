@@ -91,6 +91,50 @@ public class Commands_Project_Progress_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Project progress for 'test'",
 				"",
+				"Features             1 /  5 [==        ]  20 %",
+				"Tasks                1 / 10 [=         ]  10 %",
+				"",
+				"/projects/test/four/ 1 /  1 [==========] 100 %",
+				"/projects/test/one   0 /  3 [          ]   0 %",
+				"/projects/test/two   0 /  2 [          ]   0 %",
+				"/projects/test/three 0 /  4 [          ]   0 %",
+				""
+		);
+	}
+
+	@Test
+	void displays_all_sub_features_verbose() {
+		tasks.addGroup(newGroup("/projects/test/four/"));
+		tasks.addList(newList("/projects/test/one"), true);
+		tasks.addList(newList("/projects/test/two"), true);
+		tasks.addList(newList("/projects/test/three"), true);
+		tasks.addList(newList("/projects/test/four/five"), true);
+
+		tasks.setCurrentList(existingList("/projects/test/one"));
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.setCurrentList(existingList("/projects/test/two"));
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.setCurrentList(existingList("/projects/test/three"));
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.setCurrentList(existingList("/projects/test/four/five"));
+		tasks.addTask("Test");
+
+		tasks.finishTask(existingID(10));
+		tasks.finishList(existingList("/projects/test/four/five"));
+
+		projects.createProject(new NewProject(projects, "test"), true);
+
+		commands.execute(System.out, "project --name test --progress -v");
+
+		assertOutput(
+				"Project progress for 'test'",
+				"",
 				"Features                 1 /  5 [==        ]  20 %",
 				"Tasks                    1 / 10 [=         ]  10 %",
 				"",

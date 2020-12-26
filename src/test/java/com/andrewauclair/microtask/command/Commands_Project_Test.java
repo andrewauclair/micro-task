@@ -26,11 +26,12 @@ class Commands_Project_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "project --help");
 
 		assertOutput(
-				"Usage:  project [-h] [--list] [--progress] [-n=<name>]",
+				"Usage:  project [-hv] [--list] [--progress] [-n=<name>]",
 				"  -h, --help          Show this help message.",
 				"      --list",
 				"  -n, --name=<name>",
-				"      --progress"
+				"      --progress",
+				"  -v, --verbose"
 		);
 	}
 }

@@ -7,10 +7,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.TaskContainer;
-import com.andrewauclair.microtask.task.TaskGroup;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -38,6 +35,9 @@ public class ProjectCommand implements Runnable {
 
 	@Option(names = {"--list"})
 	private boolean list;
+
+	@Option(names = {"-v", "--verbose"})
+	private boolean verbose;
 
 	public ProjectCommand(Tasks tasks, Projects projects, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -96,6 +96,9 @@ public class ProjectCommand implements Runnable {
 //		List<List<String>> output = new ArrayList<>();
 
 		for (final TaskContainer child : group.getChildren()) {
+			if (child.getState() == TaskContainerState.Finished && !verbose) {
+				continue;
+			}
 			long finished = child.getTasks().stream()
 					.filter(task -> task.state == TaskState.Finished)
 					.count();
