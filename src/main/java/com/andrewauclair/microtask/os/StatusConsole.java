@@ -248,6 +248,10 @@ public class StatusConsole {
 		table.setColumnAlignment(RIGHT, RIGHT, RIGHT, RIGHT, LEFT);
 
 		for (final TaskContainer child : tasks.getCurrentGroup().getChildren()) {
+			if (child.getState() == TaskContainerState.Finished) {
+				continue;
+			}
+
 			List<Task> tasks = child.getTasks();
 
 			int total = tasks.size();
