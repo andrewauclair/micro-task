@@ -57,7 +57,14 @@ final class SearchCommand implements Runnable {
 			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.id)).getFullPath()));
 		}
 
-//		System.out.println("Searching for '" + searchText + "'");
+		if (group) {
+			System.out.println("Searching group '" + tasks.getCurrentGroup().getFullPath() + "' for '" + searchText + "'");
+		}
+		else {
+			System.out.println("Searching all tasks for '" + searchText + "'");
+		}
+
+		System.out.println();
 		System.out.println("Search Results (" + searchResults.size() + "):");
 		System.out.println();
 

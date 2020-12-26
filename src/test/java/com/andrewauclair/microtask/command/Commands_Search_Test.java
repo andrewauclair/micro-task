@@ -20,6 +20,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (4):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -39,6 +41,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (2):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -63,6 +67,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (2):",
 				"",
 				"3 - 'finish this task by \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -87,6 +93,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\" --finished");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (2):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -111,6 +119,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search --finished --text \"monday\"");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (2):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -136,7 +146,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
-//				"Searching for 'monday'",
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (4):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -171,6 +182,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\" --group");
 
 		assertOutput(
+				"Searching group '/' for 'monday'",
+				"",
 				"Search Results (3):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -196,6 +209,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
+				"Searching all tasks for 'monday'",
+				"",
 				"Search Results (4):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",
@@ -231,6 +246,8 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -vgt \"monday\"");
 
 		assertOutput(
+				"Searching group '/' for 'monday'",
+				"",
 				"Search Results (4):",
 				"",
 				ANSI_BOLD + "/apples" + ANSI_RESET,
