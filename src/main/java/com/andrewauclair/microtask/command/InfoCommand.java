@@ -90,5 +90,10 @@ final class InfoCommand implements Runnable {
 		System.out.println("Project '" + projects.getProjectForList(tasks.getListForTask(new ExistingID(tasks, task.id))) + "'");
 		System.out.println("Feature '" + projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.id))) + "'");
 		System.out.println();
+
+		if (task.state != TaskState.Finished) {
+			System.out.println("Due: " + Instant.ofEpochSecond(task.dueTime).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
+			System.out.println();
+		}
 	}
 }

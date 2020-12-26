@@ -83,6 +83,8 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 				"",
 				"Project 'micro-task'",
 				"Feature 'feature-1'",
+				"",
+				"Due: 01/07/1970 06:16:40 PM",
 				""
 		);
 	}
@@ -109,6 +111,8 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 				"",
 				"Project 'micro-task'",
 				"Feature 'feature-1'",
+				"",
+				"Due: 01/07/1970 06:16:40 PM",
 				""
 		);
 	}
