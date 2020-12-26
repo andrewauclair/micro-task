@@ -46,13 +46,6 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	}
 
 	@Test
-	void returned_list_should_be_unmodifiable() {
-		List<Task> tasks = this.tasks.getTasks();
-
-		assertThrows(UnsupportedOperationException.class, () -> tasks.add(newTask(1, "Test", TaskState.Inactive, 0)));
-	}
-
-	@Test
 	void returns_a_set_of_the_list_names() {
 		tasks.addList(newList("test"), true);
 		assertThat(tasks.getInProgressListNames()).containsOnly("/default", "/test");

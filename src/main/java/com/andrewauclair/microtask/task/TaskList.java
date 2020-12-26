@@ -54,7 +54,7 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public List<Task> getTasks() {
-		return Collections.unmodifiableList(tasks);
+		return new ArrayList<>(tasks);
 	}
 
 	@Override

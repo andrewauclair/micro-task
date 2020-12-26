@@ -12,10 +12,7 @@ What follows is a detailed design of micro-task and its many features and comman
 #### 1.1 Assumptions
 micro-task requires a Java VM of at least Java 14 installed.
 
-#### 1.2 Constraints
-*In this section describe any constraints on the system that have a significant impact on the design of the system.*
-
-#### 1.3 System Environment
+#### 1.2 System Environment
 Currently, micro-task is only designed for Windows 10.
 
 ## 2. Architecture

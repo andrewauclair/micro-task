@@ -136,6 +136,7 @@ class Commands_Search_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "search -t \"monday\"");
 
 		assertOutput(
+//				"Searching for 'monday'",
 				"Search Results (4):",
 				"",
 				"1 - 'do this task on \u001B[1m\u001B[7mmonday\u001B[0m'",

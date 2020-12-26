@@ -76,15 +76,38 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("/gr/gd/one"), true);
 		tasks.setCurrentList(existingList("/gr/gd/one"));
 		tasks.addTask("Test");
+		tasks.addTask("Test");
 
 		commands.execute(printStream, "set list /gr/gd/one --due 1w");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/07/1970 06:33:20 PM",
+				"Set due date for task 1 - 'Test' to 01/07/1970 06:50:00 PM",
+				"Set due date for task 2 - 'Test' to 01/07/1970 06:50:00 PM",
 				""
 		);
 	}
 
+	@Test
+	void set_group_due_date() {
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.addList(newList("/gr/gd/two"), true);
+
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+
+		commands.execute(printStream, "set group /gr/gd/ --due 1w");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 01/07/1970 07:23:20 PM",
+				"Set due date for task 2 - 'Test' to 01/07/1970 07:23:20 PM",
+				"Set due date for task 3 - 'Test' to 01/07/1970 07:23:20 PM",
+				"Set due date for task 4 - 'Test' to 01/07/1970 07:23:20 PM",
+				""
+		);
+	}
 	@Test
 	void set_list_due_today() {
 		tasks.addTask("Test");
