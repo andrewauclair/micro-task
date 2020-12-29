@@ -56,11 +56,6 @@ public class Tasks {
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
-
-		if (!new TaskListFinder(this).hasList(new TaskListName(this, "/default") {})) {
-			addList(new NewTaskListName(this, "/default"), osInterface.canCreateFiles());
-		}
-		activeContext.setCurrentList(new ExistingListName(this, "/default"));
 	}
 
 	public void setProjects(Projects projects) {
@@ -632,6 +627,10 @@ public class Tasks {
 				activeContext.setActiveTaskID(activeTask.get().id);
 				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
+			}
+			else if (!new TaskListFinder(this).hasList(new TaskListName(this, "/default") {})) {
+				addList(new NewTaskListName(this, "/default"), osInterface.canCreateFiles());
+				activeContext.setCurrentList(new ExistingListName(this, "/default"));
 			}
 		}
 		catch (Exception e) {

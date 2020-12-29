@@ -20,6 +20,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -32,11 +33,12 @@ import java.util.Set;
 public class OSInterfaceImpl implements OSInterface {
 	public static boolean disableGit = false;
 
+	public static String working_directory = System.getProperty("user.home") + "/micro-task";
+
 	public Terminal terminal = null;
 
 	private String lastInputFile = "";
-	//	private DataOutputStream statusOutput;
-	private List<Socket> clients = new ArrayList<>();
+	private final List<Socket> clients = new ArrayList<>();
 
 	private final Git repo;
 
@@ -51,7 +53,7 @@ public class OSInterfaceImpl implements OSInterface {
 
 	private Git initGitRepo() throws GitAPIException {
 		final Git repo;
-		File directory = new File("git-data");
+		File directory = new File(working_directory + "/git-data");
 		boolean exists = directory.exists();
 
 		// if the directory doesn't exist JGit will create it for us
@@ -199,7 +201,7 @@ public class OSInterfaceImpl implements OSInterface {
 			throw new RuntimeException("Shouldn't use createOutputStream in tests.");
 		}
 
-		File file = new File(fileName);
+		File file = new File(working_directory + "/" + fileName);
 
 		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			System.out.println("Failed to create directory: " + file.getParentFile());
@@ -218,27 +220,40 @@ public class OSInterfaceImpl implements OSInterface {
 		if (isJUnitTest()) {
 			throw new RuntimeException("Shouldn't use createInputStream in tests.");
 		}
-		File file = new File(fileName);
+
+		String path = fileName;
+
+		if (!Paths.get(path).isAbsolute()) {
+			path = working_directory + "/" + fileName;
+		}
+
+		File file = new File(path);
 		lastInputFile = file.getAbsolutePath();
 		return new FileInputStream(file);
 	}
 
 	@Override
 	public void removeFile(String fileName) {
-		File file = new File(fileName);
+		File file = new File(working_directory + "/" + fileName);
 
 		if (file.exists()) {
-			boolean delete = new File(fileName).delete();
+			boolean delete = new File(working_directory + "/" + fileName).delete();
 
 			if (!delete) {
-				throw new RuntimeException("Failed to delete " + fileName);
+				throw new RuntimeException("Failed to delete " + working_directory + "/" + fileName);
 			}
 		}
 	}
 
 	@Override
 	public List<TaskFileInfo> listFiles(String folder) {
-		File[] files = new File(folder).listFiles();
+		String path = folder;
+
+		if (!Paths.get(path).isAbsolute()) {
+			path = working_directory + "/" + folder;
+		}
+
+		File[] files = new File(path).listFiles();
 		List<TaskFileInfo> info = new ArrayList<>();
 		if (files != null) {
 			for (File file : files) {
@@ -293,12 +308,12 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public void createFolder(String folder) {
 		//noinspection ResultOfMethodCallIgnored
-		new File(folder).mkdirs();
+		new File(working_directory + "/" + folder).mkdirs();
 	}
 
 	@Override
 	public void moveFolder(String src, String dest) throws IOException {
-		Files.move(new File("git-data/tasks" + src).toPath(), new File("git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
+		Files.move(new File(working_directory + "/git-data/tasks" + src).toPath(), new File(working_directory + "/git-data/tasks" + dest).toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	@Override
@@ -308,7 +323,7 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public boolean fileExists(String fileName) {
-		return new File(fileName).exists();
+		return new File(working_directory + "/" + fileName).exists();
 	}
 
 	@Override

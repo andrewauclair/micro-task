@@ -37,6 +37,9 @@ class ProjectBaseTestCase {
 
 		tasks = new Tasks(writer, new PrintStream(outputStream), osInterface);
 
+		tasks.addList(newList("/default"), true);
+		tasks.setCurrentList(existingList("/default"));
+
 		projects = new Projects(tasks, osInterface);
 		project = projects.createProject(new NewProject(projects, "micro-task"), true);
 	}

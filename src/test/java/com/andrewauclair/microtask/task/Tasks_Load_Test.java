@@ -157,8 +157,6 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		tasks.load(loader, commands);
 
-		tasks.addList(newList("/default"), true);
-
 		assertFalse(tasks.hasActiveTask());
 		assertEquals(existingList("/default"), tasks.getCurrentList());
 	}

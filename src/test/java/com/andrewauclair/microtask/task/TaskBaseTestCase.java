@@ -39,6 +39,10 @@ class TaskBaseTestCase {
 		System.setOut(output);
 		
 		tasks = new Tasks(writer, output, osInterface);
+
+		tasks.addList(newList("/default"), true);
+		tasks.setCurrentList(existingList("/default"));
+
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 //		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen

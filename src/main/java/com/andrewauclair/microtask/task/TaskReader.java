@@ -23,7 +23,6 @@ public class TaskReader {
 	}
 
 	Task readTask(long id, BufferedReader reader) throws IOException {
-//		try (Scanner scanner = new Scanner(osInterface.createInputStream(fileName))) {
 		TaskBuilder builder = new TaskBuilder(id)
 				.withTask(reader.readLine())
 				.withState(TaskState.valueOf(reader.readLine()))
