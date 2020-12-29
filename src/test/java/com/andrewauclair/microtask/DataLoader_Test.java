@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -75,6 +76,10 @@ public class DataLoader_Test {
 		System.setOut(output);
 
 		tasks = new Tasks(writer, output, osInterface);
+
+		tasks.addList(new NewTaskListName(tasks, "/default"), true);
+		tasks.setCurrentList(new ExistingListName(tasks, "/default"));
+
 		projects = new Projects(tasks, osInterface);
 
 		// put these here, the Tasks constructor uses these for legit reasons and we don't want to make those fail

@@ -91,6 +91,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		assertOutput(
 				defaultList,
 
+				"InProgress",
 				"InProgress"
 		);
 

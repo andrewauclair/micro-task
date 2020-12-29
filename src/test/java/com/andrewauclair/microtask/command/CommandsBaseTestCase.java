@@ -65,6 +65,10 @@ public class CommandsBaseTestCase {
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
+
+		tasks.addList(newList("/default"), true);
+		tasks.setCurrentList(existingList("/default"));
+
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 

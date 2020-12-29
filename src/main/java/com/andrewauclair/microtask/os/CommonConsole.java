@@ -41,7 +41,7 @@ public class CommonConsole {
 				.parser(new DefaultParser())
 				.variable(LineReader.LIST_MAX, 50)
 				.variable(LineReader.BELL_STYLE, "none")
-				.variable(LineReader.HISTORY_FILE, "history.txt")
+				.variable(LineReader.HISTORY_FILE, OSInterfaceImpl.working_directory + "/history.txt")
 				.build();
 
 		loadHistory(lineReader);

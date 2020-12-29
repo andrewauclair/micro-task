@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id "com.github.ben-manes.versions" version "0.28.0"
+    id "com.github.ben-manes.versions" version "0.36.0"
 }
 
 apply plugin: 'java'
@@ -16,22 +16,22 @@ repositories {
 }
 
 dependencies {
-    compile 'net.java.dev.jna:jna:5.5.0'
-    compile 'net.java.dev.jna:jna-platform:5.5.0'
+    compile 'net.java.dev.jna:jna:5.6.0'
+    compile 'net.java.dev.jna:jna-platform:5.6.0'
     compile 'org.jline:jline:3.14.1'
-    compile 'org.json:json:20190722'
+    compile 'org.json:json:20201115'
     compile 'info.picocli:picocli-shell-jline3:4.2.0'
     compile 'org.fusesource.jansi:jansi:1.18'
-    compile 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
-    compile 'org.slf4j:slf4j-simple:1.7.9'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0-M1'
+    compile 'org.eclipse.jgit:org.eclipse.jgit:5.10.0.202012080955-r'
+    compile 'org.slf4j:slf4j-simple:2.0.0-alpha1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.7.0-M1'
-    testCompile 'org.assertj:assertj-core:3.16.1'
-    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.2'
-    testCompile 'org.mockito:mockito-core:3.3.3'
-    testCompile 'org.mockito:mockito-junit-jupiter:3.3.3'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.7.0'
+    testCompile 'org.assertj:assertj-core:3.18.1'
+    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.5'
+    testCompile 'org.mockito:mockito-core:3.6.28'
+    testCompile 'org.mockito:mockito-junit-jupiter:3.6.28'
 }
 
 tasks.withType(JavaCompile) {
@@ -62,3 +62,5 @@ jacocoTestReport {
         xml.enabled true
     }
 }
+
+// jpackage -i build/libs --main-class com.andrewauclair.microtask.Main --main-jar micro-task.jar --java-options "--enable-preview" --win-console --name "micro-task" --copyright "Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved" --description "command line task tracker" --app-version 21.1.1

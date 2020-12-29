@@ -65,7 +65,7 @@ public class MainConsole extends CommonConsole {
 			LineReader lineReader = configureTerminal(commands, terminal);
 
 			if (loadSuccessful) {
-				lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//				lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 			}
 
 			VersionCommand.printLogo(osInterface);

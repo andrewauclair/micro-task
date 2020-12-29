@@ -47,7 +47,8 @@ class LocalSettings_Test {
 		System.setOut(output);
 		
 		tasks = new Tasks(writer, output, osInterface);
-//		tasks.addList(newList("default", true); // add the default list, in reality it gets created, but we don't want all that stuff to happen
+		tasks.addList(new NewTaskListName(tasks, "/default"), true);
+		tasks.setCurrentList(new ExistingListName(tasks, "/default"));
 	}
 
 	@Test
