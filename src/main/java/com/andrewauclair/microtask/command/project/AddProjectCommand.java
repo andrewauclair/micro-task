@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.project;
 
 import com.andrewauclair.microtask.jline.ProjectCompleter;
