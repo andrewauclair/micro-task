@@ -323,7 +323,7 @@ without having to set up the active context again.
 | Option | Sub-Command(s) | Description |
 | ------ | -------------- | ----------- |
 | `-h`,`--help` | All | Print the help message for this command. |
-| `-f`,`--finish` | `task` | Finish the previous task when starting another. |
+| `-f`,`--finish-active-task` | `task` | Finish the previous task when starting another. |
 
 #### 5.X Stop Command
 
