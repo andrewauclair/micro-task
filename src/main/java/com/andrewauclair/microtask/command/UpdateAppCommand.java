@@ -122,7 +122,7 @@ public class UpdateAppCommand implements Runnable {
 				}
 
 				if (isCurrentVersion) {
-					table.addRow(ANSI_BG_GREEN, release.versionName, status);
+					table.addRow(ANSI_BG_GREEN, false, release.versionName, status);
 				}
 				else if (count < MAX_DISPLAYED_VERSIONS) {
 					table.addRow(release.versionName, status);

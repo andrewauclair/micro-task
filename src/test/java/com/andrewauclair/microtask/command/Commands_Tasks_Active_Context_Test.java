@@ -123,9 +123,11 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 				"",
 				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
 				ANSI_BG_GRAY + "       4  Task 4     " + ANSI_RESET,
+				"",
+				"Active Task" + ANSI_RESET,
 				ANSI_BG_GREEN + "*     10  Active task" + ANSI_RESET,
 				"",
-				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""
 		);
 	}

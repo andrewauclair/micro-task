@@ -233,17 +233,12 @@ public class TasksCommand implements Runnable {
 			tasks.addAll(tasksList);
 		}
 
-		if (tasksData.hasActiveTask() && !tasks.contains(tasksData.getActiveTask())) {
-			tasks.add(tasksData.getActiveTask());
-		}
-
 		if (tasks.size() > limit) {
 			limit--;
 		}
 
 		table.setRowLimit(limit, true);
 
-		Optional<Task> activeTask = Optional.empty();
 		List<Task> dueTasks = tasksData.getActiveContext().hasAnyContext() ? new ArrayList<>() : getDueTasks();
 
 		// remove any tasks that are duplicated between tasks and dueTasks
@@ -259,18 +254,17 @@ public class TasksCommand implements Runnable {
 		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
 
 		for (final Task task : tasks) {
-			if (task.state == TaskState.Active) {
-				activeTask = Optional.of(task);
-			}
-			else {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
-				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
+			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-				addTaskToTable(table, task, name, false, useGroup);
-			}
+			addTaskToTable(table, task, name, false, useGroup);
 		}
 
-		tasks.addAll(dueTasks);
+//		tasks.addAll(dueTasks);
+
+		if (dueTasks.size() > 0 && due_before == null) {
+			table.addRow(true, "Due Tasks");
+		}
 
 		for (Task dueTask : dueTasks) {
 			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
@@ -278,14 +272,22 @@ public class TasksCommand implements Runnable {
 			addTaskToTable(table, dueTask, name, true, useGroup);
 		}
 
-		if (activeTask.isPresent()) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, activeTask.get().id));
+		if (tasksData.hasActiveTask()) {
+//			tasks.add(tasksData.getActiveTask());
+
+			table.addRow(true, "Active Task");
+
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().id));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-			addTaskToTable(table, activeTask.get(), name, false, useGroup);
+			addTaskToTable(table, tasksData.getActiveTask(), name, false, useGroup);
 		}
 
-		int totalTasks = tasks.size();
+		int totalTasks = tasks.size() + dueTasks.size();
+
+		if (tasksData.hasActiveTask() && !tasks.contains(tasksData.getActiveTask())) {
+			totalTasks++;
+		}
 
 		if (totalTasks > 0) {
 			table.print();
@@ -307,10 +309,13 @@ public class TasksCommand implements Runnable {
 			System.out.println();
 			System.out.print(ANSI_BOLD);
 			if (finished) {
-				System.out.print("Total Finished Tasks: " + totalTasks);
+				System.out.print("Total Finished Tasks: " + tasks.size());
+			}
+			else if (due_before != null) {
+				System.out.print("Total Tasks: " + dueTasks.size());
 			}
 			else {
-				System.out.print("Total Tasks: " + totalTasks);
+				System.out.print("Total Tasks: " + tasks.size());
 
 				if (totalRecurring > 0) {
 					System.out.print(" (" + totalRecurring + " Recurring)");
@@ -388,10 +393,10 @@ public class TasksCommand implements Runnable {
 		}
 
 		if (printListName) {
-			table.addRow(bgColor, listName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, listName, type, String.valueOf(task.id), task.task);
 		}
 		else {
-			table.addRow(bgColor, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, type, String.valueOf(task.id), task.task);
 		}
 	}
 
