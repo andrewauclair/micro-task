@@ -178,10 +178,10 @@ final class NextCommand implements Runnable {
 			if (task.state == TaskState.Active) {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
+					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
 				}
 				else {
-					table.addRow(ANSI_BG_GREEN, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
 				}
 			}
 			else {

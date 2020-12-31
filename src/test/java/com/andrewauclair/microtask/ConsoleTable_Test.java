@@ -191,7 +191,7 @@ public class ConsoleTable_Test {
 		table.setRowLimit(2, false);
 
 		table.addRow("1", "one", "data", "data", "data");
-		table.addRow(ANSI_BG_BLUE, "2", "two", "bigger", "more", "here");
+		table.addRow(ANSI_BG_BLUE, false, "2", "two", "bigger", "more", "here");
 		table.addRow("3", "three", "", "", "");
 		table.addRow("4", "four", "bigger", "", "last");
 
@@ -344,7 +344,7 @@ public class ConsoleTable_Test {
 
 		table.addRow("add");
 		table.addRow("two");
-		table.addRow(ANSI_BG_GREEN, "rows");
+		table.addRow(ANSI_BG_GREEN, false, "rows");
 
 		table.print();
 
@@ -369,6 +369,80 @@ public class ConsoleTable_Test {
 				u + "type" + r + "        " + u + "data" + r + " ",
 				"one         alpha",
 				"forty-five  beta "
+		);
+	}
+
+	@Test
+	void full_rows_can_be_added_to_break_up_data_in_table() {
+		table.setHeaders("type", "data");
+
+		table.addRow("one", "alpha");
+		table.addRow("forty-five", "beta");
+		table.addRow(true, "Another Row of Data");
+		table.addRow("a", "bravo");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "type" + r + "        " + u + "data" + r + " ",
+				"one         alpha",
+				"forty-five  beta ",
+				"",
+				"Another Row of Data",
+				"a           bravo"
+		);
+	}
+
+	@Test
+	void row_limit_is_split_between_groups() {
+		table.setRowLimit(11, false);
+		table.setColumnAlignment(LEFT, RIGHT);
+
+		table.setHeaders("type", "data");
+
+		table.addRow("one", "1");
+		table.addRow("two", "2");
+		table.addRow("three", "3");
+		table.addRow("four", "4");
+		table.addRow("five", "5");
+
+		table.addRow(true, "Group 2");
+
+		table.addRow("six", "6");
+		table.addRow("seven", "7");
+		table.addRow("eight", "8");
+		table.addRow("nine", "9");
+		table.addRow("ten", "10");
+
+		table.addRow(true, "Group 3");
+
+		table.addRow("eleven", "11");
+		table.addRow("twelve", "12");
+		table.addRow("thirteen", "13");
+		table.addRow("fourteen", "14");
+		table.addRow("fifteen", "15");
+
+		table.print();
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				u + "type" + r + "      " + u + "data" + r,
+				"one          1",
+				"two          2",
+				"three        3",
+				"four         4",
+				"",
+				"Group 2",
+				"six          6",
+				"seven        7",
+				"",
+				"Group 3",
+				"eleven      11"
 		);
 	}
 

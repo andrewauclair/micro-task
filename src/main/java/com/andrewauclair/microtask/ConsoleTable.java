@@ -17,14 +17,20 @@ public class ConsoleTable {
 		RIGHT
 	}
 
+	private static class RowCells {
+		ConsoleBackgroundColor background_color;
+		List<String> cells = new ArrayList<>();
+
+		// tells the console table to print the first cell at the full table with
+		boolean full_row_header = false;
+	}
+
 	private final OSInterface osInterface;
 
 	List<String> headers = new ArrayList<>();
-	List<List<String>> cells = new ArrayList<>();
-
-	List<ConsoleBackgroundColor> rowColors = new ArrayList<>();
-
 	List<Alignment> alignments = new ArrayList<>();
+
+	List<RowCells> cells = new ArrayList<>();
 
 	boolean alternateColors = false;
 	boolean wordWrap = false;
@@ -33,6 +39,8 @@ public class ConsoleTable {
 
 	private int spacing = 2;
 	private int rowLimit = Integer.MAX_VALUE;
+
+	private int group_count = 1;
 
 	public ConsoleTable(OSInterface osInterface) {
 		this.osInterface = osInterface;
@@ -68,12 +76,24 @@ public class ConsoleTable {
 	}
 
 	public void addRow(String... cells) {
-		addRow(ConsoleBackgroundColor.ANSI_BG_BLACK, cells);
+		addRow(ConsoleBackgroundColor.ANSI_BG_BLACK, false, cells);
 	}
 
-	public void addRow(ConsoleBackgroundColor bgColor, String... cells) {
-		rowColors.add(bgColor);
-		this.cells.add(Arrays.asList(cells));
+	public void addRow(boolean full_row, String... cells) {
+		addRow(ConsoleBackgroundColor.ANSI_BG_BLACK, full_row, cells);
+	}
+
+	public void addRow(ConsoleBackgroundColor bgColor, boolean full_row, String... cells) {
+		RowCells row = new RowCells();
+		row.background_color = bgColor;
+		row.cells.addAll(Arrays.asList(cells));
+		row.full_row_header = full_row;
+
+		this.cells.add(row);
+
+		if (full_row) {
+			group_count++;
+		}
 	}
 
 	public void print() {
@@ -112,16 +132,41 @@ public class ConsoleTable {
 		int rowCount = 0;
 		int rowsDisplayed = 0;
 
+		int row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) group_count);
+		int row_count_for_group = 0;
+		int remaining_group_count = group_count;
+		boolean skip_to_next_group = false;
+
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
-			List<String> row = cells.get(rowNum);
+			List<String> row = cells.get(rowNum).cells;
+
+			if (skip_to_next_group) {
+				if (cells.get(rowNum).full_row_header) {
+					// found the next group
+					skip_to_next_group = false;
+					row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) remaining_group_count);
+					row_count_for_group = 0;
+				}
+				else {
+					continue;
+				}
+			}
+			else if (group_count > 1) {
+				if (row_count_for_group >= row_limit_for_group) {
+					remaining_group_count--;
+					skip_to_next_group = true;
+					continue;
+				}
+			}
 
 			if (rowsDisplayed >= rowLimit && rowLimit != 0) {
 				break;
 			}
 
-			ConsoleBackgroundColor bgColor = rowColors.get(rowCount + startRow);
+			ConsoleBackgroundColor bgColor = cells.get(rowNum).background_color;
 
 			rowCount++;
+			row_count_for_group++;
 
 			StringBuilder line = new StringBuilder();
 			int prelength = 0;
@@ -188,19 +233,29 @@ public class ConsoleTable {
 				continue;
 			}
 
-			if (bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK) {
+			if (bgColor != ConsoleBackgroundColor.ANSI_BG_BLACK && !cells.get(rowNum).full_row_header) {
 				System.out.print(bgColor);
 			}
-			else if (rowCount % 2 != 0 && alternateColors) {
+			else if (rowCount % 2 != 0 && alternateColors && !cells.get(rowNum).full_row_header) {
 				System.out.print(ConsoleBackgroundColor.ANSI_BG_GRAY);
 			}
 
-			for (int i = 0; i < lines.size(); i++) {
-				if (i + 1 < lines.size()) {
-					System.out.println(lines.get(i));
-				}
-				else {
-					System.out.print(lines.get(i));
+			if (cells.get(rowNum).full_row_header) {
+				System.out.println();
+				System.out.print(row.get(0));
+
+				// extra row for the blank line
+				rowCount++;
+				row_count_for_group++;
+			}
+			else {
+				for (int i = 0; i < lines.size(); i++) {
+					if (i + 1 < lines.size()) {
+						System.out.println(lines.get(i));
+					}
+					else {
+						System.out.print(lines.get(i));
+					}
 				}
 			}
 
@@ -230,7 +285,10 @@ public class ConsoleTable {
 		int startRow = getStartRow();
 
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
-			List<String> row = cells.get(rowNum);
+			if (cells.get(rowNum).full_row_header) {
+				continue;
+			}
+			List<String> row = cells.get(rowNum).cells;
 
 			for (int i = 0; i < row.size(); i++) {
 				if (widths.size() < i + 1) {

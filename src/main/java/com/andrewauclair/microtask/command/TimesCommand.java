@@ -268,7 +268,7 @@ public final class TimesCommand implements Runnable {
 
 			if (!total) {
 				if (active) {
-					table.addRow(ANSI_BG_GREEN, time, type, String.valueOf(task.id), task.task);
+					table.addRow(ANSI_BG_GREEN, false, time, type, String.valueOf(task.id), task.task);
 				}
 				else {
 					table.addRow(time, type, String.valueOf(task.id), task.task);
