@@ -628,10 +628,6 @@ public class Tasks {
 				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}
-			else if (!new TaskListFinder(this).hasList(new TaskListName(this, "/default") {})) {
-				addList(new NewTaskListName(this, "/default"), osInterface.canCreateFiles());
-				activeContext.setCurrentList(new ExistingListName(this, "/default"));
-			}
 		}
 		catch (Exception e) {
 			System.out.println(ConsoleColors.ConsoleForegroundColor.ANSI_FG_RED + "Failed to read tasks." + ConsoleColors.ANSI_RESET);

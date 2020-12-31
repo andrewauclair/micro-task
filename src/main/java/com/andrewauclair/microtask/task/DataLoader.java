@@ -31,6 +31,13 @@ public class DataLoader {
 	public void load() throws IOException {
 		loadTasks("git-data/tasks", true);
 
+		// if the default list is missing, add it and the /projects/ group
+		if (!new TaskListFinder(tasks).hasList(new TaskListName(tasks, "/default") {})) {
+			tasks.addList(new NewTaskListName(tasks, "/default"), osInterface.canCreateFiles());
+			tasks.addGroup(new NewTaskGroupName(tasks, "/projects/"));
+			tasks.getActiveContext().setCurrentList(new ExistingListName(tasks, "/default"));
+		}
+
 		localSettings.load(tasks);
 //		projects.load();
 	}

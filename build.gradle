@@ -63,4 +63,4 @@ jacocoTestReport {
     }
 }
 
-// jpackage -i build/libs --main-class com.andrewauclair.microtask.Main --main-jar micro-task.jar --java-options "--enable-preview" --win-console --name "micro-task" --copyright "Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved" --description "command line task tracker" --app-version 21.1.1
+// jpackage -i build/libs --main-class com.andrewauclair.microtask.Main --main-jar micro-task.jar --java-options "--enable-preview" --win-console --win-menu --name "micro-task" --copyright "Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved" --description "micro-task (command line task tracker)" --app-version 20.12.29
