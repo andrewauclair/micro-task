@@ -239,7 +239,7 @@ public class TasksCommand implements Runnable {
 
 		table.setRowLimit(limit, true);
 
-		List<Task> dueTasks = tasksData.getActiveContext().hasAnyContext() ? new ArrayList<>() : getDueTasks();
+		List<Task> dueTasks = getDueTasks();
 
 		// remove any tasks that are duplicated between tasks and dueTasks
 		for (final Task dueTask : dueTasks) {
