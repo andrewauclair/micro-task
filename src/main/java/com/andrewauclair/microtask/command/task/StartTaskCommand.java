@@ -19,7 +19,7 @@ public class StartTaskCommand implements Runnable {
 	@CommandLine.Parameters(index = "0", description = "The task to start.")
 	private ExistingID id;
 
-	@CommandLine.Option(names = {"-f", "--finish"}, description = "Finish the active task.")
+	@CommandLine.Option(names = {"-f", "--finish-active-task"}, description = "Finish the active task.")
 	private boolean finish;
 
 	public StartTaskCommand(Tasks tasks, OSInterface osInterface) {

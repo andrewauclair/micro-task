@@ -105,7 +105,7 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
 
-		commands.execute(printStream, "start task 2 --finish");
+		commands.execute(printStream, "start task 2 --finish-active-task");
 
 		assertThat(tasks.getTasks()).containsOnly(
 				newTask(1, "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
