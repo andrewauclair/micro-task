@@ -74,13 +74,11 @@ public class DataLoader {
 //							osInterface.removeFile(fileInfo.getPath());
 							osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + id + ".txt");
 
-							line = bufferedReader.readLine();
-							continue;
 						}
-
-						Task task = reader.readTask(id, bufferedReader);
-						tasks.addTask(task, list, false);
-
+						else {
+							Task task = reader.readTask(id, bufferedReader);
+							tasks.addTask(task, list, false);
+						}
 						line = bufferedReader.readLine();
 					} while (line != null);
 				}
