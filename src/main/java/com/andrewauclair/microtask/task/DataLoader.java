@@ -73,6 +73,8 @@ public class DataLoader {
 						if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks, id)).state == TaskState.Finished) {
 //							osInterface.removeFile(fileInfo.getPath());
 							osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + id + ".txt");
+
+							line = bufferedReader.readLine();
 							continue;
 						}
 
