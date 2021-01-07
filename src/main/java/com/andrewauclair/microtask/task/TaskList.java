@@ -160,7 +160,13 @@ public final class TaskList implements TaskContainer {
 	}
 
 	private void writeTask(Task task) {
-		writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+		if (task.state == TaskState.Finished) {
+			osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+			writeArchive();
+		}
+		else {
+			writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+		}
 	}
 
 	public void writeArchive() {

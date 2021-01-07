@@ -84,6 +84,11 @@ public class DataLoader {
 				String fileName = fileInfo.getFileName();
 				long id = idFromFileName(fileInfo, fileName);
 
+				// probably our bug where we keep writing the finished tasks that are in the archive, delete the file
+				if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks, id)).state == TaskState.Finished) {
+					osInterface.removeFile(fileInfo.getPath());
+				}
+
 				Task task = reader.readTask(id, fileInfo.getPath());
 				tasks.addTask(task, list, false);
 			}
