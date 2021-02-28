@@ -566,6 +566,39 @@ class Commands_Tasks_No_Active_Context_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void due_tasks_are_displayed_twice_if_on_current_list() {
+		tasks.addTask(newTask(1, "Test", TaskState.Inactive, 1000));
+		tasks.addTask(newTaskBuilder(2, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000).build());
+		tasks.addTask(newTaskBuilder(3, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000).build());
+
+		tasks.setCurrentList(existingList("/default"));
+		tasks.startTask(existingID(1), false);
+
+		commands.execute(printStream, "tasks");
+
+		String u = ConsoleColors.ANSI_UNDERLINE;
+		String r = ANSI_RESET;
+
+		assertOutput(
+				"Tasks on list '/default'",
+				"",
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "      ",
+				ANSI_BG_GRAY + "       3  Test Due Today   " + ANSI_RESET,
+				               "       2  Test Due Tomorrow",
+				ANSI_BG_GREEN + "*      1  Test             " + ANSI_RESET,
+				"",
+				"Due Tasks" + ANSI_RESET,
+				ANSI_BG_RED + "       3  Test Due Today   " + ANSI_RESET,
+				"",
+				"Active Task",
+				ANSI_BG_GREEN + "*      1  Test             " + ANSI_RESET,
+				"",
+				ANSI_BOLD + "Total Tasks: 3" + ANSI_RESET,
+				""
+		);
+	}
+
+	@Test
 	void printing_tasks_in_group_when_there_are_no_tasks() {
 		commands.execute(printStream, "tasks --current-group");
 

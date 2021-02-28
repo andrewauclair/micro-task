@@ -140,17 +140,22 @@ public class ConsoleTable {
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
 			List<String> row = cells.get(rowNum).cells;
 
-			if (skip_to_next_group) {
+//			if (skip_to_next_group) {
 				if (cells.get(rowNum).full_row_header) {
 					// found the next group
 					skip_to_next_group = false;
-					row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) remaining_group_count);
+					if (remaining_group_count > 1) {
+						row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) remaining_group_count);
+					}
+					else {
+						row_limit_for_group = rowLimit - rowCount;
+					}
 					row_count_for_group = 0;
 				}
-				else {
-					continue;
-				}
-			}
+//				else {
+//					continue;
+//				}
+//			}
 			else if (group_count > 1) {
 				if (row_count_for_group >= row_limit_for_group) {
 					remaining_group_count--;

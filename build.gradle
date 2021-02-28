@@ -44,7 +44,7 @@ test {
 }
 
 description = 'micro task'
-sourceCompatibility = '14'
+sourceCompatibility = '15'
 
 jar {
     manifest {
