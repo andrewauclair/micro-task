@@ -243,7 +243,7 @@ public class TasksCommand implements Runnable {
 
 		// remove any tasks that are duplicated between tasks and dueTasks
 		for (final Task dueTask : dueTasks) {
-			tasks.removeIf(dueTask::equals);
+//			tasks.removeIf(dueTask::equals);
 		}
 
 		if (due_before != null) {

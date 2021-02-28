@@ -11,7 +11,10 @@ import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.sun.jna.Native;
 import com.sun.jna.Structure;
-import com.sun.jna.platform.win32.*;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.Wincon;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 import org.fusesource.hawtjni.runtime.ArgFlag;
@@ -138,7 +141,22 @@ public class StatusConsole {
 
 	public StatusConsole(boolean directoryDisplay) throws Exception {
 		this.directoryDisplay = directoryDisplay;
-		client = new Socket("localhost", 5678);
+
+		boolean connected = false;
+		Socket client = null;
+
+		while (!connected) {
+			try {
+				client = new Socket("localhost", 5678);
+				connected = true;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				Thread.sleep(1000);
+			}
+		}
+
+		this.client = client;
 
 		hidecursor();
 
@@ -165,6 +183,10 @@ public class StatusConsole {
 				.terminal(terminal)
 				.variable(LineReader.BELL_STYLE, "none")
 				.build();
+
+		tasks.load(loader, commands);
+		commands.loadAliases();
+		lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 
 		osInterface.setTerminal(terminal);
 
@@ -193,6 +215,13 @@ public class StatusConsole {
 
 		kernel32.SetConsoleTitle(CONSOLE_TITLE);
 
+		if (directoryDisplay) {
+			displayDirectory();
+		}
+		else {
+			updateStatus(terminal);
+		}
+
 		run();
 	}
 
@@ -203,7 +232,7 @@ public class StatusConsole {
 				synchronized (tasks) {
 					tasks.load(loader, commands);
 					commands.loadAliases();
-					lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
+//					lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply();
 
 					TransferType transferType = TransferType.valueOf(c);
 
@@ -281,7 +310,8 @@ public class StatusConsole {
 			int height = osInterface.getTerminalHeight();
 			int lines = 3;
 
-			terminal.puts(InfoCmp.Capability.cursor_address, 0, 0);
+//			terminal.puts(InfoCmp.Capability.cursor_address, 0, 0);
+
 
 			int width = osInterface.getTerminalWidth();
 
@@ -340,13 +370,22 @@ public class StatusConsole {
 				as.add(padString(terminal, "Current Group: " + currentGroup + "  Current List: " + currentList));
 			}
 
+			StringBuilder finalStr = new StringBuilder();
 			for (final String a : as) {
-				System.out.println(a);
+//				System.out.println(a);
+				finalStr.append(a).append("\n");
+			}
+			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
+				terminal.writer().print(finalStr);
 			}
 
-			for (int i = 0; i < height - lines - 1; i++) {
-				System.out.println();
-			}
+
+//			System.out.print(finalStr);
+
+
+//			for (int i = 0; i < height - lines - 1; i++) {
+//				System.out.println();
+//			}
 		}
 	}
 
@@ -354,7 +393,7 @@ public class StatusConsole {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
 		new PrintStream(stream).print(Utils.formatTime(time, Utils.HighestTime.None));
-		return new String(stream.toByteArray(), StandardCharsets.UTF_8);
+		return stream.toString(StandardCharsets.UTF_8);
 	}
 
 	private long applyDateRange(Task task, ZoneId zoneId, LocalDateTime midnight, LocalDateTime nextMidnight) {
@@ -363,12 +402,6 @@ public class StatusConsole {
 
 		long totalTime = 0;
 
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 		for (TaskTimes time : task.startStopTimes) {
 			if (time.start >= midnightStart && time.stop < midnightStop && time.start < midnightStop) {
 				totalTime += time.getDuration(osInterface);
@@ -379,18 +412,6 @@ public class StatusConsole {
 	}
 
 	private long getTimeCurrent(Task task) {
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 		TaskTimes taskTimes = task.startStopTimes.get(task.startStopTimes.size() - 1);
 
 		return osInterface.currentSeconds() - taskTimes.start;
@@ -415,12 +436,7 @@ public class StatusConsole {
 
 	private long getElapsedTime(Task task) {
 		long total = 0;
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
+
 		for (TaskTimes time : task.startStopTimes) {
 			if (time.stop != TaskTimes.TIME_NOT_SET) {
 				total += time.stop - time.start;
@@ -465,10 +481,10 @@ public class StatusConsole {
 		public boolean bVisible;
 
 		public static class ByReference extends CONSOLE_CURSOR_INFO implements
-		                                                                                                     Structure.ByReference {
+		                                                            Structure.ByReference {
 		}
 
-		private static String[] fieldOrder = { "dwSize", "bVisible" };
+		private static String[] fieldOrder = {"dwSize", "bVisible"};
 
 		@Override
 		protected java.util.List<String> getFieldOrder() {
@@ -478,14 +494,15 @@ public class StatusConsole {
 
 	public interface Kernel32 extends StdCallLibrary, WinNT, Wincon {
 
-		/** The instance. */
+		/**
+		 * The instance.
+		 */
 		Kernel32 INSTANCE = Native.load("kernel32", Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
 
-		boolean SetConsoleCursorInfo(@JniArg(cast = "HANDLE",flags = {ArgFlag.POINTER_ARG}) long handle, CONSOLE_CURSOR_INFO.ByReference info);
+		boolean SetConsoleCursorInfo(@JniArg(cast = "HANDLE", flags = {ArgFlag.POINTER_ARG}) long handle, CONSOLE_CURSOR_INFO.ByReference info);
 	}
 
-	void hidecursor()
-	{
+	void hidecursor() {
 		final StatusConsole.Kernel32 kernel32 = StatusConsole.Kernel32.INSTANCE;
 
 		long handle = GetStdHandle(STD_OUTPUT_HANDLE);
