@@ -30,13 +30,12 @@ public class AddFeatureCommand implements Runnable {
 
 	private boolean hasList() {
 		TaskListFinder finder = new TaskListFinder(tasks);
-		return finder.hasList(new TaskListName(tasks, "/projects/" + project.getName() + "/" + feature) {
-		});
+		return finder.hasList(new TaskListName(tasks, "/projects/" + project.getName() + "/" + feature) {});
 	}
 
 	private boolean hasGroup() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
-		return finder.hasGroupPath(new TaskGroupName(tasks, "/projects/" + project.getName() + "/" + feature + "/"));
+		return finder.hasGroupPath(new TaskGroupName(tasks, "/projects/" + project.getName() + "/" + feature + "/"){});
 	}
 
 	@Override

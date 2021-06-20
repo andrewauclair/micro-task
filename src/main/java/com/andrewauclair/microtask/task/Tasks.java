@@ -126,7 +126,7 @@ public class Tasks {
 	}
 
 	public TaskGroup getGroup(String name) {
-		TaskGroupName groupName = new TaskGroupName(this, name);
+		TaskGroupName groupName = new TaskGroupName(this, name){};
 
 		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(groupName.absoluteName());
 

@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -43,7 +44,7 @@ public class Projects {
 
 		String groupName = projectToGroup(projectName.getName());
 
-		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName))) {
+		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName){})) {
 			tasks.addGroup(new NewTaskGroupName(tasks, groupName));
 		}
 
@@ -52,7 +53,11 @@ public class Projects {
 		Project project = new Project(osInterface, tasks, group, projectName.getName());
 		projects.add(project);
 
+		tasks.addList(new NewTaskListName(tasks, group.absoluteName() + "general"), save);
+
 		if (save) {
+			tasks.addTask("Planning", new ExistingListName(tasks, group.absoluteName() + "general"));
+
 			save();
 		}
 
@@ -99,7 +104,7 @@ public class Projects {
 	public void load() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/"))) {
+		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/"){})) {
 			TaskGroup projectGroup = tasks.getGroup(new ExistingGroupName(tasks, "/projects/"));
 
 			for (final TaskContainer child : projectGroup.getChildren()) {

@@ -2,10 +2,13 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.project.NewProject;
-import com.andrewauclair.microtask.task.TaskGroupFinder;
-import com.andrewauclair.microtask.task.TaskGroupName;
+import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
+import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Commands_Add_Project_Test extends CommandsBaseTestCase {
@@ -27,12 +30,29 @@ public class Commands_Add_Project_Test extends CommandsBaseTestCase {
 	void make_a_new_project_with_a_new_group_name() {
 		commands.execute(System.out, "add project test");
 
-		assertTrue(new TaskGroupFinder(tasks).hasGroupPath(new TaskGroupName(tasks, "/projects/test/")));
+		assertTrue(new TaskGroupFinder(tasks).hasGroupPath(new ExistingGroupName(tasks, "/projects/test/")));
 		assertTrue(projects.hasProject("test"));
 
 		assertOutput(
 				"Created project 'test'",
 				""
+		);
+	}
+
+	@Test
+	void creating_new_project_creates_general_list_with_planning_task() {
+		commands.execute(printStream, "add project test");
+
+		assertTrue(new TaskListFinder(tasks).hasList(new ExistingListName(tasks, "/projects/test/general")));
+		TaskList list = tasks.getList(new ExistingListName(tasks, "/projects/test/general"));
+
+		assertThat(list.getTasks()).containsOnly(
+				new TaskBuilder(1)
+						.withTask("Planning")
+						.withState(TaskState.Inactive)
+						.withAddTime(1000)
+						.withDueTime(605800)
+						.build()
 		);
 	}
 

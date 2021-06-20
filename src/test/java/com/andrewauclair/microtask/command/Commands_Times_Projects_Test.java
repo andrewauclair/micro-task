@@ -37,10 +37,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void basic_times_command_for_projects_and_features() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -97,9 +97,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void feature_names_when_parent_group_has_no_feature() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task1 = newTask(2, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(3, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(4, "Test 3", TaskState.Finished, addTime);
 		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 		Task task6 = newTask(6, "Test 5", TaskState.Inactive, addTime);
 
@@ -163,9 +163,9 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void features_are_inherited_from_parent() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
+		Task task1 = newTask(2, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(3, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(4, "Test 3", TaskState.Finished, addTime);
 		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
@@ -224,10 +224,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_times_today() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -289,10 +289,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_times_yesterday() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -357,10 +357,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -401,10 +401,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(3, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(4, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(5, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(6, "Test 5", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
 
@@ -431,10 +431,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -492,10 +492,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -553,10 +553,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
+		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
+		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
+		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -597,10 +597,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(3, "Test 1", TaskState.Active, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(4, "Test 2", TaskState.Inactive, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(5, "Test 3", TaskState.Finished, addTime), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(6, "Test 5", TaskState.Inactive, addTime, true), "/default")
 				)
 		);
 

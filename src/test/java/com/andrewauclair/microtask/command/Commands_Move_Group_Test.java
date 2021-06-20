@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.task.TaskGroupFinder;
 import com.andrewauclair.microtask.task.TaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

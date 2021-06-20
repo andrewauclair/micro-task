@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Project;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -206,28 +207,26 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask("Test");
-//		tasks.setProject(existingList("/default"), "Project", true);
-//		tasks.setFeature(existingList("/default"), "Feature", true);
 
-		tasks.startTask(existingID(1), false);
+		tasks.startTask(existingID(3), false);
 
 		tasks.stopTask();
 
-		tasks.moveTask(existingID(1), existingList("/projects/project-2/two"));
+		tasks.moveTask(existingID(3), existingList("/projects/project-2/two"));
 
-//		tasks.setProject(existingList("/default"), "Project 2", true);
-//		tasks.setFeature(existingList("/default"), "Feature 2", true);
+		tasks.startTask(existingID(3), false);
 
-		tasks.startTask(existingID(1), false);
+		Task expectedTask = new TaskBuilder(3)
+				.withTask("Test")
+				.withState(TaskState.Active)
+				.withAddTime(3000)
+				.withDueTime(607800)
+				.withStartStopTime(new TaskTimes(4000, 5000, "project-1", "one"))
+				.withStartStopTime(new TaskTimes(6000, "project-2", "two"))
+				.build();
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Test", TaskState.Active,
-						1000,
-						Arrays.asList(
-								new TaskTimes(2000, 3000, "project-1", "one"),
-								new TaskTimes(4000, "project-2", "two")
-						)
-				)
+				expectedTask
 		);
 	}
 	
