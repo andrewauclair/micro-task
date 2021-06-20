@@ -7,6 +7,7 @@ import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.Kernel32;
 import org.jline.reader.*;
@@ -51,7 +52,7 @@ public class MainConsole extends CommonConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
+		commands = new Commands(tasks, projects, new Schedule(), new GitLabReleases(), localSettings, osInterface);
 
 		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 

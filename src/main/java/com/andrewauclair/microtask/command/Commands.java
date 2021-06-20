@@ -22,6 +22,7 @@ import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.NewID;
 import com.andrewauclair.microtask.task.Tasks;
@@ -50,6 +51,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final Map<String, Runnable> commands = new HashMap<>();
 
 	private final Map<String, String> aliases = new HashMap<>();
+	private final Schedule scheudule;
 	private final GitLabReleases gitLabReleases;
 	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
@@ -58,9 +60,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final MainConsole.CliCommands cliCommands = new MainConsole.CliCommands();
 	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
-	public Commands(Tasks tasks, Projects projects, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
+	public Commands(Tasks tasks, Projects projects, Schedule scheudule, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.projects = projects;
+		this.scheudule = scheudule;
 
 		this.gitLabReleases = gitLabReleases;
 		this.localSettings = localSettings;
@@ -99,6 +102,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("group", new GroupCommand(tasks));
 		commands.put("tasks", new TasksCommand(tasks, projects, osInterface));
 		commands.put("milestone", new MilestoneCommand(projects));
+		commands.put("schedule", new ScheduleCommand(scheudule, projects));
 	}
 
 	private CommandLine createCommand(CommandLine cmdLine, String command) {

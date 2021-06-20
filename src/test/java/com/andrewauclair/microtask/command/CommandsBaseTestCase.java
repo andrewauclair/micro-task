@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskWriter;
@@ -40,7 +41,7 @@ public class CommandsBaseTestCase {
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
 	protected Tasks tasks;
 	protected Projects projects;
-
+	protected Schedule schedule = new Schedule();
 	protected Commands commands;
 
 	private final PrintStream originalSystemOut = System.out;
@@ -72,7 +73,7 @@ public class CommandsBaseTestCase {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, gitLabReleases, localSettings, osInterface);
+		commands = new Commands(tasks, projects, schedule, gitLabReleases, localSettings, osInterface);
 	}
 
 	@AfterEach

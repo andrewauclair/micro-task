@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -168,7 +169,7 @@ public class StatusConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
+		commands = new Commands(tasks, projects, new Schedule(), new GitLabReleases(), localSettings, osInterface);
 
 		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
 
