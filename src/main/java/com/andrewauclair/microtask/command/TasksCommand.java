@@ -7,6 +7,7 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -33,6 +34,9 @@ public class TasksCommand implements Runnable {
 	@CommandLine.Option(names = {"-g", "--group"}, completionCandidates = GroupCompleter.class, description = "List tasks in this group.")
 	private ExistingGroupName group;
 
+	@CommandLine.Option(names = {"--schedule"}, description = "Display tasks on the schedule.")
+	private boolean display_schedule;
+
 	@CommandLine.Option(names = {"--recursive"}, description = "List tasks recursively in all sub-groups.")
 	private boolean recursive;
 
@@ -50,21 +54,23 @@ public class TasksCommand implements Runnable {
 
 	private final Tasks tasksData;
 	private final Projects projects;
+	private final Schedule schedule;
 	private final OSInterface osInterface;
 
-	public TasksCommand(Tasks tasks, Projects projects, OSInterface osInterface) {
+	public TasksCommand(Tasks tasks, Projects projects, Schedule schedule, OSInterface osInterface) {
 		tasksData = tasks;
 		this.projects = projects;
+		this.schedule = schedule;
 		this.osInterface = osInterface;
 	}
 
 	@Override
 	public void run() {
-		boolean all = this.all;
+		boolean all = this.all || display_schedule;
 //		boolean showTasks = this.tasks;
 		boolean useGroup = this.current_group;
 		boolean recursive = this.recursive;
-		boolean finished = this.finished;
+		boolean finished = this.finished || display_schedule; // always display finished tasks for schedule
 
 		ExistingListName list = tasksData.getCurrentList();
 
@@ -139,6 +145,9 @@ public class TasksCommand implements Runnable {
 				System.out.print(" with tag(s): " + String.join(", ", tags));
 			}
 			System.out.println();
+		}
+		else if (display_schedule) {
+			System.out.println("Tasks on Schedule");
 		}
 		else if (!useGroup) {
 			if (finished) {
@@ -224,6 +233,9 @@ public class TasksCommand implements Runnable {
 					.filter(task -> !useTags || task.tags.containsAll(tags))
 					.collect(Collectors.toList());
 		}
+		else if (display_schedule) {
+			tasks.addAll(schedule.tasks());
+		}
 		else {
 			List<Task> tasksList = tasksData.getTasksForList(list).stream()
 					.filter(task -> finished == (task.state == TaskState.Finished))
@@ -241,11 +253,6 @@ public class TasksCommand implements Runnable {
 
 		List<Task> dueTasks = getDueTasks();
 
-		// remove any tasks that are duplicated between tasks and dueTasks
-		for (final Task dueTask : dueTasks) {
-//			tasks.removeIf(dueTask::equals);
-		}
-
 		if (due_before != null) {
 			tasks.clear();
 		}
@@ -260,8 +267,6 @@ public class TasksCommand implements Runnable {
 			addTaskToTable(table, task, name, false, useGroup);
 		}
 
-//		tasks.addAll(dueTasks);
-
 		if (dueTasks.size() > 0 && due_before == null) {
 			table.addRow(true, "Due Tasks");
 		}
@@ -272,9 +277,7 @@ public class TasksCommand implements Runnable {
 			addTaskToTable(table, dueTask, name, true, useGroup);
 		}
 
-		if (tasksData.hasActiveTask()) {
-//			tasks.add(tasksData.getActiveTask());
-
+		if (tasksData.hasActiveTask() && !display_schedule) {
 			table.addRow(true, "Active Task");
 
 			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().id));
@@ -308,7 +311,7 @@ public class TasksCommand implements Runnable {
 		if (totalTasks > 0) {
 			System.out.println();
 			System.out.print(ANSI_BOLD);
-			if (finished) {
+			if (finished && !display_schedule) {
 				System.out.print("Total Finished Tasks: " + tasks.size());
 			}
 			else if (due_before != null) {

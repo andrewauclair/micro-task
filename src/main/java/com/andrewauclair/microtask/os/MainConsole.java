@@ -52,7 +52,7 @@ public class MainConsole extends CommonConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new Schedule(), new GitLabReleases(), localSettings, osInterface);
+		commands = new Commands(tasks, projects, new Schedule(tasks), new GitLabReleases(), localSettings, osInterface);
 
 		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
 

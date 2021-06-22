@@ -11,6 +11,9 @@ public class ScheduleCommand implements Runnable {
 	@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
+	@CommandLine.Option(names = {"--day"})
+	private boolean day;
+
 	@CommandLine.Option(names = {"--project"})
 	private ExistingProject project;
 
@@ -27,6 +30,14 @@ public class ScheduleCommand implements Runnable {
 
 	@Override
 	public void run() {
-		schedule.scheduleProject(projects.getProject(project), percent);
+		if (project != null) {
+			schedule.scheduleProject(projects.getProject(project), percent);
+		}
+		else if (day) {
+			schedule.createTasksForDay();
+		}
+		else {
+			schedule.display();
+		}
 	}
 }

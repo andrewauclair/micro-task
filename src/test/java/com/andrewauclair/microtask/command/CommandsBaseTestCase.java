@@ -41,7 +41,7 @@ public class CommandsBaseTestCase {
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
 	protected Tasks tasks;
 	protected Projects projects;
-	protected Schedule schedule = new Schedule();
+	protected Schedule schedule;
 	protected Commands commands;
 
 	private final PrintStream originalSystemOut = System.out;
@@ -66,6 +66,8 @@ public class CommandsBaseTestCase {
 		System.setErr(errPrintStream);
 
 		tasks = new Tasks(writer, printStream, osInterface);
+
+		schedule = new Schedule(tasks);
 
 		tasks.addList(newList("/default"), true);
 		tasks.setCurrentList(existingList("/default"));

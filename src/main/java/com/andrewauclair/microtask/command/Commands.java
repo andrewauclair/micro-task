@@ -51,7 +51,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final Map<String, Runnable> commands = new HashMap<>();
 
 	private final Map<String, String> aliases = new HashMap<>();
-	private final Schedule scheudule;
+	private final Schedule schedule;
 	private final GitLabReleases gitLabReleases;
 	private final LocalSettings localSettings;
 	private final OSInterface osInterface;
@@ -60,10 +60,10 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	private final MainConsole.CliCommands cliCommands = new MainConsole.CliCommands();
 	private CommandLine.IExecutionExceptionHandler defaultHandler;
 
-	public Commands(Tasks tasks, Projects projects, Schedule scheudule, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
+	public Commands(Tasks tasks, Projects projects, Schedule schedule, GitLabReleases gitLabReleases, LocalSettings localSettings, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.projects = projects;
-		this.scheudule = scheudule;
+		this.schedule = schedule;
 
 		this.gitLabReleases = gitLabReleases;
 		this.localSettings = localSettings;
@@ -100,9 +100,9 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("status", new StatusCommand(this, osInterface));
 		commands.put("project", new ProjectCommand(tasks, projects, localSettings, osInterface));
 		commands.put("group", new GroupCommand(tasks));
-		commands.put("tasks", new TasksCommand(tasks, projects, osInterface));
+		commands.put("tasks", new TasksCommand(tasks, projects, schedule, osInterface));
 		commands.put("milestone", new MilestoneCommand(projects));
-		commands.put("schedule", new ScheduleCommand(scheudule, projects));
+		commands.put("schedule", new ScheduleCommand(schedule, projects));
 	}
 
 	private CommandLine createCommand(CommandLine cmdLine, String command) {
@@ -246,9 +246,11 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "group":
 				return new GroupCommand(tasks);
 			case "tasks":
-				return new TasksCommand(tasks, projects, osInterface);
+				return new TasksCommand(tasks, projects, schedule, osInterface);
 			case "milestone":
 				return new MilestoneCommand(projects);
+			case "schedule":
+				return new ScheduleCommand(schedule, projects);
 		}
 
 		for (String alias : aliases.keySet()) {
