@@ -208,6 +208,10 @@ public class TasksCommand implements Runnable {
 			table.setHeaders("List", "Type", "ID", "Description");
 			table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
 		}
+		else if (display_schedule) {
+			table.setHeaders("Project", "Type", "ID", "Description");
+			table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+		}
 		else {
 			table.setHeaders("Type", "ID", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT);
@@ -264,17 +268,24 @@ public class TasksCommand implements Runnable {
 			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-			addTaskToTable(table, task, name, false, useGroup);
+			String project_name = projects.getProjectForList(listForTask);
+
+			addTaskToTable(table, task, name, project_name, false, useGroup, display_schedule);
 		}
 
-		if (dueTasks.size() > 0 && due_before == null) {
-			table.addRow(true, "Due Tasks");
-		}
+		if (!display_schedule) {
+			if (dueTasks.size() > 0 && due_before == null) {
+				table.addRow(true, "Due Tasks");
+			}
 
-		for (Task dueTask : dueTasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
-			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
-			addTaskToTable(table, dueTask, name, true, useGroup);
+			for (Task dueTask : dueTasks) {
+				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
+				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
+
+				String project_name = projects.getProjectForList(listForTask);
+
+				addTaskToTable(table, dueTask, name, project_name, true, useGroup, display_schedule);
+			}
 		}
 
 		if (tasksData.hasActiveTask() && !display_schedule) {
@@ -283,7 +294,9 @@ public class TasksCommand implements Runnable {
 			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().id));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
-			addTaskToTable(table, tasksData.getActiveTask(), name, false, useGroup);
+			String project_name = projects.getProjectForList(listForTask);
+
+			addTaskToTable(table, tasksData.getActiveTask(), name, project_name, false, useGroup, display_schedule);
 		}
 
 		int totalTasks = tasks.size() + dueTasks.size();
@@ -361,7 +374,7 @@ public class TasksCommand implements Runnable {
 		return dueTasks;
 	}
 
-	private void addTaskToTable(ConsoleTable table, Task task, String listName, boolean due, boolean printListName) {
+	private void addTaskToTable(ConsoleTable table, Task task, String listName, String projectName, boolean due, boolean printListName, boolean printProjectName) {
 		boolean active = task.id == tasksData.getActiveTaskID();
 
 		String type = "";
@@ -397,6 +410,9 @@ public class TasksCommand implements Runnable {
 
 		if (printListName) {
 			table.addRow(bgColor, false, listName, type, String.valueOf(task.id), task.task);
+		}
+		else if (printProjectName) {
+			table.addRow(bgColor, false, projectName, type, String.valueOf(task.id), task.task);
 		}
 		else {
 			table.addRow(bgColor, false, type, String.valueOf(task.id), task.task);
