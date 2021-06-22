@@ -3,6 +3,8 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.project.NewProject;
+import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +71,7 @@ public class Commands_Tasks_Schedule_Test extends CommandsBaseTestCase {
 			tasks.addTask("Test", new ExistingListName(tasks, "/projects/proj-2/general"));
 			tasks.addTask("Test", new ExistingListName(tasks, "/projects/proj-3/general"));
 		}
+
 		assertThat(schedule.tasks()).isEmpty();
 
 		commands.execute(printStream, "schedule --day");

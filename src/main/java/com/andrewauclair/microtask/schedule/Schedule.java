@@ -90,6 +90,7 @@ public class Schedule {
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
 				.map(task -> task.id)
+				.sorted()
 				.limit(remaining_tasks)
 				.collect(Collectors.toList()));
 	}
