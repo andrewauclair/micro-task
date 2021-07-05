@@ -376,10 +376,16 @@ public class StatusConsole {
 //				System.out.println(a);
 				finalStr.append(a).append("\n");
 			}
-			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
-				terminal.writer().print(finalStr);
-			}
 
+			char escCode = 0x1B;
+			int row = 0; int column = 0;
+			System.out.printf("%c[%d;%df",escCode,row,column);
+
+//			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
+//				terminal.writer().print(finalStr);
+//			}
+
+			System.out.print(finalStr);
 
 //			System.out.print(finalStr);
 
