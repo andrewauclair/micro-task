@@ -15,14 +15,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class Project_Files_Test extends ProjectBaseTestCase {
 	@Test
 	void projects_are_saved_to_a_file() throws IOException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ByteArrayOutputStream outputStreamProject = new ByteArrayOutputStream();
+		ByteArrayOutputStream outputStreamGroup = new ByteArrayOutputStream();
 
-		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/done/project.txt")).thenReturn(new DataOutputStream(outputStream));
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/done/project.txt")).thenReturn(new DataOutputStream(outputStreamProject));
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/done/group.txt")).thenReturn(new DataOutputStream(outputStreamGroup));
 
 		projects.createProject(new NewProject(projects, "done"), true);
 
-		TestUtils.assertOutput(outputStream,
+		TestUtils.assertOutput(outputStreamProject,
 				"name done",
+				""
+		);
+
+		TestUtils.assertOutput(outputStreamGroup,
+				"InProgress",
 				""
 		);
 	}

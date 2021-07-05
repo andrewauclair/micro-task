@@ -45,7 +45,7 @@ public class Projects {
 		String groupName = projectToGroup(projectName.getName());
 
 		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName){})) {
-			tasks.addGroup(new NewTaskGroupName(tasks, groupName));
+			tasks.createGroup(new NewTaskGroupName(tasks, groupName), save);
 		}
 
 		ExistingGroupName group = new ExistingGroupName(tasks, groupName);
