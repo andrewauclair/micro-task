@@ -595,6 +595,14 @@ public class Tasks {
 			throw new TaskException("Group has already been finished.");
 		}
 
+		for (final TaskContainer child : origGroup.getChildren()) {
+			if (child instanceof TaskList) {
+				finishList(new ExistingListName(this, child.getFullPath()));
+			}
+			else {
+				finishGroup(new ExistingGroupName(this, child.getFullPath()));
+			}
+		}
 		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);
 
 		parent.removeChild(origGroup);

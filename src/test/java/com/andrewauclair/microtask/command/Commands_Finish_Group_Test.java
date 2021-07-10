@@ -26,6 +26,7 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		);
 
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
+		assertEquals(TaskContainerState.Finished, tasks.getList(existingList("/test/one")).getState());
 		assertNotNull(tasks.getTask(existingID(1)));
 	}
 
