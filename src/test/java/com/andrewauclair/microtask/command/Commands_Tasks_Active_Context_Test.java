@@ -153,9 +153,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 				"one             4  Task 3     ",
 				ANSI_BG_GRAY + "one             3  Task 2     " + ANSI_RESET,
 				"one             2  Task 1     ",
-				ANSI_BG_GRAY + "general         1  Planning   " + ANSI_RESET,
+				ANSI_BG_GRAY + "general   R     1  Planning   " + ANSI_RESET,
 				"",
-				ANSI_BOLD + "Total Tasks: 9" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 9 (1 Recurring)" + ANSI_RESET,
 				""
 		);
 	}
@@ -203,9 +203,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 				"one             4  Task 3     ",
 				ANSI_BG_GRAY + "one             3  Task 2     " + ANSI_RESET,
 				"one             2  Task 1     ",
-				ANSI_BG_GRAY + "general         1  Planning   " + ANSI_RESET,
+				ANSI_BG_GRAY + "general   R     1  Planning   " + ANSI_RESET,
 				"",
-				ANSI_BOLD + "Total Tasks: 9" + ANSI_RESET,
+				ANSI_BOLD + "Total Tasks: 9 (1 Recurring)" + ANSI_RESET,
 				""
 		);
 	}

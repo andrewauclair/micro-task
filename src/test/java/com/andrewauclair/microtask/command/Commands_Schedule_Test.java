@@ -39,9 +39,9 @@ public class Commands_Schedule_Test extends CommandsBaseTestCase {
 
 	@Test
 	void create_for_day() {
-		projects.createProject(new NewProject(projects, "proj-1"), false);
-		projects.createProject(new NewProject(projects, "proj-2"), false);
-		projects.createProject(new NewProject(projects, "proj-3"), false);
+		projects.createProject(new NewProject(projects, "proj-1"), true);
+		projects.createProject(new NewProject(projects, "proj-2"), true);
+		projects.createProject(new NewProject(projects, "proj-3"), true);
 
 		commands.execute(printStream, "schedule --project proj-1 --pct 35");
 		commands.execute(printStream, "schedule --project proj-2 --pct 25");
@@ -62,7 +62,7 @@ public class Commands_Schedule_Test extends CommandsBaseTestCase {
 				.map(task -> task.id)
 				.collect(Collectors.toList())
 		).containsOnly(
-				4L, 8L, 3L, 7L, 11L, 15L, 2L, 6L, 10L, 14L, 18L, 22L, 1L, 5L, 9L, 13L
+				4L, 8L, 7L, 11L, 12L, 16L, 17L, 6L, 10L, 14L, 18L, 5L, 9L, 13L, 21L, 25L
 		);
 	}
 

@@ -91,6 +91,7 @@ public class DataLoader_Test {
 		DataFolder first = new DataFolder("first");
 		DataFolder projectsFolder = new DataFolder("projects");
 		DataFolder microtaskProject = new DataFolder("micro-task");
+		DataFolder microtaskGeneral = new DataFolder("general");
 		DataFolder featureOne = new DataFolder("one");
 		DataFolder featureTwo = new DataFolder("two");
 		DataFolder meetings = new DataFolder("meetings");
@@ -111,9 +112,12 @@ public class DataLoader_Test {
 
 		projectsFolder.entities.add(microtaskProject);
 
+		microtaskProject.entities.add(microtaskGeneral);
 		microtaskProject.entities.add(featureOne);
 		microtaskProject.entities.add(featureTwo);
 		microtaskProject.entities.add(meetings);
+
+		microtaskGeneral.entities.add(new DataFile("list.txt", "InProgress", ""));
 
 		first.entities.add(new DataFile("list.txt", "InProgress", ""));
 
@@ -122,7 +126,7 @@ public class DataLoader_Test {
 		projectsFolder.entities.add(new DataFile("group.txt", "InProgress", ""));
 
 		microtaskProject.entities.add(new DataFile("group.txt", "InProgress", ""));
-		microtaskProject.entities.add(new DataFile("project.txt", "micro-task", ""));
+		microtaskProject.entities.add(new DataFile("project.txt", "name micro-task", ""));
 		microtaskProject.entities.add(new DataFile("milestone.20.9.3.txt", "20.9.3", "feature one", "feature two", "task 1", "task 2"));
 
 		featureOne.entities.add(new DataFile("feature.txt", "one", ""));
@@ -244,6 +248,12 @@ public class DataLoader_Test {
 		assertTrue(projects.hasProject("micro-task"));
 
 		Project project = projects.getProject(new ExistingProject(projects, "micro-task"));
+
+		TaskListFinder finder = new TaskListFinder(tasks);
+
+		TaskListName listName = new TaskListName(tasks, "/projects/micro-task/general") {};
+
+		assertTrue(finder.hasList(listName));
 
 		assertTrue(project.hasFeature("one"));
 		assertTrue(project.hasFeature("two"));

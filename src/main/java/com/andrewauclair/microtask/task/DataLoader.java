@@ -201,7 +201,7 @@ public class DataLoader {
 			}
 		}
 
-		loadTasks(fileInfo.getPath(), true);
+		loadTasks(folder + "/" + name, true);
 		tasks.setCurrentGroup(new ExistingGroupName(tasks, tasks.getCurrentGroup().getParent()));
 
 		// load milestones after we load everything in the project

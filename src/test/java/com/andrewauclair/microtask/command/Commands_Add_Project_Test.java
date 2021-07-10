@@ -50,6 +50,7 @@ public class Commands_Add_Project_Test extends CommandsBaseTestCase {
 				new TaskBuilder(1)
 						.withTask("Planning")
 						.withState(TaskState.Inactive)
+						.withRecurring(true)
 						.withAddTime(1000)
 						.withDueTime(605800)
 						.build()

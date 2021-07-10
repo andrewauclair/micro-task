@@ -33,22 +33,22 @@ public class Commands_Tasks_Schedule_Test extends CommandsBaseTestCase {
 				"Tasks on Schedule",
 				"",
 				u + "Project" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "proj-1     F   22  Test       " + ANSI_RESET,
-				"proj-1         18  Test       ",
-				ANSI_BG_GRAY + "proj-2         15  Test       " + ANSI_RESET,
-				"proj-1         14  Test       ",
-				ANSI_BG_GRAY + "               13  Test       " + ANSI_RESET,
-				"proj-2         11  Test       ",
-				ANSI_BG_GRAY + "proj-1         10  Test       " + ANSI_RESET,
-				"                9  Test       ",
-				ANSI_BG_GRAY + "proj-3          8  Test       " + ANSI_RESET,
-				"proj-2     F    7  Test       ",
-				ANSI_BG_GRAY + "proj-1          6  Test       " + ANSI_RESET,
-				"                5  Test       ",
-				ANSI_BG_GRAY + "proj-3     F    4  Test       " + ANSI_RESET,
-				"proj-2          3  Test       ",
-				ANSI_BG_GREEN + "proj-1   *      2  Test       " + ANSI_RESET,
-				"                1  Test       ",
+				ANSI_BG_GRAY + "proj-1         25  Test       " + ANSI_RESET,
+				"proj-1         21  Test       ",
+				ANSI_BG_GRAY + "proj-2         18  Test       " + ANSI_RESET,
+				"proj-1         17  Test       ",
+				ANSI_BG_GRAY + "               16  Test       " + ANSI_RESET,
+				"proj-2         14  Test       ",
+				ANSI_BG_GRAY + "proj-1         13  Test       " + ANSI_RESET,
+				"               12  Test       ",
+				ANSI_BG_GRAY + "proj-3         11  Test       " + ANSI_RESET,
+				"proj-2         10  Test       ",
+				ANSI_BG_GRAY + "proj-1          9  Test       " + ANSI_RESET,
+				"                8  Test       ",
+				ANSI_BG_GRAY + "proj-3     F    7  Test       " + ANSI_RESET,
+				"proj-2          6  Test       ",
+				ANSI_BG_GRAY + "proj-1          5  Test       " + ANSI_RESET,
+				"           F    4  Test       ",
 				"",
 				ANSI_BOLD + "Total Tasks: 16" + ANSI_RESET,
 				""
@@ -56,9 +56,9 @@ public class Commands_Tasks_Schedule_Test extends CommandsBaseTestCase {
 	}
 
 	private void schedule_day() {
-		projects.createProject(new NewProject(projects, "proj-1"), false);
-		projects.createProject(new NewProject(projects, "proj-2"), false);
-		projects.createProject(new NewProject(projects, "proj-3"), false);
+		projects.createProject(new NewProject(projects, "proj-1"), true);
+		projects.createProject(new NewProject(projects, "proj-2"), true);
+		projects.createProject(new NewProject(projects, "proj-3"), true);
 
 		commands.execute(printStream, "schedule --project proj-1 --pct 35");
 		commands.execute(printStream, "schedule --project proj-2 --pct 25");

@@ -53,10 +53,12 @@ public class Projects {
 		Project project = new Project(osInterface, tasks, group, projectName.getName());
 		projects.add(project);
 
-		tasks.addList(new NewTaskListName(tasks, group.absoluteName() + "general"), save);
-
 		if (save) {
-			tasks.addTask("Planning", new ExistingListName(tasks, group.absoluteName() + "general"));
+			tasks.addList(new NewTaskListName(tasks, group.absoluteName() + "general"), true); // TODO This needs to only happen if we're saving because when we load from the files we will be loading a general list and should not create it
+
+			Task planning = tasks.addTask("Planning", new ExistingListName(tasks, group.absoluteName() + "general"));
+
+			tasks.setRecurring(new ExistingID(tasks, planning.id), true);
 
 			save();
 		}
