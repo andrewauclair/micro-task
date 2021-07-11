@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
@@ -261,8 +260,8 @@ public class DataLoader_Test {
 		assertTrue(project.hasMilestone("20.9.3"));
 
 		assertThat(project.getMilestone(new ExistingMilestone(project, "20.9.3")).getFeatures()).containsOnly(
-				new ExistingFeature(project, "one"),
-				new ExistingFeature(project, "two")
+				ExistingFeature.tryCreate(project, "one"),
+				ExistingFeature.tryCreate(project, "two")
 		);
 
 		//new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),

@@ -34,7 +34,7 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		project.addMilestone(new NewMilestone(project, "20.9.3"), true);
 
 		Milestone milestone = project.getMilestone(new ExistingMilestone(project, "20.9.3"));
-		milestone.addFeature(new ExistingFeature(project, "two"));
+		milestone.addFeature(ExistingFeature.tryCreate(project, "two"));
 
 		tasks.setCurrentList(existingList("/projects/micro-task/one"));
 
@@ -235,7 +235,7 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 	@Test
 	void tasks_in_active_feature() {
 		Project project = projects.getProject(new ExistingProject(projects, "micro-task"));
-		tasks.getActiveContext().setActiveFeature(new ExistingFeature(project, "one"));
+		tasks.getActiveContext().setActiveFeature(ExistingFeature.tryCreate(project, "one"));
 
 		commands.execute(printStream, "tasks");
 
@@ -259,7 +259,7 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 	@Test
 	void tasks_in_active_feature_with_tags() {
 		Project project = projects.getProject(new ExistingProject(projects, "micro-task"));
-		tasks.getActiveContext().setActiveFeature(new ExistingFeature(project, "one"));
+		tasks.getActiveContext().setActiveFeature(ExistingFeature.tryCreate(project, "one"));
 		tasks.getActiveContext().setActiveTags(Arrays.asList("alpha", "bravo"));
 
 		commands.execute(printStream, "tasks");

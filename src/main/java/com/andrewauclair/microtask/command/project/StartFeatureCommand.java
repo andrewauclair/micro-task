@@ -30,6 +30,6 @@ public class StartFeatureCommand implements Runnable {
 	@Override
 	public void run() {
 		Project project = projects.getProject(this.project);
-		tasks.getActiveContext().setActiveFeature(new ExistingFeature(project, feature));
+		tasks.getActiveContext().setActiveFeature(ExistingFeature.tryCreate(project, feature));
 	}
 }

@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
@@ -51,12 +49,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -112,11 +110,11 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		project1.addFeature(new NewFeature(project1, "two"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "two")).addList(new ExistingListName(tasks, "/projects/project-1/two"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "two")).addList(new ExistingListName(tasks, "/projects/project-1/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -177,7 +175,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "feature-1"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "feature-1")).addGroup(existingGroup("/projects/project-1/feature-1/"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "feature-1")).addGroup(existingGroup("/projects/project-1/feature-1/"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/feature-1/one"));
 
@@ -238,12 +236,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -303,12 +301,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -371,12 +369,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -445,12 +443,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -506,12 +504,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);
@@ -567,12 +565,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		Project project1 = projects.getProject(new ExistingProject(projects, "project-1"));
 		project1.addFeature(new NewFeature(project1, "one"), true);
 
-		project1.getFeature(new ExistingFeature(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
+		project1.getFeature(ExistingFeature.tryCreate(project1, "one")).addList(new ExistingListName(tasks, "/projects/project-1/one"));
 
 		Project project2 = projects.getProject(new ExistingProject(projects, "project-2"));
 		project2.addFeature(new NewFeature(project2, "two"), true);
 
-		project2.getFeature(new ExistingFeature(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
+		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
 		tasks.addTask(task1);

@@ -225,7 +225,7 @@ public class DataLoader {
 							if (line.startsWith("feature")) {
 								String feature = line.split(" ")[1];
 
-								ms.addFeature(new ExistingFeature(project, feature));
+								ms.addFeature(ExistingFeature.tryCreate(project, feature));
 							}
 							else {
 								long taskID = Long.parseLong(line.split(" ")[1]);

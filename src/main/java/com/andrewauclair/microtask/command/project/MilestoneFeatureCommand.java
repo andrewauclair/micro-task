@@ -46,7 +46,7 @@ public class MilestoneFeatureCommand implements Runnable {
 
 			Milestone milestone = project.getMilestone(new ExistingMilestone(project, parent.parent.milestone));
 
-			feature.forEach(feat -> milestone.addFeature(new ExistingFeature(project, feat)));
+			feature.forEach(feat -> milestone.addFeature(ExistingFeature.tryCreate(project, feat)));
 
 			milestone.save();
 		}
@@ -69,7 +69,7 @@ public class MilestoneFeatureCommand implements Runnable {
 
 			Milestone milestone = project.getMilestone(new ExistingMilestone(project, parent.parent.milestone));
 
-			feature.forEach(feat -> milestone.removeFeature(new ExistingFeature(project, feat)));
+			feature.forEach(feat -> milestone.removeFeature(ExistingFeature.tryCreate(project, feat)));
 
 			milestone.save();
 		}

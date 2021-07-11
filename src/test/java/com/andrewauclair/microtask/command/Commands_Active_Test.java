@@ -184,7 +184,7 @@ class Commands_Active_Test extends CommandsBaseTestCase {
 		Project project = projects.getProject(new ExistingProject(projects, "test"));
 		project.addFeature(new NewFeature(project, "feat"), true);
 
-		tasks.getActiveContext().setActiveFeature(new ExistingFeature(project, "feat"));
+		tasks.getActiveContext().setActiveFeature(ExistingFeature.tryCreate(project, "feat"));
 
 		commands.execute(printStream, "active --context");
 
