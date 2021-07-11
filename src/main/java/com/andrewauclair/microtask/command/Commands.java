@@ -20,6 +20,7 @@ import com.andrewauclair.microtask.command.task.StartTaskCommand;
 import com.andrewauclair.microtask.os.*;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.project.ExistingProject;
+import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;

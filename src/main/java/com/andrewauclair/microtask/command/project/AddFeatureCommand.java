@@ -1,10 +1,8 @@
 // Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.project;
 
-import com.andrewauclair.microtask.project.ExistingProject;
-import com.andrewauclair.microtask.project.NewFeature;
-import com.andrewauclair.microtask.project.Project;
-import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine;

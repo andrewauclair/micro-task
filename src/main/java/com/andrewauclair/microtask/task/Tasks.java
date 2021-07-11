@@ -597,7 +597,8 @@ public class Tasks {
 			return origGroup;
 		}
 
-		for (final TaskContainer child : origGroup.getChildren()) {
+		List<TaskContainer> children = new ArrayList<>(origGroup.getChildren());
+		for (final TaskContainer child : children) {
 			if (child instanceof TaskList) {
 				finishList(new ExistingListName(this, child.getFullPath()));
 			}

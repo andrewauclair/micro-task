@@ -35,6 +35,8 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addList(newList("/test/one/two"), true);
+		tasks.addList(newList("/test/one/three"), true);
+		tasks.addList(newList("/test/one/four"), true);
 		tasks.addTask("Test", existingList("/test/one/two"));
 		tasks.finishTask(existingID(1));
 
@@ -48,6 +50,8 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/").getState());
 		assertEquals(TaskContainerState.Finished, tasks.getGroup("/test/one/").getState());
 		assertEquals(TaskContainerState.Finished, tasks.getList(existingList("/test/one/two")).getState());
+		assertEquals(TaskContainerState.Finished, tasks.getList(existingList("/test/one/three")).getState());
+		assertEquals(TaskContainerState.Finished, tasks.getList(existingList("/test/one/four")).getState());
 		assertNotNull(tasks.getTask(existingID(1)));
 	}
 
