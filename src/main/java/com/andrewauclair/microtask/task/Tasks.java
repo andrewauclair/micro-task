@@ -592,11 +592,6 @@ public class Tasks {
 		TaskGroup origGroup = getGroup(group);
 		TaskGroup parent = getGroup(origGroup.getParent());
 
-		if (origGroup.getState() == TaskContainerState.Finished) {
-//			throw new TaskException("Group has already been finished.");
-			return origGroup;
-		}
-
 		List<TaskContainer> children = new ArrayList<>(origGroup.getChildren());
 		for (final TaskContainer child : children) {
 			if (child instanceof TaskList) {
@@ -606,6 +601,11 @@ public class Tasks {
 				finishGroup(new ExistingGroupName(this, child.getFullPath()));
 			}
 		}
+
+		if (origGroup.getState() == TaskContainerState.Finished) {
+			return origGroup;
+		}
+
 		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);
 
 		parent.removeChild(origGroup);

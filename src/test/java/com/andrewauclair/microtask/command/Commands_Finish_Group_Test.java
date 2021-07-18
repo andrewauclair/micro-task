@@ -79,7 +79,7 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void ignore_nested_group_that_is_already_finished() {
+	void finish_children_of_finished_nested_group_just_to_be_sure_they_are_finished__this_was_a_bug() {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addGroup(newGroup("/test/one/"));
 		tasks.addList(newList("/test/one/two"), true);
@@ -87,6 +87,8 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		tasks.finishTask(existingID(1));
 
 		tasks.finishGroup(existingGroup("/test/one/"));
+		
+		tasks.setListState(existingList("/test/one/two"), TaskContainerState.InProgress, true);
 
 		commands.execute(printStream, "finish --group /test/");
 
