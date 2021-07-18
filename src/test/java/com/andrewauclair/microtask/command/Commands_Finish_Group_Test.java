@@ -87,8 +87,8 @@ class Commands_Finish_Group_Test extends CommandsBaseTestCase {
 		tasks.finishTask(existingID(1));
 
 		tasks.finishGroup(existingGroup("/test/one/"));
-		
-		tasks.setListState(existingList("/test/one/two"), TaskContainerState.InProgress, true);
+
+		tasks.setListState(existingList("/test/one/two"), TaskContainerState.InProgress, false);
 
 		commands.execute(printStream, "finish --group /test/");
 

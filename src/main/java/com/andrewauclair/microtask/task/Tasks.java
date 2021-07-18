@@ -531,6 +531,14 @@ public class Tasks {
 			new TaskGroupFileWriter(taskGroup, osInterface).write();
 
 			osInterface.gitCommit("Set state for group '" + taskGroup.getFullPath() + "' to " + state);
+
+			if (state == TaskContainerState.InProgress) {
+				System.out.println("Set state of group '" + group.getFullPath() + "' to In Progress");
+
+				if (parent.getState() == TaskContainerState.Finished) {
+					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, createFiles);
+				}
+			}
 		}
 	}
 
@@ -549,6 +557,14 @@ public class Tasks {
 			new TaskListFileWriter(newList, osInterface).write();
 
 			osInterface.gitCommit("Set state for list '" + newList.getFullPath() + "' to " + state);
+
+			if (state == TaskContainerState.InProgress) {
+				System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
+
+				if (parent.getState() == TaskContainerState.Finished) {
+					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, createFiles);
+				}
+			}
 		}
 	}
 

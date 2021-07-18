@@ -30,6 +30,24 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void set_parent_group_to_in_progress_when_finished() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), true);
+
+		tasks.finishGroup(existingGroup("/test/"));
+
+		commands.execute(printStream, "set list /test/one --in-progress");
+
+		assertEquals(TaskContainerState.InProgress, tasks.getListByName(existingList("/test/one")).getState());
+
+		assertOutput(
+				"Set state of list '/test/one' to In Progress",
+				"Set state of group '/test/' to In Progress",
+				""
+		);
+	}
+
+	@Test
 	void prints_full_path_when_using_relative_name_to_set_state_to_in_progress() {
 		tasks.addList(newList("/test"), true);
 
