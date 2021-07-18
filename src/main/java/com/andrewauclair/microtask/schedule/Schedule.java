@@ -1,27 +1,36 @@
 // Copyright (C) 2021 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.schedule;
 
+import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.Tasks;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Schedule {
 	private final Map<Project, Integer> percents = new HashMap<>();
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
-	private List<Long> daily_tasks = new ArrayList<>();
+	private final List<Long> daily_tasks = new ArrayList<>();
 
-	public Schedule(Tasks tasks) {
+	public Schedule(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 
 	public void scheduleProject(Project project, int percent) {
 		percents.put(project, percent);
+
+		saveSchedule();
 	}
 
 	public List<Task> tasks() {
@@ -93,5 +102,21 @@ public class Schedule {
 				.sorted()
 				.limit(remaining_tasks)
 				.collect(Collectors.toList()));
+	}
+
+	private void saveSchedule() {
+		try (PrintStream output = new PrintStream(osInterface.createOutputStream("git-data/schedule.txt"))) {
+			List<Project> projects = percents.keySet().stream().sorted((o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName()))
+					.collect(Collectors.toList());
+
+			for (final Project project : projects) {
+				output.print(project.getName());
+				output.print(" ");
+				output.println(percents.get(project));
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
 	}
 }

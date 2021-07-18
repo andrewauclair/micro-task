@@ -67,7 +67,7 @@ public class CommandsBaseTestCase {
 
 		tasks = new Tasks(writer, printStream, osInterface);
 
-		schedule = new Schedule(tasks);
+		schedule = new Schedule(tasks, osInterface);
 
 		tasks.addList(newList("/default"), true);
 		tasks.setCurrentList(existingList("/default"));
