@@ -2,16 +2,16 @@
 package com.andrewauclair.microtask.schedule;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.Project;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.Tasks;
+import org.eclipse.jgit.ignore.internal.Strings;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,5 +118,27 @@ public class Schedule {
 		catch (IOException e) {
 			e.printStackTrace(System.out);
 		}
+	}
+
+	public void loadSchedule(Projects projects) {
+		if (!osInterface.fileExists("git-data/schedule.txt")) {
+			return;
+		}
+
+		try (Scanner scanner = new Scanner(osInterface.createInputStream("git-data/schedule.txt"))) {
+			percents.clear();
+
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+
+				List<String> split = Strings.split(line, ' ');
+
+				percents.put(projects.getProject(new ExistingProject(projects, split.get(0))), Integer.parseInt(split.get(1)));
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
+
 	}
 }

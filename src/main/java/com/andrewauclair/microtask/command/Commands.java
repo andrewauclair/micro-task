@@ -138,7 +138,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				cmdLine.addSubcommand("update",
 						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface), factory)
 								.addSubcommand(new UpdateAppCommand(gitLabReleases, osInterface))
-								.addSubcommand(new UpdateRepoCommand(tasks, osInterface, localSettings, projects, this))
+								.addSubcommand(new UpdateRepoCommand(tasks, osInterface, localSettings, projects, schedule, this))
 				);
 				break;
 			case "set":

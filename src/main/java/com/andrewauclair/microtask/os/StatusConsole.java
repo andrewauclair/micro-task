@@ -123,6 +123,7 @@ public class StatusConsole {
 
 	private final Tasks tasks;
 	private final Projects projects;
+	private final Schedule schedule;
 
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
 		@Override
@@ -169,9 +170,11 @@ public class StatusConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new Schedule(tasks, osInterface), new GitLabReleases(), localSettings, osInterface);
+		schedule = new Schedule(tasks, osInterface);
 
-		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
+		commands = new Commands(tasks, projects, schedule, new GitLabReleases(), localSettings, osInterface);
+
+		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, schedule, osInterface);
 
 		terminal = TerminalBuilder.builder()
 				.system(true)
