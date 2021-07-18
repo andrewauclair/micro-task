@@ -82,6 +82,7 @@ public class Schedule {
 					List<Long> tasks_for_day_for_project = project.getGroup().getTasks().stream()
 							.filter(task -> task.state != TaskState.Finished)
 							.filter(task -> !task.recurring)
+							.sorted(Comparator.comparingLong(o -> o.dueTime))
 							.map(task -> task.id)
 							.limit(task_count)
 							.collect(Collectors.toList());
@@ -92,7 +93,9 @@ public class Schedule {
 
 		int remaining_tasks = TASKS_PER_DAY - daily_tasks.size();
 
-		List<Task> allTasks = tasks.getAllTasks();
+		List<Task> allTasks = tasks.getAllTasks().stream()
+				.sorted(Comparator.comparingLong(o -> o.dueTime))
+				.collect(Collectors.toList());
 		allTasks.removeAll(tasks.getGroup("/projects/").getTasks());
 
 		daily_tasks.addAll(allTasks.stream()
