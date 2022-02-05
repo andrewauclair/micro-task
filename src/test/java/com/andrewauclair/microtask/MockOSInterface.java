@@ -134,4 +134,9 @@ public class MockOSInterface implements OSInterface {
 	@Override
 	public void copyToClipboard(String stringToCopy) {
 	}
+
+	@Override
+	public boolean promptChoice(String prompt) {
+		return false;
+	}
 }

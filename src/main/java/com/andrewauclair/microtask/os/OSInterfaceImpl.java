@@ -387,4 +387,17 @@ public class OSInterfaceImpl implements OSInterface {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clipboard.setContents(stringSelection, null);
 	}
+
+	@Override
+	public boolean promptChoice(String prompt) {
+		try {
+			System.out.print(prompt + " [y/n] ");
+			char choice = Character.toLowerCase((char) terminal.reader().read());
+			System.out.println(choice);
+			return choice == 'y';
+		}
+		catch (IOException e) {
+			return false;
+		}
+	}
 }

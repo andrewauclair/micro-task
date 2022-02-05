@@ -52,6 +52,8 @@ public interface OSInterface {
 
 	void copyToClipboard(String stringToCopy);
 
+	boolean promptChoice(String prompt);
+
 	final class TaskFileInfo {
 		final String name;
 		final String path;
