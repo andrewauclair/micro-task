@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -122,6 +123,7 @@ public class StatusConsole {
 
 	private final Tasks tasks;
 	private final Projects projects;
+	private final Schedule schedule;
 
 	private final OSInterfaceImpl osInterface = new OSInterfaceImpl() {
 		@Override
@@ -168,9 +170,11 @@ public class StatusConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
+		schedule = new Schedule(tasks, osInterface);
 
-		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface);
+		commands = new Commands(tasks, projects, schedule, new GitLabReleases(), localSettings, osInterface);
+
+		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, schedule, osInterface);
 
 		terminal = TerminalBuilder.builder()
 				.system(true)
@@ -375,10 +379,16 @@ public class StatusConsole {
 //				System.out.println(a);
 				finalStr.append(a).append("\n");
 			}
-			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
-				terminal.writer().print(finalStr);
-			}
 
+			char escCode = 0x1B;
+			int row = 0; int column = 0;
+			System.out.printf("%c[%d;%df",escCode,row,column);
+
+//			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
+//				terminal.writer().print(finalStr);
+//			}
+
+			System.out.print(finalStr);
 
 //			System.out.print(finalStr);
 

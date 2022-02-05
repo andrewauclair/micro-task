@@ -12,7 +12,7 @@ public class ExistingFeature_Test extends ProjectBaseTestCase {
 	void throws_exception_when_feature_does_not_exist() {
 		Project project = new Project(osInterface, tasks, existingGroup("/projects/micro-task/"), "micro-task");
 
-		TaskException exception = assertThrows(TaskException.class, () -> new ExistingFeature(project, "test"));
+		TaskException exception = assertThrows(TaskException.class, () -> ExistingFeature.tryCreate(project, "test"));
 
 		assertEquals("Feature 'test' does not exist on project 'micro-task'", exception.getMessage());
 	}
@@ -22,7 +22,7 @@ public class ExistingFeature_Test extends ProjectBaseTestCase {
 		Project project = new Project(osInterface, tasks, existingGroup("/projects/micro-task/"), "micro-task");
 		project.addFeature(new NewFeature(project, "test"), true);
 
-		ExistingFeature feature = new ExistingFeature(project, "test");
+		ExistingFeature feature = ExistingFeature.tryCreate(project, "test");
 
 		assertEquals("test", feature.getName());
 		assertEquals("test", feature.toString());

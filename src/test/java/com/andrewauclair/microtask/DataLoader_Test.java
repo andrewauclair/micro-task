@@ -3,6 +3,7 @@ package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
@@ -13,7 +14,6 @@ import org.mockito.Mockito;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 // responsible for testing all data loading now that we have a lot of different file types
 public class DataLoader_Test {
 
-	private DataFolder support = new DataFolder("support");
-	private DataFolder releases = new DataFolder("releases");
+	private final DataFolder support = new DataFolder("support");
+	private final DataFolder releases = new DataFolder("releases");
 
-	private static interface FileSystemEntity {
+	private interface FileSystemEntity {
 	}
 
 	private static class DataFolder implements FileSystemEntity {
@@ -57,6 +57,7 @@ public class DataLoader_Test {
 	private final TaskReader reader = new TaskReader(osInterface);
 	private final LocalSettings localSettings = new LocalSettings(osInterface);
 	private Projects projects;
+	private Schedule schedule = Mockito.mock(Schedule.class);
 
 	// TODO setup tasks, lists, groups, projects, features, and milestones to test loading
 
@@ -86,11 +87,20 @@ public class DataLoader_Test {
 		Mockito.when(osInterface.createOutputStream(Mockito.anyString())).thenThrow(new RuntimeException("DataLoader should not write files"));
 		Mockito.doThrow(new RuntimeException("DataLoader should not run git commands")).when(osInterface).gitCommit(Mockito.anyString());
 
+		InputStream inputStream = createInputStream(
+				"micro-task 75",
+				""
+		);
+
+		Mockito.when(osInterface.fileExists("git-data/schedule.txt")).thenReturn(true);
+		Mockito.when(osInterface.createInputStream("git-data/schedule.txt")).thenReturn(inputStream);
+
 		DataFolder doneGroup = new DataFolder("done-group");
 		DataFolder doneList = new DataFolder("done-list");
 		DataFolder first = new DataFolder("first");
 		DataFolder projectsFolder = new DataFolder("projects");
 		DataFolder microtaskProject = new DataFolder("micro-task");
+		DataFolder microtaskGeneral = new DataFolder("general");
 		DataFolder featureOne = new DataFolder("one");
 		DataFolder featureTwo = new DataFolder("two");
 		DataFolder meetings = new DataFolder("meetings");
@@ -111,9 +121,12 @@ public class DataLoader_Test {
 
 		projectsFolder.entities.add(microtaskProject);
 
+		microtaskProject.entities.add(microtaskGeneral);
 		microtaskProject.entities.add(featureOne);
 		microtaskProject.entities.add(featureTwo);
 		microtaskProject.entities.add(meetings);
+
+		microtaskGeneral.entities.add(new DataFile("list.txt", "InProgress", ""));
 
 		first.entities.add(new DataFile("list.txt", "InProgress", ""));
 
@@ -122,7 +135,7 @@ public class DataLoader_Test {
 		projectsFolder.entities.add(new DataFile("group.txt", "InProgress", ""));
 
 		microtaskProject.entities.add(new DataFile("group.txt", "InProgress", ""));
-		microtaskProject.entities.add(new DataFile("project.txt", "micro-task", ""));
+		microtaskProject.entities.add(new DataFile("project.txt", "name micro-task", ""));
 		microtaskProject.entities.add(new DataFile("milestone.20.9.3.txt", "20.9.3", "feature one", "feature two", "task 1", "task 2"));
 
 		featureOne.entities.add(new DataFile("feature.txt", "one", ""));
@@ -223,10 +236,22 @@ public class DataLoader_Test {
 	}
 
 	@Test
+	void loads_schedule() throws IOException {
+		createMocks();
+
+		Schedule schedule = new Schedule(tasks, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
+
+		dataLoader.load();
+
+		assertEquals(75, schedule.projectPercent("micro-task"));
+	}
+
+	@Test
 	void loads_support_list() throws IOException {
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -237,7 +262,7 @@ public class DataLoader_Test {
 	void load_micro_task_project() throws IOException {
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -245,14 +270,20 @@ public class DataLoader_Test {
 
 		Project project = projects.getProject(new ExistingProject(projects, "micro-task"));
 
+		TaskListFinder finder = new TaskListFinder(tasks);
+
+		TaskListName listName = new TaskListName(tasks, "/projects/micro-task/general") {};
+
+		assertTrue(finder.hasList(listName));
+
 		assertTrue(project.hasFeature("one"));
 		assertTrue(project.hasFeature("two"));
 
 		assertTrue(project.hasMilestone("20.9.3"));
 
 		assertThat(project.getMilestone(new ExistingMilestone(project, "20.9.3")).getFeatures()).containsOnly(
-				new ExistingFeature(project, "one"),
-				new ExistingFeature(project, "two")
+				ExistingFeature.tryCreate(project, "one"),
+				ExistingFeature.tryCreate(project, "two")
 		);
 
 		//new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
@@ -270,7 +301,7 @@ public class DataLoader_Test {
 	void load_micro_task_feature_one_tasks() throws IOException {
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -286,7 +317,7 @@ public class DataLoader_Test {
 	void list_file_format() throws IOException {
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -304,7 +335,7 @@ public class DataLoader_Test {
 
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -315,7 +346,7 @@ public class DataLoader_Test {
 	void group_file_format() throws IOException {
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -333,7 +364,7 @@ public class DataLoader_Test {
 
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		dataLoader.load();
 
@@ -346,7 +377,7 @@ public class DataLoader_Test {
 
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		TaskException taskException = assertThrows(TaskException.class, dataLoader::load);
 
@@ -359,7 +390,7 @@ public class DataLoader_Test {
 
 		createMocks();
 
-		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, osInterface);
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
 
 		TaskException taskException = assertThrows(TaskException.class, dataLoader::load);
 

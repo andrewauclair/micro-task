@@ -7,6 +7,7 @@ import com.andrewauclair.microtask.command.UpdateCommand;
 import com.andrewauclair.microtask.command.VersionCommand;
 import com.andrewauclair.microtask.os.StatusConsole.TransferType;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.Kernel32;
 import org.jline.reader.*;
@@ -33,6 +34,7 @@ public class MainConsole extends CommonConsole {
 	private final Commands commands;
 	private final Tasks tasks;
 	private final Projects projects;
+	private final Schedule schedule;
 
 	public MainConsole() throws Exception {
 		Thread listen = new Thread(() -> {
@@ -51,12 +53,13 @@ public class MainConsole extends CommonConsole {
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
-		commands = new Commands(tasks, projects, new GitLabReleases(), localSettings, osInterface);
+		schedule = new Schedule(tasks, osInterface);
+		commands = new Commands(tasks, projects, schedule, new GitLabReleases(), localSettings, osInterface);
 
-		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
+		boolean loadSuccessful = tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, schedule, osInterface), commands);
 
 		if (requiresTaskUpdate()) {
-			UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
+			UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 		}
 
 		sendCurrentStatus();

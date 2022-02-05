@@ -62,7 +62,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		ByteArrayOutputStream projectGroup = new ByteArrayOutputStream();
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/group.txt")).thenReturn(new DataOutputStream(projectGroup));
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 
 		InOrder order = Mockito.inOrder(writer, osInterface);
 
@@ -137,7 +137,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 
 		tasks.addGroup(newGroup("/projects/"));
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 
 		InOrder order = Mockito.inOrder(osInterface);
 
@@ -157,7 +157,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 
 		tasks.addGroup(newGroup("/projects/"));
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 
 		assertOutput(
 				"java.io.IOException",
@@ -174,7 +174,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/task-data-version.txt")).thenThrow(IOException.class);
 
-		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, commands);
+		UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 
 		Mockito.verify(tasks).load(any(), any());
 	}

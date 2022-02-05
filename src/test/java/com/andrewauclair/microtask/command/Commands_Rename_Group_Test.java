@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.task.TaskGroupFinder;
 import com.andrewauclair.microtask.task.TaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +71,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
+		assertTrue(finder.hasGroupPath(new ExistingGroupName(tasks, "/one/")));
 
 		commands.execute(printStream, "rename group /one -n \"/two/\"");
 
@@ -86,7 +87,7 @@ class Commands_Rename_Group_Test extends CommandsBaseTestCase {
 
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/")));
+		assertTrue(finder.hasGroupPath(new ExistingGroupName(tasks, "/one/")));
 
 		commands.execute(printStream, "rename group /one/ -n \"/two\"");
 

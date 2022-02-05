@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
+import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -43,8 +44,8 @@ public class Projects {
 
 		String groupName = projectToGroup(projectName.getName());
 
-		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName))) {
-			tasks.addGroup(new NewTaskGroupName(tasks, groupName));
+		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName){})) {
+			tasks.createGroup(new NewTaskGroupName(tasks, groupName), save);
 		}
 
 		ExistingGroupName group = new ExistingGroupName(tasks, groupName);
@@ -53,6 +54,12 @@ public class Projects {
 		projects.add(project);
 
 		if (save) {
+			tasks.addList(new NewTaskListName(tasks, group.absoluteName() + "general"), true); // TODO This needs to only happen if we're saving because when we load from the files we will be loading a general list and should not create it
+
+			Task planning = tasks.addTask("Planning", new ExistingListName(tasks, group.absoluteName() + "general"));
+
+			tasks.setRecurring(new ExistingID(tasks, planning.id), true);
+
 			save();
 		}
 
@@ -99,7 +106,7 @@ public class Projects {
 	public void load() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/"))) {
+		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/"){})) {
 			TaskGroup projectGroup = tasks.getGroup(new ExistingGroupName(tasks, "/projects/"));
 
 			for (final TaskContainer child : projectGroup.getChildren()) {

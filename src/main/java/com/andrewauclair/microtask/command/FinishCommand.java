@@ -76,9 +76,14 @@ final class FinishCommand implements Runnable {
 			System.out.println("Group to finish still has tasks to complete.");
 		}
 		else {
-			TaskGroup taskGroup = tasks.finishGroup(this.options.group);
+			if (tasks.getGroup(this.options.group.absoluteName()).getState() == TaskContainerState.Finished) {
+				System.out.println("Group has already been finished.");
+			}
+			else {
+				TaskGroup taskGroup = tasks.finishGroup(this.options.group);
 
-			System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
+				System.out.println("Finished group '" + taskGroup.getFullPath() + "'");
+			}
 		}
 
 		System.out.println();
@@ -93,9 +98,14 @@ final class FinishCommand implements Runnable {
 			System.out.println("List to finish still has tasks to complete.");
 		}
 		else {
-			TaskList taskList = tasks.finishList(this.options.list);
+			if (tasks.getListByName(this.options.list).getState() == TaskContainerState.Finished) {
+				System.out.println("List has already been finished.");
+			}
+			else {
+				TaskList taskList = tasks.finishList(this.options.list);
 
-			System.out.println("Finished list '" + taskList.getFullPath() + "'");
+				System.out.println("Finished list '" + taskList.getFullPath() + "'");
+			}
 		}
 		System.out.println();
 	}

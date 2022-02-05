@@ -18,6 +18,6 @@ public class Commands_Start_Feature_Test extends CommandsBaseTestCase {
 		commands.execute(System.out, "start feature micro-task times");
 
 		assertThat(tasks.getActiveContext().getActiveFeature()).isPresent();
-		assertEquals(new ExistingFeature(project, "times"), tasks.getActiveContext().getActiveFeature().get());
+		assertEquals(ExistingFeature.tryCreate(project, "times"), tasks.getActiveContext().getActiveFeature().get());
 	}
 }

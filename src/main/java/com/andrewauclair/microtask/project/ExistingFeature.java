@@ -5,14 +5,20 @@ import com.andrewauclair.microtask.TaskException;
 
 import java.util.Objects;
 
+// suppressing warning because it isn't valid here. The ExistingFeature(String) constructor is private, there for we can't make a proper matching record.
+@SuppressWarnings("ClassCanBeRecord")
 public final class ExistingFeature {
 	private final String name;
 
-	public ExistingFeature(Project project, String name) {
+	private ExistingFeature(String name) {
+		this.name = name;
+	}
+
+	public static ExistingFeature tryCreate(Project project, String name) {
 		if (!project.hasFeature(name)) {
 			throw new TaskException("Feature '" + name + "' does not exist on project '" + project.getName() + "'");
 		}
-		this.name = name;
+		return new ExistingFeature(name);
 	}
 
 	@Override

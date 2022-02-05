@@ -126,7 +126,7 @@ public class Tasks {
 	}
 
 	public TaskGroup getGroup(String name) {
-		TaskGroupName groupName = new TaskGroupName(this, name);
+		TaskGroupName groupName = new TaskGroupName(this, name){};
 
 		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(groupName.absoluteName());
 
@@ -531,6 +531,14 @@ public class Tasks {
 			new TaskGroupFileWriter(taskGroup, osInterface).write();
 
 			osInterface.gitCommit("Set state for group '" + taskGroup.getFullPath() + "' to " + state);
+
+			if (state == TaskContainerState.InProgress) {
+				System.out.println("Set state of group '" + group.getFullPath() + "' to In Progress");
+
+				if (parent.getState() == TaskContainerState.Finished) {
+					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, createFiles);
+				}
+			}
 		}
 	}
 
@@ -549,6 +557,14 @@ public class Tasks {
 			new TaskListFileWriter(newList, osInterface).write();
 
 			osInterface.gitCommit("Set state for list '" + newList.getFullPath() + "' to " + state);
+
+			if (state == TaskContainerState.InProgress) {
+				System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
+
+				if (parent.getState() == TaskContainerState.Finished) {
+					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, createFiles);
+				}
+			}
 		}
 	}
 
@@ -572,7 +588,8 @@ public class Tasks {
 		TaskGroup parent = getGroupForList(list);
 
 		if (taskList.getState() == TaskContainerState.Finished) {
-			throw new TaskException("List has already been finished.");
+//			throw new TaskException("List has already been finished.");
+			return taskList;
 		}
 
 		TaskList newList = taskList.changeState(TaskContainerState.Finished);
@@ -591,8 +608,18 @@ public class Tasks {
 		TaskGroup origGroup = getGroup(group);
 		TaskGroup parent = getGroup(origGroup.getParent());
 
+		List<TaskContainer> children = new ArrayList<>(origGroup.getChildren());
+		for (final TaskContainer child : children) {
+			if (child instanceof TaskList) {
+				finishList(new ExistingListName(this, child.getFullPath()));
+			}
+			else {
+				finishGroup(new ExistingGroupName(this, child.getFullPath()));
+			}
+		}
+
 		if (origGroup.getState() == TaskContainerState.Finished) {
-			throw new TaskException("Group has already been finished.");
+			return origGroup;
 		}
 
 		TaskGroup taskGroup = origGroup.changeState(TaskContainerState.Finished);

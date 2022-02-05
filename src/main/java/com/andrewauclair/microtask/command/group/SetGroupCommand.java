@@ -59,8 +59,6 @@ public class SetGroupCommand implements Runnable {
 
 			if (group.getState() == TaskContainerState.Finished) {
 				tasks.setGroupState(this.group, TaskContainerState.InProgress, true);
-
-				System.out.println("Set state of group '" + group.getFullPath() + "' to In Progress");
 			}
 			else {
 				System.out.println("Group '" + group.getFullPath() + "' must be finished first");

@@ -27,7 +27,7 @@ public class ListAdder {
 		String groupName = listName.parentGroupName().absoluteName();
 
 		// create any groups in the path that don't exist
-		tasks.createGroup(new TaskGroupName(tasks, listName.parentGroupName().absoluteName()), createFiles);
+		tasks.createGroup(new TaskGroupName(tasks, listName.parentGroupName().absoluteName()){}, createFiles);
 
 		group = tasks.getGroup(groupName);
 
