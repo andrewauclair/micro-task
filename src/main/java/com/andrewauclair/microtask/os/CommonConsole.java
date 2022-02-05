@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.command.Commands;
@@ -12,6 +12,7 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.Widget;
 import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.completer.SystemCompleter;
 import org.jline.terminal.Terminal;
 import picocli.CommandLine;
 
@@ -31,7 +32,7 @@ public class CommonConsole {
 
 		CustomPicocliCommands picocliCommands = new CustomPicocliCommands(Paths.get(""), cmd);
 
-		Completers.SystemCompleter systemCompleter = new Completers.SystemCompleter();
+		SystemCompleter systemCompleter = new SystemCompleter();
 		systemCompleter.add(picocliCommands.compileCompleters());
 		systemCompleter.compile();
 

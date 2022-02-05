@@ -1,15 +1,18 @@
-// Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.picocli;
 
-import org.jline.builtins.CommandRegistry;
 import org.jline.builtins.Completers;
 import org.jline.builtins.Options;
-import org.jline.builtins.Widgets;
+import org.jline.console.ArgDesc;
+import org.jline.console.CmdDesc;
+import org.jline.console.CommandRegistry;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
+import org.jline.reader.impl.completer.SystemCompleter;
 import org.jline.utils.AttributedString;
+import org.jline.widget.Widgets;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
@@ -55,13 +58,18 @@ public class CustomPicocliCommands implements CommandRegistry {
 	}
 
 
-	public Completers.SystemCompleter compileCompleters() {
-		Completers.SystemCompleter out = new Completers.SystemCompleter();
+	public SystemCompleter compileCompleters() {
+		SystemCompleter out = new SystemCompleter();
 		List<String> all = new ArrayList<>();
 		all.addAll(commands);
 		all.addAll(aliasCommand.keySet());
 		out.add(all, new PicocliCompleter());
 		return out;
+	}
+
+	@Override
+	public CmdDesc commandDescription(List<String> args) {
+		return new CmdDesc(true);
 	}
 
 	private class PicocliCompleter implements Completer {
@@ -210,7 +218,7 @@ public class CustomPicocliCommands implements CommandRegistry {
 	 * @param command
 	 * @return command description for JLine TailTipWidgets to be displayed in terminal status bar.
 	 */
-	public Widgets.CmdDesc commandDescription(String command) {
+	public CmdDesc commandDescription(String command) {
 		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get(command).getCommandSpec();
 		CommandLine.Help cmdhelp = new picocli.CommandLine.Help(spec);
 		List<AttributedString> main = new ArrayList<>();
@@ -230,7 +238,7 @@ public class CustomPicocliCommands implements CommandRegistry {
 			}
 			options.put(key, val);
 		}
-		return new Widgets.CmdDesc(main, Widgets.ArgDesc.doArgNames(Arrays.asList("")), options);
+		return new CmdDesc(main, ArgDesc.doArgNames(Arrays.asList("")), options);
 	}
 
 	@Override
@@ -244,10 +252,13 @@ public class CustomPicocliCommands implements CommandRegistry {
 	}
 
 	@Override
-	public Object execute(CommandRegistry.CommandSession session, String command, String[] args) throws Exception {
+	public Object invoke(CommandSession session, String command, Object... args) throws Exception {
 		List<String> arguments = new ArrayList<>();
 		arguments.add(command);
-		arguments.addAll(Arrays.asList(args));
+
+		for (final Object arg : args) {
+			arguments.add(arg.toString());
+		}
 		cmd.execute(arguments.toArray(new String[0]));
 		return null;
 	}

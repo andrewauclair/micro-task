@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors.ConsoleForegroundColor;
@@ -45,7 +45,7 @@ public final class VersionCommand implements Runnable {
 		System.out.println(micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + version + ANSI_RESET);
 		System.out.println(micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET);
 		System.out.println(micro + "                                    " + task + "                         " + ANSI_RESET);
-		System.out.println(ANSI_BOLD + "Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved" + ANSI_RESET);
+		System.out.println(ANSI_BOLD + "Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved" + ANSI_RESET);
 		System.out.println();
 	}
 }
