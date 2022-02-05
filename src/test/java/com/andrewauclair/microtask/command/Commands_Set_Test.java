@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Disabled;
@@ -127,7 +127,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set list ([--in-progress] [--due=<due>] [--due-today]) [-h] <list>",
+				"Usage:  set list [-h] ([--in-progress] [--due=<due>] [--due-today]) <list>",
 						"      <list>          The list to set.",
 						"      --due=<due>     Set the due time for all tasks in the list.",
 						"      --due-today     Set the due time for all tasks in the list to today.",
@@ -141,7 +141,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set group ([--in-progress] [--due=<due>] [--due-today]) [-h] <group>",
+				"Usage:  set group [-h] ([--in-progress] [--due=<due>] [--due-today]) <group>",
 						"      <group>         The group to set.",
 						"      --due=<due>     Set the due time for all tasks in the group.",
 						"      --due-today     Set the due time for all tasks in the group to today.",

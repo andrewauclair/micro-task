@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id "com.github.ben-manes.versions" version "0.36.0"
+    id "com.github.ben-manes.versions" version "0.42.0"
 }
 
 apply plugin: 'java'
@@ -12,26 +12,26 @@ apply plugin: 'jacoco'
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
-    compile 'net.java.dev.jna:jna:5.6.0'
-    compile 'net.java.dev.jna:jna-platform:5.6.0'
-    compile 'org.jline:jline:3.14.1'
-    compile 'org.json:json:20201115'
-    compile 'info.picocli:picocli-shell-jline3:4.2.0'
-    compile 'org.fusesource.jansi:jansi:1.18'
-    compile 'org.eclipse.jgit:org.eclipse.jgit:5.10.0.202012080955-r'
-    compile 'org.slf4j:slf4j-simple:2.0.0-alpha1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    implementation 'net.java.dev.jna:jna:5.10.0'
+    implementation 'net.java.dev.jna:jna-platform:5.10.0'
+    implementation 'org.jline:jline:3.21.0'
+    implementation 'org.json:json:20211205'
+    implementation 'info.picocli:picocli-shell-jline3:4.6.2'
+    implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation 'org.fusesource.hawtjni:hawtjni-runtime:1.18'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha6'
 
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.7.0'
-    testCompile 'org.assertj:assertj-core:3.18.1'
-    testCompile 'nl.jqno.equalsverifier:equalsverifier:3.5'
-    testCompile 'org.mockito:mockito-core:3.6.28'
-    testCompile 'org.mockito:mockito-junit-jupiter:3.6.28'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+    testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.9'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.3.1'
 }
 
 tasks.withType(JavaCompile) {
@@ -47,20 +47,20 @@ description = 'micro task'
 sourceCompatibility = '15'
 
 jar {
-    manifest {
-        attributes "Main-Class": "com.andrewauclair.microtask.Main"
-    }
+    manifest.attributes.put("Main-Class", "com.andrewauclair.microtask.Main")
 
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.required
     }
 }
 
-// jpackage -i build/libs --main-class com.andrewauclair.microtask.Main --main-jar micro-task.jar --java-options "--enable-preview" --win-console --win-menu --name "micro-task" --copyright "Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved" --description "micro-task (command line task tracker)" --app-version 20.12.29
+// jpackage -i build/libs --main-class com.andrewauclair.microtask.Main --main-jar micro-task.jar --java-options "--enable-preview" --win-console --win-menu --name "micro-task" --copyright "Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved" --description "micro-task (command line task tracker)" --app-version 20.12.29
