@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
+import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.Tasks;
@@ -13,9 +14,12 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.io.IOException;
+
 @Command(name = "move", description = "Move a task, list or group.")
 final class MoveCommand implements Runnable {
 	private final Tasks tasks;
+	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
@@ -40,8 +44,12 @@ final class MoveCommand implements Runnable {
 	@Option(names = {"--dest-list"}, completionCandidates = ListCompleter.class, description = "Destination list for task.")
 	private ExistingListName dest_list;
 
-	MoveCommand(Tasks tasks) {
+	@Option(names = {"--interactive"}, description = "Prompt y/n per task.")
+	private boolean interactive;
+
+	MoveCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
+		this.osInterface = osInterface;
 	}
 
 	@Override
@@ -52,7 +60,15 @@ final class MoveCommand implements Runnable {
 			}
 
 			for (ExistingID taskID : args.id) {
-				moveTask(dest_list, taskID);
+				boolean move = true;
+
+				if (interactive) {
+					move = osInterface.promptChoice("move task " + taskID.get());
+				}
+
+				if (move) {
+					moveTask(dest_list, taskID);
+				}
 			}
 			System.out.println();
 		}

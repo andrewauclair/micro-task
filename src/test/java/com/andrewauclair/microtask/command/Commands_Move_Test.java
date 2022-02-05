@@ -9,8 +9,9 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move --help");
 
 		assertOutput(
-				"Usage:  move [-h] [--dest-group=<dest_group>] [--dest-list=<dest_list>] (-t=<id>",
-				"             [,<id>...] [-t=<id>[,<id>...]]... | -l=<list> | -g=<group>)",
+				"Usage:  move [-h] [--interactive] [--dest-group=<dest_group>]",
+				"             [--dest-list=<dest_list>] (-t=<id>[,<id>...] [-t=<id>[,",
+				"             <id>...]]... | -l=<list> | -g=<group>)",
 				"Move a task, list or group.",
 				"      --dest-group=<dest_group>",
 				"                        Destination group for list or group.",
@@ -18,6 +19,7 @@ class Commands_Move_Test extends CommandsBaseTestCase {
 				"                        Destination list for task.",
 				"  -g, --group=<group>   Group to move.",
 				"  -h, --help            Show this help message.",
+				"      --interactive     Prompt y/n per task.",
 				"  -l, --list=<list>     List to move.",
 				"  -t, --task=<id>[,<id>...]",
 				"                        Tasks to move."
