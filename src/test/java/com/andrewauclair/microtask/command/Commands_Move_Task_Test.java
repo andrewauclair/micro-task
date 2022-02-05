@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
@@ -75,6 +76,36 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Moved task 1 to list '/one/test/five'",
 				"Moved task 2 to list '/one/test/five'",
+				"Moved task 3 to list '/one/test/five'",
+				""
+		);
+	}
+
+	@Test
+	void move_multiple_tasks_at_once_interactively() {
+		tasks.addGroup(newGroup("/one/two/"));
+		tasks.addGroup(newGroup("/one/test/"));
+		tasks.addList(newList("/one/two/three"), true);
+		tasks.addList(newList("/one/test/five"), true);
+		tasks.setCurrentList(existingList("/one/two/three"));
+
+		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addTask("Test 3");
+
+		Mockito.when(osInterface.promptChoice("move task 1")).thenReturn(true);
+		Mockito.when(osInterface.promptChoice("move task 2")).thenReturn(false);
+		Mockito.when(osInterface.promptChoice("move task 3")).thenReturn(true);
+
+		commands.execute(printStream, "move --task 1,2,3 --dest-list /one/test/five --interactive");
+
+		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
+				newTask(1, "Test 1", TaskState.Inactive, 1000),
+				newTask(3, "Test 3", TaskState.Inactive, 3000)
+		);
+
+		assertOutput(
+				"Moved task 1 to list '/one/test/five'",
 				"Moved task 3 to list '/one/test/five'",
 				""
 		);

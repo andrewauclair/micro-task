@@ -87,7 +87,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("version", new VersionCommand(osInterface));
 //		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
-		commands.put("move", new MoveCommand(tasks));
+		commands.put("move", new MoveCommand(tasks, osInterface));
 //		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
 //		commands.put("set-list", new SetCommand.SetListCommand(tasks));
 //		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
@@ -217,7 +217,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 			case "exit":
 				return new ExitCommand(osInterface);
 			case "move":
-				return new MoveCommand(tasks);
+				return new MoveCommand(tasks, osInterface);
 //			case "set-task":
 //				return new SetCommand.SetTaskCommand(tasks);
 //			case "set-list":
