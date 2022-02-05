@@ -14,7 +14,7 @@ class Commands_Stop_Feature_Test extends CommandsBaseTestCase {
 
 		project.addFeature(new NewFeature(project, "one"), true);
 
-		tasks.getActiveContext().setActiveFeature(new ExistingFeature(project, "one"));
+		tasks.getActiveContext().setActiveFeature(ExistingFeature.tryCreate(project, "one"));
 
 		commands.execute(printStream, "stop feature");
 

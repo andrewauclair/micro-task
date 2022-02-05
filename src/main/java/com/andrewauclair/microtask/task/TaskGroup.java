@@ -277,20 +277,6 @@ public final class TaskGroup implements TaskContainer {
 		children.add(child);
 	}
 
-//	TaskGroup changeProject(String project) {
-//		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-//		group.children.addAll(children);
-//
-//		return group;
-//	}
-//
-//	TaskGroup changeFeature(String feature) {
-//		TaskGroup group = new TaskGroup(name, parent, project, feature, state);
-//		group.children.addAll(children);
-//
-//		return group;
-//	}
-
 	TaskGroup changeState(TaskContainerState state) {
 		TaskGroup group = new TaskGroup(name, parent, state);
 		group.children.addAll(children);

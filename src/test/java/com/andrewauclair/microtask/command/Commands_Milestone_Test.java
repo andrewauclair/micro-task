@@ -30,8 +30,8 @@ public class Commands_Milestone_Test extends CommandsBaseTestCase {
 		Milestone milestone = project.getMilestone(new ExistingMilestone(project, "20.9.3"));
 
 		assertThat(milestone.getFeatures()).containsOnly(
-				new ExistingFeature(project, "one"),
-				new ExistingFeature(project, "two")
+				ExistingFeature.tryCreate(project, "one"),
+				ExistingFeature.tryCreate(project, "two")
 		);
 
 		TestUtils.assertOutput(outputStream,
@@ -54,9 +54,9 @@ public class Commands_Milestone_Test extends CommandsBaseTestCase {
 
 		Milestone milestone = project.getMilestone(new ExistingMilestone(project, "20.9.3"));
 
-		milestone.addFeature(new ExistingFeature(project, "one"));
-		milestone.addFeature(new ExistingFeature(project, "two"));
-		milestone.addFeature(new ExistingFeature(project, "three"));
+		milestone.addFeature(ExistingFeature.tryCreate(project, "one"));
+		milestone.addFeature(ExistingFeature.tryCreate(project, "two"));
+		milestone.addFeature(ExistingFeature.tryCreate(project, "three"));
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/micro-task/milestone-20.9.3.txt")).thenReturn(new DataOutputStream(outputStream));
@@ -64,7 +64,7 @@ public class Commands_Milestone_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "milestone micro-task 20.9.3 feature remove two three");
 
 		assertThat(milestone.getFeatures()).containsOnly(
-				new ExistingFeature(project, "one")
+				ExistingFeature.tryCreate(project, "one")
 		);
 
 		TestUtils.assertOutput(outputStream,

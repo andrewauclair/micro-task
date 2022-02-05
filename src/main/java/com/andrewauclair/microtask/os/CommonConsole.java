@@ -67,9 +67,10 @@ public class CommonConsole {
 		Widget widget = lineReader.getBuiltinWidgets().get(LineReader.BACKWARD_KILL_WORD);
 
 		main.bind((Widget) () -> {
-			short keyState = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_LCONTROL);
+			short left_ctrl = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_LCONTROL);
+			short right_ctrl = User32.INSTANCE.GetAsyncKeyState(WinUser.VK_RCONTROL);
 
-			if ((keyState & 0x8000) == 0) {
+			if ((left_ctrl & 0x8000) == 0 && (right_ctrl & 0x8000) == 0) {
 				return lineReader.getBuffer().backspace();
 			}
 			else {

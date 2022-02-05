@@ -57,8 +57,6 @@ public class SetListCommand implements Runnable {
 
 			if (list.getState() == TaskContainerState.Finished) {
 				tasks.setListState(this.list, TaskContainerState.InProgress, true);
-
-				System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
 			}
 			else {
 				System.out.println("List '" + list.getFullPath() + "' must be finished first");

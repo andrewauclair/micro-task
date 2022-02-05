@@ -45,11 +45,11 @@ public class Milestone_Files_Test extends ProjectBaseTestCase {
 
 		ExistingMilestone milestone = new ExistingMilestone(project, "20.9.3");
 
-		project.getMilestone(milestone).addFeature(new ExistingFeature(project, "one"));
+		project.getMilestone(milestone).addFeature(ExistingFeature.tryCreate(project, "one"));
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/projects/micro-task/milestone-20.9.3.txt")).thenReturn(new DataOutputStream(outputStream));
 
-		project.getMilestone(milestone).addFeature(new ExistingFeature(project, "two"));
+		project.getMilestone(milestone).addFeature(ExistingFeature.tryCreate(project, "two"));
 
 		project.getMilestone(milestone).save();
 
@@ -74,8 +74,8 @@ public class Milestone_Files_Test extends ProjectBaseTestCase {
 
 		ExistingMilestone milestone = new ExistingMilestone(project, "20.9.3");
 
-		project.getMilestone(milestone).addFeature(new ExistingFeature(project, "one"));
-		project.getMilestone(milestone).addFeature(new ExistingFeature(project, "two"));
+		project.getMilestone(milestone).addFeature(ExistingFeature.tryCreate(project, "one"));
+		project.getMilestone(milestone).addFeature(ExistingFeature.tryCreate(project, "two"));
 
 		project.getMilestone(milestone).addTask(existingID(1));
 

@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.DataLoader;
 import com.andrewauclair.microtask.task.TaskReader;
 import com.andrewauclair.microtask.task.Tasks;
@@ -30,13 +31,15 @@ public class UpdateRepoCommand implements Runnable {
 	private final OSInterface osInterface;
 	private final LocalSettings localSettings;
 	private final Projects projects;
+	private final Schedule schedule;
 	private final Commands commands;
 
-	public UpdateRepoCommand(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Projects projects, Commands commands) {
+	public UpdateRepoCommand(Tasks tasks, OSInterface osInterface, LocalSettings localSettings, Projects projects, Schedule schedule, Commands commands) {
 		this.tasks = tasks;
 		this.osInterface = osInterface;
 		this.localSettings = localSettings;
 		this.projects = projects;
+		this.schedule = schedule;
 		this.commands = commands;
 	}
 
@@ -50,7 +53,7 @@ public class UpdateRepoCommand implements Runnable {
 		else if (args.from_remote) {
 			osInterface.gitPull();
 
-			tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, osInterface), commands);
+			tasks.load(new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, schedule, osInterface), commands);
 
 			System.out.println("Pulled changes from remote");
 		}

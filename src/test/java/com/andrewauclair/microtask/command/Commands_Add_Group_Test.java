@@ -4,6 +4,7 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.task.TaskGroupFinder;
 import com.andrewauclair.microtask.task.TaskGroupName;
+import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -26,7 +27,7 @@ class Commands_Add_Group_Test extends CommandsBaseTestCase {
 
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/test/one/two/three/")));
+		assertTrue(finder.hasGroupPath(new ExistingGroupName(tasks, "/test/one/two/three/")));
 
 		InOrder inOrder = Mockito.inOrder(osInterface);
 
@@ -56,7 +57,7 @@ class Commands_Add_Group_Test extends CommandsBaseTestCase {
 
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		assertTrue(finder.hasGroupPath(new TaskGroupName(tasks, "/one/two/three/")));
+		assertTrue(finder.hasGroupPath(new ExistingGroupName(tasks, "/one/two/three/")));
 
 		assertOutput(
 				"Created group '/one/two/three/'",

@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
+import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -18,13 +19,15 @@ public class DataLoader {
 	private final TaskReader reader;
 	private final LocalSettings localSettings;
 	private final Projects projects;
+	private final Schedule schedule;
 	private final OSInterface osInterface;
 
-	public DataLoader(Tasks tasks, TaskReader reader, LocalSettings localSettings, Projects projects, OSInterface osInterface) {
+	public DataLoader(Tasks tasks, TaskReader reader, LocalSettings localSettings, Projects projects, Schedule schedule, OSInterface osInterface) {
 		this.tasks = tasks;
 		this.reader = reader;
 		this.localSettings = localSettings;
 		this.projects = projects;
+		this.schedule = schedule;
 		this.osInterface = osInterface;
 	}
 
@@ -39,6 +42,7 @@ public class DataLoader {
 		}
 
 		localSettings.load(tasks);
+		schedule.loadSchedule(projects);
 //		projects.load();
 	}
 
@@ -201,7 +205,7 @@ public class DataLoader {
 			}
 		}
 
-		loadTasks(fileInfo.getPath(), true);
+		loadTasks(folder + "/" + name, true);
 		tasks.setCurrentGroup(new ExistingGroupName(tasks, tasks.getCurrentGroup().getParent()));
 
 		// load milestones after we load everything in the project
@@ -225,7 +229,7 @@ public class DataLoader {
 							if (line.startsWith("feature")) {
 								String feature = line.split(" ")[1];
 
-								ms.addFeature(new ExistingFeature(project, feature));
+								ms.addFeature(ExistingFeature.tryCreate(project, feature));
 							}
 							else {
 								long taskID = Long.parseLong(line.split(" ")[1]);

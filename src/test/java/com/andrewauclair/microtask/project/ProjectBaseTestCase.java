@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 @ExtendWith(MockitoExtension.class)
+public
 class ProjectBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
-	final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
+	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	Tasks tasks;
-	Projects projects;
+	protected Tasks tasks;
+	protected Projects projects;
 
 	Project project;
 
