@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
@@ -9,8 +9,8 @@ class Commands_Finish_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "finish --help");
 
 		assertOutput(
-				"Usage:  finish (-t=<id>[,<id>...] [-t=<id>[,<id>...]]... | -l=<list> |",
-				"               -g=<group> | --active-task) [-h]",
+				"Usage:  finish [-h] (-t=<id>[,<id>...] [-t=<id>[,<id>...]]... | -l=<list> |",
+				"               -g=<group> | --active-task)",
 				"Finish a task, list or group.",
 				"      --active-task     Finish the active task.",
 				"  -g, --group=<group>   Group to finish.",

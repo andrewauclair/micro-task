@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ class Commands_Change_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "ch --help");
 
 		assertOutput(
-				"Usage:  ch (-l=<list> | -g=<group> | -p=<project>) [-h]",
+				"Usage:  ch [-h] (-l=<list> | -g=<group> | -p=<project>)",
 				"Change the current list or group.",
 				"  -g, --group=<group>       The group to change to.",
 				"  -h, --help                Show this help message.",

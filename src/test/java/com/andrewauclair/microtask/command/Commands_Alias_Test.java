@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -348,7 +348,7 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "alias --help");
 
 		assertOutput(
-				"Usage:  alias (-c=<command> | -u=<update> | -r | -l) [-h] [-n=<name>]",
+				"Usage:  alias [-h] [-n=<name>] (-c=<command> | -u=<update> | -r | -l)",
 						"Add, list, update or delete aliases.",
 						"  -c, --command=<command>   The alias command.",
 						"  -h, --help                Show this help message.",

@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -27,7 +27,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 				micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + "20.1.1" + ANSI_RESET,
 				micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET,
 				micro + "                                    " + task + "                         " + ANSI_RESET,
-				ANSI_BOLD + "Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved" + ANSI_RESET,
+				ANSI_BOLD + "Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved" + ANSI_RESET,
 				""
 		);
 	}
@@ -48,7 +48,7 @@ class Commands_Version_Test extends CommandsBaseTestCase {
 				micro + " / / / / / // // /__ / /   / /_/ /  " + task + "/ /_ / /_/ /(__  )/ ,<   " + ANSI_RESET + ANSI_BOLD + "Unknown" + ANSI_RESET,
 				micro + "/_/ /_/ /_//_/ \\___//_/    \\____/   " + task + "\\__/ \\__,_//____//_/|_|  " + ANSI_RESET,
 				micro + "                                    " + task + "                         " + ANSI_RESET,
-				ANSI_BOLD + "Copyright (C) 2019-2020 Andrew Auclair - All Rights Reserved" + ANSI_RESET,
+				ANSI_BOLD + "Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved" + ANSI_RESET,
 				""
 		);
 	}

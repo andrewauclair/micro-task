@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
 // Provides the ability to create mock TaskFilter in TimesCommand

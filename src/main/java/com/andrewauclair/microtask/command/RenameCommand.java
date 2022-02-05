@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import picocli.CommandLine;

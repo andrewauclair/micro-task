@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2021 Andrew Auclair - All Rights Reserved
+// Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ public class Commands_Start_List_Test extends CommandsBaseTestCase {
 	void start_a_list() {
 		commands.execute(printStream, "start list /default");
 
+		assertThat(tasks.getActiveContext().getActiveList()).isPresent();
 		assertEquals(existingList("/default"), tasks.getActiveContext().getActiveList().get());
 	}
 
