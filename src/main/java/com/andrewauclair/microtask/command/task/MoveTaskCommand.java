@@ -1,13 +1,16 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.task;
 
+import com.andrewauclair.microtask.command.group.SetGroupCommand;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.ExistingID;
-import com.andrewauclair.microtask.task.TaskList;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "task")
 public class MoveTaskCommand implements Runnable {
@@ -17,8 +20,16 @@ public class MoveTaskCommand implements Runnable {
 	@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@CommandLine.Parameters(index = "0", split = ",", description = "Tasks to move.")
-	private ExistingID[] id;
+	private static class Args {
+		@CommandLine.Parameters(index = "0", split = ",", description = "Tasks to move.")
+		private ExistingID[] id;
+
+		@CommandLine.Option(names = {"--src-list"}, completionCandidates = ListCompleter.class, description = "Source list for moving all tasks on a list.")
+		private ExistingListName src_list;
+	}
+
+	@CommandLine.ArgGroup(multiplicity = "1")
+	Args args;
 
 	@CommandLine.Option(names = {"--dest-list"}, required = true, completionCandidates = ListCompleter.class, description = "Destination list for task.")
 	private ExistingListName dest_list;
@@ -33,10 +44,24 @@ public class MoveTaskCommand implements Runnable {
 
 	@Override
 	public void run() {
-		for (ExistingID taskID : id) {
+		if (args.id == null) {
+			List<Task> tasks = this.tasks.getList(args.src_list).getTasks().stream()
+					.filter(task -> task.state != TaskState.Finished)
+					.sorted(Comparator.comparingLong(o -> o.id))
+					.collect(Collectors.toList());
+
+			args.id = new ExistingID[tasks.size()];
+
+			for (int i = 0; i < tasks.size(); i++) {
+				args.id[i] = new ExistingID(this.tasks, tasks.get(i).id);
+			}
+		}
+
+		for (ExistingID taskID : args.id) {
 			boolean move = true;
 
 			if (interactive) {
+				System.out.println(tasks.getTask(taskID).description());
 				move = osInterface.promptChoice("move task " + taskID.get());
 			}
 
