@@ -32,7 +32,10 @@ public class Copyright_Test {
 			}
 			else if (file.getName().endsWith(".java")) {
 				try (Scanner scanner = new Scanner(file)) {
-					soft.assertThat(scanner.nextLine()).describedAs(new TextDescription(file.getAbsolutePath())).startsWith("//");
+					String firstLine = scanner.nextLine();
+					if (!firstLine.contains("Copyright")) {
+						soft.assertThat(firstLine).describedAs(new TextDescription(file.getAbsolutePath())).contains("Copyright");
+					}
 				}
 			}
 		}

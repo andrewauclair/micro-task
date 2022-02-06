@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.ConsoleTable;
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -46,8 +47,16 @@ public class TasksCommand implements Runnable {
 	@CommandLine.Option(names = {"--all"}, description = "List all tasks.")
 	private boolean all;
 
-	@CommandLine.Option(names = {"--due-before"}, description = "Show tasks due before this date.")
-	private Date due_before;
+	@CommandLine.ArgGroup
+	private DueArgs due_args;
+
+	private static class DueArgs {
+		@CommandLine.Option(names = {"--due-before"}, description = "Show tasks due before this date.")
+		private LocalDate due_before;
+
+		@CommandLine.Option(names = {"--due-within"}, description = "Show tasks due within a period.")
+		private Period due_within;
+	}
 
 	@CommandLine.Option(names = {"-v", "--verbose"}, description = "Display verbose information.")
 	private boolean verbose;
@@ -120,9 +129,28 @@ public class TasksCommand implements Runnable {
 		boolean useTags = !tasksData.getActiveContext().getActiveTags().isEmpty();
 		List<String> tags = tasksData.getActiveContext().getActiveTags();
 
-		if  (due_before != null) {
+		if  (due_args != null && due_args.due_before != null) {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-			System.out.println("Tasks due before " + dateTimeFormatter.format(due_before.toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime()));
+			System.out.println("Tasks due before " + dateTimeFormatter.format(due_args.due_before.atStartOfDay()));
+		}
+		else if (due_args != null && due_args.due_within != null) {
+			System.out.print("Tasks due within ");
+
+			int days = due_args.due_within.getDays();
+
+			int weeks = days / 7;
+			days -= weeks * 7;
+
+			if (due_args.due_within.getMonths() > 0) {
+				System.out.print(due_args.due_within.getMonths() + " month(s) ");
+			}
+			if (weeks > 0) {
+				System.out.print(weeks + " week(s) ");
+			}
+			if (days > 0) {
+				System.out.print(days + " day(s) ");
+			}
+			System.out.println();
 		}
 		else if (feature.isPresent()) {
 			group = new ExistingGroupName(tasksData, project.get().getGroup().getFullPath());
@@ -257,7 +285,7 @@ public class TasksCommand implements Runnable {
 
 		List<Task> dueTasks = getDueTasks();
 
-		if (due_before != null) {
+		if (due_args != null) {
 			tasks.clear();
 		}
 
@@ -274,7 +302,7 @@ public class TasksCommand implements Runnable {
 		}
 
 		if (!display_schedule) {
-			if (dueTasks.size() > 0 && due_before == null) {
+			if (dueTasks.size() > 0 && due_args == null) {// && due_args == null || (due_args != null && due_args.due_before == null)) {
 				table.addRow(true, "Due Tasks");
 			}
 
@@ -327,7 +355,7 @@ public class TasksCommand implements Runnable {
 			if (finished && !display_schedule) {
 				System.out.print("Total Finished Tasks: " + tasks.size());
 			}
-			else if (due_before != null) {
+			else if (due_args != null) {// && due_args.due_before != null) {
 				System.out.print("Total Tasks: " + dueTasks.size());
 			}
 			else {
@@ -349,24 +377,25 @@ public class TasksCommand implements Runnable {
 
 		ZoneId zoneId = osInterface.getZoneId();
 
-		if (due_before != null) {
-			LocalDate due_date = LocalDate.ofInstant(due_before.toInstant(), zoneId);
-			LocalDateTime due_date_midnight = LocalDateTime.of(due_date, LocalTime.MIDNIGHT);
-			long due_midnight = due_date_midnight.atZone(zoneId).toEpochSecond();
-			epochSecond = due_midnight;
+		if (due_args != null && due_args.due_before != null) {
+			epochSecond = new DueDate(osInterface, due_args.due_before).dueTime();
 		}
+		else if (due_args != null && due_args.due_within != null) {
+			epochSecond = new DueDate(osInterface, due_args.due_within).dueTime();
+		}
+		else {
+			Instant instant = Instant.ofEpochSecond(epochSecond);
 
-		Instant instant = Instant.ofEpochSecond(epochSecond);
-
-		LocalDate today = LocalDate.ofInstant(instant, zoneId);
-		LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-		LocalDateTime nextMidnight = midnight.plusDays(1);
-		long midnightStop = nextMidnight.atZone(zoneId).toEpochSecond();
+			LocalDate today = LocalDate.ofInstant(instant, zoneId);
+			LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
+			LocalDateTime nextMidnight = midnight.plusDays(1);
+			epochSecond = nextMidnight.atZone(zoneId).toEpochSecond();
+		}
 
 		List<Task> dueTasks = new ArrayList<>();
 
 		for (Task task : tasksData.getAllTasks()) {
-			if (task.state != TaskState.Finished && !task.recurring && task.dueTime < midnightStop) {
+			if (task.state != TaskState.Finished && !task.recurring && task.dueTime < epochSecond) {
 				dueTasks.add(task);
 			}
 		}
