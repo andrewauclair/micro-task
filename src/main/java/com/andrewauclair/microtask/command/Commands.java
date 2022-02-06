@@ -145,6 +145,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 								.addSubcommand(new SetTaskCommand(tasks, osInterface))
 								.addSubcommand(new SetListCommand(tasks, osInterface))
 								.addSubcommand(new SetGroupCommand(tasks, osInterface))
+								.addSubcommand(new SetDueTasksCommand(tasks, osInterface))
 				);
 				break;
 			case "rename":
