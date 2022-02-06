@@ -21,7 +21,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "move --list /one/two/three --dest-group /one/test/");
+		commands.execute(printStream, "move list /one/two/three --dest-group /one/test/");
 		
 		TaskListFinder finder = new TaskListFinder(tasks);
 		
@@ -45,7 +45,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 		tasks.addTask("Test 1");
 
-		commands.execute(printStream, "move --list /one/two/three --dest-group /");
+		commands.execute(printStream, "move list /one/two/three --dest-group /");
 		
 		TaskListFinder finder = new TaskListFinder(tasks);
 		
@@ -68,7 +68,7 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 
 		Task task = tasks.addTask("Test 1");
 
-		commands.execute(printStream, "move --list /one/two/three --dest-group /one/test/");
+		commands.execute(printStream, "move list /one/two/three --dest-group /one/test/");
 
 		TaskListFinder finder = new TaskListFinder(tasks);
 
@@ -79,25 +79,13 @@ class Commands_Move_List_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void move_list_requires_dest_group_not_group_option() {
-		tasks.addGroup(newGroup("/one/"));
-
-		commands.execute(printStream, "move --list /default --group /one/");
-
-		assertOutput(
-				"Error: --list=<list>, --group=<group> are mutually exclusive (specify only one)",
-				""
-		);
-	}
-
-	@Test
 	void move_list_requires_dest_group() {
 		tasks.addList(newList("/one"), true);
 
-		commands.execute(printStream, "move --list /one");
+		commands.execute(printStream, "move list /one");
 
 		assertOutput(
-				"move --list requires --dest-group",
+				"Missing required option: '--dest-group=<dest_group>'",
 				""
 		);
 	}
