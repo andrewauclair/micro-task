@@ -24,7 +24,7 @@ class DueDateTest {
 	void create_from_period() {
 		DueDate due = new DueDate(osInterface, Period.parse("p1w"));
 
-		assertEquals(604800, due.dueTime());
+		assertEquals(540000, due.dueTime());
 	}
 
 	@Test

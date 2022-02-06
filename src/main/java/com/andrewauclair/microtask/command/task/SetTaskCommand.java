@@ -81,7 +81,7 @@ public class SetTaskCommand implements Runnable {
 
 			tasks.setDueDate(id, dueTime);
 
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
 
 			// TODO This isn't covered by a test

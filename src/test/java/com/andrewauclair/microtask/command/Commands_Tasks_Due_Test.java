@@ -58,20 +58,24 @@ public class Commands_Tasks_Due_Test extends CommandsBaseTestCase {
 
 	@Test
 	void display_tasks_due_before() {
-		int time_in_day = 86000;
+		osInterface.setTime(21600);
+		osInterface.setIncrementTime(false);
 
-		tasks.addTask(newTaskBuilder(1, "Test", TaskState.Inactive, 0).withDueTime(0).build());
-		tasks.addTask(newTaskBuilder(2, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 2).build());
-		tasks.addTask(newTaskBuilder(3, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 3).build());
-		tasks.addTask(newTaskBuilder(4, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 4).build());
-		tasks.addTask(newTaskBuilder(5, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 5).build());
-		tasks.addTask(newTaskBuilder(6, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 6).build());
-		tasks.addTask(newTaskBuilder(7, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 7).build());
-		tasks.addTask(newTaskBuilder(8, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 8).build());
-		tasks.addTask(newTaskBuilder(9, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 9).build());
-		tasks.addTask(newTaskBuilder(10, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 10).build());
-		tasks.addTask(newTaskBuilder(11, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 11).build());
-		tasks.addTask(newTaskBuilder(12, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 12).build());
+		int first_midnight = 21600;
+		int time_in_day = 86400;
+
+		tasks.addTask(newTaskBuilder(1, "Test", TaskState.Inactive, 0).withDueTime(first_midnight).build());
+		tasks.addTask(newTaskBuilder(2, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day).build());
+		tasks.addTask(newTaskBuilder(3, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 2).build());
+		tasks.addTask(newTaskBuilder(4, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 3).build());
+		tasks.addTask(newTaskBuilder(5, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 4).build());
+		tasks.addTask(newTaskBuilder(6, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 5).build());
+		tasks.addTask(newTaskBuilder(7, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 6).build());
+		tasks.addTask(newTaskBuilder(8, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 7).build());
+		tasks.addTask(newTaskBuilder(9, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 8).build());
+		tasks.addTask(newTaskBuilder(10, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 9).build());
+		tasks.addTask(newTaskBuilder(11, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 10).build());
+		tasks.addTask(newTaskBuilder(12, "Test", TaskState.Inactive, 0).withDueTime(first_midnight + time_in_day * 11).build());
 
 		commands.execute(printStream, "tasks --due-before 1970-01-07");
 
@@ -99,17 +103,17 @@ public class Commands_Tasks_Due_Test extends CommandsBaseTestCase {
 		int time_in_day = 86000;
 
 		tasks.addTask(newTaskBuilder(1, "Test", TaskState.Inactive, 0).withDueTime(0).build());
-		tasks.addTask(newTaskBuilder(2, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 2).build());
-		tasks.addTask(newTaskBuilder(3, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 3).build());
-		tasks.addTask(newTaskBuilder(4, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 4).build());
-		tasks.addTask(newTaskBuilder(5, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 5).build());
-		tasks.addTask(newTaskBuilder(6, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 6).build());
-		tasks.addTask(newTaskBuilder(7, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 7).build());
-		tasks.addTask(newTaskBuilder(8, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 8).build());
-		tasks.addTask(newTaskBuilder(9, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 9).build());
-		tasks.addTask(newTaskBuilder(10, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 10).build());
-		tasks.addTask(newTaskBuilder(11, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 11).build());
-		tasks.addTask(newTaskBuilder(12, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 12).build());
+		tasks.addTask(newTaskBuilder(2, "Test", TaskState.Inactive, 0).withDueTime(time_in_day).build());
+		tasks.addTask(newTaskBuilder(3, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 2).build());
+		tasks.addTask(newTaskBuilder(4, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 3).build());
+		tasks.addTask(newTaskBuilder(5, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 4).build());
+		tasks.addTask(newTaskBuilder(6, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 5).build());
+		tasks.addTask(newTaskBuilder(7, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 6).build());
+		tasks.addTask(newTaskBuilder(8, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 7).build());
+		tasks.addTask(newTaskBuilder(9, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 8).build());
+		tasks.addTask(newTaskBuilder(10, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 9).build());
+		tasks.addTask(newTaskBuilder(11, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 10).build());
+		tasks.addTask(newTaskBuilder(12, "Test", TaskState.Inactive, 0).withDueTime(time_in_day * 11).build());
 
 		commands.execute(printStream, "tasks --due-within p1w");
 

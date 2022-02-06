@@ -53,6 +53,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 
 	@Test
 	void add_task_with_2_week_due_time() {
+		osInterface.setTime(50000);
 		osInterface.setIncrementTime(false);
 
 		commands.execute(printStream, "add task \"Test\" --due p2w");
@@ -66,8 +67,8 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 				new TaskBuilder(1)
 						.withTask("Test")
 						.withState(TaskState.Inactive)
-						.withAddTime(1000)
-						.withDueTime(1000 + (604_800L * 2))
+						.withAddTime(50000)
+						.withDueTime(1231200)
 						.build()
 		);
 	}
@@ -89,7 +90,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 						.withTask("Test")
 						.withState(TaskState.Inactive)
 						.withAddTime(50000)
-						.withDueTime(50000)
+						.withDueTime(21600)
 						.build()
 		);
 	}

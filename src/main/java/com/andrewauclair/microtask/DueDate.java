@@ -6,7 +6,7 @@ import com.andrewauclair.microtask.os.OSInterface;
 import java.time.*;
 
 public class DueDate {
-	private long dueTime;
+	private final long dueTime;
 
 	public DueDate(OSInterface osInterface, Period period) {
 		Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
@@ -14,8 +14,11 @@ public class DueDate {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
+		baseDate = baseDate.plus(period);
+		baseDate.atZone(zoneId);
+		baseDate = baseDate.toLocalDate().atStartOfDay();
 
-		dueTime = baseDate.plus(period).atZone(zoneId).toEpochSecond();
+		dueTime = baseDate.atZone(zoneId).toEpochSecond();
 	}
 
 	public DueDate(OSInterface osInterface, MonthDay parse) {
