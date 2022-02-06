@@ -4,6 +4,8 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.project.NewProject;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Commands_Change_Project_Test extends CommandsBaseTestCase {

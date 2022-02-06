@@ -1,6 +1,7 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.task;
 
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
@@ -39,7 +40,7 @@ public class AddTaskCommand implements Runnable {
 	private boolean recurring;
 
 	@CommandLine.Option(names = {"--due"}, description = "Due time of the task. Defaults to 1 week.")
-	private String due;
+	private DueDate due;
 
 	@CommandLine.Option(names = {"--due-today"}, description = "Task is due today.")
 	private Boolean dueToday;
@@ -66,7 +67,7 @@ public class AddTaskCommand implements Runnable {
 
 		if (dueToday != null) {
 			// set the due date to 0d, which is "today" in the Period.parse method
-			due = "0w";
+			due = new DueDate(osInterface, Period.parse("p0w"));
 		}
 
 		TaskList taskList = tasks.getList(list);
@@ -85,14 +86,7 @@ public class AddTaskCommand implements Runnable {
 			builder.withRecurring(recurring);
 
 			if (due != null) {
-				Instant instant = Instant.ofEpochSecond(addTime);
-
-				ZoneId zoneId = osInterface.getZoneId();
-
-				LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
-
-				// I think it's dumb to need the "P" in front, but this parses what I want for now
-				long dueTime = baseDate.plus(Period.parse("P" + due)).atZone(zoneId).toEpochSecond();
+				long dueTime = due.dueTime();
 
 				builder.withDueTime(dueTime);
 			}

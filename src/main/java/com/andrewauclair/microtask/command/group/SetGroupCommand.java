@@ -1,6 +1,8 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.group;
 
+import com.andrewauclair.microtask.DueDate;
+import com.andrewauclair.microtask.command.list.SetListCommand;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
@@ -33,11 +35,16 @@ public class SetGroupCommand implements Runnable {
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 		private boolean in_progress;
 
-		@Option(names = {"--due"}, description = "Set the due time for all tasks in the group.")
-		private String due;
+		@ArgGroup()
+		DueArgs dueArgs;
 
-		@Option(names = {"--due-today"}, description = "Set the due time for all tasks in the group to today.")
-		private Boolean dueToday;
+		private static class DueArgs {
+			@Option(names = {"--due"}, description = "Set the due time for all tasks in the group.")
+			private DueDate due;
+
+			@Option(names = {"--due-today"}, description = "Set the due time for all tasks in the group to today.")
+			private Boolean due_today;
+		}
 	}
 
 	@ArgGroup(exclusive = false, multiplicity = "1")
@@ -50,9 +57,7 @@ public class SetGroupCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (args.dueToday != null) {
-			args.due = "0d";
-		}
+		checkDueToday();
 
 		if (args.in_progress) {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
@@ -64,15 +69,10 @@ public class SetGroupCommand implements Runnable {
 				System.out.println("Group '" + group.getFullPath() + "' must be finished first");
 			}
 		}
-		else if (args.due != null) {
-			Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
-
+		else if (args.dueArgs.due != null) {
 			ZoneId zoneId = osInterface.getZoneId();
 
-			LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
-
-			// I think it's dumb to need the "P" in front, but this parses what I want for now
-			long dueTime = baseDate.plus(Period.parse("P" + args.due)).atZone(zoneId).toEpochSecond();
+			long dueTime = args.dueArgs.due.dueTime();
 
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
@@ -89,5 +89,11 @@ public class SetGroupCommand implements Runnable {
 		}
 
 		System.out.println();
+	}
+
+	private void checkDueToday() {
+		if (args.dueArgs != null && args.dueArgs.due_today != null) {
+			args.dueArgs.due = new DueDate(osInterface, Period.parse("p0d"));
+		}
 	}
 }
