@@ -164,7 +164,12 @@ public class Tasks {
 
 	public void addList(NewTaskListName name, boolean createFiles) {
 		ListAdder adder = new ListAdder(this, writer, osInterface);
-		adder.addList(name, createFiles);
+		adder.addList(name, "none", createFiles);
+	}
+
+	public void addList(NewTaskListName name, String timeCategory, boolean createFiles) {
+		ListAdder adder = new ListAdder(this, writer, osInterface);
+		adder.addList(name, timeCategory, createFiles);
 	}
 
 	public boolean hasActiveTask() {
@@ -545,7 +550,7 @@ public class Tasks {
 	public void setListState(ExistingListName listName, TaskContainerState state, boolean createFiles) {
 		TaskList list = getList(listName);
 
-		TaskGroup parent = getGroupForList(new ExistingListName(this, list.getFullPath()));
+		TaskGroup parent = getGroupForList(listName);
 
 		parent.removeChild(list);
 
@@ -562,9 +567,29 @@ public class Tasks {
 				System.out.println("Set state of list '" + list.getFullPath() + "' to In Progress");
 
 				if (parent.getState() == TaskContainerState.Finished) {
-					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, createFiles);
+					setGroupState(new ExistingGroupName(this, parent.getFullPath()), state, true);
 				}
 			}
+		}
+	}
+
+	public void setListTimeCategory(ExistingListName listName, String timeCategory, boolean createFiles) {
+		TaskList list = getList(listName);
+
+		TaskGroup parent = getGroupForList(listName);
+
+		parent.removeChild(list);
+
+		TaskList newList = list.changeTimeCategory(timeCategory);
+
+		parent.addChild(newList);
+
+		if (createFiles) {
+			new TaskListFileWriter(newList, osInterface).write();
+
+			System.out.println("Set Time Category of list '" + newList.getFullPath() + "' to '" + timeCategory + "'");
+
+			osInterface.gitCommit("Set Time Category for list '" + newList.getFullPath() + "' to '" + timeCategory + "'");
 		}
 	}
 

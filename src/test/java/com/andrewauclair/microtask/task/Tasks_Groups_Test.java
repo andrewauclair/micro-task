@@ -82,7 +82,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"),
 				new TaskGroup("test", parent, TaskContainerState.InProgress)
 		);
 	}
@@ -94,7 +94,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		tasks.createGroup(newGroup("/test/one/two/"));
 
 		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
-		parent.addChild(new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress));
+		parent.addChild(new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"));
 		
 		TaskGroup expected = new TaskGroup("test", parent, TaskContainerState.InProgress);
 		parent.addChild(expected);
@@ -105,7 +105,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		one.addChild(new TaskGroup("two", one, TaskContainerState.InProgress));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"),
 				expected
 		);
 	}

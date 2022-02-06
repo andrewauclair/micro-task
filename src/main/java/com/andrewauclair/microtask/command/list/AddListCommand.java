@@ -16,6 +16,9 @@ public class AddListCommand implements Runnable {
 	@CommandLine.Parameters(index = "0", completionCandidates = ListCompleter.class, description = "List to add.")
 	private NewTaskListName list;
 
+	@CommandLine.Option(names = {"--time-category"}, description = "Time category used for time charging.")
+	private String time_category;
+
 	public AddListCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
@@ -24,7 +27,13 @@ public class AddListCommand implements Runnable {
 	public void run() {
 		tasks.addList(list, true);
 
-		System.out.println("Created list '" + list + "'");
+		System.out.print("Created list '" + list + "'");
+
+		if (time_category != null) {
+			System.out.print(" with Time Category '" + time_category + "'");
+		}
+		System.out.println();
+
 		System.out.println();
 	}
 }

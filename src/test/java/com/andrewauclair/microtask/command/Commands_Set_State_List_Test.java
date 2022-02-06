@@ -78,7 +78,8 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 		assertOutput(
 				outputStream,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 	}
 

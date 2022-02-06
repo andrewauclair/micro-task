@@ -59,10 +59,6 @@ public class DataLoader_Test {
 	private Projects projects;
 	private Schedule schedule = Mockito.mock(Schedule.class);
 
-	// TODO setup tasks, lists, groups, projects, features, and milestones to test loading
-
-	// TODO make specific tests for each thing and use the setup data
-
 	DataFolder root = new DataFolder("");
 
 	@BeforeEach
@@ -105,10 +101,10 @@ public class DataLoader_Test {
 		DataFolder featureTwo = new DataFolder("two");
 		DataFolder meetings = new DataFolder("meetings");
 
-		support.entities.add(new DataFile("list.txt", "InProgress", ""));
+		support.entities.add(new DataFile("list.txt", "state InProgress", "time none"));
 
-		doneGroup.entities.add(new DataFile("group.txt", "Finished"));
-		doneList.entities.add(new DataFile("list.txt", "Finished", ""));
+		doneGroup.entities.add(new DataFile("group.txt", "state Finished", "time none"));
+		doneList.entities.add(new DataFile("list.txt", "state Finished", "time none"));
 
 		root.entities.add(support);
 		root.entities.add(doneGroup);
@@ -126,22 +122,22 @@ public class DataLoader_Test {
 		microtaskProject.entities.add(featureTwo);
 		microtaskProject.entities.add(meetings);
 
-		microtaskGeneral.entities.add(new DataFile("list.txt", "InProgress", ""));
+		microtaskGeneral.entities.add(new DataFile("list.txt", "state InProgress", "time none"));
 
-		first.entities.add(new DataFile("list.txt", "InProgress", ""));
+		first.entities.add(new DataFile("list.txt", "state InProgress", "time none"));
 
-		releases.entities.add(new DataFile("group.txt", "InProgress", ""));
+		releases.entities.add(new DataFile("group.txt", "state InProgress", "time none"));
 
-		projectsFolder.entities.add(new DataFile("group.txt", "InProgress", ""));
+		projectsFolder.entities.add(new DataFile("group.txt", "state InProgress", "time none"));
 
-		microtaskProject.entities.add(new DataFile("group.txt", "InProgress", ""));
+		microtaskProject.entities.add(new DataFile("group.txt", "state InProgress", "time none"));
 		microtaskProject.entities.add(new DataFile("project.txt", "name micro-task", ""));
 		microtaskProject.entities.add(new DataFile("milestone.20.9.3.txt", "20.9.3", "feature one", "feature two", "task 1", "task 2"));
 
 		featureOne.entities.add(new DataFile("feature.txt", "one", ""));
-		featureOne.entities.add(new DataFile("list.txt", "InProgress", ""));
+		featureOne.entities.add(new DataFile("list.txt", "state InProgress", "time none", ""));
 		featureTwo.entities.add(new DataFile("feature.txt", "two", ""));
-		featureTwo.entities.add(new DataFile("list.txt", "InProgress", ""));
+		featureTwo.entities.add(new DataFile("list.txt", "state InProgress", "time none", ""));
 
 		featureTwo.entities.add(new DataFile("1.txt", "Test",
 				"Active",
@@ -325,13 +321,13 @@ public class DataLoader_Test {
 		assertEquals(TaskContainerState.Finished, tasks.getList(new ExistingListName(tasks, "done-group/done-list")).getState());
 	}
 
-	// TODO Remove this after we release the new version
+	// TODO Remove this after we release the new version, I think we can get rid of this now
 	@Test
-	void legacy_list_file_format() throws IOException {
+	void legacy_list_file_format_v1() throws IOException {
 		DataFolder folder = new DataFolder("legacy");
 		root.entities.add(folder);
 
-		folder.entities.add(new DataFile("list.txt", "", "", "InProgress"));
+		folder.entities.add(new DataFile("list.txt", "", "", "Finished"));
 
 		createMocks();
 
@@ -339,7 +335,26 @@ public class DataLoader_Test {
 
 		dataLoader.load();
 
-		assertEquals(TaskContainerState.InProgress, tasks.getList(new ExistingListName(tasks, "legacy")).getState());
+		assertEquals(TaskContainerState.Finished, tasks.getList(new ExistingListName(tasks, "legacy")).getState());
+	}
+
+	@Test
+	void legacy_list_file_format_v2() throws IOException {
+		DataFolder folder = new DataFolder("legacy");
+		root.entities.add(folder);
+
+		folder.entities.add(new DataFile("list.txt", "InProgress"));
+
+		createMocks();
+
+		DataLoader dataLoader = new DataLoader(tasks, reader, localSettings, projects, schedule, osInterface);
+
+		dataLoader.load();
+
+		TaskList list = tasks.getList(new ExistingListName(tasks, "legacy"));
+
+		assertEquals(TaskContainerState.InProgress, list.getState());
+		assertEquals("none", list.getTimeCategory());
 	}
 
 	@Test

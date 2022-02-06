@@ -18,7 +18,8 @@ public class TaskGroupFileWriter {
 
 	public void write() {
 		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/tasks" + group.getFullPath() + "group.txt"))) {
-			outputStream.println(group.getState());
+			outputStream.println("state " + group.getState());
+			outputStream.println("time " + group.getTimeCategory());
 			// TODO Notes
 		}
 		catch (IOException e) {

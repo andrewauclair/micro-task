@@ -29,7 +29,8 @@ public class Project_Files_Test extends ProjectBaseTestCase {
 		);
 
 		TestUtils.assertOutput(outputStreamGroup,
-				"InProgress",
+				"state InProgress",
+				"time none",
 				""
 		);
 	}

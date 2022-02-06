@@ -91,38 +91,45 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		assertOutput(
 				defaultList,
 
-				"InProgress",
-				"InProgress"
+				"state InProgress",
+				"time none",
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				oneList,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				fiveList,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				testGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				testTwoGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				testTwoThreeGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 	}
 

@@ -20,6 +20,7 @@ public final class TaskGroup implements TaskContainer {
 //	private final String feature;
 
 	private final TaskContainerState state;
+	private final String timeCategory;
 
 	private final List<TaskContainer> children = new ArrayList<>();
 
@@ -31,6 +32,7 @@ public final class TaskGroup implements TaskContainer {
 		parent = null;
 		parentPath = null;
 		state = TaskContainerState.InProgress;
+		timeCategory = "none";
 	}
 
 	// name is relative and the parent is the absolute path of the parent
@@ -42,6 +44,7 @@ public final class TaskGroup implements TaskContainer {
 //		this.feature = feature;
 
 		this.state = state;
+		timeCategory = "none";
 
 		if (parent != null) {
 			parentPath = parent.getFullPath();
@@ -115,9 +118,13 @@ public final class TaskGroup implements TaskContainer {
 		return state;
 	}
 
+	public String getTimeCategory() {
+		return timeCategory;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parentPath, children, state);
+		return Objects.hash(name, fullPath, parentPath, children, state, timeCategory);
 	}
 
 	@Override
@@ -135,13 +142,16 @@ public final class TaskGroup implements TaskContainer {
 				Objects.equals(children, taskGroup.children) &&
 //				Objects.equals(project, taskGroup.project) &&
 //				Objects.equals(feature, taskGroup.feature) &&
-				Objects.equals(state, taskGroup.state);
+				Objects.equals(state, taskGroup.state) &&
+				Objects.equals(timeCategory, taskGroup.timeCategory);
 	}
 
 	@Override
 	public String toString() {
 		return "TaskGroup{" +
 				"name='" + name + '\'' +
+				", state='" + state + '\'' +
+				", timeCategory='" + timeCategory + '\'' +
 				", fullPath='" + fullPath + '\'' +
 				", parent='" + (parent == null ? "" : parent.getFullPath()) + '\'' +
 				", children=" + children +
@@ -251,7 +261,7 @@ public final class TaskGroup implements TaskContainer {
 	public TaskList moveList(TaskList list, TaskGroup group, PrintStream output, OSInterface osInterface) {
 		removeChild(list);
 
-		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), TaskContainerState.InProgress);
+		TaskList newList = new TaskList(list.getName(), group, osInterface, list.getWriter(), TaskContainerState.InProgress, list.getTimeCategory());
 		list.getTasks().forEach(newList::addTask);
 
 		group.addChild(newList);

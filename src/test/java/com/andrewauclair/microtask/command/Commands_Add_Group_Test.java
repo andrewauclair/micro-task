@@ -38,7 +38,8 @@ class Commands_Add_Group_Test extends CommandsBaseTestCase {
 		inOrder.verify(osInterface).gitCommit("Created group '/test/one/two/three/'");
 
 		TestUtils.assertOutput(listStream,
-				"InProgress",
+				"state InProgress",
+				"time none",
 				""
 		);
 

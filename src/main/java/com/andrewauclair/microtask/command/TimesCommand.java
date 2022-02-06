@@ -31,6 +31,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_REVERSED;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.ANSI_BG_GREEN;
 import static java.util.stream.Collectors.toMap;
 
+// TODO add new 'times by-category' subcommand that deals with showing tasks grouped and counted by their time category (pulled from groups and lists) not going to store it per start/stop like originally
 @Command(name = "times", description = "Display times for tasks, lists or groups.")
 public final class TimesCommand implements Runnable {
 	private final Tasks tasks;
