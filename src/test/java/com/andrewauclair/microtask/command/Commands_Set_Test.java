@@ -26,7 +26,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.setCurrentList(existingList("/gr/gd/one"));
 		tasks.addTask("Test");
 
-		commands.execute(printStream, "set task 1 --due 1w");
+		commands.execute(printStream, "set task 1 --due p1w");
 
 		assertOutput(
 				"Set due date for task 1 - 'Test' to 01/07/1970 06:33:20 PM",
@@ -71,14 +71,14 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void set_list_due_date() {
+	void set_list_due_date__period() {
 		tasks.addGroup(newGroup("/gr/gd/"));
 		tasks.addList(newList("/gr/gd/one"), true);
 		tasks.setCurrentList(existingList("/gr/gd/one"));
 		tasks.addTask("Test");
 		tasks.addTask("Test");
 
-		commands.execute(printStream, "set list /gr/gd/one --due 1w");
+		commands.execute(printStream, "set list /gr/gd/one --due p1w");
 
 		assertOutput(
 				"Set due date for task 1 - 'Test' to 01/07/1970 06:50:00 PM",
@@ -88,7 +88,43 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
-	void set_group_due_date() {
+	void set_list_due_date__local_date() {
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.setCurrentList(existingList("/gr/gd/one"));
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		commands.execute(printStream, "set list /gr/gd/one --due 1971-02-15");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 2 - 'Test' to 02/15/1971 12:00:00 AM",
+				""
+		);
+	}
+
+	@Test
+	void set_list_due_date__month_day() {
+		osInterface.setTime(50000);
+
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.setCurrentList(existingList("/gr/gd/one"));
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		commands.execute(printStream, "set list /gr/gd/one --due --02-15");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 2 - 'Test' to 02/15/1970 12:00:00 AM",
+				""
+		);
+	}
+
+	@Test
+	void set_group_due_date__period() {
 		tasks.addGroup(newGroup("/gr/gd/"));
 		tasks.addList(newList("/gr/gd/one"), true);
 		tasks.addList(newList("/gr/gd/two"), true);
@@ -98,7 +134,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		tasks.addTask("Test", existingList("/gr/gd/two"));
 		tasks.addTask("Test", existingList("/gr/gd/two"));
 
-		commands.execute(printStream, "set group /gr/gd/ --due 1w");
+		commands.execute(printStream, "set group /gr/gd/ --due p1w");
 
 		assertOutput(
 				"Set due date for task 1 - 'Test' to 01/07/1970 07:23:20 PM",
@@ -108,11 +144,59 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void set_group_due_date__local_date() {
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.addList(newList("/gr/gd/two"), true);
+
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+
+		commands.execute(printStream, "set group /gr/gd/ --due 1971-02-15");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 2 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 3 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 4 - 'Test' to 02/15/1971 12:00:00 AM",
+				""
+		);
+	}
+
+	@Test
+	void set_group_due_date__month_day() {
+		osInterface.setTime(50000);
+
+		tasks.addGroup(newGroup("/gr/gd/"));
+		tasks.addList(newList("/gr/gd/one"), true);
+		tasks.addList(newList("/gr/gd/two"), true);
+
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/one"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+		tasks.addTask("Test", existingList("/gr/gd/two"));
+
+		commands.execute(printStream, "set group /gr/gd/ --due --02-15");
+
+		assertOutput(
+				"Set due date for task 1 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 2 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 3 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 4 - 'Test' to 02/15/1970 12:00:00 AM",
+				""
+		);
+	}
+
 	@Test
 	void set_list_due_today() {
 		tasks.addTask("Test");
 
 		osInterface.setTime(50000);
+		osInterface.setIncrementTime(false);
 
 		commands.execute(printStream, "set list /default --due-today");
 
@@ -127,7 +211,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set list [-h] ([--in-progress] [--due=<due>] [--due-today]) <list>",
+				"Usage:  set list [-h] ([--in-progress] [--due=<due> | --due-today]) <list>",
 						"      <list>          The list to set.",
 						"      --due=<due>     Set the due time for all tasks in the list.",
 						"      --due-today     Set the due time for all tasks in the list to today.",
@@ -141,7 +225,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group --help");
 
 		assertOutput(
-				"Usage:  set group [-h] ([--in-progress] [--due=<due>] [--due-today]) <group>",
+				"Usage:  set group [-h] ([--in-progress] [--due=<due> | --due-today]) <group>",
 						"      <group>         The group to set.",
 						"      --due=<due>     Set the due time for all tasks in the group.",
 						"      --due-today     Set the due time for all tasks in the group to today.",

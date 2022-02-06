@@ -1,6 +1,7 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.task;
 
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.Task;
@@ -39,7 +40,7 @@ public class SetTaskCommand implements Runnable {
 	private Boolean inactive;
 
 	@CommandLine.Option(names = {"--due"}, description = "Due time of the task.")
-	private String due;
+	private DueDate due;
 
 	@CommandLine.Option(names = {"--due-today"}, description = "Set due date of task as today.")
 	private Boolean dueToday;
@@ -70,18 +71,13 @@ public class SetTaskCommand implements Runnable {
 
 		if (dueToday != null) {
 			// set the due date to 0d, which is "today" in the Period.parse method
-			due = "0d";
+			due = new DueDate(osInterface, Period.parse("p0d"));
 		}
 
 		if (due != null) {
-			Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
-
 			ZoneId zoneId = osInterface.getZoneId();
 
-			LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
-
-			// I think it's dumb to need the "P" in front, but this parses what I want for now
-			long dueTime = baseDate.plus(Period.parse("P" + due)).atZone(zoneId).toEpochSecond();
+			long dueTime = due.dueTime();
 
 			tasks.setDueDate(id, dueTime);
 

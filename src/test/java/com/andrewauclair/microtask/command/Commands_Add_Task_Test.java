@@ -53,7 +53,9 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 
 	@Test
 	void add_task_with_2_week_due_time() {
-		commands.execute(printStream, "add task \"Test\" --due 2w");
+		osInterface.setIncrementTime(false);
+
+		commands.execute(printStream, "add task \"Test\" --due p2w");
 
 		assertOutput(
 				"Added task 1 - 'Test'",
@@ -73,6 +75,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 	@Test
 	void add_task_with_due_date_of_today() {
 		osInterface.setTime(50000);
+		osInterface.setIncrementTime(false);
 
 		commands.execute(printStream, "add task \"Test\" --due-today");
 

@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.command.list;
 
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.ArgGroup;
@@ -10,10 +11,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 @Command(name = "list")
@@ -34,11 +32,16 @@ public class SetListCommand implements Runnable {
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
 		private boolean in_progress;
 
-		@Option(names = {"--due"}, description = "Set the due time for all tasks in the list.")
-		private String due;
+		@ArgGroup()
+		DueArgs dueArgs;
 
-		@Option(names = {"--due-today"}, description = "Set the due time for all tasks in the list to today.")
-		private Boolean dueToday;
+		private static class DueArgs {
+			@Option(names = {"--due"}, description = "Set the due time for all tasks in the list.")
+			private DueDate due;
+
+			@Option(names = {"--due-today"}, description = "Set the due time for all tasks in the list to today.")
+			private Boolean due_today;
+		}
 	}
 
 	public SetListCommand(Tasks tasks, OSInterface osInterface) {
@@ -48,9 +51,7 @@ public class SetListCommand implements Runnable {
 
 	@Override
 	public void run() {
-		if (args.dueToday != null) {
-			args.due = "0d";
-		}
+		checkDueToday();
 
 		if (args.in_progress) {
 			TaskList list = tasks.getListByName(this.list);
@@ -62,15 +63,10 @@ public class SetListCommand implements Runnable {
 				System.out.println("List '" + list.getFullPath() + "' must be finished first");
 			}
 		}
-		else if (args.due != null) {
-			Instant instant = Instant.ofEpochSecond(osInterface.currentSeconds());
-
+		else if (args.dueArgs.due != null) {
 			ZoneId zoneId = osInterface.getZoneId();
 
-			LocalDateTime baseDate = LocalDateTime.ofInstant(instant, zoneId);
-
-			// I think it's dumb to need the "P" in front, but this parses what I want for now
-			long dueTime = baseDate.plus(Period.parse("P" + args.due)).atZone(zoneId).toEpochSecond();
+			long dueTime = args.dueArgs.due.dueTime();
 
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
@@ -87,5 +83,11 @@ public class SetListCommand implements Runnable {
 		}
 
 		System.out.println();
+	}
+
+	private void checkDueToday() {
+		if (args.dueArgs != null && args.dueArgs.due_today != null) {
+			args.dueArgs.due = new DueDate(osInterface, Period.parse("p0d"));
+		}
 	}
 }

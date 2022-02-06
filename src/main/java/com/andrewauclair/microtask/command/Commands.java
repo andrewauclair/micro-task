@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.group.AddGroupCommand;
@@ -20,7 +21,6 @@ import com.andrewauclair.microtask.command.task.StartTaskCommand;
 import com.andrewauclair.microtask.os.*;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.project.ExistingProject;
-import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
@@ -355,6 +355,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
+		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));
 
 		return cmdLine;
 	}
@@ -401,6 +402,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
+		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));
 
 		return cmdLine;
 	}
