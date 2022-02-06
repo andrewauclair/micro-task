@@ -86,7 +86,7 @@ public class SetDueTasksCommand implements Runnable {
 
 	private String getDueTimeString(long dueTime, ZoneId zoneId) {
 		String eodStr;
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
 		return eodStr;
 	}

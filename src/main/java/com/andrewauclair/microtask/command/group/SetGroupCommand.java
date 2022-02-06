@@ -74,7 +74,7 @@ public class SetGroupCommand implements Runnable {
 
 			long dueTime = args.dueArgs.due.dueTime();
 
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
 
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());

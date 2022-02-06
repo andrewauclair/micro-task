@@ -56,12 +56,6 @@ final class InfoCommand implements Runnable {
 
 		int count = 1;
 
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 		for (TaskTimes startStopTime : task.startStopTimes) {
 			System.out.print(Instant.ofEpochSecond(startStopTime.start).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
 			System.out.print(" - ");
@@ -92,7 +86,8 @@ final class InfoCommand implements Runnable {
 		System.out.println();
 
 		if (task.state != TaskState.Finished) {
-			System.out.println("Due: " + Instant.ofEpochSecond(task.dueTime).atZone(osInterface.getZoneId()).format(dateTimeFormatter));
+			DateTimeFormatter dueDateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			System.out.println("Due: " + Instant.ofEpochSecond(task.dueTime).atZone(osInterface.getZoneId()).format(dueDateTimeFormatter));
 			System.out.println();
 		}
 	}

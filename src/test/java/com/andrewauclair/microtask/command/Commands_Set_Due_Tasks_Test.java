@@ -21,15 +21,15 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set due-tasks --due 2w");
 
-		Mockito.verify(osInterface).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM");
-		Mockito.verify(osInterface).gitCommit("Set due date for task 3 - 'Test 3' to 01/14/1970 07:23:20 PM");
+		Mockito.verify(osInterface).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970");
+		Mockito.verify(osInterface).gitCommit("Set due date for task 3 - 'Test 3' to 01/14/1970");
 
 		assertEquals(1214600, tasks.getTask(existingID(1)).dueTime);
 		assertEquals(1214600, tasks.getTask(existingID(3)).dueTime);
 
 		assertOutput(
-				"Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM",
-				"Set due date for task 3 - 'Test 3' to 01/14/1970 07:23:20 PM",
+				"Set due date for task 1 - 'Test 1' to 01/14/1970",
+				"Set due date for task 3 - 'Test 3' to 01/14/1970",
 				""
 		);
 	}
@@ -49,14 +49,14 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set due-tasks --due 2w --interactive");
 
-		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM");
+		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970");
 
 		assertEquals(1214600, tasks.getTask(existingID(1)).dueTime);
 		assertEquals(0, tasks.getTask(existingID(3)).dueTime);
 
 		assertOutput(
 				"1 - 'Test 1'",
-				"Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM",
+				"Set due date for task 1 - 'Test 1' to 01/14/1970",
 				"3 - 'Test 3'",
 				""
 		);
@@ -81,17 +81,17 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set due-tasks --interactive");
 
-		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM");
-		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 3 - 'Test 3' to 01/07/1970 07:23:20 PM");
+		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970");
+		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 3 - 'Test 3' to 01/07/1970");
 
 		assertEquals(1214600, tasks.getTask(existingID(1)).dueTime);
 		assertEquals(609800, tasks.getTask(existingID(3)).dueTime);
 
 		assertOutput(
 				"1 - 'Test 1'",
-				"Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM",
+				"Set due date for task 1 - 'Test 1' to 01/14/1970",
 				"3 - 'Test 3'",
-				"Set due date for task 3 - 'Test 3' to 01/07/1970 07:23:20 PM",
+				"Set due date for task 3 - 'Test 3' to 01/07/1970",
 				"4 - 'Test 4'",
 				""
 		);

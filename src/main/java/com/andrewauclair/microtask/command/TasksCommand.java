@@ -302,7 +302,7 @@ public class TasksCommand implements Runnable {
 		}
 
 		if (!display_schedule) {
-			if (dueTasks.size() > 0 && due_args == null) {// && due_args == null || (due_args != null && due_args.due_before == null)) {
+			if (dueTasks.size() > 0 && due_args == null) {
 				table.addRow(true, "Due Tasks");
 			}
 

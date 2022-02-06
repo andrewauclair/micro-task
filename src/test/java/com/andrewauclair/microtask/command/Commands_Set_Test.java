@@ -29,7 +29,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set task 1 --due p1w");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/07/1970 06:33:20 PM",
+				"Set due date for task 1 - 'Test' to 01/07/1970",
 				""
 		);
 	}
@@ -43,7 +43,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set task 1 --due-today");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/01/1970 07:53:20 AM",
+				"Set due date for task 1 - 'Test' to 01/01/1970",
 				""
 		);
 	}
@@ -81,8 +81,8 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list /gr/gd/one --due p1w");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/07/1970 06:50:00 PM",
-				"Set due date for task 2 - 'Test' to 01/07/1970 06:50:00 PM",
+				"Set due date for task 1 - 'Test' to 01/07/1970",
+				"Set due date for task 2 - 'Test' to 01/07/1970",
 				""
 		);
 	}
@@ -98,8 +98,8 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list /gr/gd/one --due 1971-02-15");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 02/15/1971 12:00:00 AM",
-				"Set due date for task 2 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 1 - 'Test' to 02/15/1971",
+				"Set due date for task 2 - 'Test' to 02/15/1971",
 				""
 		);
 	}
@@ -117,8 +117,8 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list /gr/gd/one --due --02-15");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 02/15/1970 12:00:00 AM",
-				"Set due date for task 2 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 1 - 'Test' to 02/15/1970",
+				"Set due date for task 2 - 'Test' to 02/15/1970",
 				""
 		);
 	}
@@ -137,10 +137,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group /gr/gd/ --due p1w");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/07/1970 07:23:20 PM",
-				"Set due date for task 2 - 'Test' to 01/07/1970 07:23:20 PM",
-				"Set due date for task 3 - 'Test' to 01/07/1970 07:23:20 PM",
-				"Set due date for task 4 - 'Test' to 01/07/1970 07:23:20 PM",
+				"Set due date for task 1 - 'Test' to 01/07/1970",
+				"Set due date for task 2 - 'Test' to 01/07/1970",
+				"Set due date for task 3 - 'Test' to 01/07/1970",
+				"Set due date for task 4 - 'Test' to 01/07/1970",
 				""
 		);
 	}
@@ -159,10 +159,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group /gr/gd/ --due 1971-02-15");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 02/15/1971 12:00:00 AM",
-				"Set due date for task 2 - 'Test' to 02/15/1971 12:00:00 AM",
-				"Set due date for task 3 - 'Test' to 02/15/1971 12:00:00 AM",
-				"Set due date for task 4 - 'Test' to 02/15/1971 12:00:00 AM",
+				"Set due date for task 1 - 'Test' to 02/15/1971",
+				"Set due date for task 2 - 'Test' to 02/15/1971",
+				"Set due date for task 3 - 'Test' to 02/15/1971",
+				"Set due date for task 4 - 'Test' to 02/15/1971",
 				""
 		);
 	}
@@ -183,10 +183,10 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set group /gr/gd/ --due --02-15");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 02/15/1970 12:00:00 AM",
-				"Set due date for task 2 - 'Test' to 02/15/1970 12:00:00 AM",
-				"Set due date for task 3 - 'Test' to 02/15/1970 12:00:00 AM",
-				"Set due date for task 4 - 'Test' to 02/15/1970 12:00:00 AM",
+				"Set due date for task 1 - 'Test' to 02/15/1970",
+				"Set due date for task 2 - 'Test' to 02/15/1970",
+				"Set due date for task 3 - 'Test' to 02/15/1970",
+				"Set due date for task 4 - 'Test' to 02/15/1970",
 				""
 		);
 	}
@@ -201,7 +201,7 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list /default --due-today");
 
 		assertOutput(
-				"Set due date for task 1 - 'Test' to 01/01/1970 07:53:20 AM",
+				"Set due date for task 1 - 'Test' to 01/01/1970",
 				""
 		);
 	}
