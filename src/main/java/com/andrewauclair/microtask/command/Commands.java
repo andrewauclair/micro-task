@@ -3,24 +3,14 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.command.group.AddGroupCommand;
-import com.andrewauclair.microtask.command.group.RenameGroupCommand;
-import com.andrewauclair.microtask.command.group.SetGroupCommand;
-import com.andrewauclair.microtask.command.group.StartGroupCommand;
-import com.andrewauclair.microtask.command.list.AddListCommand;
-import com.andrewauclair.microtask.command.list.RenameListCommand;
-import com.andrewauclair.microtask.command.list.SetListCommand;
-import com.andrewauclair.microtask.command.list.StartListCommand;
+import com.andrewauclair.microtask.command.group.*;
+import com.andrewauclair.microtask.command.list.*;
 import com.andrewauclair.microtask.command.project.*;
 import com.andrewauclair.microtask.command.tags.StartTagsCommand;
-import com.andrewauclair.microtask.command.task.AddTaskCommand;
-import com.andrewauclair.microtask.command.task.RenameTaskCommand;
-import com.andrewauclair.microtask.command.task.SetTaskCommand;
-import com.andrewauclair.microtask.command.task.StartTaskCommand;
+import com.andrewauclair.microtask.command.task.*;
 import com.andrewauclair.microtask.os.*;
 import com.andrewauclair.microtask.picocli.*;
 import com.andrewauclair.microtask.project.ExistingProject;
-import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
@@ -87,7 +77,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("version", new VersionCommand(osInterface));
 //		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
-		commands.put("move", new MoveCommand(tasks, osInterface));
+//		commands.put("move", new MoveCommand(tasks, osInterface));
 //		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
 //		commands.put("set-list", new SetCommand.SetListCommand(tasks));
 //		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
@@ -134,6 +124,14 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 								.addSubcommand(new StartTagsCommand(tasks))
 				);
 				break;
+			case "move":
+				cmdLine.addSubcommand("move",
+						new CommandLine(new MoveCommand(), factory)
+								.addSubcommand(new MoveTaskCommand(tasks, osInterface))
+								.addSubcommand(new MoveListCommand(tasks))
+								.addSubcommand(new MoveGroupCommand(tasks))
+				);
+				break;
 			case "update":
 				cmdLine.addSubcommand("update",
 						new CommandLine(new UpdateCommand(tasks, this, localSettings, osInterface), factory)
@@ -147,6 +145,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 								.addSubcommand(new SetTaskCommand(tasks, osInterface))
 								.addSubcommand(new SetListCommand(tasks, osInterface))
 								.addSubcommand(new SetGroupCommand(tasks, osInterface))
+								.addSubcommand(new SetDueTasksCommand(tasks, osInterface))
 				);
 				break;
 			case "rename":
@@ -216,8 +215,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new UpdateCommand(tasks, this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
-			case "move":
-				return new MoveCommand(tasks, osInterface);
+//			case "move":
+//				return new MoveCommand(tasks, osInterface);
 //			case "set-task":
 //				return new SetCommand.SetTaskCommand(tasks);
 //			case "set-list":
@@ -320,6 +319,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		createCommand(cmdLine, "rename");
 		createCommand(cmdLine, "add");
 		createCommand(cmdLine, "start");
+		createCommand(cmdLine, "move");
 
 //		aliases.keySet().forEach(name -> {
 //
@@ -375,7 +375,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("start")) {
+		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("move") || command.equals("start")) {
 			createCommand(cmdLine, command);
 		}
 		else {

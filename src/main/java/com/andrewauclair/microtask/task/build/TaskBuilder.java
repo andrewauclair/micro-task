@@ -10,13 +10,13 @@ import java.util.List;
 
 public final class TaskBuilder {
 	private final long id;
-	private String task;
-	private TaskState state;
-	private long addTime;
+	private String task = "";
+	private TaskState state = TaskState.Inactive;
+	private long addTime = 0;
 	private long finishTime = TaskTimes.TIME_NOT_SET;
 	private final List<TaskTimes> startStopTimes = new ArrayList<>();
-	private boolean recurring;
-	private long dueTime;
+	private boolean recurring = false;
+	private long dueTime = 0;
 	private final List<String> tags = new ArrayList<>();
 
 	public TaskBuilder(long id) {

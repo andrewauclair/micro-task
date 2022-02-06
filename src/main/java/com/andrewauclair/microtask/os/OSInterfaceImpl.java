@@ -24,10 +24,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
@@ -391,7 +388,7 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public boolean promptChoice(String prompt) {
 		try {
-			System.out.print(prompt + " [y/n] ");
+			System.out.print(prompt + "? [y/n] ");
 			char choice = Character.toLowerCase((char) terminal.reader().read());
 			System.out.println(choice);
 			return choice == 'y';
@@ -399,5 +396,14 @@ public class OSInterfaceImpl implements OSInterface {
 		catch (IOException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public String promptForString(String prompt) {
+		System.out.print(prompt + ": ");
+
+		Scanner scanner = new Scanner(System.in);
+
+		return scanner.nextLine();
 	}
 }
