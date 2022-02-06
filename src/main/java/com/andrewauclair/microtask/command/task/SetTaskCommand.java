@@ -88,6 +88,7 @@ public class SetTaskCommand implements Runnable {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a");
 			String eodStr = Instant.ofEpochSecond(dueTime).atZone(zoneId).format(dateTimeFormatter);
 
+			// TODO This isn't covered by a test
 			osInterface.gitCommit("Set due date for task " + tasks.getTask(id).description() + " to " + eodStr);
 
 			System.out.println("Set due date for task " + tasks.getTask(id).description() + " to " + eodStr);

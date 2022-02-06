@@ -46,7 +46,7 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"ch", "finish", "list", "move", "times"})
+	@ValueSource(strings = {"ch", "finish", "list", "times"})
 	void command_list_option_has_list_completer(String command) {
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
@@ -59,6 +59,16 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	@Test
 	void add_list_parameter_has_list_completer() {
 		CommandLine cmd = commands.buildCommandLine("add").getSubcommands().get("add").getSubcommands().get("list");
+
+		CommandLine.Model.PositionalParamSpec positionalParamSpec = cmd.getCommandSpec().positionalParameters().get(0);
+
+		assertNotNull(positionalParamSpec.completionCandidates());
+		assertEquals("/default", positionalParamSpec.completionCandidates().iterator().next());
+	}
+
+	@Test
+	void move_list_parameter_has_list_completer() {
+		CommandLine cmd = commands.buildCommandLine("move").getSubcommands().get("move").getSubcommands().get("list");
 
 		CommandLine.Model.PositionalParamSpec positionalParamSpec = cmd.getCommandSpec().positionalParameters().get(0);
 
@@ -90,7 +100,7 @@ class ListCompleterTest extends CommandsBaseTestCase {
 	void move_command_dest_list_option_has_list_completer() {
 		CommandLine cmd = commands.buildCommandLineWithAllCommands();
 
-		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getCommandSpec();
+		CommandLine.Model.CommandSpec spec = cmd.getSubcommands().get("move").getSubcommands().get("task").getCommandSpec();
 
 		assertNotNull(spec.optionsMap().get("--dest-list").completionCandidates());
 		assertEquals("/default", spec.optionsMap().get("--dest-list").completionCandidates().iterator().next());

@@ -54,6 +54,8 @@ public interface OSInterface {
 
 	boolean promptChoice(String prompt);
 
+	String promptForString(String prompt);
+
 	final class TaskFileInfo {
 		final String name;
 		final String path;

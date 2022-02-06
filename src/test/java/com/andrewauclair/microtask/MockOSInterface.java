@@ -139,4 +139,9 @@ public class MockOSInterface implements OSInterface {
 	public boolean promptChoice(String prompt) {
 		return false;
 	}
+
+	@Override
+	public String promptForString(String prompt) {
+		return "";
+	}
 }
