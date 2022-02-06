@@ -49,8 +49,7 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set due-tasks --due 2w --interactive");
 
-		Mockito.verify(osInterface).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM");
-		Mockito.verifyNoMoreInteractions(osInterface);
+		Mockito.verify(osInterface, times(1)).gitCommit("Set due date for task 1 - 'Test 1' to 01/14/1970 07:23:20 PM");
 
 		assertEquals(1214600, tasks.getTask(existingID(1)).dueTime);
 		assertEquals(0, tasks.getTask(existingID(3)).dueTime);
