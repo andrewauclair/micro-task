@@ -26,6 +26,7 @@ build-tag:
     - ./create-version.sh
     - ./gradlew jar
   artifacts:
+    expire_in: never
     paths:
       - build/libs/
 

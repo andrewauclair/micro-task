@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.os;
 
 import com.andrewauclair.microtask.ConsoleTable;
+import com.andrewauclair.microtask.TaskException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -20,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("CanBeFinal")
@@ -182,9 +185,15 @@ public class GitLabReleases {
 		String zip = release.versionName + ".zip";
 
 		if (downloadFile(proxy, artifactURL, zip)) {
-			unzip(zip, "build/libs/micro-task.jar", "micro-task.jar");
+			extractFolder(zip, ".");
 
 			Files.delete(new File(zip).toPath());
+
+			// now that we downloaded the new one without issues we can replace it
+			Files.move(new File("build/libs/micro-task.jar").toPath(), new File("micro-task.jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+			Files.delete(new File("build/libs").toPath());
+			Files.delete(new File("build").toPath());
 
 			return true;
 		}
@@ -203,7 +212,7 @@ public class GitLabReleases {
 				return new URL(artifactsBaseURL + jsonObject.getInt("id") + "/artifacts");
 			}
 		}
-		throw new RuntimeException("No artifacts found for release '" + release.versionName + "'");
+		throw new TaskException("No artifacts found for release '" + release.versionName + "'");
 	}
 
 	private boolean downloadFile(Proxy proxy, URL URL, String fileName) throws IOException {
@@ -286,21 +295,94 @@ public class GitLabReleases {
 	}
 
 	public void unzip(String zipFilePath, String file, String dest) throws IOException {
-		try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath))) {
-			ZipEntry entry = zipIn.getNextEntry();
+		ZipFile zipFile = new ZipFile(zipFilePath);
 
-			while (entry != null) {
-				if (entry.getName().equals(file)) {
-					extractFile(zipIn, dest);
-				}
-				entry = zipIn.getNextEntry();
+		Enumeration zipFileEntries = zipFile.entries();
+
+		// Process each entry
+		while (zipFileEntries.hasMoreElements()) {
+			// grab a zip file entry
+			ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+
+			if (entry.getName().equals(file)) {
+				System.out.println("Unzip " + new File(entry.getName()).getAbsolutePath() + " to " + new File(file).getAbsolutePath());
+				BufferedInputStream is = new BufferedInputStream(zipFile.getInputStream(entry));
+				extractFile(is, dest);
+				is.close();
 			}
 		}
+
+		zipFile.close();
 	}
 
-	private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-		try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(filePath))) {
-			output.write(zipIn.readAllBytes());
+	private void extractFile(BufferedInputStream zipIn, String filePath) throws IOException {
+		byte[] buffer = new byte[1024];
+		int count;
+
+		FileOutputStream fos = new FileOutputStream(filePath);
+		while ((count = zipIn.read(buffer)) > 0) {
+			fos.write(buffer, 0, count);
 		}
+		fos.close();
+	}
+
+	private static void extractFolder(String zipFile,String extractFolder)
+	{
+		try (ZipFile zip = new ZipFile(zipFile))
+		{
+			int BUFFER = 2048;
+//			File file = new File(zipFile);
+//
+//			ZipFile zip = new ZipFile(file);
+			String newPath = extractFolder;
+
+			new File(newPath).mkdir();
+			Enumeration zipFileEntries = zip.entries();
+
+			// Process each entry
+			while (zipFileEntries.hasMoreElements())
+			{
+				// grab a zip file entry
+				ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+				String currentEntry = entry.getName();
+
+				File destFile = new File(newPath, currentEntry);
+				//destFile = new File(newPath, destFile.getName());
+				File destinationParent = destFile.getParentFile();
+
+				// create the parent directory structure if needed
+				destinationParent.mkdirs();
+
+				if (!entry.isDirectory())
+				{
+					BufferedInputStream is = new BufferedInputStream(zip
+							.getInputStream(entry));
+					int currentByte;
+					// establish buffer for writing file
+					byte data[] = new byte[BUFFER];
+
+					// write the current file to disk
+					FileOutputStream fos = new FileOutputStream(destFile);
+					BufferedOutputStream dest = new BufferedOutputStream(fos,
+							BUFFER);
+
+					// read and write until last byte is encountered
+					while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+						dest.write(data, 0, currentByte);
+					}
+					dest.flush();
+					dest.close();
+					is.close();
+				}
+
+
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+//			Log("ERROR: "+e.getMessage());
+		}
+
 	}
 }

@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.ConsoleTable;
+import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.os.OSInterface;
 import picocli.CommandLine.ArgGroup;
@@ -215,8 +216,11 @@ public class UpdateAppCommand implements Runnable {
 				System.out.println("Version '" + version.versionName + "' not found on GitLab");
 			}
 		}
+		catch (TaskException e) {
+			System.out.println(e.getMessage());
+		}
 		catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 			System.out.println("Failed to update to version '" + version.versionName + "'");
 		}
 
