@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.function.Function;
 
 public interface OSInterface {
 	void gitCommit(String message);
@@ -54,7 +55,7 @@ public interface OSInterface {
 
 	boolean promptChoice(String prompt);
 
-	String promptForString(String prompt);
+	String promptForString(String prompt, Function<String, Boolean> isValid);
 
 	final class TaskFileInfo {
 		final String name;

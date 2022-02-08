@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class MockOSInterface implements OSInterface {
 	private long time = 1000;
@@ -141,7 +142,7 @@ public class MockOSInterface implements OSInterface {
 	}
 
 	@Override
-	public String promptForString(String prompt) {
+	public String promptForString(String prompt, Function<String, Boolean> isValid) {
 		return "";
 	}
 }
