@@ -22,11 +22,16 @@ public class SetDueTasksCommand implements Runnable {
 	@CommandLine.Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 
-	@CommandLine.Option(names = {"--due"}, description = "Set the due time for all due tasks.")
-	private String due;
+	@CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+	private Args args;
 
-	@CommandLine.Option(names = {"--interactive"}, description = "Choose which tasks the new due time is assigned to. If there is no --due argument, then a custom time can be picked per task.")
-	private boolean interactive;
+	private static class Args {
+		@CommandLine.Option(names = {"--due"}, description = "Set the due time for all due tasks.")
+		private String due;
+
+		@CommandLine.Option(names = {"--interactive"}, description = "Choose which tasks the new due time is assigned to. If there is no --due argument, then a custom time can be picked per task.")
+		private boolean interactive;
+	}
 
 	public SetDueTasksCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -45,8 +50,8 @@ public class SetDueTasksCommand implements Runnable {
 		long dueTime = 0;
 		String dueTimeStr = "";
 
-		if (due != null) {
-			dueTime = getDueTime(instant, zoneId, due);
+		if (args.due != null) {
+			dueTime = getDueTime(instant, zoneId, args.due);
 			dueTimeStr = getDueTimeString(dueTime, zoneId);
 		}
 
@@ -55,17 +60,25 @@ public class SetDueTasksCommand implements Runnable {
 
 			boolean set = true;
 
-			if (interactive) {
+			if (args.interactive) {
 				System.out.println(tasks.getTask(id).description());
 
-				if (due != null) {
-					set = osInterface.promptChoice("set task " + id.get() + " due in " + due);
+				if (args.due != null) {
+					set = osInterface.promptChoice("set task " + id.get() + " due in " + args.due);
 				}
 				else {
 					set = osInterface.promptChoice("change due time for task " + id.get());
 
 					if (set) {
-						String due = osInterface.promptForString("task " + id.get() + ", due in: ");
+						String due = osInterface.promptForString("task " + id.get() + ", due in", str -> {
+							try {
+								Period.parse("P" + str);
+								return true;
+							}
+							catch (Exception e) {
+								return false;
+							}
+						});
 
 						dueTime = getDueTime(instant, zoneId, due);
 						dueTimeStr = getDueTimeString(dueTime, zoneId);

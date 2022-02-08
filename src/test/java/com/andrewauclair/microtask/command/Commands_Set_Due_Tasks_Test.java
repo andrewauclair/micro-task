@@ -74,9 +74,9 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 		tasks.setDueDate(existingID(4), 0);
 
 		Mockito.when(osInterface.promptChoice("change due time for task 1")).thenReturn(true);
-		Mockito.when(osInterface.promptForString("task 1, due in: ")).thenReturn("2w");
+		Mockito.when(osInterface.promptForString(Mockito.eq("task 1, due in"), Mockito.any())).thenReturn("2w");
 		Mockito.when(osInterface.promptChoice("change due time for task 3")).thenReturn(true);
-		Mockito.when(osInterface.promptForString("task 3, due in: ")).thenReturn("1w");
+		Mockito.when(osInterface.promptForString(Mockito.eq("task 3, due in"), Mockito.any())).thenReturn("1w");
 		Mockito.when(osInterface.promptChoice("change due time for task 4")).thenReturn(false);
 
 		commands.execute(printStream, "set due-tasks --interactive");
@@ -93,6 +93,16 @@ class Commands_Set_Due_Tasks_Test extends CommandsBaseTestCase {
 				"3 - 'Test 3'",
 				"Set due date for task 3 - 'Test 3' to 01/07/1970",
 				"4 - 'Test 4'",
+				""
+		);
+	}
+
+	@Test
+	void set_due_tasks_requires_an_argument() {
+		commands.execute(printStream, "set due-tasks");
+
+		assertOutput(
+				"Error: Missing required argument(s): ([--due=<due>] [--interactive])",
 				""
 		);
 	}
