@@ -34,7 +34,7 @@ public class GitLabReleases {
 
 	private static final Map<BigInteger, X509Certificate> trustedCertificates = new HashMap<>();
 
-	public GitLabReleases() throws Exception {
+	public GitLabReleases(OSInterface osInterface) throws Exception {
 		TrustManagerFactory tmf = TrustManagerFactory
 				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 
@@ -82,23 +82,16 @@ public class GitLabReleases {
 					System.out.println(cert.getSigAlgName());
 					System.out.println(cert.getType());
 					System.out.println();
-					System.out.print("Do you trust this certificate? [Y/n] ");
+					System.out.print("Do you trust this certificate? [y/n] ");
 
-					try {
-						char ch = (char) System.in.read();
+					boolean trusted = osInterface.promptChoice("Do you trust this certificate");
 
-						System.out.println(ch);
-
-						if (ch == 'n' || ch == 'N') {
-							throw e;
-						}
-						else {
-							// trust the certificate for the rest of the run
-							trustedCertificates.put(cert.getSerialNumber(), cert);
-						}
+					if (trusted) {
+						// trust the certificate for the rest of the run
+						trustedCertificates.put(cert.getSerialNumber(), cert);
 					}
-					catch (IOException e1) {
-						e.printStackTrace();
+					else {
+						throw e;
 					}
 				}
 			}
