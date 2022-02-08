@@ -172,7 +172,7 @@ public class StatusConsole {
 
 		schedule = new Schedule(tasks, osInterface);
 
-		commands = new Commands(tasks, projects, schedule, new GitLabReleases(), localSettings, osInterface);
+		commands = new Commands(tasks, projects, schedule, new GitLabReleases(osInterface), localSettings, osInterface);
 
 		loader = new DataLoader(tasks, new TaskReader(osInterface), localSettings, projects, schedule, osInterface);
 

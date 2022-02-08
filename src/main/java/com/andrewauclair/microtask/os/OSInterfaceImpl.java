@@ -25,6 +25,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
 
 // Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
@@ -388,9 +389,13 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public boolean promptChoice(String prompt) {
 		try {
-			System.out.print(prompt + "? [y/n] ");
-			char choice = Character.toLowerCase((char) terminal.reader().read());
-			System.out.println(choice);
+			char choice;
+			do {
+				System.out.print(prompt + "? [y/n] ");
+				choice = Character.toLowerCase((char) terminal.reader().read());
+				System.out.println(choice);
+			} while (choice != 'n' && choice != 'y');
+
 			return choice == 'y';
 		}
 		catch (IOException e) {
@@ -399,11 +404,39 @@ public class OSInterfaceImpl implements OSInterface {
 	}
 
 	@Override
-	public String promptForString(String prompt) {
-		System.out.print(prompt + ": ");
+	public String promptForString(String prompt, Function<String, Boolean> isValid) {
+		String str = "";
 
-		Scanner scanner = new Scanner(System.in);
+		do {
+			System.out.print(prompt + ": ");
 
-		return scanner.nextLine();
+			char ch;
+
+			try {
+				do {
+					ch = (char) terminal.reader().read();
+
+					if (ch != '\n' && ch != '\r') {
+						str += ch;
+					}
+
+					System.out.print(ch);
+				} while (ch != '\n' && ch != '\r');
+
+				if (ch == '\r') {
+					System.out.println();
+				}
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			if (!isValid.apply(str)) {
+				System.out.println("Invalid value");
+				str = "";
+			}
+		} while (!isValid.apply(str));
+
+		return str;
 	}
 }
