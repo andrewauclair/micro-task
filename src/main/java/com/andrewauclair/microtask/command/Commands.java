@@ -90,7 +90,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("info", new InfoCommand(tasks, projects, osInterface));
 		commands.put("focus", new FocusCommand(osInterface));
 		commands.put("status", new StatusCommand(this, osInterface));
-		commands.put("project", new ProjectCommand(tasks, projects, localSettings, osInterface));
+//		commands.put("project", new ProjectCommand(tasks, projects, localSettings, osInterface));
 		commands.put("group", new GroupCommand(tasks));
 		commands.put("tasks", new TasksCommand(tasks, projects, schedule, osInterface));
 		commands.put("milestone", new MilestoneCommand(projects));
@@ -155,6 +155,12 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 								.addSubcommand(new RenameTaskCommand(tasks))
 								.addSubcommand(new RenameListCommand(tasks))
 								.addSubcommand(new RenameGroupCommand(tasks))
+				);
+				break;
+			case "project":
+				cmdLine.addSubcommand("project",
+						new CommandLine(new ProjectCommand(tasks, projects, localSettings, osInterface))
+								.addSubcommand("template", new ProjectTemplateCommand(osInterface))
 				);
 				break;
 		}
@@ -240,8 +246,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new FocusCommand(osInterface);
 			case "status":
 				return new StatusCommand(this, osInterface);
-			case "project":
-				return new ProjectCommand(tasks, projects, localSettings, osInterface);
+//			case "project":
+//				return new ProjectCommand(tasks, projects, localSettings, osInterface);
 			case "datagen":
 				return new RandomDataGenerator(tasks);
 			case "group":
@@ -321,6 +327,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		createCommand(cmdLine, "add");
 		createCommand(cmdLine, "start");
 		createCommand(cmdLine, "move");
+		createCommand(cmdLine, "project");
 
 //		aliases.keySet().forEach(name -> {
 //
@@ -377,7 +384,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("move") || command.equals("start")) {
+		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("move") || command.equals("start") || command.equals("project")) {
 			createCommand(cmdLine, command);
 		}
 		else {

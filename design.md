@@ -206,7 +206,7 @@ A project is a special form of group. Project folders will be defined the same a
 | `name <text>` | Name of the project. This is more descriptive than the short name used for the file name. |
 | `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 
-##### 4.5 Feature
+##### 4.4.1 Feature
 
 A feature is a special version of either a group or list folder. A feature starts out as a list, but can be converted to a group
 		if a sub-feature is added. A special feature.txt file is added to the group or list folder to give further details on the feature
@@ -222,7 +222,7 @@ from an existing group then all groups and lists in the project group will be tu
 | `name <text>` | Name of the feature. This is more descriptive than the short name used for the file name. |
 | `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 
-##### 4.6 Milestone
+##### 4.4.2 Milestone
 
 Milestones are stored in a special milestones folder in the project group folder. For example /projects/<project>/milestones. This
 		milestones folder is neither a list, nor a group. Instead the milestones folder is special and milestones is a reserved keyword that
@@ -238,6 +238,23 @@ Milestones are stored in a special milestones folder in the project group folder
 | `due <date>` | The due date for this milestone. <br>This is optional, if not set by the user then the line will read `due none`. |
 | `note <time> <text>` | Any number of notes related to the milestone. |
 
+##### 4.4.3 Templates
+
+Project templates are used to define sets of groups, lists and tasks that can be used to generate a new project. This allows for
+creating new projects with different setups quickly. No two projects are alike, but a lot of projects can fall into general setups and
+these templates will provide the ability to control that variability.
+
+Project templates are stored in a `templates.txt` file.
+
+<b>Format (line by line):</b>
+
+| Line | Description |
+| ---- | ----------- |
+| `template <name>` | Start of a new template, with name. |
+| `group <name>` | Start of a group in the template. Can repeat any number of times. |
+| `list <name>` | Start of a list in the template. Can repeat with this line and any number of task lines. |
+| `task <name> <recurring>` | Repeating line per task on the list. |
+
 ##### 4.7 Archive
 
 With the data defined above, it would be easy to write a ton of folders and files to the file system. Only the active data
@@ -248,6 +265,7 @@ interaction from the user. Below is the format for an archive file.
 File name `project-<id>.txt`
 
 | Line | Description |
+| ---- | ----------- |
 | `file <path>` | The name of the file whose contains are to follow. |
 | `<file contents>` | The contents of the file. |
 
