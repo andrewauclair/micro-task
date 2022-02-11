@@ -31,6 +31,11 @@ public class RenameTaskCommand implements Runnable {
 			System.out.println();
 			return;
 		}
+
+		if (name.contains("\"")) {
+			throw new RuntimeException("Task name cannot contain quotes");
+		}
+
 		Task task = tasks.renameTask(id, name);
 
 		System.out.println("Renamed task " + task.description());
