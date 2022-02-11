@@ -72,6 +72,10 @@ public class AddTaskCommand implements Runnable {
 
 		TaskList taskList = tasks.getList(list);
 
+		if (name.contains("\"")) {
+			throw new RuntimeException("Task name cannot contain quotes");
+		}
+
 		if (taskList.canAddTask()) {
 			long newID = tasks.incrementID();
 

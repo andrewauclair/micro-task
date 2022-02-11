@@ -344,7 +344,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 //		});
 
 		// has to be done after we add the subcommands
-		cmdLine.setTrimQuotes(true);
+//		cmdLine.setTrimQuotes(true);
 
 		setHandlers(cmdLine);
 
@@ -391,7 +391,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		}
 
 		// has to be done after we add the subcommands
-		cmdLine.setTrimQuotes(true);
+//		cmdLine.setTrimQuotes(true);
 
 		setHandlers(cmdLine);
 

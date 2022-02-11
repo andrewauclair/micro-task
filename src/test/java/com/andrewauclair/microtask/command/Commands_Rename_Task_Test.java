@@ -44,4 +44,16 @@ class Commands_Rename_Task_Test extends CommandsBaseTestCase {
 				""
 		);
 	}
+
+	@Test
+	void task_names_cannot_have_quotes() {
+		tasks.addTask("Test");
+
+		commands.execute(printStream, "rename task 1 --name \"Test \"Quotes\" in name\"");
+
+		assertOutput(
+				"Task name cannot contain quotes",
+				""
+		);
+	}
 }

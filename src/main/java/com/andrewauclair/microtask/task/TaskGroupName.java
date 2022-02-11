@@ -1,17 +1,27 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
 
 public class TaskGroupName {
+	private static final List<Character> illegal_characters = Arrays.asList('\\', '<', '>', ':', '\"', '\\', '|', '?', '*');
+
 	private final String absoluteName;
 	private final String shortName;
 
 	public TaskGroupName(Tasks tasks, String name) {
 		if (!name.endsWith("/")) {
 			throw new RuntimeException("Group name must end in /");
+		}
+
+		for (final char character : illegal_characters) {
+			if (name.contains(String.valueOf(character))) {
+				throw new RuntimeException("Illegal character in group name: '" + character + "'");
+			}
 		}
 
 		this.absoluteName = absoluteName(tasks, name).toLowerCase();

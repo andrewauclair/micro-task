@@ -174,6 +174,16 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void task_names_cannot_have_quotes() {
+		commands.execute(printStream, "add task \"Test \"Quotes\" in name\"");
+
+		assertOutput(
+				"Task name cannot contain quotes",
+				""
+		);
+	}
+
+	@Test
 	void add_command_help() {
 		commands.execute(printStream, "add --help");
 

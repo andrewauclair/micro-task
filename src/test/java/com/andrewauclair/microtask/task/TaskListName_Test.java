@@ -13,4 +13,60 @@ class TaskListName_Test extends TaskBaseTestCase {
 
 		assertEquals("List name must not end in /", runtimeException.getMessage());
 	}
+
+	@Test
+	void backslashes_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te\\st"){});
+
+		assertEquals("Illegal character in list name: '\\'", runtimeException.getMessage());
+	}
+
+	@Test
+	void less_thans_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te<st"){});
+
+		assertEquals("Illegal character in list name: '<'", runtimeException.getMessage());
+	}
+
+	@Test
+	void greater_thans_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te>st"){});
+
+		assertEquals("Illegal character in list name: '>'", runtimeException.getMessage());
+	}
+
+	@Test
+	void colons_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te:st"){});
+
+		assertEquals("Illegal character in list name: ':'", runtimeException.getMessage());
+	}
+
+	@Test
+	void double_quotes_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te\"st"){});
+
+		assertEquals("Illegal character in list name: '\"'", runtimeException.getMessage());
+	}
+
+	@Test
+	void vertical_bar_pipes_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te|st"){});
+
+		assertEquals("Illegal character in list name: '|'", runtimeException.getMessage());
+	}
+
+	@Test
+	void question_marks_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te?st"){});
+
+		assertEquals("Illegal character in list name: '?'", runtimeException.getMessage());
+	}
+
+	@Test
+	void asterisks_are_not_allowed() {
+		RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new TaskListName(tasks, "te*st"){});
+
+		assertEquals("Illegal character in list name: '*'", runtimeException.getMessage());
+	}
 }
