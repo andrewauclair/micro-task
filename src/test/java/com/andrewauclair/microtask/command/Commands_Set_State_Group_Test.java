@@ -65,7 +65,7 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_group_file_when_setting_group_to_in_progress() throws IOException {
-		tasks.addGroup(newGroup("/test/"));
+		tasks.addGroup(newGroup("/test/"), "overhead-general");
 
 		tasks.finishGroup(existingGroup("/test/"));
 
@@ -79,7 +79,7 @@ class Commands_Set_State_Group_Test extends CommandsBaseTestCase {
 				outputStream,
 
 				"state InProgress",
-				"time none"
+				"time overhead-general"
 		);
 	}
 

@@ -164,7 +164,7 @@ public class Tasks {
 
 	public void addList(NewTaskListName name, boolean createFiles) {
 		ListAdder adder = new ListAdder(this, writer, osInterface);
-		adder.addList(name, "none", createFiles);
+		adder.addList(name, "", createFiles);
 	}
 
 	public void addList(NewTaskListName name, String timeCategory, boolean createFiles) {
@@ -384,7 +384,15 @@ public class Tasks {
 		return createGroup(groupName, false);
 	}
 
+	public TaskGroup addGroup(NewTaskGroupName groupName, String timeCategory) {
+		return createGroup(groupName, timeCategory, false);
+	}
+
 	public TaskGroup createGroup(TaskGroupName groupName, boolean createFiles) {
+		return createGroup(groupName, "", createFiles);
+	}
+
+	public TaskGroup createGroup(TaskGroupName groupName, String timeCategory, boolean createFiles) {
 		TaskGroupFinder finder = new TaskGroupFinder(this);
 
 		if (finder.hasGroupPath(groupName)) {
@@ -401,7 +409,7 @@ public class Tasks {
 				throw new TaskException("Group '" + groupName + "' cannot be created because group '" + parentGroup.getFullPath() + "' has been finished.");
 			}
 
-			newGroup = new TaskGroup(group, parentGroup, TaskContainerState.InProgress);
+			newGroup = new TaskGroup(group, parentGroup, TaskContainerState.InProgress, timeCategory);
 			currentParent = newGroup.getFullPath();
 
 			if (!parentGroup.containsGroup(newGroup)) {
@@ -421,6 +429,10 @@ public class Tasks {
 
 	public TaskGroup createGroup(NewTaskGroupName groupName) {
 		return createGroup(groupName, true);
+	}
+
+	public TaskGroup createGroup(NewTaskGroupName groupName, String timeCategory) {
+		return createGroup(groupName, timeCategory, true);
 	}
 
 	public long getActiveTaskID() {
@@ -590,6 +602,26 @@ public class Tasks {
 			System.out.println("Set Time Category of list '" + newList.getFullPath() + "' to '" + timeCategory + "'");
 
 			osInterface.gitCommit("Set Time Category for list '" + newList.getFullPath() + "' to '" + timeCategory + "'");
+		}
+	}
+
+	public void setGroupTimeCategory(ExistingGroupName groupName, String timeCategory, boolean createFiles) {
+		TaskGroup group = getGroup(groupName);
+
+		TaskGroup parent = getGroup(group.getParent());
+
+		parent.removeChild(group);
+
+		TaskGroup taskGroup = group.changeTimeCategory(timeCategory);
+
+		parent.addChild(taskGroup);
+
+		if (createFiles) {
+			new TaskGroupFileWriter(taskGroup, osInterface).write();
+
+			osInterface.gitCommit("Set Time Category for group '" + taskGroup.getFullPath() + "' to '" + timeCategory + "'");
+
+			System.out.println("Set Time Category of group '" + group.getFullPath() + "' to '" + timeCategory + "'");
 		}
 	}
 

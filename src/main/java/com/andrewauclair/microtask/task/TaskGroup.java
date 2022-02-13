@@ -16,9 +16,6 @@ public final class TaskGroup implements TaskContainer {
 	private final TaskGroup parent;
 	private final String parentPath;
 
-//	private final String project;
-//	private final String feature;
-
 	private final TaskContainerState state;
 	private final String timeCategory;
 
@@ -27,24 +24,23 @@ public final class TaskGroup implements TaskContainer {
 	public TaskGroup(String name) {
 		this.name = name;
 		fullPath = name;
-//		project = "";
-//		feature = "";
 		parent = null;
 		parentPath = null;
 		state = TaskContainerState.InProgress;
-		timeCategory = "none";
+		timeCategory = "";
+	}
+
+	TaskGroup(String name, TaskGroup parent, TaskContainerState state) {
+		this(name, parent, state, "");
 	}
 
 	// name is relative and the parent is the absolute path of the parent
-	TaskGroup(String name, TaskGroup parent, TaskContainerState state) {
+	TaskGroup(String name, TaskGroup parent, TaskContainerState state, String timeCategory) {
 		this.name = name;
 		this.parent = parent;
 
-//		this.project = project;
-//		this.feature = feature;
-
 		this.state = state;
-		timeCategory = "none";
+		this.timeCategory = timeCategory;
 
 		if (parent != null) {
 			parentPath = parent.getFullPath();
@@ -95,30 +91,15 @@ public final class TaskGroup implements TaskContainer {
 		return Collections.unmodifiableList(children);
 	}
 
-//	@Override
-//	public String getProject() {
-//		return "";
-////		if (parent != null && project.isEmpty()) {
-////			return parent.getProject();
-////		}
-////		return project;
-//	}
-//
-//	@Override
-//	public String getFeature() {
-//		return "";
-////		if (parent != null && feature.isEmpty()) {
-////			return parent.getFeature();
-////		}
-////		return feature;
-//	}
-
 	@Override
 	public TaskContainerState getState() {
 		return state;
 	}
 
 	public String getTimeCategory() {
+		if (parent != null && timeCategory.isEmpty()) {
+			return parent.getTimeCategory();
+		}
 		return timeCategory;
 	}
 
@@ -140,8 +121,6 @@ public final class TaskGroup implements TaskContainer {
 				Objects.equals(fullPath, taskGroup.fullPath) &&
 				Objects.equals(parentPath, taskGroup.parentPath) &&
 				Objects.equals(children, taskGroup.children) &&
-//				Objects.equals(project, taskGroup.project) &&
-//				Objects.equals(feature, taskGroup.feature) &&
 				Objects.equals(state, taskGroup.state) &&
 				Objects.equals(timeCategory, taskGroup.timeCategory);
 	}
@@ -155,8 +134,6 @@ public final class TaskGroup implements TaskContainer {
 				", fullPath='" + fullPath + '\'' +
 				", parent='" + (parent == null ? "" : parent.getFullPath()) + '\'' +
 				", children=" + children +
-//				", project='" + project + '\'' +
-//				", feature='" + feature + '\'' +
 				'}';
 	}
 
@@ -211,7 +188,7 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	public TaskGroup rename(String newName) {
-		TaskGroup group = new TaskGroup(newName, parent, state);
+		TaskGroup group = new TaskGroup(newName, parent, state, timeCategory);
 
 		buildNewChildren(group);
 
@@ -240,7 +217,7 @@ public final class TaskGroup implements TaskContainer {
 	public TaskGroup moveGroup(TaskGroup group, TaskGroup destGroup, PrintStream output, OSInterface osInterface) {
 		removeChild(group);
 
-		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.state);
+		TaskGroup newGroup = new TaskGroup(group.getName(), destGroup, group.state, group.timeCategory);
 		group.getChildren().forEach(newGroup::addChild);
 
 		destGroup.addChild(newGroup);
@@ -288,14 +265,21 @@ public final class TaskGroup implements TaskContainer {
 	}
 
 	TaskGroup changeState(TaskContainerState state) {
-		TaskGroup group = new TaskGroup(name, parent, state);
+		TaskGroup group = new TaskGroup(name, parent, state, timeCategory);
+		group.children.addAll(children);
+
+		return group;
+	}
+
+	TaskGroup changeTimeCategory(String timeCategory) {
+		TaskGroup group = new TaskGroup(name, parent, state, timeCategory);
 		group.children.addAll(children);
 
 		return group;
 	}
 
 	private TaskGroup changeParent(TaskGroup parent) {
-		TaskGroup group = new TaskGroup(name, parent, state);
+		TaskGroup group = new TaskGroup(name, parent, state, timeCategory);
 
 		buildNewChildren(group);
 

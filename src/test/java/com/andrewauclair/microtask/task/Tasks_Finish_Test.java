@@ -139,7 +139,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_list_writes_file() throws IOException {
 		tasks.addGroup(newGroup("/test/"));
-		tasks.addList(newList("/test/one"), true);
+		tasks.addList(newList("/test/one"), "overhead-general", true);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -149,7 +149,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 
 		assertThat(outputStream.toString()).isEqualTo(
 				"state Finished" + NL +
-						"time none" + NL
+						"time overhead-general" + NL
 		);
 	}
 
@@ -167,7 +167,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 
 	@Test
 	void finish_group_writes_file() throws IOException {
-		tasks.addGroup(newGroup("/test/"));
+		tasks.addGroup(newGroup("/test/"), "overhead-general");
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -177,7 +177,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 
 		assertThat(outputStream.toString()).isEqualTo(
 				"state Finished" + NL +
-						"time none" + NL
+						"time overhead-general" + NL
 		);
 	}
 

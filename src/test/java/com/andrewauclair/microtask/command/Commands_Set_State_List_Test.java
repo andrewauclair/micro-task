@@ -65,7 +65,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 
 	@Test
 	void write_list_file_when_setting_list_to_in_progress() throws IOException {
-		tasks.addList(newList("/test"), true);
+		tasks.addList(newList("/test"), "overhead-general", true);
 
 		tasks.finishList(existingList("/test"));
 
@@ -79,7 +79,7 @@ class Commands_Set_State_List_Test extends CommandsBaseTestCase {
 				outputStream,
 
 				"state InProgress",
-				"time none"
+				"time overhead-general"
 		);
 	}
 

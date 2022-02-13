@@ -81,13 +81,13 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
 
-		tasks.addList(newList("test"), true);
+		tasks.addList(newList("test"), "overhead-general", true);
 
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
 
 		TestUtils.assertOutput(listStream,
 				"state InProgress",
-				"time none",
+				"time overhead-general",
 				""
 		);
 	}
@@ -116,7 +116,7 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).gitCommit("Created list '/test/one' with Time Category 'none'");
+		order.verify(osInterface).gitCommit("Created list '/test/one' with Time Category ''");
 	}
 
 	@Test
@@ -196,5 +196,15 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		InOrder order = Mockito.inOrder(osInterface);
 
 		order.verify(osInterface).gitCommit("Set Time Category for list '/test' to 'overhead-general'");
+	}
+
+	@Test
+	void list_inherits_time_tracking_from_parent_if_none_is_defined() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.setGroupTimeCategory(existingGroup("/test/"), "overhead-general", true);
+
+		tasks.addList(newList("/test/one"), true);
+
+		assertEquals("overhead-general", tasks.getList(existingList("/test/one")).getTimeCategory());
 	}
 }

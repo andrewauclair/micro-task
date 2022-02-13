@@ -7,6 +7,7 @@ import com.andrewauclair.microtask.command.CommandsBaseTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
@@ -82,7 +83,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, ""),
 				new TaskGroup("test", parent, TaskContainerState.InProgress)
 		);
 	}
@@ -94,7 +95,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		tasks.createGroup(newGroup("/test/one/two/"));
 
 		TaskGroup parent = new TaskGroup(TaskGroup.ROOT_PATH);
-		parent.addChild(new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"));
+		parent.addChild(new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, ""));
 		
 		TaskGroup expected = new TaskGroup("test", parent, TaskContainerState.InProgress);
 		parent.addChild(expected);
@@ -105,7 +106,7 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		one.addChild(new TaskGroup("two", one, TaskContainerState.InProgress));
 
 		assertThat(tasks.getRootGroup().getChildren()).containsOnly(
-				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, "none"),
+				new TaskList("default", new TaskGroup(TaskGroup.ROOT_PATH), osInterface, writer, TaskContainerState.InProgress, ""),
 				expected
 		);
 	}
@@ -215,5 +216,35 @@ class Tasks_Groups_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("/one/three"), true);
 		
 		Mockito.verify(osInterface, never()).gitCommit("Created group '/one/'");
+	}
+
+	@Test
+	void set_time_category_on_group() {
+		tasks.addGroup(newGroup("/test/"));
+
+		tasks.setGroupTimeCategory(existingGroup("/test/"), "overhead-general", true);
+
+		assertEquals("overhead-general", tasks.getGroup(existingGroup("/test/")).getTimeCategory());
+	}
+
+	@Test
+	void set_time_category_on_list__commit() {
+		tasks.addGroup(newGroup("/test/"));
+
+		tasks.setGroupTimeCategory(existingGroup("/test/"), "overhead-general", true);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).gitCommit("Set Time Category for group '/test/' to 'overhead-general'");
+	}
+
+	@Test
+	void group_inherits_time_tracking_from_parent_if_none_is_defined() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.setGroupTimeCategory(existingGroup("/test/"), "overhead-general", true);
+
+		tasks.addGroup(newGroup("/test/one/"));
+
+		assertEquals("overhead-general", tasks.getGroup(existingGroup("/test/one/")).getTimeCategory());
 	}
 }

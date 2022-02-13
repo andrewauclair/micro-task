@@ -53,14 +53,14 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void to_string() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress, "none");
 		
 		assertEquals("TaskGroup{name='test', state='InProgress', timeCategory='none', fullPath='/test/', parent='/', children=[]}", group.toString());
 	}
 
 	@Test
 	void to_string_with_null_parent() {
-		TaskGroup group = new TaskGroup("/", null, TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("/", null, TaskContainerState.InProgress, "none");
 
 		assertEquals("TaskGroup{name='/', state='InProgress', timeCategory='none', fullPath='/', parent='', children=[]}", group.toString());
 	}
@@ -68,7 +68,7 @@ class TaskGroupTest extends TaskBaseTestCase {
 	@Test
 	void rename() {
 		TaskGroup parent = new TaskGroup("/");
-		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress);
+		TaskGroup group = new TaskGroup("test", parent, TaskContainerState.InProgress, "none");
 		
 		TaskGroup renamed = group.rename("one");
 		

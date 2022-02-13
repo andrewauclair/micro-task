@@ -17,15 +17,23 @@ public class AddGroupCommand implements Runnable {
 	@CommandLine.Parameters(index = "0", completionCandidates = GroupCompleter.class, description = "Group to add.")
 	private NewTaskGroupName group;
 
+	@CommandLine.Option(names = {"--time-category"}, description = "Time category used for time charging.")
+	private String time_category;
+
 	public AddGroupCommand(Tasks tasks) {
 		this.tasks = tasks;
 	}
 
 	@Override
 	public void run() {
-		TaskGroup group = tasks.createGroup(this.group);
+		TaskGroup group = tasks.createGroup(this.group, time_category != null ? time_category : "");
 
-		System.out.println("Created group '" + group.getFullPath() + "'");
+		System.out.print("Created group '" + group.getFullPath() + "'");
+
+		if (time_category != null) {
+			System.out.print(" with Time Category '" + time_category + "'");
+		}
+		System.out.println();
 		System.out.println();
 	}
 }

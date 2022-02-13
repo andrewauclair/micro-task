@@ -79,6 +79,9 @@ public final class TaskList implements TaskContainer {
 	}
 
 	public String getTimeCategory() {
+		if (timeCategory.isEmpty()) {
+			return parent.getTimeCategory();
+		}
 		return timeCategory;
 	}
 

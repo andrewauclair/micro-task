@@ -354,7 +354,7 @@ public class DataLoader_Test {
 		TaskList list = tasks.getList(new ExistingListName(tasks, "legacy"));
 
 		assertEquals(TaskContainerState.InProgress, list.getState());
-		assertEquals("none", list.getTimeCategory());
+		assertEquals("", list.getTimeCategory());
 	}
 
 	@Test
