@@ -1,6 +1,7 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
@@ -10,6 +11,7 @@ import picocli.CommandLine;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -17,6 +19,15 @@ import java.util.*;
 public class TimesTrackingCommand implements Runnable {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
+
+	@CommandLine.Option(names = {"-d", "--day"}, description = "Day to display times for.")
+	private Integer day;
+
+	@CommandLine.Option(names = {"-m", "--month"}, description = "Month to display times for.")
+	private Integer month;
+
+	@CommandLine.Option(names = {"-y", "--year"}, description = "Year to display times for.")
+	private Integer year;
 
 	TimesTrackingCommand(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -51,6 +62,26 @@ public class TimesTrackingCommand implements Runnable {
 	@Override
 	public void run() {
 		Instant start_instant = Instant.ofEpochSecond(osInterface.currentSeconds());
+
+		if (this.day != null) {
+			ZoneId zoneId = osInterface.getZoneId();
+
+			if (this.day < 1 || this.day > 31) {
+				throw new TaskException("Day option must be 1 - 31");
+			}
+
+			if (this.month != null && (this.month < 1 || this.month > 12)) {
+				throw new TaskException("Month option must be 1 - 12");
+			}
+
+			day = this.day;
+			month = this.month != null ? this.month : start_instant.atZone(zoneId).getMonthValue();
+			year = this.year != null ? this.year : start_instant.atZone(zoneId).getYear();
+
+			LocalDate of = LocalDate.of(year, month, day);
+
+			start_instant = of.atStartOfDay(zoneId).toInstant();
+		}
 
 		LocalDate weekDay = LocalDate.ofInstant(start_instant, osInterface.getZoneId());
 
