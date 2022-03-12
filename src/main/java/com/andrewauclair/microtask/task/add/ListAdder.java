@@ -19,7 +19,7 @@ public class ListAdder {
 		this.osInterface = osInterface;
 	}
 
-	public void addList(NewTaskListName listName, boolean createFiles) {
+	public void addList(NewTaskListName listName, String timeCategory, boolean createFiles) {
 		TaskGroup group;
 
 		String absoluteList = listName.absoluteName();
@@ -35,7 +35,7 @@ public class ListAdder {
 			throw new TaskException("List '" + absoluteList + "' cannot be created because group '" + group.getFullPath() + "' has been finished.");
 		}
 
-		TaskList newList = new TaskList(listName.shortName(), group, osInterface, writer, TaskContainerState.InProgress);
+		TaskList newList = new TaskList(listName.shortName(), group, osInterface, writer, TaskContainerState.InProgress, timeCategory);
 
 		group.addChild(newList);
 
@@ -44,7 +44,8 @@ public class ListAdder {
 
 			new TaskListFileWriter(newList, osInterface).write();
 
-			osInterface.gitCommit("Created list '" + newList.getFullPath() + "'");
+			// TODO git commit needs to be updated with timeCategory (if present)
+			osInterface.gitCommit("Created list '" + newList.getFullPath() + "' with Time Category '" + timeCategory + "'");
 		}
 	}
 }

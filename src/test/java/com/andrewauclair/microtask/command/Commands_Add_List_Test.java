@@ -59,6 +59,22 @@ class Commands_Add_List_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void create_list_with_time_category() {
+		commands.execute(printStream, "add group /test/one/");
+
+		tasks.setCurrentGroup(existingGroup("/test/one/"));
+
+		outputStream.reset();
+
+		commands.execute(printStream, "add list two --time-category overhead-general");
+
+		assertOutput(
+				"Created list '/test/one/two' with Time Category 'overhead-general'",
+				""
+		);
+	}
+
+	@Test
 	void can_not_create_a_new_list_with_a_name_that_already_exists() {
 		tasks.addList(newList("test"), true);
 

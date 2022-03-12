@@ -18,7 +18,8 @@ public class TaskListFileWriter {
 
 	public void write() {
 		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data" + "/tasks" + list.getFullPath() + "/list.txt"))) {
-			outputStream.println(list.getState());
+			outputStream.println("state " + list.getState());
+			outputStream.println("time " + list.getTimeCategory());
 			// TODO Notes
 		}
 		catch (IOException e) {

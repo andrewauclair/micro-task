@@ -23,7 +23,7 @@ class Commands_Add_Group_Test extends CommandsBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/group.txt")).thenReturn(new DataOutputStream(listStream));
 
-		commands.execute(printStream, "add group /test/one/two/three/");
+		commands.execute(printStream, "add group /test/one/two/three/ --time-category overhead-general");
 
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
@@ -38,12 +38,13 @@ class Commands_Add_Group_Test extends CommandsBaseTestCase {
 		inOrder.verify(osInterface).gitCommit("Created group '/test/one/two/three/'");
 
 		TestUtils.assertOutput(listStream,
-				"InProgress",
+				"state InProgress",
+				"time overhead-general",
 				""
 		);
 
 		assertOutput(
-				"Created group '/test/one/two/three/'",
+				"Created group '/test/one/two/three/' with Time Category 'overhead-general'",
 				""
 		);
 	}

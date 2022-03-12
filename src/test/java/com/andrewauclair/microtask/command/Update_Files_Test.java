@@ -21,7 +21,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 	void update_files_on_all_lists() throws IOException {
 		Task task1 = tasks.addTask("Test");
 		Task task2 = tasks.addTask("Test");
-		tasks.addList(newList("one"), true);
+		tasks.addList(newList("one"), "overhead-general", true);
 		tasks.setCurrentList(existingList("one"));
 		Task task3 = tasks.addTask("Test");
 		Task task4 = tasks.addTask("Test");
@@ -30,7 +30,7 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		tasks.createGroup(newGroup("/projects/"));
 
 		tasks.createGroup(newGroup("/test/two/three/"));
-		tasks.addList(newList("/test/two/three/five"), true);
+		tasks.addList(newList("/test/two/three/five"), "none", true);
 		tasks.setCurrentList(existingList("/test/two/three/five"));
 
 		Task task6 = tasks.addTask("Test");
@@ -91,38 +91,45 @@ class Update_Files_Test extends CommandsBaseTestCase {
 		assertOutput(
 				defaultList,
 
-				"InProgress",
-				"InProgress"
+				"state InProgress",
+				"time ",
+				"state InProgress",
+				"time "
 		);
 
 		assertOutput(
 				oneList,
 
-				"InProgress"
+				"state InProgress",
+				"time overhead-general"
 		);
 
 		assertOutput(
 				fiveList,
 
-				"InProgress"
+				"state InProgress",
+				"time none"
 		);
 
 		assertOutput(
 				testGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time "
 		);
 
 		assertOutput(
 				testTwoGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time "
 		);
 
 		assertOutput(
 				testTwoThreeGroup,
 
-				"InProgress"
+				"state InProgress",
+				"time "
 		);
 	}
 

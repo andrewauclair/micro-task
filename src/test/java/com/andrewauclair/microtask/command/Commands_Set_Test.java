@@ -211,12 +211,15 @@ class Commands_Set_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "set list --help");
 
 		assertOutput(
-				"Usage:  set list [-h] ([--in-progress] [--due=<due> | --due-today]) <list>",
+				"Usage:  set list [-h] ([--in-progress] [--time-category=<time_category>]",
+						"                 [--due=<due> | --due-today]) <list>",
 						"      <list>          The list to set.",
 						"      --due=<due>     Set the due time for all tasks in the list.",
 						"      --due-today     Set the due time for all tasks in the list to today.",
 						"  -h, --help          Show this help message.",
-						"      --in-progress   Set the list state to in progress."
+						"      --in-progress   Set the list state to in progress.",
+						"      --time-category=<time_category>",
+						"                      Set the Time Category of the list."
 		);
 	}
 

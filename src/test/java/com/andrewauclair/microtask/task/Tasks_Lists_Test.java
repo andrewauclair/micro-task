@@ -81,12 +81,30 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
 
-		tasks.addList(newList("test"), true);
+		tasks.addList(newList("test"), "overhead-general", true);
 
 		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
 
 		TestUtils.assertOutput(listStream,
-				"InProgress",
+				"state InProgress",
+				"time overhead-general",
+				""
+		);
+	}
+
+	@Test
+	void adding_list_creates_list_txt_with_time_category() throws IOException {
+		OutputStream listStream = new ByteArrayOutputStream();
+
+		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/list.txt")).thenReturn(new DataOutputStream(listStream));
+
+		tasks.addList(newList("test"), "overhead-general", true);
+
+		Mockito.verify(osInterface).createOutputStream("git-data/tasks/test/list.txt");
+
+		TestUtils.assertOutput(listStream,
+				"state InProgress",
+				"time overhead-general",
 				""
 		);
 	}
@@ -98,7 +116,17 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 
 		InOrder order = Mockito.inOrder(osInterface);
 
-		order.verify(osInterface).gitCommit("Created list '/test/one'");
+		order.verify(osInterface).gitCommit("Created list '/test/one' with Time Category ''");
+	}
+
+	@Test
+	void adding_list_commits_the_list_txt_file__with_time_category() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), "overhead-general", true);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).gitCommit("Created list '/test/one' with Time Category 'overhead-general'");
 	}
 
 	@Test
@@ -144,9 +172,39 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 	
 	@Test
 	void if_task_does_not_exist_then_an_exception_is_thrown() {
-		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, TaskContainerState.InProgress);
+		TaskList list = new TaskList("one", new TaskGroup("/"), osInterface, writer, TaskContainerState.InProgress, "none");
 		TaskException taskException = assertThrows(TaskException.class, () -> list.finishTask(existingID(3)));
 		
 		assertEquals("Task 3 does not exist.", taskException.getMessage());
+	}
+
+	@Test
+	void set_time_category_on_list() {
+		tasks.addList(newList("/test"), true);
+
+		tasks.setListTimeCategory(existingList("/test"), "overhead-general", true);
+
+		assertEquals("overhead-general", tasks.getList(existingList("/test")).getTimeCategory());
+	}
+
+	@Test
+	void set_time_category_on_list__commit() {
+		tasks.addList(newList("/test"), true);
+
+		tasks.setListTimeCategory(existingList("/test"), "overhead-general", true);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		order.verify(osInterface).gitCommit("Set Time Category for list '/test' to 'overhead-general'");
+	}
+
+	@Test
+	void list_inherits_time_tracking_from_parent_if_none_is_defined() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.setGroupTimeCategory(existingGroup("/test/"), "overhead-general", true);
+
+		tasks.addList(newList("/test/one"), true);
+
+		assertEquals("overhead-general", tasks.getList(existingList("/test/one")).getTimeCategory());
 	}
 }

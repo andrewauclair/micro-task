@@ -59,7 +59,7 @@ jar {
 
 jacocoTestReport {
     reports {
-        xml.required
+        xml.required = true
     }
 }
 

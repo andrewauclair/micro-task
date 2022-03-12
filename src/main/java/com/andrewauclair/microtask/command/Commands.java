@@ -71,7 +71,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 //		commands.put("add", new AddCommand(tasks, this));
 		commands.put("active", new ActiveCommand(tasks, osInterface));
 		commands.put("list", new ListCommand(tasks, osInterface));
-		commands.put("times", new TimesCommand(tasks, projects, osInterface));//, new TaskFilterBuilder()));
+//		commands.put("times", new TimesCommand(tasks, projects, osInterface));//, new TaskFilterBuilder()));
 		commands.put("debug", new DebugCommand(localSettings));
 //		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
@@ -157,6 +157,12 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 								.addSubcommand(new RenameGroupCommand(tasks))
 				);
 				break;
+			case "times":
+				cmdLine.addSubcommand("times",
+						new CommandLine(new TimesCommand(tasks, projects, osInterface), factory)
+								.addSubcommand(new TimesTrackingCommand(tasks, osInterface))
+				);
+				break;
 		}
 
 		if (command.equals("json")) {
@@ -202,8 +208,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new ActiveCommand(tasks, osInterface);
 			case "list":
 				return new ListCommand(tasks, osInterface);
-			case "times":
-				return new TimesCommand(tasks, projects, osInterface);
+//			case "times":
+//				return new TimesCommand(tasks, projects, osInterface);
 			case "debug":
 				return new DebugCommand(localSettings);
 //			case "rename":
@@ -321,6 +327,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		createCommand(cmdLine, "add");
 		createCommand(cmdLine, "start");
 		createCommand(cmdLine, "move");
+		createCommand(cmdLine, "times");
 
 //		aliases.keySet().forEach(name -> {
 //
@@ -377,7 +384,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 	public CommandLine buildCommandLine(String command) {
 		CommandLine cmdLine = new CommandLine(cliCommands, factory);
 
-		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("move") || command.equals("start")) {
+		if (command.equals("update") || command.equals("set") || command.equals("rename") || command.equals("add") || command.equals("move") || command.equals("start") || command.equals("times")) {
 			createCommand(cmdLine, command);
 		}
 		else {

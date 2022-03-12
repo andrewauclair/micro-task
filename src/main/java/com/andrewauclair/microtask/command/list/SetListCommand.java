@@ -30,7 +30,10 @@ public class SetListCommand implements Runnable {
 
 	private static class Args {
 		@Option(names = {"--in-progress"}, description = "Set the list state to in progress.")
-		private boolean in_progress;
+		private Boolean in_progress;
+
+		@Option(names = {"--time-category"}, description = "Set the Time Category of the list.")
+		private String time_category;
 
 		@ArgGroup()
 		DueArgs dueArgs;
@@ -53,7 +56,7 @@ public class SetListCommand implements Runnable {
 	public void run() {
 		checkDueToday();
 
-		if (args.in_progress) {
+		if (args.in_progress != null) {
 			TaskList list = tasks.getListByName(this.list);
 
 			if (list.getState() == TaskContainerState.Finished) {
@@ -62,6 +65,9 @@ public class SetListCommand implements Runnable {
 			else {
 				System.out.println("List '" + list.getFullPath() + "' must be finished first");
 			}
+		}
+		else if (args.time_category != null) {
+			tasks.setListTimeCategory(this.list, args.time_category, true);
 		}
 		else if (args.dueArgs.due != null) {
 			ZoneId zoneId = osInterface.getZoneId();
