@@ -136,19 +136,33 @@ public class DataLoader {
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/list.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			String line = scanner.nextLine();
-			TaskContainerState state;
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
 
-			try {
-				state = TaskContainerState.valueOf(line);
-			}
-			catch (IllegalArgumentException e) {
-				// legacy
-				scanner.nextLine();
-				state = TaskContainerState.valueOf(scanner.nextLine());
-			}
+				if (line.startsWith("state")) {
+					TaskContainerState state = TaskContainerState.valueOf(line.substring(6));
+					tasks.setListState(tasks.getCurrentList(), state, false);
+				}
+				else if (line.startsWith("time")) {
+					String timeCategory = line.substring(5);
+					tasks.setListTimeCategory(tasks.getCurrentList(), timeCategory, false);
+				}
+				else {
+					// legacy v1
+					TaskContainerState state;
 
-			tasks.setListState(tasks.getCurrentList(), state, false);
+					try {
+						// legacy, v2
+						state = TaskContainerState.valueOf(line);
+					}
+					catch (IllegalArgumentException e) {
+						// legacy, v1
+						scanner.nextLine();
+						state = TaskContainerState.valueOf(scanner.nextLine());
+					}
+					tasks.setListState(tasks.getCurrentList(), state, false);
+				}
+			}
 		}
 		catch (NullPointerException e) {
 			System.err.println(folder + "/" + name + "/list.txt");
@@ -180,19 +194,27 @@ public class DataLoader {
 		try (InputStream inputStream = osInterface.createInputStream(folder + "/" + name + "/group.txt")) {
 			Scanner scanner = new Scanner(inputStream);
 
-			String line = scanner.nextLine();
-			TaskContainerState state;
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
 
-			try {
-				state = TaskContainerState.valueOf(line);
-			}
-			catch (IllegalArgumentException e) {
-				// legacy
-				scanner.nextLine();
-				state = TaskContainerState.valueOf(scanner.nextLine());
-			}
+				if (line.startsWith("state")) {
+					TaskContainerState state = TaskContainerState.valueOf(line.substring(6));
 
-			tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), state, false);
+					tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), state, false);
+				}
+			}
+//			String line = scanner.nextLine();
+//			TaskContainerState state;
+//
+//			try {
+//				state = TaskContainerState.valueOf(line);
+//			}
+//			catch (IllegalArgumentException e) {
+//				// legacy
+//				scanner.nextLine();
+//				state = TaskContainerState.valueOf(scanner.nextLine());
+//			}
+
 		}
 		catch (IOException e) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this

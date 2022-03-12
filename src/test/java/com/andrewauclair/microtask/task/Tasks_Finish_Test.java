@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -23,13 +22,13 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finish_writes_file_on_correct_list() throws IOException {
 		tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
-		
+
 		tasks.startTask(existingID(1), false);
-		
+
 		tasks.setCurrentList(existingList("one"));
-		
+
 		tasks.addTask("Test 2");
-		
+
 		Mockito.reset(writer);
 
 		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
@@ -66,36 +65,36 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	void finish_tells_git_control_to_add_correct_files() throws IOException {
 		tasks.addTask("Test");
 		tasks.addList(newList("one"), true);
-		
+
 		tasks.startTask(existingID(1), false);
-		
+
 		tasks.setCurrentList(existingList("one"));
-		
+
 		tasks.addTask("Test 2");
-		
+
 		Mockito.reset(osInterface);
 
 		DataOutputStream archiveStream = new DataOutputStream(new ByteArrayOutputStream());
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/default/archive.txt")).thenReturn(archiveStream);
-		
+
 		tasks.finishTask();
-		
+
 		InOrder order = Mockito.inOrder(osInterface);
-		
+
 		order.verify(osInterface).gitCommit("Finished task 1 - 'Test'");
 	}
-	
+
 	@Test
 	void finish_task_when_on_different_list() {
 		tasks.addTask("Test");
-		
+
 		tasks.startTask(existingID(1), false);
-		
+
 		tasks.addList(newList("test"), true);
 		tasks.setCurrentList(existingList("test"));
-		
+
 		Task task = tasks.finishTask(existingID(1));
-		
+
 		assertEquals(
 				newTask(1, "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))),
 				task
@@ -112,7 +111,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		Mockito.reset(osInterface);
 
 		TaskException taskException = assertThrows(TaskException.class, tasks::finishTask);
-		
+
 		assertEquals("Recurring tasks cannot be finished.", taskException.getMessage());
 
 		assertThat(tasks.getAllTasks()).containsOnly(task);
@@ -140,54 +139,56 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finish_list_writes_file() throws IOException {
 		tasks.addGroup(newGroup("/test/"));
-		tasks.addList(newList("/test/one"), true);
-		
+		tasks.addList(newList("/test/one"), "overhead-general", true);
+
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
+
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/one/list.txt")).thenReturn(new DataOutputStream(outputStream));
-		
+
 		tasks.finishList(existingList("/test/one"));
-		
+
 		assertThat(outputStream.toString()).isEqualTo(
-				"Finished" + NL
+				"state Finished" + NL +
+						"time overhead-general" + NL
 		);
 	}
-	
+
 	@Test
 	void finish_list_commits_files_to_git() {
 		tasks.addGroup(newGroup("/test/"));
 		tasks.addList(newList("/test/one"), true);
-		
+
 		tasks.finishList(existingList("/test/one"));
-		
+
 		InOrder order = Mockito.inOrder(osInterface);
-		
+
 		order.verify(osInterface).gitCommit("Finished list '/test/one'");
 	}
-	
+
 	@Test
 	void finish_group_writes_file() throws IOException {
-		tasks.addGroup(newGroup("/test/"));
-		
+		tasks.addGroup(newGroup("/test/"), "overhead-general");
+
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
+
 		Mockito.when(osInterface.createOutputStream("git-data/tasks/test/group.txt")).thenReturn(new DataOutputStream(outputStream));
-		
+
 		tasks.finishGroup(existingGroup("/test/"));
-		
+
 		assertThat(outputStream.toString()).isEqualTo(
-				"Finished" + NL
+				"state Finished" + NL +
+						"time overhead-general" + NL
 		);
 	}
-	
+
 	@Test
 	void finish_group_commits_files_to_git() {
 		tasks.addGroup(newGroup("/test/"));
-		
+
 		tasks.finishGroup(existingGroup("/test/"));
-		
+
 		InOrder order = Mockito.inOrder(osInterface);
-		
+
 		order.verify(osInterface).gitCommit("Finished group '/test/'");
 	}
 }

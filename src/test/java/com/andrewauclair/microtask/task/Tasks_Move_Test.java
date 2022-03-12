@@ -116,6 +116,19 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 	}
 
 	@Test
+	void moving_list_with_time_category_moves_folder_of_files() throws IOException {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), "overhead-general", true);
+
+		InOrder order = Mockito.inOrder(osInterface);
+
+		tasks.moveList(existingList("/test/one"), existingGroup("/"));
+
+		order.verify(osInterface).moveFolder("/test/one", "/one");
+		order.verify(osInterface).gitCommit("Moved list '/test/one' to group '/'");
+	}
+
+	@Test
 	void moving_group_moves_folder_of_files() throws IOException {
 		tasks.createGroup(newGroup("/one/"));
 		tasks.createGroup(newGroup("/two/"));
@@ -141,6 +154,15 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 		assertEquals(existingList("/one"), tasks.getCurrentList());
 	}
 
+	@Test
+	void moving_list_keeps_time_category() {
+		tasks.addGroup(newGroup("/test/"));
+		tasks.addList(newList("/test/one"), "overhead-general", true);
+
+		tasks.moveList(existingList("/test/one"), existingGroup("/"));
+
+		assertEquals("overhead-general", tasks.getList(existingList("/one")).getTimeCategory());
+	}
 	@Test
 	void moving_active_group_changes_active_group_name() {
 		tasks.createGroup(newGroup("/one/"));

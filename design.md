@@ -176,6 +176,7 @@ Lists contain a flag to indicator they are a feature. This is done so that the u
 | Line | Description |
 | ---- | ----------- |
 | `state <enum>` | `InProgress` or `Finished` |
+| `time <category>` | Any string |
 | `note <time> <text>` | Any number of notes related to the list. |
 
 ##### 4.3 Group

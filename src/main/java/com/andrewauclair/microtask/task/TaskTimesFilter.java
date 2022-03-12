@@ -138,7 +138,7 @@ public class TaskTimesFilter {
 	}
 
 	public static final class TaskTimeFilterResult {
-		public final long total;
+		public final long total; // time in seconds
 		public final Task task;
 		public final String list;
 

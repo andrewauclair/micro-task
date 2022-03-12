@@ -14,6 +14,7 @@ import static com.andrewauclair.microtask.Utils.NL;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Commands_Alias_Test extends CommandsBaseTestCase {
 	@Test
@@ -117,28 +118,42 @@ class Commands_Alias_Test extends CommandsBaseTestCase {
 		);
 	}
 
-	@Test
-	void removing_alias_writes_new_file() throws IOException {
+	private String fileContentsAfterCommand(String file, String command) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
+		Mockito.when(osInterface.createOutputStream("git-data/" + file)).thenReturn(new DataOutputStream(outputStream));
 
-		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
+		commands.execute(printStream, command);
 
-		outputStream.reset();
+		return outputStream.toString();
+	}
 
-		commands.execute(printStream, "alias -n ltg -c \"tasks --all\"");
+	@Test
+	void removing_alias_writes_new_file() throws IOException {
+//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//
+//		Mockito.when(osInterface.createOutputStream("git-data/aliases.txt")).thenReturn(new DataOutputStream(outputStream));
+//
+//		commands.execute(printStream, "alias --name ttt --command \"times --today\"");
+//
+//		outputStream.reset();
+		fileContentsAfterCommand("aliases.txt", "alias --name ttt --command \"times --today\"");
+		String output = fileContentsAfterCommand("aliases.txt", "alias -n ltg -c \"tasks --all\"");
 
-		assertThat(outputStream.toString()).isEqualTo(
+//		commands.execute(printStream, "alias -n ltg -c \"tasks --all\"");
+
+		assertEquals(output,
 				"ttt=\"times --today\"" + NL +
 						"ltg=\"tasks --all\"" + NL
 		);
 
-		outputStream.reset();
+//		outputStream.reset();
 
-		commands.execute(printStream, "alias -r -n ttt");
+		output = fileContentsAfterCommand("aliases.txt", "alias -r -n ttt");
 
-		assertThat(outputStream.toString()).isEqualTo(
+//		commands.execute(printStream, "alias -r -n ttt");
+
+		assertEquals(output,
 				"ltg=\"tasks --all\"" + NL
 		);
 	}

@@ -57,7 +57,7 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Usage:  times [-hv] [--all-month] [--all-time] [--proj-feat] [--today]",
 				"              [--total] [--week] [--yesterday] [-d=<day>] [-m=<month>]",
-				"              [-y=<year>] [--group=<group>]... [--list=<list>]...",
+				"              [-y=<year>] [--group=<group>]... [--list=<list>]... COMMAND",
 				"Display times for tasks, lists or groups.",
 				"      --all-month       Display times for the entire month",
 				"      --all-time        Display all task times recorded.",
@@ -72,7 +72,9 @@ class Commands_Times_Test extends CommandsBaseTestCase {
 				"  -v, --verbose         Display times with verbose output.",
 				"      --week            Week to display times for.",
 				"  -y, --year=<year>     Year to display times for.",
-				"      --yesterday       Display times for yesterday."
+				"      --yesterday       Display times for yesterday.",
+				"Commands:",
+				"  tracking"
 		);
 	}
 }

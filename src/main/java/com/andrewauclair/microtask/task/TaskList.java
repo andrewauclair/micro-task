@@ -22,9 +22,11 @@ public final class TaskList implements TaskContainer {
 
 	private final TaskContainerState state;
 
+	private final String timeCategory;
+
 	private final List<Task> tasks = new ArrayList<>();
 
-	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, TaskContainerState state) {
+	public TaskList(String name, TaskGroup parent, OSInterface osInterface, TaskWriter writer, TaskContainerState state, String timeCategory) {
 		Objects.requireNonNull(parent);
 
 		this.name = name;
@@ -32,6 +34,7 @@ public final class TaskList implements TaskContainer {
 		this.osInterface = osInterface;
 		this.writer = writer;
 		this.state = state;
+		this.timeCategory = timeCategory;
 
 		parentPath = parent.getFullPath();
 
@@ -75,26 +78,40 @@ public final class TaskList implements TaskContainer {
 		return state;
 	}
 
+	public String getTimeCategory() {
+		if (timeCategory.isEmpty()) {
+			return parent.getTimeCategory();
+		}
+		return timeCategory;
+	}
+
 	public TaskWriter getWriter() {
 		return writer;
 	}
 
 	public TaskList rename(String name) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state, timeCategory);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
 
 	TaskList changeState(TaskContainerState state) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state, timeCategory);
 		list.tasks.addAll(tasks);
 
 		return list;
 	}
 
 	TaskList changeParent(TaskGroup parent) {
-		TaskList list = new TaskList(name, parent, osInterface, writer, state);
+		TaskList list = new TaskList(name, parent, osInterface, writer, state, timeCategory);
+		list.tasks.addAll(tasks);
+
+		return list;
+	}
+
+	TaskList changeTimeCategory(String timeCategory) {
+		TaskList list = new TaskList(name, parent, osInterface, writer, state, timeCategory);
 		list.tasks.addAll(tasks);
 
 		return list;
@@ -102,7 +119,7 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, fullPath, parentPath, tasks, osInterface, writer, state);
+		return Objects.hash(name, fullPath, parentPath, tasks, osInterface, writer, state, timeCategory);
 	}
 
 	@Override
@@ -120,7 +137,8 @@ public final class TaskList implements TaskContainer {
 				Objects.equals(tasks, taskList.tasks) &&
 				Objects.equals(osInterface, taskList.osInterface) &&
 				Objects.equals(writer, taskList.writer) &&
-				Objects.equals(state, taskList.state);
+				Objects.equals(state, taskList.state) &&
+				Objects.equals(timeCategory, taskList.timeCategory);
 	}
 
 	@Override
@@ -128,6 +146,8 @@ public final class TaskList implements TaskContainer {
 		return "TaskList{" +
 				"name='" + name + '\'' +
 				", fullPath='" + fullPath + '\'' +
+				", state=" + state +
+				", timeCategory='" + timeCategory + '\'' +
 				", tasks=" + tasks +
 				'}';
 	}
