@@ -48,7 +48,7 @@ public class Milestone {
 
 		for (final ExistingFeature feature : features) {
 			IDs.addAll(project.getFeature(feature).getTasks().stream()
-					.map(task -> new ExistingID(tasks, task.id))
+					.map(task -> new ExistingID(tasks, task.ID()))
 					.collect(Collectors.toList()));
 		}
 

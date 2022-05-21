@@ -244,7 +244,7 @@ public final class TimesCommand implements Runnable {
 			String type = "";
 			Task task = result.task;
 
-			boolean active = tasks.getActiveTaskID() == task.id;
+			boolean active = tasks.getActiveTaskID() == task.ID();
 
 			if (active) {
 				type += "*";
@@ -269,10 +269,10 @@ public final class TimesCommand implements Runnable {
 
 			if (!total) {
 				if (active) {
-					table.addRow(ANSI_BG_GREEN, false, time, type, String.valueOf(task.id), task.task);
+					table.addRow(ANSI_BG_GREEN, false, time, type, String.valueOf(task.ID()), task.task);
 				}
 				else {
-					table.addRow(time, type, String.valueOf(task.id), task.task);
+					table.addRow(time, type, String.valueOf(task.ID()), task.task);
 				}
 			}
 
@@ -482,9 +482,9 @@ public final class TimesCommand implements Runnable {
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks, task.task.id)));
+			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks, task.task.ID())));
 //			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
-			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.task.id)));
+			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.task.ID())));
 
 			if (project.isEmpty()) {
 				project = "None";

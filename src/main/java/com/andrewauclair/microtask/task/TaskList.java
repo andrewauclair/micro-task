@@ -70,7 +70,7 @@ public final class TaskList implements TaskContainer {
 
 	boolean containsTask(long taskID) {
 		return tasks.stream()
-				.anyMatch(task -> task.id == taskID);
+				.anyMatch(task -> task.ID() == taskID);
 	}
 
 	@Override
@@ -181,11 +181,11 @@ public final class TaskList implements TaskContainer {
 
 	private void writeTask(Task task) {
 		if (task.state == TaskState.Finished) {
-			osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+			osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 			writeArchive();
 		}
 		else {
-			writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+			writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 		}
 	}
 
@@ -197,7 +197,7 @@ public final class TaskList implements TaskContainer {
 		if (finished.size() > 0) {
 			try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + getFullPath() + "/archive.txt")) {
 				for (final Task task : finished) {
-					String fileName = "git-data/tasks" + getFullPath() + "/" + task.id + ".txt";
+					String fileName = "git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt";
 					osInterface.removeFile(fileName);
 
 					outputStream.writeBytes(fileName);
@@ -235,7 +235,7 @@ public final class TaskList implements TaskContainer {
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.id == id.get())
+				.filter(task -> task.ID() == id.get())
 				.findFirst();
 
 		if (optionalTask.isPresent()) {
@@ -321,7 +321,7 @@ public final class TaskList implements TaskContainer {
 		tasks.remove(task);
 		list.tasks.add(task);
 
-		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 
 		list.writeTask(task);
 		osInterface.gitCommit("Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'");

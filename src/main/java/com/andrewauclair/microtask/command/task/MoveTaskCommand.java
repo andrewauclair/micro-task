@@ -47,13 +47,13 @@ public class MoveTaskCommand implements Runnable {
 		if (args.id == null) {
 			List<Task> tasks = this.tasks.getList(args.src_list).getTasks().stream()
 					.filter(task -> task.state != TaskState.Finished)
-					.sorted(Comparator.comparingLong(o -> o.id))
+					.sorted(Comparator.comparingLong(o -> o.ID()))
 					.collect(Collectors.toList());
 
 			args.id = new ExistingID[tasks.size()];
 
 			for (int i = 0; i < tasks.size(); i++) {
-				args.id[i] = new ExistingID(this.tasks, tasks.get(i).id);
+				args.id[i] = new ExistingID(this.tasks, tasks.get(i).ID());
 			}
 		}
 

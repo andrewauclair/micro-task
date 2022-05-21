@@ -24,7 +24,7 @@ public final class TaskBuilder {
 	}
 
 	public TaskBuilder(Task task) {
-		id = task.id;
+		id = task.ID();
 		this.task = task.task;
 		state = task.state;
 		addTime = task.addTime;

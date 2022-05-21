@@ -27,13 +27,13 @@ public class TaskRecurringUpdater {
 				.withRecurring(recurring)
 				.build();
 
-		String list = tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath();
+		String list = tasks.findListForTask(new ExistingID(tasks, task.ID())).getFullPath();
 		tasks.replaceTask(new ExistingListName(tasks, list), optionalTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		tasks.getWriter().writeTask(task, file);
 
-		osInterface.gitCommit("Set recurring for task " + task.id + " to " + recurring);
+		osInterface.gitCommit("Set recurring for task " + task.ID() + " to " + recurring);
 
 		return task;
 	}

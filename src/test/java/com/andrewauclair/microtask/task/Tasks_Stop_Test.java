@@ -141,7 +141,7 @@ class Tasks_Stop_Test extends TaskBaseTestCase {
 
 		Task stoppedTask = tasks.stopTask();
 
-		assertEquals(task.id, stoppedTask.id);
+		assertEquals(task.ID(), stoppedTask.ID());
 	}
 
 	@Test

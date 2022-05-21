@@ -116,7 +116,7 @@ public class AddTaskCommand implements Runnable {
 			System.out.println();
 
 			if (start) {
-				commands.execute(System.out, "start task " + task.id);
+				commands.execute(System.out, "start task " + task.ID());
 			}
 		}
 		else {

@@ -83,7 +83,7 @@ public class Schedule {
 							.filter(task -> task.state != TaskState.Finished)
 							.filter(task -> !task.recurring)
 							.sorted(Comparator.comparingLong(o -> o.dueTime))
-							.map(task -> task.id)
+							.map(task -> task.ID())
 							.limit(task_count)
 							.collect(Collectors.toList());
 
@@ -101,7 +101,7 @@ public class Schedule {
 		daily_tasks.addAll(allTasks.stream()
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
-				.map(task -> task.id)
+				.map(task -> task.ID())
 				.sorted()
 				.limit(remaining_tasks)
 				.collect(Collectors.toList()));

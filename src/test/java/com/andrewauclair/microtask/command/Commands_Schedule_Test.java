@@ -59,7 +59,7 @@ public class Commands_Schedule_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "schedule --day");
 
 		assertThat(schedule.tasks().stream()
-				.map(task -> task.id)
+				.map(task -> task.ID())
 				.collect(Collectors.toList())
 		).containsOnly(
 				4L, 8L, 7L, 11L, 12L, 16L, 17L, 6L, 10L, 14L, 18L, 5L, 9L, 13L, 21L, 25L

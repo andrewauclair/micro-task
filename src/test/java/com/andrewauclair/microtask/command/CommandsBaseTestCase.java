@@ -99,7 +99,7 @@ public class CommandsBaseTestCase {
 	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);
-		tasks.startTask(existingID(task.id), false);
+		tasks.startTask(existingID(task.ID()), false);
 		setTime(stop);
 		return tasks.stopTask();
 	}

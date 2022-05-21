@@ -111,7 +111,7 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		tasks.getActiveContext().setActiveTags(Arrays.asList("alpha", "bravo"));
 
 		Task active_task = tasks.addTask("Active task");
-		tasks.startTask(existingID(active_task.id), false);
+		tasks.startTask(existingID(active_task.ID()), false);
 
 		commands.execute(printStream, "tasks");
 

@@ -45,7 +45,7 @@ public class SetDueTasksCommand implements Runnable {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		List<Task> dueTasks = getDueTasks(instant);
-		dueTasks.sort(Comparator.comparingLong(o -> o.id));
+		dueTasks.sort(Comparator.comparingLong(o -> o.ID()));
 
 		long dueTime = 0;
 		String dueTimeStr = "";
@@ -56,7 +56,7 @@ public class SetDueTasksCommand implements Runnable {
 		}
 
 		for (final Task dueTask : dueTasks) {
-			ExistingID id = new ExistingID(tasks, dueTask.id);
+			ExistingID id = new ExistingID(tasks, dueTask.ID());
 
 			boolean set = true;
 

@@ -50,11 +50,11 @@ final class SearchCommand implements Runnable {
 
 		List<Task> searchResults = stream.filter(task -> task.task.toLowerCase().contains(searchText.toLowerCase()))
 				.filter(task -> finished == (task.state == TaskState.Finished))
-				.sorted(Comparator.comparingLong(o -> o.id))
+				.sorted(Comparator.comparingLong(o -> o.ID()))
 				.collect(Collectors.toList());
 
 		if (verbose) {
-			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.id)).getFullPath()));
+			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.ID())).getFullPath()));
 		}
 
 		if (group) {
@@ -71,7 +71,7 @@ final class SearchCommand implements Runnable {
 		String currentList = "";
 
 		for (Task task : searchResults) {
-			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks, task.id));
+			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks, task.ID()));
 
 			if (verbose && !listForTask.getFullPath().equals(currentList)) {
 				if (!currentList.isEmpty()) {

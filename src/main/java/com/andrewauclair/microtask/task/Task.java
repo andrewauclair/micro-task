@@ -4,7 +4,7 @@ package com.andrewauclair.microtask.task;
 import java.util.*;
 
 public final class Task {
-	public final long id; // TODO it would be great if this was an instance of ExistingID
+	private final long id; // TODO it would be great if this was an instance of ExistingID
 	public final String task;
 	public final TaskState state;
 	public final long addTime;
@@ -25,6 +25,10 @@ public final class Task {
 		this.recurring = recurring;
 		this.dueTime = dueTime;
 		this.tags = Collections.unmodifiableList(tags);
+	}
+
+	public long ID() {
+		return id;
 	}
 
 	@Override

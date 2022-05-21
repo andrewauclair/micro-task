@@ -177,7 +177,7 @@ public class Tasks {
 	}
 
 	public Task finishTask() {
-		return finishTask(new ExistingID(this, getActiveTask().id));
+		return finishTask(new ExistingID(this, getActiveTask().ID()));
 	}
 
 	public List<Task> getTasksForList(ExistingListName listName) {
@@ -330,26 +330,26 @@ public class Tasks {
 	}
 
 	public void addTask(Task task) {
-		if (hasTaskWithID(task.id)) {
-			throw new TaskException("Task with ID " + task.id + " already exists.");
+		if (hasTaskWithID(task.ID())) {
+			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasks.add(task.id);
+		existingTasks.add(task.ID());
 
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.id);
+			activeContext.setActiveTaskID(task.ID());
 		}
 	}
 
 	public void addTask(Task task, TaskList list, boolean commit) {
-		if (hasTaskWithID(task.id)) {
-			throw new TaskException("Task with ID " + task.id + " already exists.");
+		if (hasTaskWithID(task.ID())) {
+			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasks.add(task.id);
+		existingTasks.add(task.ID());
 
 		if (commit) {
 			list.addTask(task);
@@ -360,7 +360,7 @@ public class Tasks {
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.id);
+			activeContext.setActiveTaskID(task.ID());
 		}
 	}
 
@@ -454,20 +454,20 @@ public class Tasks {
 
 		Task task = builder.build();
 
-		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
+		String list = findListForTask(new ExistingID(this, task.ID())).getFullPath();
 		replaceTask(new ExistingListName(this, list), origTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		osInterface.gitCommit("Set tag(s) for task " + task.id + " to " + String.join(", ", tags));
+		osInterface.gitCommit("Set tag(s) for task " + task.ID() + " to " + String.join(", ", tags));
 
 		return task;
 	}
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.id == id.get())
+				.filter(task -> task.ID() == id.get())
 				.findFirst();
 
 		if (optionalTask.isEmpty()) {
@@ -507,15 +507,15 @@ public class Tasks {
 				.withState(state)
 				.build();
 
-		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
+		String list = findListForTask(new ExistingID(this, task.ID())).getFullPath();
 		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		findListForTask(new ExistingID(this, task.id)).writeArchive();
+		findListForTask(new ExistingID(this, task.ID())).writeArchive();
 
-		osInterface.gitCommit("Set state for task " + task.id + " to " + state);
+		osInterface.gitCommit("Set state for task " + task.ID() + " to " + state);
 
 		return task;
 	}
@@ -529,7 +529,7 @@ public class Tasks {
 		String list = findListForTask(id).getFullPath();
 		replaceTask(new ExistingListName(this, list), existingTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 	}
 
@@ -708,7 +708,7 @@ public class Tasks {
 					.findFirst();
 
 			if (activeTask.isPresent()) {
-				activeContext.setActiveTaskID(activeTask.get().id);
+				activeContext.setActiveTaskID(activeTask.get().ID());
 				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}

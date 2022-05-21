@@ -28,7 +28,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
 
-		Task newActiveTask = tasks.startTask(existingID(task.id), false);
+		Task newActiveTask = tasks.startTask(existingID(task.ID()), false);
 
 		Task oldTask = newTask(2, "Testing task start command", TaskState.Inactive, 0);
 		Task activeTask = newTask(2, "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));

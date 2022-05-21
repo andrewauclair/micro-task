@@ -58,7 +58,7 @@ public class Projects {
 
 			Task planning = tasks.addTask("Planning", new ExistingListName(tasks, group.absoluteName() + "general"));
 
-			tasks.setRecurring(new ExistingID(tasks, planning.id), true);
+			tasks.setRecurring(new ExistingID(tasks, planning.ID()), true);
 
 			save();
 		}

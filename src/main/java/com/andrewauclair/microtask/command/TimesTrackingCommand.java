@@ -107,7 +107,7 @@ public class TimesTrackingCommand implements Runnable {
 			List<TaskTimesFilter.TaskTimeFilterResult> data = filter.getData();
 
 			for (final TaskTimesFilter.TaskTimeFilterResult datum : data) {
-				String charge = tasks.getListForTask(new ExistingID(tasks, datum.task.id)).getTimeCategory();
+				String charge = tasks.getListForTask(new ExistingID(tasks, datum.task.ID())).getTimeCategory();
 
 				if (!times.containsKey(charge)) {
 					times.put(charge, new Times());

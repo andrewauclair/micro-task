@@ -80,7 +80,7 @@ public class SetGroupCommand implements Runnable {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
 			for (final Task task : group.getTasks()) {
-				tasks.setDueDate(new ExistingID(tasks, task.id), dueTime);
+				tasks.setDueDate(new ExistingID(tasks, task.ID()), dueTime);
 
 				System.out.println("Set due date for task " + task.description() + " to " + eodStr);
 			}

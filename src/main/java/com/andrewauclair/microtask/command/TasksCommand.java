@@ -289,11 +289,11 @@ public class TasksCommand implements Runnable {
 			tasks.clear();
 		}
 
-		dueTasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
-		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
+		dueTasks.sort((o1, o2) -> Long.compare(o2.ID(), o1.ID()));
+		tasks.sort((o1, o2) -> Long.compare(o2.ID(), o1.ID()));
 
 		for (final Task task : tasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.ID()));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -307,7 +307,7 @@ public class TasksCommand implements Runnable {
 			}
 
 			for (Task dueTask : dueTasks) {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
+				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.ID()));
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 				String project_name = projects.getProjectForList(listForTask);
@@ -319,7 +319,7 @@ public class TasksCommand implements Runnable {
 		if (tasksData.hasActiveTask() && !display_schedule) {
 			table.addRow(true, "Active Task");
 
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().id));
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().ID()));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -404,7 +404,7 @@ public class TasksCommand implements Runnable {
 	}
 
 	private void addTaskToTable(ConsoleTable table, Task task, String listName, String projectName, boolean due, boolean printListName, boolean printProjectName) {
-		boolean active = task.id == tasksData.getActiveTaskID();
+		boolean active = task.ID() == tasksData.getActiveTaskID();
 
 		String type = "";
 		if (active) {
@@ -438,13 +438,13 @@ public class TasksCommand implements Runnable {
 		}
 
 		if (printListName) {
-			table.addRow(bgColor, false, listName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, listName, type, String.valueOf(task.ID()), task.task);
 		}
 		else if (printProjectName) {
-			table.addRow(bgColor, false, projectName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, projectName, type, String.valueOf(task.ID()), task.task);
 		}
 		else {
-			table.addRow(bgColor, false, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, type, String.valueOf(task.ID()), task.task);
 		}
 	}
 
