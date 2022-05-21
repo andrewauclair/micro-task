@@ -8,6 +8,7 @@ class Task_Equals_Test {
 	@Test
 	void task_equals_task() {
 		EqualsVerifier.forClass(Task.class)
+				.withIgnoredFields("shortID") // ignore shortID, it is mutable so that we don't have to recreate all tasks when shortIDs get reassigned
 				.verify();
 	}
 }

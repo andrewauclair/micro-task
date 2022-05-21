@@ -1,8 +1,12 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-public class RelativeTaskID {
-	private long id;
+import java.util.Objects;
+
+public final class RelativeTaskID {
+	public static final RelativeTaskID NO_SHORT_ID = new RelativeTaskID(-1);
+
+	private final long id;
 
 	public RelativeTaskID(long id) {
 		this.id = id;
@@ -10,5 +14,22 @@ public class RelativeTaskID {
 
 	public long ID() {
 		return id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		final RelativeTaskID that = (RelativeTaskID) o;
+		return id == that.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }
