@@ -94,7 +94,7 @@ class Commands_Times_Task_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Times",
 				"",
-				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r + "              ",
+				u + "Time" + r + "        " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
 				ANSI_BG_GREEN + "1h 23m 20s  *      2  Very long titles will be cut off at the side of the sc..." + ANSI_RESET,
 				"   33m 20s    F    1  Very long titles will be cut off at the side of the sc...",
 				ANSI_BG_GRAY + "   16m 40s         4  Very long titles will be cut off at the side of the sc..." + ANSI_RESET,

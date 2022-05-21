@@ -124,7 +124,8 @@ public class ConsoleTable {
 				}
 			}
 			if (line.length() > terminalWidth) {
-				line = new StringBuilder(line.substring(0, terminalWidth));
+				// don't cut the line short, it might be wider than we can deal with. Just trim it
+				line = new StringBuilder(line.toString().stripTrailing());
 			}
 			System.out.println(line);
 		}
@@ -135,31 +136,23 @@ public class ConsoleTable {
 		int row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) group_count);
 		int row_count_for_group = 0;
 		int remaining_group_count = group_count;
-		boolean skip_to_next_group = false;
 
 		for (int rowNum = startRow; rowNum < cells.size(); rowNum++) {
 			List<String> row = cells.get(rowNum).cells;
 
-//			if (skip_to_next_group) {
-				if (cells.get(rowNum).full_row_header) {
-					// found the next group
-					skip_to_next_group = false;
-					if (remaining_group_count > 1) {
-						row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) remaining_group_count);
-					}
-					else {
-						row_limit_for_group = rowLimit - rowCount;
-					}
-					row_count_for_group = 0;
+			if (cells.get(rowNum).full_row_header) {
+				// found the next group
+				if (remaining_group_count > 1) {
+					row_limit_for_group = (int) Math.ceil((rowLimit - rowCount) / (double) remaining_group_count);
 				}
-//				else {
-//					continue;
-//				}
-//			}
+				else {
+					row_limit_for_group = rowLimit - rowCount;
+				}
+				row_count_for_group = 0;
+			}
 			else if (group_count > 1) {
 				if (row_count_for_group >= row_limit_for_group) {
 					remaining_group_count--;
-					skip_to_next_group = true;
 					continue;
 				}
 			}
@@ -185,6 +178,10 @@ public class ConsoleTable {
 				}
 				else {
 					format = "%" + widths.get(i) + "s";
+				}
+
+				if (widths.get(i) == 0) {
+					format = "%s";
 				}
 
 				String cellLine = String.format(format, cell);

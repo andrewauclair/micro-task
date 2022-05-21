@@ -142,7 +142,7 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "                              ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
 				ANSI_BG_GRAY + "/default   1  Very long titles will be wrapped at the side of the screen ins..." + ANSI_RESET,
 				"/default   2  Very long titles will be wrapped at the side of the screen ins...",
 				""
@@ -164,7 +164,7 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "                              ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
 				ANSI_BG_GRAY + "/default   1  Very long titles will be wrapped at the side of the screen       ",
 				"              instead of being cut off at the edge                             " + ANSI_RESET,
 				"/default   2  Very long titles will be wrapped at the side of the screen       ",
