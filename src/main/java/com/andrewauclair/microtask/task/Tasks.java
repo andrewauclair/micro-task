@@ -362,7 +362,7 @@ public class Tasks {
 
 		existingTasksFullIDs.add(task.ID());
 
-		// TODO set the short ID
+		task.setShortID(new RelativeTaskID(nextShortID++));
 
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
