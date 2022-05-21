@@ -16,6 +16,10 @@ public final class RelativeTaskID {
 		return id;
 	}
 
+	public boolean isValid() {
+		return this != NO_SHORT_ID;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
