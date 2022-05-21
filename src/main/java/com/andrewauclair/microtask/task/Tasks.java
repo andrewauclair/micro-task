@@ -362,6 +362,8 @@ public class Tasks {
 
 		existingTasksFullIDs.add(task.ID());
 
+		// TODO set the short ID
+
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
 		// used to set the active task when reloading from the files

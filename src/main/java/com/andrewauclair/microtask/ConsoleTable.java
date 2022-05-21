@@ -84,6 +84,9 @@ public class ConsoleTable {
 	}
 
 	public void addRow(ConsoleBackgroundColor bgColor, boolean full_row, String... cells) {
+		if (headers.size() != 0 && cells.length > headers.size()) {
+			throw new RuntimeException("Too many cells in row.");
+		}
 		RowCells row = new RowCells();
 		row.background_color = bgColor;
 		row.cells.addAll(Arrays.asList(cells));

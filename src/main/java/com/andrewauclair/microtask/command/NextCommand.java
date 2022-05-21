@@ -159,11 +159,11 @@ final class NextCommand implements Runnable {
 
 		if (due) {
 			table.showFirstRows();
-			table.setHeaders("List", "ID", "Due", "Description");
+			table.setHeaders("List", "ID", "", "Due", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, LEFT);
 		}
 		else {
-			table.setHeaders("List", "ID", "Description");
+			table.setHeaders("List", "ID", "", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT);
 		}
 
@@ -177,23 +177,26 @@ final class NextCommand implements Runnable {
 		for (final Task task : tasks) {
 			String fullPath = this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath();
 
+			String fullID = String.valueOf(task.fullID().ID());
+			String shortID = task.shortID() == RelativeTaskID.NO_SHORT_ID ? "" : "(" + task.shortID().ID() + ")";
+
 			if (task.state == TaskState.Active) {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(ANSI_BG_GREEN, false, fullPath, String.valueOf(task.ID()), dueStr, task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, fullID, shortID, dueStr, task.task);
 				}
 				else {
-					table.addRow(ANSI_BG_GREEN, false, fullPath, String.valueOf(task.ID()), task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, fullID, shortID, task.task);
 				}
 			}
 			else {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(fullPath, String.valueOf(task.ID()), dueStr, task.task);
+					table.addRow(fullPath, fullID, shortID, dueStr, task.task);
 
 				}
 				else {
-					table.addRow(fullPath, String.valueOf(task.ID()), task.task);
+					table.addRow(fullPath, fullID, shortID, task.task);
 				}
 			}
 		}
