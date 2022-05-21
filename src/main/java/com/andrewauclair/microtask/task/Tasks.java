@@ -372,6 +372,10 @@ public class Tasks {
 
 		existingTasks.add(task.ID());
 
+		if (task.state != TaskState.Finished) {
+			task.setShortID(new RelativeTaskID(nextShortID++));
+		}
+
 		if (commit) {
 			list.addTask(task);
 		}

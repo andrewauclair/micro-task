@@ -175,23 +175,25 @@ final class NextCommand implements Runnable {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		for (final Task task : tasks) {
+			String fullPath = this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath();
+
 			if (task.state == TaskState.Active) {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath(), String.valueOf(task.ID()), dueStr, task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, String.valueOf(task.ID()), dueStr, task.task);
 				}
 				else {
-					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath(), String.valueOf(task.ID()), task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, String.valueOf(task.ID()), task.task);
 				}
 			}
 			else {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath(), String.valueOf(task.ID()), dueStr, task.task);
+					table.addRow(fullPath, String.valueOf(task.ID()), dueStr, task.task);
 
 				}
 				else {
-					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath(), String.valueOf(task.ID()), task.task);
+					table.addRow(fullPath, String.valueOf(task.ID()), task.task);
 				}
 			}
 		}

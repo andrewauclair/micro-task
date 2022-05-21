@@ -297,6 +297,16 @@ public class DataLoader_Test {
 				new ExistingID(tasks, 4L),
 				new ExistingID(tasks, 5L)
 		);
+
+		List<Task> tasksForList = tasks.getAllTasks();
+
+		assertEquals(5, tasksForList.size());
+
+		assertEquals(1, tasksForList.get(0).shortID().ID());
+		assertEquals(-1, tasksForList.get(1).shortID().ID());
+		assertEquals(-1, tasksForList.get(2).shortID().ID());
+		assertEquals(-1, tasksForList.get(3).shortID().ID());
+		assertEquals(2, tasksForList.get(4).shortID().ID());
 	}
 
 	@Test
