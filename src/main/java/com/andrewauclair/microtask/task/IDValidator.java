@@ -4,7 +4,7 @@ package com.andrewauclair.microtask.task;
 public interface IDValidator {
 	long nextID();
 	void setStartingID(long id);
-	long incrementID();
+	NewID incrementID();
 	long nextShortID();
 	long incrementShortID();
 	void resetShortIDs();

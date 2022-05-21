@@ -74,12 +74,9 @@ public class AddTaskCommand implements Runnable {
 		}
 
 		if (taskList.canAddTask()) {
-			long newID = tasks.incrementID();
-//			ExistingID newID = tasks.reserveID();
-
 			long addTime = osInterface.currentSeconds();
 
-			TaskBuilder builder = new TaskBuilder(newID)
+			TaskBuilder builder = new TaskBuilder(tasks.incrementID())
 					.withTask(name)
 					.withState(TaskState.Inactive)
 					.withAddTime(addTime)

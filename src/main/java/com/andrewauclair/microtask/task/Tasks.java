@@ -92,9 +92,9 @@ public class Tasks {
 		// TODO This wastes an ID if the list or group is finished and we don't actually add the task
 		TaskList taskList = getList(list);
 //		if (taskList.getState() != TaskContainerState.Finished) {
-		long newID = incrementID();
-		NewID id = new NewID(idValidator, newID);
-		idValidator.addExistingID(newID);
+		NewID id = incrementID();
+//		NewID id = new NewID(idValidator, newID);
+		idValidator.addExistingID(id.get());
 
 //		Task newTask = taskList.addTask(id, task);
 
@@ -128,7 +128,7 @@ public class Tasks {
 		return getGroupForList(listName).getListAbsolute(listName.absoluteName());
 	}
 
-	public long incrementID() {
+	public NewID incrementID() {
 		return idValidator.incrementID();
 	}
 

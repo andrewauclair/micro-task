@@ -39,12 +39,12 @@ public class TaskIDValidator implements IDValidator {
 	// increment the ID and return the result
 	// TODO this should be changed to NewID or ExistingID
 	@Override
-	public long incrementID() {
+	public NewID incrementID() {
 		long nextID = this.nextID++;
 
 		writeNextID();
 
-		return nextID;
+		return new NewID(this, nextID);
 	}
 
 	private void writeNextID() {

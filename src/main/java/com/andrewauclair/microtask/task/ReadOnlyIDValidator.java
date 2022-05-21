@@ -13,7 +13,7 @@ public class ReadOnlyIDValidator implements IDValidator {
 	}
 
 	@Override
-	public long incrementID() {
+	public NewID incrementID() {
 		throw new RuntimeException("ReadOnlyIDValidator should never be called");
 	}
 
