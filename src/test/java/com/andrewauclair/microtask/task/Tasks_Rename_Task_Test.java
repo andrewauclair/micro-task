@@ -77,7 +77,13 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getTask(existingID(5)));
 		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
-	
+
+	@Test
+	void getTaskWithRelativeID_throws_exception_if_task_was_not_found() {
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getTaskWithRelativeID(new RelativeTaskID(55)));
+		assertEquals("Task with relative ID 55 does not exist.", taskException.getMessage());
+	}
+
 	@Test
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");

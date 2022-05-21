@@ -44,7 +44,7 @@ public class Tasks {
 
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
-	private final Set<Long> existingTasks = new HashSet<>();
+	private final Set<Long> existingTasksFullIDs = new HashSet<>();
 
 	private final ActiveContext activeContext = new ActiveContext(this);
 
@@ -86,7 +86,8 @@ public class Tasks {
 //		if (taskList.getState() != TaskContainerState.Finished) {
 		long newID = incrementID();
 		NewID id = new NewID(this, newID);
-		existingTasks.add(newID);
+		existingTasksFullIDs.add(newID);
+
 		Task newTask = taskList.addTask(id, task);
 		newTask.setShortID(new RelativeTaskID(nextShortID++));
 		return newTask;
@@ -347,7 +348,11 @@ public class Tasks {
 	}
 
 	public boolean hasTaskWithID(long id) {
-		return existingTasks.contains(id);
+		return existingTasksFullIDs.contains(id);
+	}
+
+	public boolean hasTaskWithRelativeID(long id) {
+		return id < nextShortID;
 	}
 
 	public void addTask(Task task) {
@@ -355,7 +360,7 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasks.add(task.ID());
+		existingTasksFullIDs.add(task.ID());
 
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
@@ -370,7 +375,7 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasks.add(task.ID());
+		existingTasksFullIDs.add(task.ID());
 
 		if (task.state != TaskState.Finished) {
 			task.setShortID(new RelativeTaskID(nextShortID++));
@@ -498,6 +503,18 @@ public class Tasks {
 		if (optionalTask.isEmpty()) {
 			throw new TaskException("Task " + id.get() + " does not exist.");
 		}
+		return optionalTask.get();
+	}
+
+	public Task getTaskWithRelativeID(RelativeTaskID id) {
+		Optional<Task> optionalTask = getAllTasks().stream()
+				.filter(task -> task.shortID().equals(id))
+				.findFirst();
+
+		if (optionalTask.isEmpty()) {
+			throw new TaskException("Task with relative ID " + id.ID() + " does not exist.");
+		}
+
 		return optionalTask.get();
 	}
 
@@ -762,6 +779,6 @@ public class Tasks {
 	}
 
 	private void resetIDs() {
-		existingTasks.clear();
+		existingTasksFullIDs.clear();
 	}
 }

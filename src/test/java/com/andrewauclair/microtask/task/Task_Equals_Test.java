@@ -11,4 +11,16 @@ class Task_Equals_Test {
 				.withIgnoredFields("shortID") // ignore shortID, it is mutable so that we don't have to recreate all tasks when shortIDs get reassigned
 				.verify();
 	}
+
+	@Test
+	void full_id_equals() {
+		EqualsVerifier.forClass(FullTaskID.class)
+				.verify();
+	}
+
+	@Test
+	void relative_id_equals() {
+		EqualsVerifier.forClass(RelativeTaskID.class)
+				.verify();
+	}
 }

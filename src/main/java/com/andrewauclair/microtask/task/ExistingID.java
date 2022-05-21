@@ -9,10 +9,22 @@ public class ExistingID {
 	private final long id;
 
 	public ExistingID(Tasks tasks, long id) {
-		this.id = id;
+		if (id > 0) {
+			this.id = id;
 
-		if (!tasks.hasTaskWithID(id)) {
-			throw new TaskException("Task " + id + " does not exist.");
+			if (!tasks.hasTaskWithID(id)) {
+				throw new TaskException("Task " + id + " does not exist.");
+			}
+		}
+		else {
+			long shortID = id * -1;
+
+			if (tasks.hasTaskWithRelativeID(shortID)) {
+				this.id = tasks.getTaskWithRelativeID(new RelativeTaskID(shortID)).fullID().ID();
+			}
+			else {
+				throw new TaskException("Task with relative ID " + shortID + " does not exist.");
+			}
 		}
 	}
 

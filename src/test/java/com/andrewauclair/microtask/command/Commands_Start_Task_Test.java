@@ -37,6 +37,33 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 	}
 
 	@Test
+	void start_task_with_relative_id() {
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+		tasks.addTask("Test");
+
+		tasks.finishTask(existingID(1));
+		tasks.finishTask(existingID(2));
+		tasks.finishTask(existingID(3));
+
+		Mockito.when(osInterface.currentSeconds()).thenReturn(1561078202L);
+
+		commands.execute(printStream, "start task -1");
+
+		assertOutput(
+				"Started task 4 - 'Test'",
+				"",
+				"06/20/2019 07:50:02 PM -",
+				""
+		);
+
+		Task task = tasks.getTask(existingID(4));
+
+		Assertions.assertEquals(TaskState.Active, task.state);
+	}
+
+	@Test
 	void multiple_starts_prints_the_correct_start_time() {
 		tasks.addTask("Task 1");
 
