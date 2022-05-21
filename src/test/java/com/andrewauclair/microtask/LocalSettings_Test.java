@@ -27,6 +27,7 @@ class LocalSettings_Test {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected IDValidator idValidator;
 	protected Tasks tasks;
 	
 //	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
@@ -45,8 +46,9 @@ class LocalSettings_Test {
 		
 		PrintStream output = new PrintStream(outputStream);
 		System.setOut(output);
-		
-		tasks = new Tasks(writer, output, osInterface);
+
+		idValidator = new TaskIDValidator(output, osInterface);
+		tasks = new Tasks(idValidator, writer, output, osInterface);
 		tasks.addList(new NewTaskListName(tasks, "/default"), true);
 		tasks.setCurrentList(new ExistingListName(tasks, "/default"));
 	}

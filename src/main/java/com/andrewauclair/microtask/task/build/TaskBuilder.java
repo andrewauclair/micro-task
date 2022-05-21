@@ -7,6 +7,7 @@ import com.andrewauclair.microtask.task.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class TaskBuilder {
 	private final long id;
@@ -44,10 +45,11 @@ public final class TaskBuilder {
 
 	public TaskBuilder(Task task) {
 		id = task.ID();
+		existingID = task.existingID();
+//		Objects.requireNonNull(existingID);
 		shortID = task.shortID();
 
 		newID = null;
-		existingID = null;
 
 		this.task = task.task;
 		state = task.state;
@@ -122,6 +124,12 @@ public final class TaskBuilder {
 	}
 
 	public Task build() {
+		if (existingID != null) {
+			Task task1 = new Task(existingID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+			task1.setShortID(shortID);
+			return task1;
+		}
+
 		Task task1 = new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 		task1.setShortID(shortID);
 		return task1;

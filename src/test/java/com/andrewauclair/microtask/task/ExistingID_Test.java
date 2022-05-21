@@ -12,8 +12,10 @@ public class ExistingID_Test {
 	@Test
 	void short_id_does_not_exist() {
 		Tasks tasks = Mockito.mock(Tasks.class);
+		IDValidator idValidator = Mockito.mock(IDValidator.class);
 
-		Mockito.when(tasks.hasTaskWithRelativeID(1)).thenReturn(false);
+		Mockito.when(idValidator.containsShortID(new RelativeTaskID(1))).thenReturn(false);
+		Mockito.when(tasks.idValidator()).thenReturn(idValidator);
 
 		TaskException taskException = assertThrows(TaskException.class, () -> new ExistingID(tasks, -1));
 

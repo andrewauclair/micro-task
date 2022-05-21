@@ -44,19 +44,27 @@ public class Tasks {
 
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
-	private final Set<Long> existingTasksFullIDs = new HashSet<>();
-
 	private final ActiveContext activeContext = new ActiveContext(this);
 
-	private long nextID = 1;
-	private long nextShortID = 1;
+//	private long nextID = 1;
+//	private long nextShortID = 1;
+
+//	private final Set<Long> existingTasksFullIDs = new HashSet<>();
+
+	private final IDValidator idValidator;
 
 	private TaskFilterBuilder filterBuilder = new TaskFilterBuilder();
 
-	public Tasks(TaskWriter writer, PrintStream output, OSInterface osInterface) {
+	public Tasks(IDValidator idValidator, TaskWriter writer, PrintStream output, OSInterface osInterface) {
+		this.idValidator = idValidator;
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
+	}
+
+	// TODO we're going to add a bunch of calls to this that can probably get the validator elsewhere
+	public IDValidator idValidator() {
+		return idValidator;
 	}
 
 	public void setProjects(Projects projects) {
@@ -85,8 +93,8 @@ public class Tasks {
 		TaskList taskList = getList(list);
 //		if (taskList.getState() != TaskContainerState.Finished) {
 		long newID = incrementID();
-		NewID id = new NewID(this, newID);
-		existingTasksFullIDs.add(newID);
+		NewID id = new NewID(idValidator, newID);
+		idValidator.addExistingID(newID);
 
 //		Task newTask = taskList.addTask(id, task);
 
@@ -106,7 +114,11 @@ public class Tasks {
 
 		taskList.addTask(newTask);
 
-		newTask.setShortID(new RelativeTaskID(nextShortID++));
+		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+		newTask.setShortID(shortID);
+
+		idValidator.mapShortIDToFullID(shortID, newTask.fullID());
+
 		return newTask;
 //		}
 //		return null;
@@ -117,31 +129,27 @@ public class Tasks {
 	}
 
 	public long incrementID() {
-		long nextID = this.nextID++;
-
-		writeNextID();
-
-		return nextID;
+		return idValidator.incrementID();
 	}
 
-	public ExistingID reserveID() {
-		long nextID = this.nextID++;
+//	public ExistingID reserveID() {
+//		long nextID = this.nextID++;
+//
+//		writeNextID();
+//
+//		existingTasksFullIDs.add(nextID);
+//
+//		return new ExistingID(this, nextID);
+//	}
 
-		writeNextID();
-
-		existingTasksFullIDs.add(nextID);
-
-		return new ExistingID(this, nextID);
-	}
-
-	private void writeNextID() {
-		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/next-id.txt"))) {
-			outputStream.print(this.nextID);
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-		}
-	}
+//	private void writeNextID() {
+//		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/next-id.txt"))) {
+//			outputStream.print(this.nextID);
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace(output);
+//		}
+//	}
 
 	public TaskGroup getGroupForList(ExistingListName list) {
 		TaskGroup group = getGroup(list.parentGroupName());
@@ -168,7 +176,7 @@ public class Tasks {
 	}
 
 	public long nextID() {
-		return nextID;
+		return idValidator.nextID();
 	}
 
 	public void moveList(ExistingListName list, ExistingGroupName group) {
@@ -291,15 +299,17 @@ public class Tasks {
 		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
 		Task finishedTask = updater.finishTask(id);
 
-		// reset the short IDs
-		nextShortID = 1;
+		idValidator.resetShortIDs();
 
 		// renumber all the short IDs
-		for (int fullID = 1; fullID < nextID; fullID++) {
+		for (int fullID = 1; fullID < idValidator.nextID(); fullID++) {
 			Task task = getTask(new ExistingID(this, fullID));
 
 			if (task.state != TaskState.Finished) {
-				task.setShortID(new RelativeTaskID(nextShortID++));
+				RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+				task.setShortID(shortID);
+
+				idValidator.mapShortIDToFullID(shortID, task.fullID());
 			}
 			else {
 				task.setShortID(RelativeTaskID.NO_SHORT_ID);
@@ -375,11 +385,7 @@ public class Tasks {
 	}
 
 	public boolean hasTaskWithID(long id) {
-		return existingTasksFullIDs.contains(id);
-	}
-
-	public boolean hasTaskWithRelativeID(long id) {
-		return id < nextShortID;
+		return idValidator.containsExistingID(id);
 	}
 
 	public void addTask(Task task) {
@@ -387,9 +393,12 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasksFullIDs.add(task.ID());
+		idValidator.addExistingID(task.ID());
 
-		task.setShortID(new RelativeTaskID(nextShortID++));
+		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+		task.setShortID(shortID);
+
+		idValidator.mapShortIDToFullID(shortID, task.fullID());
 
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
@@ -404,10 +413,13 @@ public class Tasks {
 			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
-		existingTasksFullIDs.add(task.ID());
+		idValidator.addExistingID(task.ID());
 
 		if (task.state != TaskState.Finished) {
-			task.setShortID(new RelativeTaskID(nextShortID++));
+			RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+			task.setShortID(shortID);
+
+			idValidator.mapShortIDToFullID(shortID, task.fullID());
 		}
 
 		if (commit) {
@@ -769,7 +781,7 @@ public class Tasks {
 		activeContext.setActiveTaskID(NO_ACTIVE_TASK);
 
 		try {
-			nextID = getStartingID();
+			idValidator.setStartingID(getStartingID());
 			loader.load();
 			commands.loadAliases();
 
@@ -807,6 +819,6 @@ public class Tasks {
 	}
 
 	private void resetIDs() {
-		existingTasksFullIDs.clear();
+		idValidator.clearExistingIDs();
 	}
 }

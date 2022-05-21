@@ -6,6 +6,8 @@ import java.util.*;
 public final class Task {
 	private final long id; // TODO it would be great if this was an instance of ExistingID
 
+	private final ExistingID existingID;
+
 	private final FullTaskID fullID; // set once when task is created and never changes
 	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
 
@@ -21,6 +23,7 @@ public final class Task {
 
 	public Task(long id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
 		this.id = id;
+		this.existingID = null;
 
 		this.fullID = new FullTaskID(id);
 
@@ -36,6 +39,7 @@ public final class Task {
 
 	public Task(ExistingID id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
 		this.id = id.get();
+		this.existingID = id;
 
 		this.fullID = new FullTaskID(id.get());
 
@@ -53,6 +57,10 @@ public final class Task {
 		return id;
 	}
 
+	public ExistingID existingID() {
+		return existingID;
+	}
+
 	public FullTaskID fullID() {
 		return fullID;
 	}
@@ -67,7 +75,7 @@ public final class Task {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, fullID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		return Objects.hash(id, existingID, fullID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 	}
 
 	@Override
@@ -82,6 +90,7 @@ public final class Task {
 
 		return id == otherTask.id &&
 				Objects.equals(fullID, otherTask.fullID) &&
+				Objects.equals(existingID, otherTask.existingID) &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
 				addTime == otherTask.addTime &&

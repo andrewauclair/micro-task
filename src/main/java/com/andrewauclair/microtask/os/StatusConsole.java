@@ -166,7 +166,7 @@ public class StatusConsole {
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
 
-		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
+		tasks = new Tasks(new ReadOnlyIDValidator(), new TaskWriter(osInterface), System.out, osInterface);
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 

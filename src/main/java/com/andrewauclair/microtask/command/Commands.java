@@ -360,7 +360,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks.idValidator()).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));
@@ -407,7 +407,7 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks.idValidator()).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));

@@ -12,15 +12,15 @@ public class ExistingID {
 		if (id > 0) {
 			this.id = id;
 
-			if (!tasks.hasTaskWithID(id)) {
+			if (!tasks.idValidator().containsExistingID(id)) {
 				throw new TaskException("Task " + id + " does not exist.");
 			}
 		}
 		else {
-			long shortID = id * -1;
+			RelativeTaskID shortID = new RelativeTaskID(id * -1);
 
-			if (tasks.hasTaskWithRelativeID(shortID)) {
-				this.id = tasks.getTaskWithRelativeID(new RelativeTaskID(shortID)).fullID().ID();
+			if (tasks.idValidator().containsShortID(shortID)) {
+				this.id = tasks.idValidator().fullIDFromShortID(shortID).ID();
 			}
 			else {
 				throw new TaskException("Task with relative ID " + shortID + " does not exist.");

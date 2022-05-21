@@ -49,7 +49,7 @@ public class MainConsole extends CommonConsole {
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
 
-		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
+		tasks = new Tasks(new TaskIDValidator(System.out, osInterface), new TaskWriter(osInterface), System.out, osInterface);
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
