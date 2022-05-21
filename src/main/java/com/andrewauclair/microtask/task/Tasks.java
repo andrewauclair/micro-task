@@ -49,6 +49,7 @@ public class Tasks {
 	private final ActiveContext activeContext = new ActiveContext(this);
 
 	private long nextID = 1;
+	private long nextShortID = 1;
 
 	private TaskFilterBuilder filterBuilder = new TaskFilterBuilder();
 
@@ -86,7 +87,9 @@ public class Tasks {
 		long newID = incrementID();
 		NewID id = new NewID(this, newID);
 		existingTasks.add(newID);
-		return taskList.addTask(id, task);
+		Task newTask = taskList.addTask(id, task);
+		newTask.setShortID(new RelativeTaskID(nextShortID++));
+		return newTask;
 //		}
 //		return null;
 	}
@@ -258,7 +261,25 @@ public class Tasks {
 
 	public Task finishTask(ExistingID id) {
 		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
-		return updater.finishTask(id);
+		Task finishedTask = updater.finishTask(id);
+
+		// reset the short IDs
+		nextShortID = 1;
+
+		// renumber all the short IDs
+		for (int fullID = 1; fullID < nextID; fullID++) {
+			Task task = getTask(new ExistingID(this, fullID));
+
+			if (task.state != TaskState.Finished) {
+				task.setShortID(new RelativeTaskID(nextShortID++));
+			}
+			else {
+				task.setShortID(RelativeTaskID.NO_SHORT_ID);
+			}
+		}
+
+
+		return finishedTask;
 	}
 
 	public Task getActiveTask() {
