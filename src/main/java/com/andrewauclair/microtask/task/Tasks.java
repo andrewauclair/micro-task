@@ -537,7 +537,7 @@ public class Tasks {
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.ID() == id.get())
+				.filter(task -> task.ID() == id.get().ID())
 				.findFirst();
 
 		if (optionalTask.isEmpty()) {

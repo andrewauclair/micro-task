@@ -38,10 +38,10 @@ public final class Task {
 	}
 
 	public Task(ExistingID id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
-		this.id = id.get();
+		this.id = id.get().ID();
 		this.existingID = id;
 
-		this.fullID = new FullTaskID(id.get());
+		this.fullID = new FullTaskID(id.get().ID());
 
 		this.task = task;
 		this.state = state;

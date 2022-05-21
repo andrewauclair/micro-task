@@ -80,7 +80,7 @@ public class TaskStateUpdater {
 	public Task finishTask(ExistingID id) {
 		Task task = tasks.getListForTask(id).finishTask(id);
 
-		if (id.get() == tasks.getActiveTaskID()) {
+		if (id.get().ID() == tasks.getActiveTaskID()) {
 			tasks.setActiveTaskID(NO_ACTIVE_TASK);
 		}
 

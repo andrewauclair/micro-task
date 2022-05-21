@@ -38,7 +38,7 @@ public final class TaskBuilder {
 	}
 
 	public TaskBuilder(ExistingID id) {
-		this.id = id.get();
+		this.id = id.get().ID();
 		this.newID = null;
 		this.existingID = id;
 	}

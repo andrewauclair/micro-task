@@ -6,11 +6,11 @@ import com.andrewauclair.microtask.TaskException;
 import java.util.Objects;
 
 public class ExistingID {
-	private final long id;
+	private final FullTaskID id;
 
 	public ExistingID(Tasks tasks, long id) {
 		if (id > 0) {
-			this.id = id;
+			this.id = new FullTaskID(id);
 
 			if (!tasks.idValidator().containsExistingID(id)) {
 				throw new TaskException("Task " + id + " does not exist.");
@@ -20,7 +20,7 @@ public class ExistingID {
 			RelativeTaskID shortID = new RelativeTaskID(id * -1);
 
 			if (tasks.idValidator().containsShortID(shortID)) {
-				this.id = tasks.idValidator().fullIDFromShortID(shortID).ID();
+				this.id = tasks.idValidator().fullIDFromShortID(shortID);
 			}
 			else {
 				throw new TaskException("Task with relative ID " + shortID + " does not exist.");
@@ -28,7 +28,7 @@ public class ExistingID {
 		}
 	}
 
-	public long get() {
+	public FullTaskID get() {
 		return id;
 	}
 
@@ -41,7 +41,7 @@ public class ExistingID {
 			return false;
 		}
 		final ExistingID that = (ExistingID) o;
-		return id == that.id;
+		return Objects.equals(id, that.id);
 	}
 
 	@Override
