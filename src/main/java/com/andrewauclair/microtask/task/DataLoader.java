@@ -76,7 +76,7 @@ public class DataLoader {
 						Task task = reader.readTask(id, bufferedReader);
 
 						// probably our bug where we keep writing the finished tasks that are in the archive, delete the file
-						if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks, id)).state == TaskState.Finished) {
+						if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks.idValidator(), id)).state == TaskState.Finished) {
 //							osInterface.removeFile(fileInfo.getPath());
 							osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + id + ".txt");
 						}
@@ -256,7 +256,7 @@ public class DataLoader {
 							else {
 								long taskID = Long.parseLong(line.split(" ")[1]);
 
-								ms.addTask(new ExistingID(tasks, taskID));
+								ms.addTask(new ExistingID(tasks.idValidator(), taskID));
 							}
 						}
 					}

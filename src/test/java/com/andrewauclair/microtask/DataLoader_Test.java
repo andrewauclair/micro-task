@@ -293,11 +293,11 @@ public class DataLoader_Test {
 		//new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
 		//			new Task(2, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		assertThat(project.getMilestone(new ExistingMilestone(project, "20.9.3")).getTasks()).containsOnly(
-				new ExistingID(tasks, 1L),
-				new ExistingID(tasks, 2L),
-				new ExistingID(tasks, 3L),
-				new ExistingID(tasks, 4L),
-				new ExistingID(tasks, 5L)
+				new ExistingID(tasks.idValidator(), 1L),
+				new ExistingID(tasks.idValidator(), 2L),
+				new ExistingID(tasks.idValidator(), 3L),
+				new ExistingID(tasks.idValidator(), 4L),
+				new ExistingID(tasks.idValidator(), 5L)
 		);
 
 		List<Task> tasksForList = tasks.getAllTasks();

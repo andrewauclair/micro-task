@@ -56,7 +56,7 @@ public class SetDueTasksCommand implements Runnable {
 		}
 
 		for (final Task dueTask : dueTasks) {
-			ExistingID id = new ExistingID(tasks, dueTask.ID());
+			ExistingID id = new ExistingID(tasks.idValidator(), dueTask.ID());
 
 			boolean set = true;
 

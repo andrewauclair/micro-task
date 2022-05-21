@@ -114,7 +114,7 @@ public final class TaskBuilder {
 	}
 
 	public Task start(long start, Tasks tasks, Projects projects) {
-		ExistingID existingID = new ExistingID(tasks, id);
+		ExistingID existingID = new ExistingID(tasks.idValidator(), id);
 		TaskList list = new TaskFinder(tasks).findListForTask(existingID);
 		String project = projects.getProjectForList(list);
 		String feature = projects.getFeatureForList(list);

@@ -8,19 +8,19 @@ import java.util.Objects;
 public class ExistingID {
 	private final FullTaskID id;
 
-	public ExistingID(Tasks tasks, long id) {
+	public ExistingID(IDValidator idValidator, long id) {
 		if (id > 0) {
 			this.id = new FullTaskID(id);
 
-			if (!tasks.idValidator().containsExistingID(id)) {
+			if (!idValidator.containsExistingID(id)) {
 				throw new TaskException("Task " + id + " does not exist.");
 			}
 		}
 		else {
 			RelativeTaskID shortID = new RelativeTaskID(id * -1);
 
-			if (tasks.idValidator().containsShortID(shortID)) {
-				this.id = tasks.idValidator().fullIDFromShortID(shortID);
+			if (idValidator.containsShortID(shortID)) {
+				this.id = idValidator.fullIDFromShortID(shortID);
 			}
 			else {
 				throw new TaskException("Task with relative ID " + shortID + " does not exist.");

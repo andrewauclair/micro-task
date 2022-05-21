@@ -37,7 +37,7 @@ public class Schedule {
 		List<Task> tasks = new ArrayList<>();
 
 		for (long task_id : daily_tasks) {
-			tasks.add(this.tasks.getTask(new ExistingID(this.tasks, task_id)));
+			tasks.add(this.tasks.getTask(new ExistingID(this.tasks.idValidator(), task_id)));
 		}
 		return tasks;
 	}

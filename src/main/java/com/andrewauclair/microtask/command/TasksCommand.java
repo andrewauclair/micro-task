@@ -295,7 +295,7 @@ public class TasksCommand implements Runnable {
 		tasks.sort((o1, o2) -> Long.compare(o2.ID(), o1.ID()));
 
 		for (final Task task : tasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.ID()));
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), task.ID()));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -309,7 +309,7 @@ public class TasksCommand implements Runnable {
 			}
 
 			for (Task dueTask : dueTasks) {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.ID()));
+				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), dueTask.ID()));
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 				String project_name = projects.getProjectForList(listForTask);
@@ -321,7 +321,7 @@ public class TasksCommand implements Runnable {
 		if (tasksData.hasActiveTask() && !display_schedule) {
 			table.addRow(true, "Active Task");
 
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().ID()));
+			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), tasksData.getActiveTask().ID()));
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);

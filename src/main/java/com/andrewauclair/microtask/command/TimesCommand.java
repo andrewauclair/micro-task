@@ -482,9 +482,9 @@ public final class TimesCommand implements Runnable {
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks, task.task.ID())));
+			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks.idValidator(), task.task.ID())));
 //			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
-			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.task.ID())));
+			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks.idValidator(), task.task.ID())));
 
 			if (project.isEmpty()) {
 				project = "None";

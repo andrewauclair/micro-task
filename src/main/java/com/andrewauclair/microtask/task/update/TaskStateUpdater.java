@@ -66,11 +66,11 @@ public class TaskStateUpdater {
 			startTime = lastTask.get().startStopTimes.get(size - 1).stop;
 		}
 
-		return tasks.getList(tasks.getActiveTaskList()).startTask(new ExistingID(tasks, tasks.getActiveTaskID()), startTime, tasks, projects);
+		return tasks.getList(tasks.getActiveTaskList()).startTask(new ExistingID(tasks.idValidator(), tasks.getActiveTaskID()), startTime, tasks, projects);
 	}
 
 	public Task stopTask() {
-		Task stoppedTask = tasks.getList(tasks.getActiveTaskList()).stopTask(new ExistingID(tasks, tasks.getActiveTaskID()));
+		Task stoppedTask = tasks.getList(tasks.getActiveTaskList()).stopTask(new ExistingID(tasks.idValidator(), tasks.getActiveTaskID()));
 
 		tasks.setActiveTaskID(NO_ACTIVE_TASK);
 

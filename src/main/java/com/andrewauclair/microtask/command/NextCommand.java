@@ -175,7 +175,7 @@ final class NextCommand implements Runnable {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		for (final Task task : tasks) {
-			String fullPath = this.tasks.findListForTask(new ExistingID(this.tasks, task.ID())).getFullPath();
+			String fullPath = this.tasks.findListForTask(new ExistingID(this.tasks.idValidator(), task.ID())).getFullPath();
 
 			String fullID = String.valueOf(task.fullID().ID());
 			String shortID = task.shortID() == RelativeTaskID.NO_SHORT_ID ? "" : "(" + task.shortID().ID() + ")";

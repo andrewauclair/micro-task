@@ -17,7 +17,7 @@ public class ExistingID_Test {
 		Mockito.when(idValidator.containsShortID(new RelativeTaskID(1))).thenReturn(false);
 		Mockito.when(tasks.idValidator()).thenReturn(idValidator);
 
-		TaskException taskException = assertThrows(TaskException.class, () -> new ExistingID(tasks, -1));
+		TaskException taskException = assertThrows(TaskException.class, () -> new ExistingID(tasks.idValidator(), -1));
 
 		assertEquals("Task with relative ID 1 does not exist.", taskException.getMessage());
 	}

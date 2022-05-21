@@ -54,7 +54,7 @@ final class SearchCommand implements Runnable {
 				.collect(Collectors.toList());
 
 		if (verbose) {
-			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks, o.ID())).getFullPath()));
+			searchResults.sort(Comparator.comparing(o -> tasks.findListForTask(new ExistingID(tasks.idValidator(), o.ID())).getFullPath()));
 		}
 
 		if (group) {
@@ -71,7 +71,7 @@ final class SearchCommand implements Runnable {
 		String currentList = "";
 
 		for (Task task : searchResults) {
-			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks, task.ID()));
+			TaskList listForTask = tasks.findListForTask(new ExistingID(tasks.idValidator(), task.ID()));
 
 			if (verbose && !listForTask.getFullPath().equals(currentList)) {
 				if (!currentList.isEmpty()) {

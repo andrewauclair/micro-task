@@ -67,7 +67,7 @@ class TaskBaseTestCase {
 	}
 
 	public ExistingID existingID(long id) {
-		return new ExistingID(tasks, id);
+		return new ExistingID(tasks.idValidator(), id);
 	}
 
 	public NewID newID(long id) {

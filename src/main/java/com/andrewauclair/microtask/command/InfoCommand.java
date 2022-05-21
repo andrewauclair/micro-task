@@ -77,12 +77,12 @@ final class InfoCommand implements Runnable {
 			System.out.println();
 		}
 
-		System.out.println("on list '" + tasks.findListForTask(new ExistingID(tasks, task.ID())).getFullPath() + "'");
+		System.out.println("on list '" + tasks.findListForTask(new ExistingID(tasks.idValidator(), task.ID())).getFullPath() + "'");
 		System.out.println();
 
 
-		System.out.println("Project '" + projects.getProjectForList(tasks.getListForTask(new ExistingID(tasks, task.ID()))) + "'");
-		System.out.println("Feature '" + projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.ID()))) + "'");
+		System.out.println("Project '" + projects.getProjectForList(tasks.getListForTask(new ExistingID(tasks.idValidator(), task.ID()))) + "'");
+		System.out.println("Feature '" + projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks.idValidator(), task.ID()))) + "'");
 		System.out.println();
 
 		if (task.state != TaskState.Finished) {

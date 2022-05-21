@@ -27,7 +27,7 @@ public class TaskRecurringUpdater {
 				.withRecurring(recurring)
 				.build();
 
-		String list = tasks.findListForTask(new ExistingID(tasks, task.ID())).getFullPath();
+		String list = tasks.findListForTask(new ExistingID(tasks.idValidator(), task.ID())).getFullPath();
 		tasks.replaceTask(new ExistingListName(tasks, list), optionalTask, task);
 
 		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";

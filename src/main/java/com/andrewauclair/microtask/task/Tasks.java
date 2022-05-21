@@ -216,7 +216,7 @@ public class Tasks {
 	}
 
 	public Task finishTask() {
-		return finishTask(new ExistingID(this, getActiveTask().ID()));
+		return finishTask(new ExistingID(idValidator, getActiveTask().ID()));
 	}
 
 	public List<Task> getTasksForList(ExistingListName listName) {
@@ -292,7 +292,7 @@ public class Tasks {
 		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		return new ExistingListName(this, getListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath());
+		return new ExistingListName(this, getListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID())).getFullPath());
 	}
 
 	public Task finishTask(ExistingID id) {
@@ -303,7 +303,7 @@ public class Tasks {
 
 		// renumber all the short IDs
 		for (int fullID = 1; fullID < idValidator.nextID(); fullID++) {
-			Task task = getTask(new ExistingID(this, fullID));
+			Task task = getTask(new ExistingID(idValidator, fullID));
 
 			if (task.state != TaskState.Finished) {
 				RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
@@ -324,9 +324,9 @@ public class Tasks {
 		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		TaskList list = findListForTask(new ExistingID(this, activeContext.getActiveTaskID()));
+		TaskList list = findListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID()));
 
-		return list.getTask(new ExistingID(this, activeContext.getActiveTaskID()));
+		return list.getTask(new ExistingID(idValidator, activeContext.getActiveTaskID()));
 	}
 
 	public void renameList(ExistingListName currentName, NewTaskListName newName) {
@@ -524,7 +524,7 @@ public class Tasks {
 
 		Task task = builder.build();
 
-		String list = findListForTask(new ExistingID(this, task.ID())).getFullPath();
+		String list = findListForTask(new ExistingID(idValidator, task.ID())).getFullPath();
 		replaceTask(new ExistingListName(this, list), origTask, task);
 
 		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
@@ -589,13 +589,13 @@ public class Tasks {
 				.withState(state)
 				.build();
 
-		String list = findListForTask(new ExistingID(this, task.ID())).getFullPath();
+		String list = findListForTask(new ExistingID(idValidator, task.ID())).getFullPath();
 		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
 		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		findListForTask(new ExistingID(this, task.ID())).writeArchive();
+		findListForTask(new ExistingID(idValidator, task.ID())).writeArchive();
 
 		osInterface.gitCommit("Set state for task " + task.ID() + " to " + state);
 
@@ -791,7 +791,7 @@ public class Tasks {
 
 			if (activeTask.isPresent()) {
 				activeContext.setActiveTaskID(activeTask.get().ID());
-				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
+				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}
 		}
