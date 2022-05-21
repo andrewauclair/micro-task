@@ -57,7 +57,10 @@ public class Project {
 		int count = 0;
 		for (final TaskContainer child : group.getChildren()) {
 			count++;
-			if (child instanceof TaskGroup childGroup) {
+			if (child instanceof TaskGroup) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskGroup childGroup = (TaskGroup) child;
+
 				count += getFeatureCountForGroup(childGroup);
 			}
 		}
@@ -74,7 +77,10 @@ public class Project {
 			if (child.getState() == TaskContainerState.Finished) {
 				count++;
 			}
-			if (child instanceof TaskGroup childGroup) {
+			if (child instanceof TaskGroup) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskGroup childGroup = (TaskGroup) child;
+
 				count += getFinishedFeatureCountForGroup(childGroup);
 			}
 		}

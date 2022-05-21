@@ -110,7 +110,10 @@ public class Projects {
 			TaskGroup projectGroup = tasks.getGroup(new ExistingGroupName(tasks, "/projects/"));
 
 			for (final TaskContainer child : projectGroup.getChildren()) {
-				if (child instanceof TaskGroup group) {
+				if (child instanceof TaskGroup) {
+					// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+					TaskGroup group = (TaskGroup) child;
+
 					if (osInterface.fileExists("git-data/tasks" + group.getFullPath() + "project.txt")) {
 						createProject(new NewProject(this, group.getName()), false);
 					}

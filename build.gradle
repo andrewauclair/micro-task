@@ -34,13 +34,13 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:4.3.1'
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add("--enable-preview")
-}
+//tasks.withType(JavaCompile) {
+//    options.compilerArgs.add("--enable-preview")
+//}
 
 test {
     useJUnitPlatform()
-    jvmArgs("--enable-preview")
+//    jvmArgs("--enable-preview")
 }
 
 description = 'micro task'

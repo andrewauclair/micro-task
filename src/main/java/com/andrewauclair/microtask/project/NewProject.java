@@ -26,9 +26,12 @@ public class NewProject {
 
 	@Override
 	public final boolean equals(Object o) {
-		if (!(o instanceof NewProject that)) {
+		if (!(o instanceof NewProject)) {
 			return false;
 		}
+		// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+		NewProject that = (NewProject) o;
+
 		return Objects.equals(getName(), that.getName());
 	}
 

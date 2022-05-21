@@ -213,11 +213,17 @@ public class DataLoader_Test {
 			path = "";
 		}
 		for (final FileSystemEntity entity : folder.entities) {
-			if (entity instanceof DataFolder childFolder) {
+			if (entity instanceof DataFolder) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				DataFolder childFolder = (DataFolder) entity;
+
 				createMocksForFolder(path, childFolder);
 				fileInfo.add(new OSInterface.TaskFileInfo(childFolder.name, "git-data/tasks" + path + "/" + childFolder.name, true));
 			}
-			else if (entity instanceof DataFile file) {
+			else if (entity instanceof DataFile) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				DataFile file = (DataFile) entity;
+
 				fileInfo.add(new OSInterface.TaskFileInfo(file.name, "git-data/tasks" + path + "/" + file.name, false));
 
 				Mockito.when(osInterface.createInputStream("git-data/tasks" + path + "/" + file.name)).thenReturn(

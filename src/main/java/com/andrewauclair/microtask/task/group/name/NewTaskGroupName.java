@@ -21,9 +21,12 @@ public class NewTaskGroupName extends TaskGroupName {
 
 	@Override
 	public final boolean equals(Object o) {
-		if (!(o instanceof TaskGroupName that)) {
+		if (!(o instanceof TaskGroupName)) {
 			return false;
 		}
+		// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+		TaskGroupName that = (TaskGroupName) o;
+
 		return Objects.equals(absoluteName(), that.absoluteName()) &&
 				Objects.equals(shortName(), that.shortName());
 	}

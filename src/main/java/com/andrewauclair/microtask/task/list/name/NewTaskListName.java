@@ -21,9 +21,12 @@ public class NewTaskListName extends TaskListName {
 
 	@Override
 	public final boolean equals(Object o) {
-		if (!(o instanceof TaskListName that)) {
+		if (!(o instanceof TaskListName)) {
 			return false;
 		}
+		// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+		TaskListName that = (TaskListName) o;
+
 		return Objects.equals(absoluteName(), that.absoluteName()) &&
 				Objects.equals(shortName(), that.shortName()) &&
 				Objects.equals(parentGroupName(), that.parentGroupName());

@@ -143,12 +143,18 @@ public final class TaskGroup implements TaskContainer {
 
 	public boolean containsListAbsolute(String name) {
 		for (final TaskContainer child : children) {
-			if (child instanceof TaskList list) {
+			if (child instanceof TaskList) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskList list = (TaskList) child;
+
 				if (list.getFullPath().equals(name)) {
 					return true;
 				}
 			}
-			else if (child instanceof TaskGroup group) {
+			else if (child instanceof TaskGroup) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskGroup group = (TaskGroup) child;
+
 				if (group.containsListAbsolute(name)) {
 					return true;
 				}
@@ -173,7 +179,10 @@ public final class TaskGroup implements TaskContainer {
 
 	Optional<TaskGroup> getGroupAbsolute(String path) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskGroup group) {
+			if (child instanceof TaskGroup ) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskGroup group = (TaskGroup) child;
+
 				Optional<TaskGroup> result = group.getGroupAbsolute(path);
 
 				if (result.isPresent()) {
@@ -197,7 +206,10 @@ public final class TaskGroup implements TaskContainer {
 
 	private void buildNewChildren(TaskGroup group) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskList list) {
+			if (child instanceof TaskList) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskList list = (TaskList) child;
+
 				group.children.add(list.changeParent(group));
 			}
 			else {

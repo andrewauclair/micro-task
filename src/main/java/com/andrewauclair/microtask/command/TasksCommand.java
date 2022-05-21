@@ -452,7 +452,10 @@ public class TasksCommand implements Runnable {
 		List<Task> tasks = new ArrayList<>();
 
 		for (final TaskContainer child : group.getChildren()) {
-			if (child instanceof TaskList list) {
+			if (child instanceof TaskList) {
+				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+				TaskList list = (TaskList) child;
+
 				tasks.addAll(list.getTasks().stream()
 						.filter(task -> finished == (task.state == TaskState.Finished))
 						.collect(Collectors.toList()));

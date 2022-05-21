@@ -26,9 +26,12 @@ public final class NewFeature {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof NewFeature that)) {
+		if (!(o instanceof NewFeature)) {
 			return false;
 		}
+		// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
+		NewFeature that = (NewFeature) o;
+
 		return Objects.equals(getName(), that.getName());
 	}
 
