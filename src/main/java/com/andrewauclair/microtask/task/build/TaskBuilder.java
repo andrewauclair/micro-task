@@ -10,6 +10,7 @@ import java.util.List;
 
 public final class TaskBuilder {
 	private final long id;
+	private RelativeTaskID shortID;
 	private String task = "";
 	private TaskState state = TaskState.Inactive;
 	private long addTime = 0;
@@ -25,6 +26,7 @@ public final class TaskBuilder {
 
 	public TaskBuilder(Task task) {
 		id = task.ID();
+		shortID = task.shortID();
 		this.task = task.task;
 		state = task.state;
 		addTime = task.addTime;
@@ -98,7 +100,9 @@ public final class TaskBuilder {
 	}
 
 	public Task build() {
-		return new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		Task task1 = new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		task1.setShortID(shortID);
+		return task1;
 	}
 
 	public Task finish(long finishTime) {

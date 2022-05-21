@@ -47,4 +47,18 @@ class Task_ShortIDs_Test extends TaskBaseTestCase {
 		assertEquals(8, tasks.getTask(existingID(9)).shortID().ID());
 		assertEquals(9, tasks.getTask(existingID(10)).shortID().ID());
 	}
+
+	@Test
+	void starting_task_keeps_short_id() {
+		for (int i = 0; i < 10; i++) {
+			tasks.addTask("Test");
+		}
+
+		tasks.startTask(existingID(4), false);
+
+		for (int i = 1; i <= 10; i++) {
+			assertEquals(i, tasks.getTask(existingID(i)).fullID().ID());
+			assertEquals(i, tasks.getTask(existingID(i)).shortID().ID());
+		}
+	}
 }
