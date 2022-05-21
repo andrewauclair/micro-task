@@ -34,6 +34,21 @@ public final class Task {
 		this.tags = Collections.unmodifiableList(tags);
 	}
 
+	public Task(ExistingID id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
+		this.id = id.get();
+
+		this.fullID = new FullTaskID(id.get());
+
+		this.task = task;
+		this.state = state;
+		this.addTime = addTime;
+		this.finishTime = finishTime;
+		this.startStopTimes = Collections.unmodifiableList(startStopTimes);
+		this.recurring = recurring;
+		this.dueTime = dueTime;
+		this.tags = Collections.unmodifiableList(tags);
+	}
+
 	public long ID() {
 		return id;
 	}

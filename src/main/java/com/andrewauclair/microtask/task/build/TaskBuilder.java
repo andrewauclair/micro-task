@@ -10,6 +10,10 @@ import java.util.List;
 
 public final class TaskBuilder {
 	private final long id;
+
+	private final NewID newID;
+	private final ExistingID existingID;
+
 	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
 	private String task = "";
 	private TaskState state = TaskState.Inactive;
@@ -22,15 +26,29 @@ public final class TaskBuilder {
 
 	public TaskBuilder(long id) {
 		this.id = id;
+		newID = null;
+		existingID = null;
+	}
+
+	public TaskBuilder(NewID id) {
+		this.id = id.get();
+		this.newID = id;
+		this.existingID = null;
+	}
+
+	public TaskBuilder(ExistingID id) {
+		this.id = id.get();
+		this.newID = null;
+		this.existingID = id;
 	}
 
 	public TaskBuilder(Task task) {
 		id = task.ID();
 		shortID = task.shortID();
 
-		if (shortID == null) {
-			shortID = RelativeTaskID.NO_SHORT_ID; // TODO Kind of a code smell, need to figure out where it's setting to null
-		}
+		newID = null;
+		existingID = null;
+
 		this.task = task.task;
 		state = task.state;
 		addTime = task.addTime;

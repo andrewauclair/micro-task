@@ -5,10 +5,7 @@ import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskList;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
@@ -78,6 +75,7 @@ public class AddTaskCommand implements Runnable {
 
 		if (taskList.canAddTask()) {
 			long newID = tasks.incrementID();
+//			ExistingID newID = tasks.reserveID();
 
 			long addTime = osInterface.currentSeconds();
 

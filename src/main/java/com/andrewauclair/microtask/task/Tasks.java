@@ -88,7 +88,24 @@ public class Tasks {
 		NewID id = new NewID(this, newID);
 		existingTasksFullIDs.add(newID);
 
-		Task newTask = taskList.addTask(id, task);
+//		Task newTask = taskList.addTask(id, task);
+
+		if (taskList.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task '" + task + "' cannot be created because list '" + taskList.getFullPath() + "' has been finished.");
+		}
+
+		long addTime = osInterface.currentSeconds();
+
+		Task newTask = new TaskBuilder(id.get())
+				.withTask(task)
+				.withState(TaskState.Inactive)
+				.withAddTime(addTime)
+				.withRecurring(false)
+				.withDueTime(addTime + 604_800L)
+				.build();
+
+		taskList.addTask(newTask);
+
 		newTask.setShortID(new RelativeTaskID(nextShortID++));
 		return newTask;
 //		}
@@ -105,6 +122,16 @@ public class Tasks {
 		writeNextID();
 
 		return nextID;
+	}
+
+	public ExistingID reserveID() {
+		long nextID = this.nextID++;
+
+		writeNextID();
+
+		existingTasksFullIDs.add(nextID);
+
+		return new ExistingID(this, nextID);
 	}
 
 	private void writeNextID() {
@@ -478,9 +505,8 @@ public class Tasks {
 
 	public Task setTags(ExistingID id, List<String> tags) {
 		Task origTask = getTask(id);
-		TaskBuilder builder = new TaskBuilder(origTask);
-
-		builder.clearTags();
+		TaskBuilder builder = new TaskBuilder(origTask)
+				.clearTags();
 
 		tags.forEach(builder::withTag);
 
