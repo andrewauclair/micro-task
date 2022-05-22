@@ -94,7 +94,7 @@ public class Tasks {
 //		if (taskList.getState() != TaskContainerState.Finished) {
 		NewID id = incrementID();
 //		NewID id = new NewID(idValidator, newID);
-		idValidator.addExistingID(id.get());
+//		idValidator.addExistingID(id.get());
 
 //		Task newTask = taskList.addTask(id, task);
 
@@ -104,7 +104,7 @@ public class Tasks {
 
 		long addTime = osInterface.currentSeconds();
 
-		Task newTask = new TaskBuilder(id.get())
+		Task newTask = new TaskBuilder(idValidator, id)
 				.withTask(task)
 				.withState(TaskState.Inactive)
 				.withAddTime(addTime)
@@ -410,7 +410,7 @@ public class Tasks {
 
 	public void addTask(Task task, TaskList list, boolean commit) {
 		if (hasTaskWithID(task.ID())) {
-			throw new TaskException("Task with ID " + task.ID() + " already exists.");
+//			throw new TaskException("Task with ID " + task.ID() + " already exists.");
 		}
 
 		idValidator.addExistingID(task.ID());

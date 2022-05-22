@@ -65,13 +65,13 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		tasks.setCurrentList(existingList("default"));
 
 		assertThat(tasks.getTasksForList(existingList("default"))).containsOnly(
-				newTask(1, "default List Task 1", TaskState.Inactive, 1000),
-				newTask(2, "default List Task 2", TaskState.Inactive, 2000)
+				newTask(existingID(1), "default List Task 1", TaskState.Inactive, 1000),
+				newTask(existingID(2), "default List Task 2", TaskState.Inactive, 2000)
 		);
 
 		assertThat(tasks.getTasksForList(existingList("test"))).containsOnly(
-				newTask(3, "test List Task 1", TaskState.Inactive, 3000),
-				newTask(4, "test List Task 2", TaskState.Inactive, 4000)
+				newTask(existingID(3), "test List Task 1", TaskState.Inactive, 3000),
+				newTask(existingID(4), "test List Task 2", TaskState.Inactive, 4000)
 		);
 	}
 

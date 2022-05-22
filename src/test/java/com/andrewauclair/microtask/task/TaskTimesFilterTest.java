@@ -177,7 +177,7 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void TaskFilterResult_toString() {
-		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, task='Test', state=Inactive, addTime=1000, finishTime=None, startStopTimes=[1000 - 2000, project='', feature=''], recurring=false, due=605800, tags=[]}, list='/default'}",
+		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, existingID=null, task='Test', state=Inactive, addTime=1000, finishTime=None, startStopTimes=[1000 - 2000, project='', feature=''], recurring=false, due=605800, tags=[]}, list='/default'}",
 				new TaskTimesFilter.TaskTimeFilterResult(1000, newTask(1, "Test", TaskState.Inactive, 1000, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
 	}
 	

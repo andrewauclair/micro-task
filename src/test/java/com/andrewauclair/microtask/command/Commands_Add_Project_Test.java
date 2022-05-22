@@ -47,7 +47,7 @@ public class Commands_Add_Project_Test extends CommandsBaseTestCase {
 		TaskList list = tasks.getList(new ExistingListName(tasks, "/projects/test/general"));
 
 		assertThat(list.getTasks()).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Planning")
 						.withState(TaskState.Inactive)
 						.withRecurring(true)

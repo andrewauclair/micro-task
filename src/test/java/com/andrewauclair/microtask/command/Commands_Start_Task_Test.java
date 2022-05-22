@@ -107,8 +107,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Test 1", TaskState.Inactive, 1234, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
-				newTask(2, "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1234, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
+				newTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(
@@ -135,8 +135,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start task 2 --finish-active-task");
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
-				newTask(2, "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
+				newTask(existingID(1), "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
+				newTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(

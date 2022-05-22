@@ -30,8 +30,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task newActiveTask = tasks.startTask(existingID(task.ID()), false);
 
-		Task oldTask = newTask(2, "Testing task start command", TaskState.Inactive, 0);
-		Task activeTask = newTask(2, "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
+		Task oldTask = newTask(existingID(2), "Testing task start command", TaskState.Inactive, 0);
+		Task activeTask = newTask(existingID(2), "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -168,8 +168,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(2), true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))),
-				newTaskBuilder(2, "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
+				newTask(existingID(1), "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))),
+				newTaskBuilder(existingID(2), "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
 		);
 	}
 
@@ -186,7 +186,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task task = tasks.startTask(existingID(1), false);
 
-		assertEquals(newTask(1, "Test", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(2000))), task);
+		assertEquals(newTask(existingID(1), "Test", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(2000))), task);
 	}
 
 	@Test
@@ -216,7 +216,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		tasks.startTask(existingID(3), false);
 
-		Task expectedTask = new TaskBuilder(3)
+		Task expectedTask = new TaskBuilder(existingID(3))
 				.withTask("Test")
 				.withState(TaskState.Active)
 				.withAddTime(3000)

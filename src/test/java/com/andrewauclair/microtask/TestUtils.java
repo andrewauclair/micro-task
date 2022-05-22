@@ -1,10 +1,7 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask;
 
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.TaskTimes;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.io.ByteArrayInputStream;
@@ -43,7 +40,24 @@ public class TestUtils {
 				.build();
 	}
 
+	public static Task newTask(ExistingID id, String name, TaskState state, long addTime) {
+		return new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
+				.build();
+	}
+
 	public static TaskBuilder newTaskBuilder(long id, String name, TaskState state, long addTime) {
+		return new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+	}
+
+	public static TaskBuilder newTaskBuilder(ExistingID id, String name, TaskState state, long addTime) {
 		return new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)
@@ -63,7 +77,31 @@ public class TestUtils {
 		return builder.build();
 	}
 
+	public static Task newTask(ExistingID id, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+
+		startStopTimes.forEach(builder::withStartStopTime);
+
+		return builder.build();
+	}
+
 	public static TaskBuilder newTaskBuilder(long id, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+
+		startStopTimes.forEach(builder::withStartStopTime);
+
+		return builder;
+	}
+
+	public static TaskBuilder newTaskBuilder(ExistingID id, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
 		TaskBuilder builder = new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)
@@ -88,7 +126,33 @@ public class TestUtils {
 		return builder.build();
 	}
 
+	public static Task newTask(ExistingID id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withFinishTime(finishTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+
+		startStopTimes.forEach(builder::withStartStopTime);
+
+		return builder.build();
+	}
+
 	public static TaskBuilder newTaskBuilder(long id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withFinishTime(finishTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+
+		startStopTimes.forEach(builder::withStartStopTime);
+
+		return builder;
+	}
+
+	public static TaskBuilder newTaskBuilder(ExistingID id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
 		TaskBuilder builder = new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)

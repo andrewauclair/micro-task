@@ -12,7 +12,7 @@ import java.util.Objects;
 public final class TaskBuilder {
 	private final long id;
 
-	private final NewID newID;
+//	private final NewID newID;
 	private final ExistingID existingID;
 
 	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
@@ -25,31 +25,40 @@ public final class TaskBuilder {
 	private long dueTime = 0;
 	private final List<String> tags = new ArrayList<>();
 
+	// only used by the tests because that's going to take more work to work out
 	public TaskBuilder(long id) {
 		this.id = id;
-		newID = null;
+//		newID = null;
 		existingID = null;
 	}
 
-	public TaskBuilder(NewID id) {
+	public TaskBuilder(IDValidator idValidator, NewID id) {
 		this.id = id.get();
-		this.newID = id;
-		this.existingID = null;
+//		this.newID = id;
+
+		idValidator.addExistingID(id.get());
+
+		this.existingID = new ExistingID(idValidator, id.get());
 	}
 
 	public TaskBuilder(ExistingID id) {
 		this.id = id.get().ID();
-		this.newID = null;
+//		this.newID = null;
 		this.existingID = id;
 	}
 
 	public TaskBuilder(Task task) {
 		id = task.ID();
-		existingID = task.existingID();
-//		Objects.requireNonNull(existingID);
+
+		if (task.existingID() != null) {
+			existingID = task.existingID();
+		}
+		else {
+			existingID = null;
+		}
 		shortID = task.shortID();
 
-		newID = null;
+//		newID = null;
 
 		this.task = task.task;
 		state = task.state;

@@ -21,6 +21,7 @@ public final class Task {
 
 	public final List<String> tags;
 
+	// only called by TaskBuilder
 	public Task(long id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
 		this.id = id;
 		this.existingID = null;
@@ -37,6 +38,7 @@ public final class Task {
 		this.tags = Collections.unmodifiableList(tags);
 	}
 
+	// only called by TaskBuilder
 	public Task(ExistingID id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
 		this.id = id.get().ID();
 		this.existingID = id;
@@ -105,6 +107,7 @@ public final class Task {
 	public String toString() {
 		return "Task{" +
 				"id=" + id +
+				", existingID=" + existingID +
 				", task='" + task + '\'' +
 				", state=" + state +
 				", addTime=" + addTime +

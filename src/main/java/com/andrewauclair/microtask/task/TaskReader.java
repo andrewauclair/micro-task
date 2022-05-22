@@ -16,13 +16,13 @@ public class TaskReader {
 		this.osInterface = osInterface;
 	}
 
-	Task readTask(long id, String fileName) throws IOException {
+	Task readTask(ExistingID id, String fileName) throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(osInterface.createInputStream(fileName)))) {
 			return readTask(id, reader);
 		}
 	}
 
-	Task readTask(long id, BufferedReader reader) throws IOException {
+	Task readTask(ExistingID id, BufferedReader reader) throws IOException {
 		TaskBuilder builder = new TaskBuilder(id)
 				.withTask(reader.readLine())
 				.withState(TaskState.valueOf(reader.readLine()))

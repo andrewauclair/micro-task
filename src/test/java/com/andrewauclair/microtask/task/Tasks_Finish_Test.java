@@ -96,7 +96,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		Task task = tasks.finishTask(existingID(1));
 
 		assertEquals(
-				newTask(1, "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))),
+				newTask(existingID(1), "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))),
 				task
 		);
 	}

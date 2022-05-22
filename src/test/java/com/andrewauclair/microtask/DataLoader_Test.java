@@ -320,10 +320,10 @@ public class DataLoader_Test {
 		dataLoader.load();
 
 		assertThat(tasks.getTasksForList(new ExistingListName(tasks, "/projects/micro-task/one"))).containsOnly(
-				newTask(2, "Test", TaskState.Inactive, 1000),
-				newTask(3, "Test Finished", TaskState.Finished, 1001),
-				newTask(4, "Test Finished 2", TaskState.Finished, 1002),
-				newTask(5, "Test Finished 3", TaskState.Finished, 1003)
+				newTask(new ExistingID(tasks.idValidator(), 2), "Test", TaskState.Inactive, 1000),
+				newTask(new ExistingID(tasks.idValidator(), 3), "Test Finished", TaskState.Finished, 1001),
+				newTask(new ExistingID(tasks.idValidator(), 4), "Test Finished 2", TaskState.Finished, 1002),
+				newTask(new ExistingID(tasks.idValidator(), 5), "Test Finished 3", TaskState.Finished, 1003)
 		);
 	}
 

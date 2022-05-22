@@ -29,8 +29,8 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Testing tasks", TaskState.Inactive, 1000),
-				newTask(2, "Testing tasks 2", TaskState.Inactive, 2000)
+				newTask(existingID(1), "Testing tasks", TaskState.Inactive, 1000),
+				newTask(existingID(2), "Testing tasks 2", TaskState.Inactive, 2000)
 		);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
@@ -41,11 +41,11 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask(existingID(1));
 		
-		Task finishedTask = newTask(1, "Testing tasks", TaskState.Finished, 1000, 4567, Collections.emptyList());
+		Task finishedTask = newTask(existingID(1), "Testing tasks", TaskState.Finished, 1000, 4567, Collections.emptyList());
 
 		assertThat(tasks.getTasks()).containsOnly(
 				finishedTask,
-				newTask(2, "Testing tasks 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)))
+				newTask(existingID(2), "Testing tasks 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)))
 		);
 
 		assertEquals(finishedTask, task);
@@ -64,7 +64,7 @@ class Tasks_InactiveTask_Finish_Test extends TaskBaseTestCase {
 	void finish_with_no_active_task_does_not_throw_exception() {
 		Task finishedTask = tasks.finishTask(existingID(2));
 		
-		assertEquals(newTask(2, "Testing tasks 2", TaskState.Finished, 2000, 3000, Collections.emptyList()), finishedTask);
+		assertEquals(newTask(existingID(2), "Testing tasks 2", TaskState.Finished, 2000, 3000, Collections.emptyList()), finishedTask);
 	}
 
 	@Test

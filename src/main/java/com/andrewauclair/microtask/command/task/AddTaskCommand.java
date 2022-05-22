@@ -76,13 +76,12 @@ public class AddTaskCommand implements Runnable {
 		if (taskList.canAddTask()) {
 			long addTime = osInterface.currentSeconds();
 
-			TaskBuilder builder = new TaskBuilder(tasks.incrementID())
+			TaskBuilder builder = new TaskBuilder(tasks.idValidator(), tasks.incrementID())
 					.withTask(name)
 					.withState(TaskState.Inactive)
 					.withAddTime(addTime)
-					.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
-
-			builder.withRecurring(recurring);
+					.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
+					.withRecurring(recurring);
 
 			if (due != null) {
 				long dueTime = due.dueTime();

@@ -156,14 +156,14 @@ public final class TaskList implements TaskContainer {
 		return getState() != TaskContainerState.Finished;
 	}
 
-	public Task addTask(NewID id, String name) {
+	public Task addTask(IDValidator idValidator, NewID id, String name) {
 		if (getState() == TaskContainerState.Finished) {
 			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
 		}
 
 		long addTime = osInterface.currentSeconds();
 
-		Task task = new TaskBuilder(id.get())
+		Task task = new TaskBuilder(idValidator, id)
 				.withTask(name)
 				.withState(TaskState.Inactive)
 				.withAddTime(addTime)
