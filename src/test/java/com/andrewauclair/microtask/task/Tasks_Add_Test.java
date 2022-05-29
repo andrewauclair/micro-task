@@ -145,7 +145,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 
 		tasks.addTask(task);
 
-		assertEquals(1, tasks.getActiveTask().ID());
+		assertEquals(1, tasks.getActiveTask().ID().get().ID());
 	}
 	
 	@Test

@@ -62,15 +62,15 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public Optional<TaskList> findListForTask(ExistingID id) {
-		if (containsTask(id.get().ID())) {
+		if (containsTask(id)) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
 	}
 
-	boolean containsTask(long taskID) {
+	boolean containsTask(ExistingID taskID) {
 		return tasks.stream()
-				.anyMatch(task -> task.ID() == taskID);
+				.anyMatch(task -> task.ID().equals(taskID));
 	}
 
 	@Override
@@ -235,7 +235,7 @@ public final class TaskList implements TaskContainer {
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.ID() == id.get().ID())
+				.filter(task -> task.ID().equals(id))
 				.findFirst();
 
 		if (optionalTask.isPresent()) {

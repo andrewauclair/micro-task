@@ -28,7 +28,7 @@ public class TaskStateUpdater {
 			throw new TaskException("Task has already been finished.");
 		}
 
-		if (tasks.getActiveTaskID() == currentTask.ID()) {
+		if (tasks.getActiveTaskID() == currentTask.ID().get().ID()) {
 			throw new TaskException("Task is already active.");
 		}
 
@@ -43,7 +43,7 @@ public class TaskStateUpdater {
 			}
 		}
 
-		tasks.setActiveTaskID(currentTask.ID());
+		tasks.setActiveTaskID(currentTask.ID().get().ID());
 		tasks.setCurrentList(tasks.getActiveTaskList());
 		tasks.setCurrentGroup(tasks.getActiveTaskList().parentGroupName());
 

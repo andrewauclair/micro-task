@@ -35,11 +35,7 @@ public final class Task {
 		this.tags = Collections.unmodifiableList(tags);
 	}
 
-	public long ID() {
-		return existingID.get().ID();
-	}
-
-	public ExistingID existingID() {
+	public ExistingID ID() {
 		return existingID;
 	}
 

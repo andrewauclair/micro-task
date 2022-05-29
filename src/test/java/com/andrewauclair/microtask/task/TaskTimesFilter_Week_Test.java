@@ -80,7 +80,7 @@ class TaskTimesFilter_Week_Test extends TaskBaseTestCase {
 	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		osInterface.setTime(start);
-		tasks.startTask(existingID(task.ID()), false);
+		tasks.startTask(task.ID(), false);
 		osInterface.setTime(stop);
 		return tasks.stopTask();
 	}

@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.project.NewProject;
+import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
 
@@ -59,10 +60,25 @@ public class Commands_Schedule_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "schedule --day");
 
 		assertThat(schedule.tasks().stream()
-				.map(task -> task.ID())
+				.map(Task::ID)
 				.collect(Collectors.toList())
 		).containsOnly(
-				4L, 8L, 7L, 11L, 12L, 16L, 17L, 6L, 10L, 14L, 18L, 5L, 9L, 13L, 21L, 25L
+				existingID(4L),
+				existingID(8L),
+				existingID(7L),
+				existingID(11L),
+				existingID(12L),
+				existingID(16L),
+				existingID(17L),
+				existingID(6L),
+				existingID(10L),
+				existingID(14L),
+				existingID(18L),
+				existingID(5L),
+				existingID(9L),
+				existingID(13L),
+				existingID(21L),
+				existingID(25L)
 		);
 	}
 

@@ -65,7 +65,7 @@ final class NextCommand implements Runnable {
 		}
 
 		List<Task> tasks = this.tasks.getAllTasks().stream()
-				.sorted(Comparator.comparingLong(o -> o.ID()))
+				.sorted(Comparator.comparingLong(o -> o.ID().get().ID()))
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
 				.filter(this::includeTask)
@@ -175,7 +175,7 @@ final class NextCommand implements Runnable {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		for (final Task task : tasks) {
-			String fullPath = this.tasks.findListForTask(new ExistingID(this.tasks.idValidator(), task.ID())).getFullPath();
+			String fullPath = this.tasks.findListForTask(task.ID()).getFullPath();
 
 			String fullID = String.valueOf(task.fullID().ID());
 			String shortID = task.shortID() == RelativeTaskID.NO_SHORT_ID ? "" : "(" + task.shortID().ID() + ")";

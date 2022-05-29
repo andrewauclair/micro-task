@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 public class ExistingID {
@@ -51,8 +52,10 @@ public class ExistingID {
 
 	@Override
 	public String toString() {
-		return "ExistingID{" +
-				"id=" + id +
-				'}';
+		return String.valueOf(id);
+	}
+
+	public static int compare(ExistingID o1, ExistingID o2) {
+		return Long.compare(o1.get().ID(), o2.get().ID());
 	}
 }

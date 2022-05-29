@@ -33,7 +33,7 @@ public final class TaskBuilder {
 	}
 
 	public TaskBuilder(Task task) {
-		existingID = task.existingID();
+		existingID = task.ID();
 		shortID = task.shortID();
 
 		this.task = task.task;

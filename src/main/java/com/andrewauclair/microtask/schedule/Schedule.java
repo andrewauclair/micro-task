@@ -20,7 +20,7 @@ public class Schedule {
 	private final Tasks tasks;
 	private final OSInterface osInterface;
 
-	private final List<Long> daily_tasks = new ArrayList<>();
+	private final List<ExistingID> daily_tasks = new ArrayList<>();
 
 	public Schedule(Tasks tasks, OSInterface osInterface) {
 		this.tasks = tasks;
@@ -36,8 +36,8 @@ public class Schedule {
 	public List<Task> tasks() {
 		List<Task> tasks = new ArrayList<>();
 
-		for (long task_id : daily_tasks) {
-			tasks.add(this.tasks.getTask(new ExistingID(this.tasks.idValidator(), task_id)));
+		for (ExistingID task_id : daily_tasks) {
+			tasks.add(this.tasks.getTask(task_id));
 		}
 		return tasks;
 	}
@@ -79,11 +79,11 @@ public class Schedule {
 
 					int task_count = (int) Math.round((val.getValue() / 100.0) * TASKS_PER_DAY);
 
-					List<Long> tasks_for_day_for_project = project.getGroup().getTasks().stream()
+					List<ExistingID> tasks_for_day_for_project = project.getGroup().getTasks().stream()
 							.filter(task -> task.state != TaskState.Finished)
 							.filter(task -> !task.recurring)
 							.sorted(Comparator.comparingLong(o -> o.dueTime))
-							.map(task -> task.ID())
+							.map(Task::ID)
 							.limit(task_count)
 							.collect(Collectors.toList());
 
@@ -101,8 +101,8 @@ public class Schedule {
 		daily_tasks.addAll(allTasks.stream()
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
-				.map(task -> task.ID())
-				.sorted()
+				.map(Task::ID)
+				.sorted(ExistingID::compare)
 				.limit(remaining_tasks)
 				.collect(Collectors.toList()));
 	}

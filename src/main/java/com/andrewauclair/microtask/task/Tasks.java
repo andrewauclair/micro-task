@@ -216,7 +216,7 @@ public class Tasks {
 	}
 
 	public Task finishTask() {
-		return finishTask(new ExistingID(idValidator, getActiveTask().ID()));
+		return finishTask(getActiveTask().ID());
 	}
 
 	public List<Task> getTasksForList(ExistingListName listName) {
@@ -405,7 +405,7 @@ public class Tasks {
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.ID());
+			activeContext.setActiveTaskID(task.ID().get().ID());
 		}
 
 		return task;
@@ -435,7 +435,7 @@ public class Tasks {
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.ID());
+			activeContext.setActiveTaskID(task.ID().get().ID());
 		}
 
 		return task;
@@ -530,7 +530,7 @@ public class Tasks {
 
 		Task task = builder.build();
 
-		String list = findListForTask(new ExistingID(idValidator, task.ID())).getFullPath();
+		String list = findListForTask(task.ID()).getFullPath();
 		replaceTask(new ExistingListName(this, list), origTask, task);
 
 		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
@@ -543,7 +543,7 @@ public class Tasks {
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.ID() == id.get().ID())
+				.filter(task -> task.ID().equals(id))
 				.findFirst();
 
 		if (optionalTask.isEmpty()) {
@@ -595,13 +595,13 @@ public class Tasks {
 				.withState(state)
 				.build();
 
-		String list = findListForTask(new ExistingID(idValidator, task.ID())).getFullPath();
+		String list = findListForTask(task.ID()).getFullPath();
 		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
 		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		findListForTask(new ExistingID(idValidator, task.ID())).writeArchive();
+		findListForTask(task.ID()).writeArchive();
 
 		osInterface.gitCommit("Set state for task " + task.ID() + " to " + state);
 
@@ -796,7 +796,7 @@ public class Tasks {
 					.findFirst();
 
 			if (activeTask.isPresent()) {
-				activeContext.setActiveTaskID(activeTask.get().ID());
+				activeContext.setActiveTaskID(activeTask.get().ID().get().ID());
 				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}

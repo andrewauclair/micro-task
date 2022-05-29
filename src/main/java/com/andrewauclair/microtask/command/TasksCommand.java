@@ -291,11 +291,11 @@ public class TasksCommand implements Runnable {
 			tasks.clear();
 		}
 
-		dueTasks.sort((o1, o2) -> Long.compare(o2.ID(), o1.ID()));
-		tasks.sort((o1, o2) -> Long.compare(o2.ID(), o1.ID()));
+		dueTasks.sort((o1, o2) -> ExistingID.compare(o2.ID(), o1.ID()));
+		tasks.sort((o1, o2) -> ExistingID.compare(o2.ID(), o1.ID()));
 
 		for (final Task task : tasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), task.ID()));
+			TaskList listForTask = tasksData.findListForTask(task.ID());
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -309,7 +309,7 @@ public class TasksCommand implements Runnable {
 			}
 
 			for (Task dueTask : dueTasks) {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), dueTask.ID()));
+				TaskList listForTask = tasksData.findListForTask(dueTask.ID());
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 				String project_name = projects.getProjectForList(listForTask);
@@ -321,7 +321,7 @@ public class TasksCommand implements Runnable {
 		if (tasksData.hasActiveTask() && !display_schedule) {
 			table.addRow(true, "Active Task");
 
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData.idValidator(), tasksData.getActiveTask().ID()));
+			TaskList listForTask = tasksData.findListForTask(tasksData.getActiveTask().ID());
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -406,7 +406,7 @@ public class TasksCommand implements Runnable {
 	}
 
 	private void addTaskToTable(ConsoleTable table, Task task, String listName, String projectName, boolean due, boolean printListName, boolean printProjectName) {
-		boolean active = task.ID() == tasksData.getActiveTaskID();
+		boolean active = task.ID().get().ID() == tasksData.getActiveTaskID();
 
 		String type;
 		if (active) {
