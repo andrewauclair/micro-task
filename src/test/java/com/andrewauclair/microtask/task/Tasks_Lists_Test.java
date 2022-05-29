@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.TestUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -12,8 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,13 +62,13 @@ class Tasks_Lists_Test extends TaskBaseTestCase {
 		tasks.setCurrentList(existingList("default"));
 
 		assertThat(tasks.getTasksForList(existingList("default"))).containsOnly(
-				newTask(existingID(1), "default List Task 1", TaskState.Inactive, 1000).build(),
-				newTask(existingID(2), "default List Task 2", TaskState.Inactive, 2000).build()
+				TestUtils.existingTask(existingID(1), "default List Task 1", TaskState.Inactive, 1000).build(),
+				TestUtils.existingTask(existingID(2), "default List Task 2", TaskState.Inactive, 2000).build()
 		);
 
 		assertThat(tasks.getTasksForList(existingList("test"))).containsOnly(
-				newTask(existingID(3), "test List Task 1", TaskState.Inactive, 3000).build(),
-				newTask(existingID(4), "test List Task 2", TaskState.Inactive, 4000).build()
+				TestUtils.existingTask(existingID(3), "test List Task 1", TaskState.Inactive, 3000).build(),
+				TestUtils.existingTask(existingID(4), "test List Task 2", TaskState.Inactive, 4000).build()
 		);
 	}
 

@@ -5,9 +5,7 @@ import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -77,7 +75,7 @@ class TaskBuilderTest {
 
 	@Test
 	void finished_task_can_not_be_renamed() {
-		TaskBuilder builder = new TaskBuilder(1)
+		TaskBuilder builder = new TaskBuilder(idValidator, new NewID(idValidator, 1))
 				.withTask("Test")
 				.withState(TaskState.Finished);
 

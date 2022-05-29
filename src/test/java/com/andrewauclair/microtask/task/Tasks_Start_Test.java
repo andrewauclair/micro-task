@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -30,8 +30,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task newActiveTask = tasks.startTask(existingID(task.ID()), false);
 
-		Task oldTask = newTask(existingID(2), "Testing task start command", TaskState.Inactive, 0).build();
-		Task activeTask = newTask(existingID(2), "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
+		Task oldTask = TestUtils.existingTask(existingID(2), "Testing task start command", TaskState.Inactive, 0).build();
+		Task activeTask = TestUtils.existingTask(existingID(2), "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 		assertEquals(tasks.getActiveTask(), newActiveTask);
@@ -168,8 +168,8 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(2), true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))).build(),
-				newTaskBuilder(existingID(2), "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
+				TestUtils.existingTask(existingID(1), "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))).build(),
+				TestUtils.existingTaskBuilder(existingID(2), "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
 		);
 	}
 
@@ -186,7 +186,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task task = tasks.startTask(existingID(1), false);
 
-		assertEquals(newTask(existingID(1), "Test", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(2000))), task);
+		assertEquals(TestUtils.existingTask(existingID(1), "Test", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(2000))), task);
 	}
 
 	@Test

@@ -2,11 +2,11 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -21,7 +21,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(1), "Testing rename typo here, fixed");
 
-		Task task = newTask(existingID(1), "Testing rename typo here, fixed", TaskState.Inactive, 1000).build();
+		Task task = TestUtils.existingTask(existingID(1), "Testing rename typo here, fixed", TaskState.Inactive, 1000).build();
 		
 		assertEquals(task, renameTask);
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -35,7 +35,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(2), "Renaming task");
 
-		Task task = newTask(existingID(2), "Renaming task", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(3000)));
+		Task task = TestUtils.existingTask(existingID(2), "Renaming task", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(3000)));
 		
 		assertEquals(task, renameTask);
 	}
@@ -92,7 +92,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(1), "Renamed this task");
 
-		Task task = newTask(existingID(1), "Renamed this task", TaskState.Inactive, 1000).build();
+		Task task = TestUtils.existingTask(existingID(1), "Renamed this task", TaskState.Inactive, 1000).build();
 		
 		assertEquals(task, renameTask);
 		

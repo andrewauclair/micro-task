@@ -146,10 +146,10 @@ public class CommandsBaseTestCase {
 	}
 
 	public ExistingID existingID(long ID) {
-		return new ExistingID(tasks.idValidator(), ID);
+		return new ExistingID(idValidator, ID);
 	}
 
 	public NewID newID(long ID) {
-		return new NewID(tasks.idValidator(), ID);
+		return new NewID(idValidator, ID);
 	}
 }

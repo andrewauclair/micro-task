@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
@@ -30,7 +31,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(10), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(10), "Test 1", TaskState.Active, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(20), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(30), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(500), idValidator, "Testing a longer name in the times command because it's not done anywhere else and there's a bug right now", TaskState.Inactive, addTime, true).build(), "/default")
@@ -219,7 +220,7 @@ class Commands_Times_Today_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(10), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(10), "Test 1", TaskState.Active, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(20), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(30), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/default"),
 						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(500), idValidator, "Testing a longer name in the times command because it's not done anywhere else and there's a bug right now", TaskState.Inactive, addTime, true).build(), "/default")

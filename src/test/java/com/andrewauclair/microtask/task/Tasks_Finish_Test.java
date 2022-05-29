@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -96,7 +97,7 @@ class Tasks_Finish_Test extends TaskBaseTestCase {
 		Task task = tasks.finishTask(existingID(1));
 
 		assertEquals(
-				newTask(existingID(1), "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))).build(),
+				TestUtils.existingTask(existingID(1), "Test", TaskState.Finished, 1000, 3000, Collections.singletonList(new TaskTimes(2000, 3000))).build(),
 				task
 		);
 	}

@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class TaskBuilder {
-	private final long id;
-
-//	private final NewID newID;
 	private final ExistingID existingID;
 
 	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
@@ -25,40 +22,19 @@ public final class TaskBuilder {
 	private long dueTime = 0;
 	private final List<String> tags = new ArrayList<>();
 
-	// only used by the tests because that's going to take more work to work out
-	public TaskBuilder(long id) {
-		this.id = id;
-//		newID = null;
-		existingID = null;
-	}
-
 	public TaskBuilder(IDValidator idValidator, NewID id) {
-		this.id = id.get();
-//		this.newID = id;
-
 		idValidator.addExistingID(id.get());
 
 		this.existingID = new ExistingID(idValidator, id.get());
 	}
 
 	public TaskBuilder(ExistingID id) {
-		this.id = id.get().ID();
-//		this.newID = null;
 		this.existingID = id;
 	}
 
 	public TaskBuilder(Task task) {
-		id = task.ID();
-
-		if (task.existingID() != null) {
-			existingID = task.existingID();
-		}
-		else {
-			existingID = null;
-		}
+		existingID = task.existingID();
 		shortID = task.shortID();
-
-//		newID = null;
 
 		this.task = task.task;
 		state = task.state;
@@ -72,7 +48,7 @@ public final class TaskBuilder {
 
 	public TaskBuilder withTask(String name) {
 		if (state == TaskState.Finished) {
-			throw new TaskException("Task " + id + " cannot be renamed because it has been finished.");
+			throw new TaskException("Task " + existingID.get() + " cannot be renamed because it has been finished.");
 		}
 		task = name;
 		return this;
@@ -80,7 +56,6 @@ public final class TaskBuilder {
 
 	public TaskBuilder withState(TaskState state) {
 		if (this.state == TaskState.Finished && state != TaskState.Finished) {
-//			startStopTimes.remove(startStopTimes.size() - 1);
 			finishTime = TaskTimes.TIME_NOT_SET;
 		}
 		this.state = state;
@@ -123,7 +98,6 @@ public final class TaskBuilder {
 	}
 
 	public Task start(long start, Tasks tasks, Projects projects) {
-		ExistingID existingID = new ExistingID(tasks.idValidator(), id);
 		TaskList list = new TaskFinder(tasks).findListForTask(existingID);
 		String project = projects.getProjectForList(list);
 		String feature = projects.getFeatureForList(list);
@@ -133,14 +107,7 @@ public final class TaskBuilder {
 	}
 
 	public Task build() {
-
-		if (existingID != null) {
-			Task task1 = new Task(existingID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
-			task1.setShortID(shortID);
-			return task1;
-		}
-
-		Task task1 = new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		Task task1 = new Task(existingID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 		task1.setShortID(shortID);
 		return task1;
 	}

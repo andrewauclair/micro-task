@@ -5,7 +5,6 @@ import com.andrewauclair.microtask.project.ExistingProject;
 import com.andrewauclair.microtask.project.NewFeature;
 import com.andrewauclair.microtask.project.NewProject;
 import com.andrewauclair.microtask.project.Project;
-import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 

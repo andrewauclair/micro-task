@@ -1,6 +1,7 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.os.ConsoleColors;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
@@ -43,11 +44,11 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(2784, newTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, TestUtils.existingTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, TestUtils.existingTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, TestUtils.existingTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, TestUtils.existingTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data")
 				)
 		);
 
@@ -101,11 +102,11 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(2784, newTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, TestUtils.existingTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, TestUtils.existingTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, TestUtils.existingTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, TestUtils.existingTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data")
 				)
 		);
 
@@ -169,16 +170,16 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(661, newTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3829, newTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6155, newTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(3940, newTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(2784, newTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(2894, newTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, TestUtils.existingTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, TestUtils.existingTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, TestUtils.existingTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(661, TestUtils.existingTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3829, TestUtils.existingTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6155, TestUtils.existingTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(3940, TestUtils.existingTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, TestUtils.existingTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(2894, TestUtils.existingTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
 				)
 		);
 
@@ -254,16 +255,16 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(661, newTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3829, newTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6155, newTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(3940, newTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(2784, newTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(2894, newTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, TestUtils.existingTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, TestUtils.existingTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, TestUtils.existingTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(661, TestUtils.existingTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3829, TestUtils.existingTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6155, TestUtils.existingTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(3940, TestUtils.existingTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, TestUtils.existingTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(2894, TestUtils.existingTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
 				)
 		);
 
@@ -332,16 +333,16 @@ class Commands_Times_Group_List_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(661, newTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3829, newTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6155, newTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(3940, newTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(2784, newTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(2894, newTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, TestUtils.existingTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, TestUtils.existingTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, TestUtils.existingTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(661, TestUtils.existingTask(existingID(10), "Test 10", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3829, TestUtils.existingTask(existingID(11), "Test 11", TaskState.Inactive, addTime).build(), "/two/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6155, TestUtils.existingTask(existingID(12), "Test 12", TaskState.Finished, addTime).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(3940, TestUtils.existingTask(existingID(15), "Test 15", TaskState.Inactive, addTime, true).build(), "/two/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(2784, TestUtils.existingTask(existingID(7), "Test 7", TaskState.Inactive, addTime).build(), "/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(2894, TestUtils.existingTask(existingID(8), "Test 8", TaskState.Inactive, addTime).build(), "/default")
 				)
 		);
 

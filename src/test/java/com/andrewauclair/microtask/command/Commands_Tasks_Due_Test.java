@@ -15,7 +15,7 @@ import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColo
 public class Commands_Tasks_Due_Test extends CommandsBaseTestCase {
 	@Test
 	void finished_tasks_are_not_due() {
-		tasks.addTask(new TaskBuilder(tasks.nextID())
+		tasks.addTask(new TaskBuilder(idValidator, newID(tasks.nextID()))
 				.withTask("Test")
 				.withState(TaskState.Finished)
 				.withDueTime(0));

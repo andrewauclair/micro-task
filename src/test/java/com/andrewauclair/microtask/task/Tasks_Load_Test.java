@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.CommandsBaseTestCase;
-import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +11,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static com.andrewauclair.microtask.TestUtils.newTask;

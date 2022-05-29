@@ -2,7 +2,6 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.os.OSInterface;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -47,7 +46,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/tasks/default/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123,
 				Collections.singletonList(
 						new TaskTimes(1234, "Project", "Feature")
 				)
@@ -78,7 +77,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/tasks/default/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123)
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123)
 				.withDueTime(0)
 				.withTag("one")
 				.withTag("two")
@@ -106,7 +105,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123)
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123)
 				.withRecurring(true)
 				.withDueTime(0)
 				.build();
@@ -133,7 +132,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123)
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123)
 				.withDueTime(1234567)
 				.build();
 
@@ -158,7 +157,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123)
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123)
 				.withDueTime(0).build();
 
 		assertEquals(expectedTask, task);
@@ -190,7 +189,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Active, 123,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Active, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
@@ -226,7 +225,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Inactive, 123,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
@@ -262,7 +261,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Inactive, 123,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
@@ -299,7 +298,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Inactive, 123,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567, "start", "stop"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
@@ -334,7 +333,7 @@ class TaskReaderTest {
 
 		Task task = reader.readTask(id, "git-data/1.txt");
 
-		Task expectedTask = newTaskBuilder(id, "Test", TaskState.Finished, 1234, 3456,
+		Task expectedTask = existingTaskBuilder(id, "Test", TaskState.Finished, 1234, 3456,
 				Collections.singletonList(new TaskTimes(2345, 3456))
 		).withDueTime(0).build();
 

@@ -2,10 +2,10 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +24,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 	void adding_task_adds_it_to_a_list() {
 		Task actualTask = tasks.addTask("Testing task add command");
 
-		Task expectedTask = newTask(existingID(1), "Testing task add command", TaskState.Inactive, 1000).build();
+		Task expectedTask = TestUtils.existingTask(existingID(1), "Testing task add command", TaskState.Inactive, 1000).build();
 
 		assertThat(tasks.getTasks()).containsOnly(expectedTask);
 		assertEquals(expectedTask, actualTask);
@@ -162,7 +161,7 @@ class Tasks_Add_Test extends TaskBaseTestCase {
 		tasks.addTask("Test", existingList("one"));
 
 		assertThat(tasks.getTasksForList(existingList("one"))).containsOnly(
-				newTask(existingID(1), "Test", TaskState.Inactive, 1000).build()
+				TestUtils.existingTask(existingID(1), "Test", TaskState.Inactive, 1000).build()
 		);
 	}
 

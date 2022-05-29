@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimes;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -107,8 +107,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1234, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
-				newTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
+				TestUtils.existingTask(existingID(1), "Test 1", TaskState.Inactive, 1234, Collections.singletonList(new TaskTimes(1234, 1561078202L))),
+				TestUtils.existingTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(
@@ -135,8 +135,8 @@ class Commands_Start_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "start task 2 --finish-active-task");
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))).build(),
-				newTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
+				TestUtils.existingTask(existingID(1), "Test 1", TaskState.Finished, 1234, 1561078202L, Collections.singletonList(new TaskTimes(1234, 1561078202L))).build(),
+				TestUtils.existingTask(existingID(2), "Test 2", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(1561078202L)))
 		);
 
 		assertOutput(
