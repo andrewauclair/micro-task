@@ -114,33 +114,4 @@ public final class Utils {
 
 		return currentVersion;
 	}
-
-	public enum FormatID {
-		ONLY_FULL_ID,
-		ONLY_SHORT_ID,
-		BOTH_IDS
-	}
-
-	public static String formatID(Task task, FormatID format) {
-		// only full: 5678
-		// only short: ^15
-		// both (w/ short): 5678 (15)
-		// both (w/o short): 5678
-
-		switch (format) {
-			case ONLY_FULL_ID -> {
-				return Long.toString(task.fullID().ID());
-			}
-			case ONLY_SHORT_ID -> {
-				return "^" + task.shortID().ID();
-			}
-			case BOTH_IDS -> {
-				if (task.shortID().isValid()) {
-					return String.format("%d (%d)", task.fullID().ID(), task.shortID().ID());
-				}
-				return Long.toString(task.fullID().ID());
-			}
-		}
-		return "";
-	}
 }

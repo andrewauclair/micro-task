@@ -505,9 +505,10 @@ public class Tasks {
 	}
 
 	public Task getTask(ExistingID id) {
-		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.ID().equals(id))
-				.findFirst();
+//		Optional<Task> optionalTask = getAllTasks().stream()
+//				.filter(task -> task.ID().equals(id))
+//				.findFirst();
+		Optional<Task> optionalTask = rootGroup.findTask(id);
 
 		if (optionalTask.isEmpty()) {
 			throw new TaskException("Task " + id.get() + " does not exist.");
@@ -516,9 +517,10 @@ public class Tasks {
 	}
 
 	public Task getTaskWithRelativeID(RelativeTaskID id) {
-		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.shortID().equals(id))
-				.findFirst();
+//		Optional<Task> optionalTask = getAllTasks().stream()
+//				.filter(task -> task.shortID().equals(id))
+//				.findFirst();
+		Optional<Task> optionalTask = rootGroup.findTask(id);
 
 		if (optionalTask.isEmpty()) {
 			throw new TaskException("Task with relative ID " + id.ID() + " does not exist.");

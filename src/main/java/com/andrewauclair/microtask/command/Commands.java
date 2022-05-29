@@ -222,8 +222,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new StatusCommand(this, osInterface);
 			case "project":
 				return new ProjectCommand(tasks, projects, localSettings, osInterface);
-			case "datagen":
-				return new RandomDataGenerator(tasks);
 			case "group":
 				return new GroupCommand(tasks);
 			case "tasks":

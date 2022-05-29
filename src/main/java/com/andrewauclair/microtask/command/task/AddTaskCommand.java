@@ -91,8 +91,6 @@ public class AddTaskCommand implements Runnable {
 				tags.forEach(builder::withTag);
 			}
 
-//			Task task = builder.build();
-
 			Task task = tasks.addTask(builder, taskList, true);
 
 			System.out.println("Added task " + task.description());

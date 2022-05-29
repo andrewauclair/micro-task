@@ -18,6 +18,8 @@ import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Command(name = "list")
 public class SetListCommand implements Runnable {
@@ -84,7 +86,9 @@ public class SetListCommand implements Runnable {
 
 			TaskList list = tasks.getList(new ExistingListName(tasks, this.list.absoluteName()));
 
-			for (final Task task : list.getTasks()) {
+			List<Task> listTasks = new ArrayList<>(list.getTasks());
+
+			for (final Task task : listTasks) {
 				tasks.setDueDate(task.ID(), dueTime);
 
 				System.out.println("Set due date for task " + task.description() + " to " + eodStr);

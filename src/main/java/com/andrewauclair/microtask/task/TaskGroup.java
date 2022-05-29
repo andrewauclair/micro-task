@@ -77,11 +77,35 @@ public final class TaskGroup implements TaskContainer {
 
 	@Override
 	public Optional<TaskList> findListForTask(ExistingID id) {
-		for (TaskContainer child : getChildren()) {
+		for (TaskContainer child : children) {
 			Optional<TaskList> list = child.findListForTask(id);
 
 			if (list.isPresent()) {
 				return list;
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Task> findTask(ExistingID id) {
+		for (final TaskContainer child : children) {
+			Optional<Task> task = child.findTask(id);
+
+			if (task.isPresent()) {
+				return task;
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Task> findTask(RelativeTaskID id) {
+		for (final TaskContainer child : children) {
+			Optional<Task> task = child.findTask(id);
+
+			if (task.isPresent()) {
+				return task;
 			}
 		}
 		return Optional.empty();

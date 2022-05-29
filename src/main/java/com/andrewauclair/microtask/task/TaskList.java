@@ -8,10 +8,7 @@ import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class TaskList implements TaskContainer {
@@ -60,7 +57,8 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public List<Task> getTasks() {
-		return new ArrayList<>(tasks);
+//		return new ArrayList<>(tasks);
+		return Collections.unmodifiableList(tasks);
 	}
 
 	@Override
@@ -69,6 +67,20 @@ public final class TaskList implements TaskContainer {
 			return Optional.of(this);
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Task> findTask(ExistingID id) {
+		return tasks.stream()
+				.filter(task -> task.ID().equals(id))
+				.findFirst();
+	}
+
+	@Override
+	public Optional<Task> findTask(RelativeTaskID id) {
+		return tasks.stream()
+				.filter(task -> task.shortID().equals(id))
+				.findFirst();
 	}
 
 	boolean containsTask(ExistingID taskID) {

@@ -43,6 +43,7 @@ public class MoveTaskCommand implements Runnable {
 	@Override
 	public void run() {
 		if (args.id == null) {
+			// create list of IDs for all non-finished tasks on the given src list
 			List<Task> tasks = this.tasks.getList(args.src_list).getTasks().stream()
 					.filter(task -> task.state != TaskState.Finished)
 					.sorted((o1, o2) -> ExistingID.compare(o1.ID(), o2.ID()))
@@ -55,25 +56,26 @@ public class MoveTaskCommand implements Runnable {
 			}
 		}
 
-		for (ExistingID taskID : args.id) {
-			boolean move = true;
+		TaskList list = tasks.getListByName(dest_list);
 
+		for (ExistingID taskID : args.id) {
 			if (interactive) {
 				System.out.println(tasks.getTask(taskID).description());
-				move = osInterface.promptChoice("move task " + taskID.get());
+
+				if (!osInterface.promptChoice("move task " + taskID.get())) {
+					continue;
+				}
 			}
 
-			if (move) {
-				moveTask(dest_list, taskID);
-			}
+			moveTask(list, taskID);
 		}
 		System.out.println();
 	}
 
-	private void moveTask(ExistingListName list, ExistingID taskID) {
+	private void moveTask(TaskList list, ExistingID taskID) {
 		TaskList taskList = tasks.getListForTask(taskID);
-		taskList.moveTask(taskID, tasks.getListByName(list));
+		taskList.moveTask(taskID, list);
 
-		System.out.println("Moved task " + taskID.get() + " to list '" + list + "'");
+		System.out.println("Moved task " + taskID.get() + " to list '" + list.getFullPath() + "'");
 	}
 }
