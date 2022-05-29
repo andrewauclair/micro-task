@@ -7,10 +7,7 @@ import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.jline.ProjectCompleter;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.Tasks;
-import com.sun.jna.platform.mac.SystemB;
 import picocli.CommandLine;
-
-import java.lang.reflect.Constructor;
 
 public final class PicocliFactory implements CommandLine.IFactory {
 	private final Commands commands;

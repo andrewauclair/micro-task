@@ -6,7 +6,10 @@ import com.andrewauclair.microtask.os.OSInterface;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TaskIDValidator implements IDValidator {
 	// TODO temporarily public to ease refactoring

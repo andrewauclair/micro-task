@@ -2,5 +2,6 @@
 package com.andrewauclair.microtask.task.replace;
 
 public class TaskGroupReplacer {
-	public void replaceGroup() {}
+	public void replaceGroup() {
+	}
 }

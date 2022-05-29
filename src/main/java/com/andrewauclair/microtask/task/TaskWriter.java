@@ -18,7 +18,7 @@ public class TaskWriter {
 	}
 
 	public boolean writeTask(Task task, String fileName) {
-		try (DataOutputStream stream = osInterface.createOutputStream(fileName)){
+		try (DataOutputStream stream = osInterface.createOutputStream(fileName)) {
 			writeTask(task, stream);
 			return true;
 		}

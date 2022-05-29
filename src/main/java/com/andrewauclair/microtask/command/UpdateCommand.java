@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;

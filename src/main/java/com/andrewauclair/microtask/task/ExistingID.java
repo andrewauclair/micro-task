@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class ExistingID {

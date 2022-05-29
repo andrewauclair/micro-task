@@ -3,7 +3,10 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskList;
+import com.andrewauclair.microtask.task.TaskState;
+import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 

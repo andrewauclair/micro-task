@@ -7,7 +7,6 @@ import com.andrewauclair.microtask.task.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public final class TaskBuilder {
 	private final ExistingID existingID;

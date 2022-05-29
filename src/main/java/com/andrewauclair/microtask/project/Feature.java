@@ -9,7 +9,10 @@ import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Feature {
 	private final OSInterface osInterface;

@@ -4,7 +4,10 @@ package com.andrewauclair.microtask.task.update;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskState;
+import com.andrewauclair.microtask.task.Tasks;
 
 import java.util.Optional;
 

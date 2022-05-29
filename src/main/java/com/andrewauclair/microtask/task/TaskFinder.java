@@ -2,8 +2,6 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.util.Optional;
 
@@ -22,7 +20,7 @@ public class TaskFinder {
 //		}
 //		return false;
 //	}
-	
+
 	// TODO Is there a way that we could create a custom stream to do stuff like this where we loop through everything?
 	public TaskList findListForTask(ExistingID id) {
 		Optional<TaskList> listForTask = tasks.getRootGroup().findListForTask(id);

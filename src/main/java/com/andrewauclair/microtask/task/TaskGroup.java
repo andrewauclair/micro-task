@@ -179,7 +179,7 @@ public final class TaskGroup implements TaskContainer {
 
 	Optional<TaskGroup> getGroupAbsolute(String path) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskGroup ) {
+			if (child instanceof TaskGroup) {
 				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
 				TaskGroup group = (TaskGroup) child;
 

@@ -3,10 +3,15 @@ package com.andrewauclair.microtask.task;
 
 public interface IDValidator {
 	long nextID();
+
 	void setStartingID(long id);
+
 	NewID incrementID();
+
 	long nextShortID();
+
 	long incrementShortID();
+
 	void resetShortIDs();
 
 	boolean containsShortID(RelativeTaskID id);
@@ -17,6 +22,8 @@ public interface IDValidator {
 
 	// TODO refactor these, have to add them for now
 	void addExistingID(long id);
+
 	boolean containsExistingID(long id);
+
 	void clearExistingIDs();
 }

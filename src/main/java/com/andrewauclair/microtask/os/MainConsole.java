@@ -10,11 +10,10 @@ import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
 import com.sun.jna.platform.win32.Kernel32;
-import org.jline.reader.*;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
-import org.jline.utils.AttributedString;
-import org.jline.utils.InfoCmp;
-import org.jline.utils.OSUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -152,8 +151,9 @@ public class MainConsole extends CommonConsole {
 	}
 
 	/**
-	 //	 * Top-level command that just prints help.
-	 //	 */
+	 * //	 * Top-level command that just prints help.
+	 * //
+	 */
 	@Command(name = "",
 			description = {
 					"",

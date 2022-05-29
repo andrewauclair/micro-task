@@ -1,14 +1,12 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.task;
 
-import com.andrewauclair.microtask.command.group.SetGroupCommand;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 

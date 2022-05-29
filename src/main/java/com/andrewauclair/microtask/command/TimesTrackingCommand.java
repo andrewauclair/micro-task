@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.ExistingID;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
 import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine;
@@ -142,27 +141,27 @@ public class TimesTrackingCommand implements Runnable {
 		times.entrySet().stream()
 				.sorted(((Comparator<Map.Entry<String, Times>>) (o1, o2) -> Double.compare(o1.getValue().weekTotal(), o2.getValue().weekTotal())).reversed())
 				.forEach(stringTimesEntry -> {
-			System.out.printf("%-" + lone + "s", stringTimesEntry.getKey());
+					System.out.printf("%-" + lone + "s", stringTimesEntry.getKey());
 
-			double total = 0;
+					double total = 0;
 
-			for (int j = 0; j < 7; j++) {
-				double aDouble = stringTimesEntry.getValue().timeForDay(j);
+					for (int j = 0; j < 7; j++) {
+						double aDouble = stringTimesEntry.getValue().timeForDay(j);
 
-				if (aDouble == 0) {
-					System.out.print("        ");
-				}
-				else {
-					aDouble = Math.ceil(aDouble * 4) / 4;
-					System.out.printf("  %5sh", format.format(aDouble));
-				}
-				totals[j] += aDouble;
-				total += aDouble;
-			}
+						if (aDouble == 0) {
+							System.out.print("        ");
+						}
+						else {
+							aDouble = Math.ceil(aDouble * 4) / 4;
+							System.out.printf("  %5sh", format.format(aDouble));
+						}
+						totals[j] += aDouble;
+						total += aDouble;
+					}
 
-			System.out.printf("     %5sh", format.format(total));
-			System.out.println();
-		});
+					System.out.printf("     %5sh", format.format(total));
+					System.out.println();
+				});
 		System.out.println();
 
 		double week_total = 0;

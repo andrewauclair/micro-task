@@ -12,7 +12,10 @@ import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class DataLoader {
@@ -36,7 +39,8 @@ public class DataLoader {
 		loadTasks("git-data/tasks", true);
 
 		// if the default list is missing, add it and the /projects/ group
-		if (!new TaskListFinder(tasks).hasList(new TaskListName(tasks, "/default") {})) {
+		if (!new TaskListFinder(tasks).hasList(new TaskListName(tasks, "/default") {
+		})) {
 			tasks.addList(new NewTaskListName(tasks, "/default"), osInterface.canCreateFiles());
 			tasks.addGroup(new NewTaskGroupName(tasks, "/projects/"));
 			tasks.getActiveContext().setCurrentList(new ExistingListName(tasks, "/default"));

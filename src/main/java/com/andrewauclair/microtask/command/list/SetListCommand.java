@@ -1,17 +1,22 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.list;
 
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.DueDate;
-import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskContainerState;
+import com.andrewauclair.microtask.task.TaskList;
+import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Command(name = "list")

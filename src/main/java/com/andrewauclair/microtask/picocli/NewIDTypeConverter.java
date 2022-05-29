@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.picocli;
 
 import com.andrewauclair.microtask.task.IDValidator;
 import com.andrewauclair.microtask.task.NewID;
-import com.andrewauclair.microtask.task.Tasks;
 import picocli.CommandLine;
 
 public class NewIDTypeConverter implements CommandLine.ITypeConverter<NewID> {

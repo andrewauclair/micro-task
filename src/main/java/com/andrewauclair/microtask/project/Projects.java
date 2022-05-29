@@ -44,7 +44,8 @@ public class Projects {
 
 		String groupName = projectToGroup(projectName.getName());
 
-		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName){})) {
+		if (!finder.hasGroupPath(new TaskGroupName(tasks, groupName) {
+		})) {
 			tasks.createGroup(new NewTaskGroupName(tasks, groupName), save);
 		}
 
@@ -94,6 +95,7 @@ public class Projects {
 				.filter(project -> project.hasMilestone(milestone.getName()))
 				.findFirst().get();
 	}
+
 	public void setActiveProject(ExistingProject name) {
 		activeProject = getProject(name);
 	}
@@ -106,7 +108,8 @@ public class Projects {
 	public void load() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
 
-		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/"){})) {
+		if (finder.hasGroupPath(new TaskGroupName(tasks, "/projects/") {
+		})) {
 			TaskGroup projectGroup = tasks.getGroup(new ExistingGroupName(tasks, "/projects/"));
 
 			for (final TaskContainer child : projectGroup.getChildren()) {

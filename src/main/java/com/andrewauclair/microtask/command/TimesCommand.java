@@ -217,7 +217,7 @@ public final class TimesCommand implements Runnable {
 			}
 
 		}
-			System.out.println();
+		System.out.println();
 //			System.out.print(Utils.formatTime(totalTime, highestTime));
 
 		System.out.print(String.format("%-" + table.getColumnWidths().get(0) + "s   Total", Utils.formatTime(totalTime, highestTime)));

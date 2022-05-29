@@ -3,7 +3,6 @@ package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.DueDate;
-import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.ConsoleColors;
@@ -17,12 +16,14 @@ import picocli.CommandLine;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.RIGHT;
-import static com.andrewauclair.microtask.Utils.FormatID.*;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_BOLD;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
 import static com.andrewauclair.microtask.os.ConsoleColors.ConsoleBackgroundColor.*;
@@ -131,7 +132,7 @@ public class TasksCommand implements Runnable {
 		boolean useTags = !tasksData.getActiveContext().getActiveTags().isEmpty();
 		List<String> tags = tasksData.getActiveContext().getActiveTags();
 
-		if  (due_args != null && due_args.due_before != null) {
+		if (due_args != null && due_args.due_before != null) {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			System.out.println("Tasks due before " + dateTimeFormatter.format(due_args.due_before.atStartOfDay()));
 		}

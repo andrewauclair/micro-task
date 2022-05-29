@@ -8,7 +8,10 @@ import com.andrewauclair.microtask.task.build.TaskBuilder;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class TaskList implements TaskContainer {

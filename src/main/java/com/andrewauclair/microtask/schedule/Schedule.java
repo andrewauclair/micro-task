@@ -11,7 +11,8 @@ import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.Tasks;
 import org.eclipse.jgit.ignore.internal.Strings;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
