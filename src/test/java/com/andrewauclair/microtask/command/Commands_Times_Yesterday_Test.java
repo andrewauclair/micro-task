@@ -29,14 +29,18 @@ class Commands_Times_Yesterday_Test extends Commands_Times_BaseTestCase {
 		long addTime = 0;
 
 		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addTask("Test 3");
+		tasks.addTask("Test 4");
+		tasks.addTask("Test 5");
 		tasks.startTask(existingID(1), false);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 
@@ -70,14 +74,18 @@ class Commands_Times_Yesterday_Test extends Commands_Times_BaseTestCase {
 		long addTime = 0;
 
 		tasks.addTask("Test 1");
+		tasks.addTask("Test 2");
+		tasks.addTask("Test 3");
+		tasks.addTask("Test 4");
+		tasks.addTask("Test 5");
 		tasks.startTask(existingID(1), false);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(2), "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(3), "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(5), "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 

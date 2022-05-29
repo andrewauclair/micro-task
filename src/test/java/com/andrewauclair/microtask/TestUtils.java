@@ -31,26 +31,24 @@ public class TestUtils {
 		return new ByteArrayInputStream(content.getBytes());
 	}
 
-	public static Task newTask(long id, String name, TaskState state, long addTime) {
+	public static TaskBuilder newTask(NewID id, IDValidator idValidator, String name, TaskState state, long addTime) {
+		return new TaskBuilder(idValidator, id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+	}
+
+	public static TaskBuilder newTask(ExistingID id, String name, TaskState state, long addTime) {
 		return new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)
 				.withAddTime(addTime)
-				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
-				.build();
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
 	}
 
-	public static Task newTask(ExistingID id, String name, TaskState state, long addTime) {
-		return new TaskBuilder(id)
-				.withTask(name)
-				.withState(state)
-				.withAddTime(addTime)
-				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
-				.build();
-	}
-
-	public static TaskBuilder newTaskBuilder(long id, String name, TaskState state, long addTime) {
-		return new TaskBuilder(id)
+	public static TaskBuilder newTaskBuilder(NewID id, IDValidator idValidator, String name, TaskState state, long addTime) {
+		return new TaskBuilder(idValidator, id)
 				.withTask(name)
 				.withState(state)
 				.withAddTime(addTime)
@@ -65,8 +63,8 @@ public class TestUtils {
 				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
 	}
 
-	public static Task newTask(long id, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
-		TaskBuilder builder = new TaskBuilder(id)
+	public static TaskBuilder newTask(NewID id, IDValidator idValidator, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(idValidator, id)
 				.withTask(name)
 				.withState(state)
 				.withAddTime(addTime)
@@ -74,7 +72,7 @@ public class TestUtils {
 
 		startStopTimes.forEach(builder::withStartStopTime);
 
-		return builder.build();
+		return builder;
 	}
 
 	public static Task newTask(ExistingID id, String name, TaskState state, long addTime, List<TaskTimes> startStopTimes) {
@@ -113,8 +111,8 @@ public class TestUtils {
 		return builder;
 	}
 
-	public static Task newTask(long id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
-		TaskBuilder builder = new TaskBuilder(id)
+	public static TaskBuilder newTask(NewID id, IDValidator idValidator, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
+		TaskBuilder builder = new TaskBuilder(idValidator, id)
 				.withTask(name)
 				.withState(state)
 				.withAddTime(addTime)
@@ -123,10 +121,10 @@ public class TestUtils {
 
 		startStopTimes.forEach(builder::withStartStopTime);
 
-		return builder.build();
+		return builder;
 	}
 
-	public static Task newTask(ExistingID id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
+	public static TaskBuilder newTask(ExistingID id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
 		TaskBuilder builder = new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)
@@ -136,7 +134,7 @@ public class TestUtils {
 
 		startStopTimes.forEach(builder::withStartStopTime);
 
-		return builder.build();
+		return builder;
 	}
 
 	public static TaskBuilder newTaskBuilder(long id, String name, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes) {
@@ -178,13 +176,21 @@ public class TestUtils {
 		return builder.build();
 	}
 
-	public static Task newTask(long id, String name, TaskState state, long addTime, boolean recurring) {
+	public static TaskBuilder newTask(NewID id, IDValidator idValidator, String name, TaskState state, long addTime, boolean recurring) {
+		return new TaskBuilder(idValidator, id)
+				.withTask(name)
+				.withState(state)
+				.withAddTime(addTime)
+				.withRecurring(recurring)
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
+	}
+
+	public static TaskBuilder newTask(ExistingID id, String name, TaskState state, long addTime, boolean recurring) {
 		return new TaskBuilder(id)
 				.withTask(name)
 				.withState(state)
 				.withAddTime(addTime)
 				.withRecurring(recurring)
-				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
-				.build();
+				.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
 	}
 }

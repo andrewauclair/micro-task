@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskDurationTest {
 	private final MockOSInterface osInterface = new MockOSInterface();
-	
+	private IDValidator idValidator = new TaskIDValidator(System.out, osInterface);
+
 	@Test
 	void duration_for_single_task_time_is_difference_in_times() {
 		TaskTimes taskTimes = new TaskTimes(1561078202, 1561079202);
@@ -32,7 +33,7 @@ class TaskDurationTest {
 				new TaskTimes(1561083202)
 		);
 		
-		Task task = newTask(1, "Test", TaskState.Inactive, 1000, times);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 1000, times).build();
 		
 		osInterface.setTime(1561083288);
 		

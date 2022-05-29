@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -177,16 +178,16 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void TaskFilterResult_toString() {
-		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, existingID=null, task='Test', state=Inactive, addTime=1000, finishTime=None, startStopTimes=[1000 - 2000, project='', feature=''], recurring=false, due=605800, tags=[]}, list='/default'}",
-				new TaskTimesFilter.TaskTimeFilterResult(1000, newTask(1, "Test", TaskState.Inactive, 1000, Collections.singletonList(new TaskTimes(1000, 2000))), "/default").toString());
+		assertEquals("TaskFilterResult{total=1000, task=Task{id=1, existingID=ExistingID{id=1}, task='Test', state=Inactive, addTime=1000, finishTime=None, startStopTimes=[1000 - 2000, project='', feature=''], recurring=false, due=605800, tags=[]}, list='/default'}",
+				new TaskTimesFilter.TaskTimeFilterResult(1000, newTask(newID(1), idValidator, "Test", TaskState.Inactive, 1000, Collections.singletonList(new TaskTimes(1000, 2000))).build(), "/default").toString());
 	}
 	
 	@Test
 	void includes_only_tasks_for_day() {
-		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
-		tasks.addTask(task2);
-		
+		tasks.addTask(newTask(newID(1), idValidator, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		TaskBuilder taskBuilder2 = newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		Task task2 = tasks.addTask(taskBuilder2);
+
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
 		TaskTimesFilter filter = new TaskTimesFilter(tasks);
@@ -200,10 +201,10 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_only_times_from_correct_day() {
-		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Arrays.asList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)));
-		tasks.addTask(task2);
-		
+		tasks.addTask(newTask(newID(1), idValidator, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		TaskBuilder taskBuilder2 = newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, 1000, Arrays.asList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR), createTimes(june24_8_am, HOUR)));
+		Task task2 = tasks.addTask(taskBuilder2);
+
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
 		TaskTimesFilter filter = new TaskTimesFilter(tasks);
@@ -217,11 +218,11 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void ignores_active_task_on_latest_day() {
-		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
-		tasks.addTask(task2);
-		
-		tasks.addTask(newTask(3, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june24_8_am))));
+		tasks.addTask(newTask(newID(1), idValidator, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		TaskBuilder taskBuilder2 = newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		Task task2 = tasks.addTask(taskBuilder2);
+
+		tasks.addTask(newTask(newID(3), idValidator, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june24_8_am))));
 		
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		
@@ -236,13 +237,13 @@ class TaskTimesFilterTest extends TaskBaseTestCase {
 	
 	@Test
 	void includes_active_task_using_current_time_as_stop() {
-		tasks.addTask(newTask(1, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
-		tasks.addTask(task2);
-		
-		Task task3 = newTask(3, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june17_8_am + SECONDS_IN_DAY)));
-		tasks.addTask(task3);
-		
+		tasks.addTask(newTask(newID(1), idValidator, "Test 1", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am, HOUR))));
+		TaskBuilder taskBuilder2 = newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, 1000, Collections.singletonList(createTimes(june17_8_am + SECONDS_IN_DAY, HOUR)));
+		Task task2 = tasks.addTask(taskBuilder2);
+
+		TaskBuilder taskBuilder3 = newTask(newID(3), idValidator, "Test 3", TaskState.Active, 1000, Collections.singletonList(new TaskTimes(june17_8_am + SECONDS_IN_DAY)));
+		Task task3 = tasks.addTask(taskBuilder3);
+
 		Mockito.when(osInterface.currentSeconds()).thenReturn(june17_8_am + SECONDS_IN_DAY + HOUR + MINUTE);
 		Mockito.when(osInterface.getZoneId()).thenReturn(ZoneId.of("America/Chicago"));
 		

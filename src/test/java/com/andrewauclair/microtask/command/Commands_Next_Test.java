@@ -356,30 +356,25 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 
 	@Test
 	void next_command_displays_due_tasks_with_due_option() {
-		tasks.addTask(new TaskBuilder(1)
+		tasks.addTask(new TaskBuilder(idValidator, newID(1))
 				.withTask("Test 1")
-				.withDueTime(100000)
-				.build());
+				.withDueTime(100000));
 
-		tasks.addTask(new TaskBuilder(2)
+		tasks.addTask(new TaskBuilder(idValidator, newID(2))
 				.withTask("Test 2")
-				.withDueTime(90000)
-				.build());
+				.withDueTime(90000));
 
-		tasks.addTask(new TaskBuilder(3)
+		tasks.addTask(new TaskBuilder(idValidator, newID(3))
 				.withTask("Test 3")
-				.withDueTime(80000)
-				.build());
+				.withDueTime(80000));
 
-		tasks.addTask(new TaskBuilder(4)
+		tasks.addTask(new TaskBuilder(idValidator, newID(4))
 				.withTask("Test 4")
-				.withDueTime(70000)
-				.build());
+				.withDueTime(70000));
 
-		tasks.addTask(new TaskBuilder(5)
+		tasks.addTask(new TaskBuilder(idValidator, newID(5))
 				.withTask("Test 5")
-				.withDueTime(60000)
-				.build());
+				.withDueTime(60000));
 
 		commands.execute(printStream, "next -c 3 --due");
 

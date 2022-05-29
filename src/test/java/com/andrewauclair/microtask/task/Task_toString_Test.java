@@ -1,6 +1,7 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.MockOSInterface;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,9 +11,11 @@ import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Task_toString_Test {
+	IDValidator idValidator = new TaskIDValidator(System.out, new MockOSInterface());
+
 	@Test
 	void task_description_has_number_and_title() {
-		assertEquals("1 - 'Test'", newTask(1, "Test", TaskState.Inactive, 0).description());
+		assertEquals("1 - 'Test'", newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 0).build().description());
 	}
 
 	@Test

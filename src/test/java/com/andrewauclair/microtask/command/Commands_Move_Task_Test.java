@@ -20,7 +20,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task 1 --dest-list one");
 
 		assertThat(tasks.getTasksForList(existingList("/one"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000)
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build()
 		);
 
 		assertOutput(
@@ -42,7 +42,7 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task 1 --dest-list /one/test/five");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000)
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build()
 		);
 
 		assertOutput(
@@ -66,9 +66,9 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task 1,2,3 --dest-list /one/test/five");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000),
-				newTask(existingID(2), "Test 2", TaskState.Inactive, 2000),
-				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000)
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build(),
+				newTask(existingID(2), "Test 2", TaskState.Inactive, 2000).build(),
+				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000).build()
 		);
 
 		assertOutput(
@@ -98,8 +98,8 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task 1,2,3 --dest-list /one/test/five --interactive");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000),
-				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000)
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build(),
+				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000).build()
 		);
 
 		assertOutput(
@@ -120,12 +120,11 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		tasks.addList(newList("/one/test/five"), true);
 		tasks.setCurrentList(existingList("/one/two/three"));
 
-		Task task180 = new TaskBuilder(180)
+		TaskBuilder task180_builder = new TaskBuilder(idValidator, newID(180))
 				.withTask("Test 180")
-				.withDueTime(604800)
-				.build();
+				.withDueTime(604800);
 
-		tasks.addTask(task180);
+		Task task180 = tasks.addTask(task180_builder);
 		tasks.addTask("Test 1");
 		tasks.addTask("Test 2");
 		tasks.addTask("Test 3");
@@ -136,9 +135,9 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task --src-list /one/two/three --dest-list /one/test/five");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000),
-				newTask(existingID(2), "Test 2", TaskState.Inactive, 2000),
-				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000),
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build(),
+				newTask(existingID(2), "Test 2", TaskState.Inactive, 2000).build(),
+				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000).build(),
 				task180
 		);
 
@@ -173,8 +172,8 @@ class Commands_Move_Task_Test extends CommandsBaseTestCase {
 		commands.execute(printStream, "move task --src-list /one/two/three --dest-list /one/test/five --interactive");
 
 		assertThat(tasks.getTasksForList(existingList("/one/test/five"))).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000),
-				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000)
+				newTask(existingID(1), "Test 1", TaskState.Inactive, 1000).build(),
+				newTask(existingID(3), "Test 3", TaskState.Inactive, 3000).build()
 		);
 
 		assertOutput(

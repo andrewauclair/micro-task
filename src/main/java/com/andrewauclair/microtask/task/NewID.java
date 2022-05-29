@@ -10,7 +10,7 @@ public class NewID {
 		this.id = id;
 
 		if (idValidator.containsExistingID(id)) {
-			throw new TaskException("Task " + id + " already exist.");
+			throw new TaskException("Task with ID " + id + " already exists.");
 		}
 	}
 

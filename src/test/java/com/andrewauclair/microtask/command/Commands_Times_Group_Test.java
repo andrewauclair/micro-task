@@ -38,10 +38,10 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/one/test")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test")
 				)
 		);
 
@@ -89,10 +89,10 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/one/impl"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/one/test"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/one/test")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/one/impl"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/one/test"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/one/test")
 				)
 		);
 
@@ -140,10 +140,10 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/two/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/two/data")
 				)
 		);
 
@@ -191,10 +191,10 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/two/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/two/data")
 				)
 		);
 
@@ -243,10 +243,10 @@ class Commands_Times_Group_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/one/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/two/data"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/two/data")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/one/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/two/data"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/two/data")
 				)
 		);
 

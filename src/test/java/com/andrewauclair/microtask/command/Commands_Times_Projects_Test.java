@@ -5,6 +5,7 @@ import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,10 +36,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void basic_times_command_for_projects_and_features() {
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -57,12 +58,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -95,11 +96,11 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void feature_names_when_parent_group_has_no_feature() {
 		long addTime = 0;
 
-		Task task1 = newTask(2, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(3, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(4, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
-		Task task6 = newTask(6, "Test 5", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder1 = newTask(newID(2), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(3), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(4), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder6 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 
@@ -117,16 +118,16 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project1.getFeature(ExistingFeature.tryCreate(project1, "two")).addList(new ExistingListName(tasks, "/projects/project-1/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-1/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		tasks.setCurrentList(existingList("/projects/project-1/meetings"));
 
-		tasks.addTask(task6);
+		Task task6 = tasks.addTask(taskBuilder6);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -161,10 +162,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void features_are_inherited_from_parent() {
 		long addTime = 0;
 
-		Task task1 = newTask(2, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(3, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(4, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(2), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(3), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(4), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 
@@ -183,14 +184,14 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 //		tasks.setFeature(existingGroup("/"), "Impl", true);
 
 		tasks.setCurrentList(existingList("/projects/project-1/feature-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 //		tasks.addList(newList("/one"), true);
 //		tasks.setCurrentList(existingList("/one"));
 
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -222,10 +223,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_times_today() {
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -244,12 +245,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getTasks()).thenReturn(
 				Arrays.asList(task1, task2, task3, task5)
@@ -287,10 +288,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void project_feature_times_yesterday() {
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -309,12 +310,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getTasks()).thenReturn(
 				Arrays.asList(task1, task2, task3, task5)
@@ -355,10 +356,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -377,12 +378,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getTasks()).thenReturn(
 				Arrays.asList(task1, task2, task3, task5)
@@ -399,10 +400,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(3, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(4, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(5, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(6, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(3), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(4), "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(5), "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(6), "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 
@@ -429,10 +430,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -451,12 +452,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -490,10 +491,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -512,12 +513,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
@@ -551,10 +552,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		long addTime = 0;
 
-		Task task1 = newTask(3, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(4, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(5, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(6, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(3), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(4), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(5), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(6), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 		projects.createProject(new NewProject(projects, "project-1"), true);
 		projects.createProject(new NewProject(projects, "project-2"), true);
@@ -573,12 +574,12 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 		project2.getFeature(ExistingFeature.tryCreate(project2, "two")).addList(new ExistingListName(tasks, "/projects/project-2/two"));
 
 		tasks.setCurrentList(existingList("/projects/project-1/one"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.setCurrentList(existingList("/projects/project-2/two"));
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getTasks()).thenReturn(
 				Arrays.asList(task1, task2, task3, task5)
@@ -595,10 +596,10 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(3, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(4, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(5, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(6, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(existingID(3), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(existingID(4), "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(existingID(5), "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(existingID(6), "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 
@@ -627,7 +628,7 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 
 		tasks.addTask("Test 1");
 		addTaskTimes(1, 1561080202, 1561081202);
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
+		Task task1 = newTask(existingID(1), "Test 1", TaskState.Active, addTime).build();
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Collections.singletonList(
@@ -651,22 +652,22 @@ class Commands_Times_Projects_Test extends Commands_Times_BaseTestCase {
 	void task_with_no_project_says_none() {
 		long addTime = 0;
 
-		Task task1 = newTask(1, "Test 1", TaskState.Active, addTime);
-		Task task2 = newTask(2, "Test 2", TaskState.Inactive, addTime);
-		Task task3 = newTask(3, "Test 3", TaskState.Finished, addTime);
-		Task task5 = newTask(5, "Test 5", TaskState.Inactive, addTime, true);
+		TaskBuilder taskBuilder1 = newTask(newID(1), idValidator, "Test 1", TaskState.Active, addTime);
+		TaskBuilder taskBuilder2 = newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime);
+		TaskBuilder taskBuilder3 = newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime);
+		TaskBuilder taskBuilder5 = newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true);
 
 //		tasks.setFeature(existingGroup("/"), "Feature 1", true);
 
 		tasks.setCurrentList(existingList("/default"));
-		tasks.addTask(task1);
-		tasks.addTask(task2);
+		Task task1 = tasks.addTask(taskBuilder1);
+		Task task2 = tasks.addTask(taskBuilder2);
 
 		tasks.addList(newList("/one"), true);
 		tasks.setCurrentList(existingList("/one"));
 
-		tasks.addTask(task3);
-		tasks.addTask(task5);
+		Task task3 = tasks.addTask(taskBuilder3);
+		Task task5 = tasks.addTask(taskBuilder5);
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(

@@ -133,6 +133,7 @@ public final class TaskBuilder {
 	}
 
 	public Task build() {
+
 		if (existingID != null) {
 			Task task1 = new Task(existingID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 			task1.setShortID(shortID);

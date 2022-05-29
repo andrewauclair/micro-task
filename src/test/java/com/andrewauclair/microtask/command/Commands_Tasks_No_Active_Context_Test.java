@@ -532,14 +532,14 @@ class Commands_Tasks_No_Active_Context_Test extends CommandsBaseTestCase {
 
 	@Test
 	void due_tasks_are_displayed_when_having_no_active_context() {
-		tasks.addTask(newTask(1, "Test", TaskState.Active, 1000));
+		tasks.addTask(newTask(newID(1), idValidator, "Test", TaskState.Active, 1000));
 
 		// add the due tasks to a list we aren't looking at
 		tasks.addList(newList("/test"), true);
 		tasks.setCurrentList(existingList("/test"));
 
-		tasks.addTask(newTaskBuilder(2, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000).build());
-		tasks.addTask(newTaskBuilder(3, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000).build());
+		tasks.addTask(newTaskBuilder(newID(2), idValidator, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000));
+		tasks.addTask(newTaskBuilder(newID(3), idValidator, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000));
 
 		tasks.setCurrentList(existingList("/default"));
 
@@ -567,9 +567,9 @@ class Commands_Tasks_No_Active_Context_Test extends CommandsBaseTestCase {
 
 	@Test
 	void due_tasks_are_displayed_twice_if_on_current_list() {
-		tasks.addTask(newTask(1, "Test", TaskState.Inactive, 1000));
-		tasks.addTask(newTaskBuilder(2, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000).build());
-		tasks.addTask(newTaskBuilder(3, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000).build());
+		tasks.addTask(newTask(newID(1), idValidator, "Test", TaskState.Inactive, 1000));
+		tasks.addTask(newTaskBuilder(newID(2), idValidator, "Test Due Tomorrow", TaskState.Inactive, 1000).withDueTime(25_000));
+		tasks.addTask(newTaskBuilder(newID(3), idValidator, "Test Due Today", TaskState.Inactive, 1000).withDueTime(18_000));
 
 		tasks.setCurrentList(existingList("/default"));
 		tasks.startTask(existingID(1), false);

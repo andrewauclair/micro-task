@@ -40,8 +40,8 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Testing tasks", TaskState.Inactive, 1000),
-				newTask(existingID(2), "Testing tasks 2", TaskState.Inactive, 2000)
+				newTask(existingID(1), "Testing tasks", TaskState.Inactive, 1000).build(),
+				newTask(existingID(2), "Testing tasks 2", TaskState.Inactive, 2000).build()
 		);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
@@ -52,10 +52,10 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = newTask(existingID(2), "Testing tasks 2", TaskState.Finished, 2000, 4567, Arrays.asList(new TaskTimes(1234, 4567)));
+		Task finishedTask = newTask(existingID(2), "Testing tasks 2", TaskState.Finished, 2000, 4567, Arrays.asList(new TaskTimes(1234, 4567))).build();
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Testing tasks", TaskState.Inactive,1000),
+				newTask(existingID(1), "Testing tasks", TaskState.Inactive,1000).build(),
 				finishedTask
 		);
 

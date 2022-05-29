@@ -35,7 +35,7 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void info_command_prints_data_related_to_a_task() {
-		tasks.addTask(newTask(2, "Test", TaskState.Finished, 1000, 8000,
+		tasks.addTask(newTask(newID(2), idValidator, "Test", TaskState.Finished, 1000, 8000,
 				Arrays.asList(
 				new TaskTimes(2000, 3000),
 				new TaskTimes(6000, 8000)
@@ -63,7 +63,7 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void inactive_tasks_do_not_print_a_finish_time() {
-		tasks.addTask(newTask(2, "Test", TaskState.Inactive, 1000,
+		tasks.addTask(newTask(newID(2), idValidator, "Test", TaskState.Inactive, 1000,
 				Arrays.asList(
 				new TaskTimes(2000, 3000),
 				new TaskTimes(6000, 8000)
@@ -91,7 +91,7 @@ class Commands_Info_Test extends CommandsBaseTestCase {
 
 	@Test
 	void active_task_displays_no_stop_time() {
-		tasks.addTask(newTask(2, "Test", TaskState.Active, 1000,
+		tasks.addTask(newTask(newID(2), idValidator, "Test", TaskState.Active, 1000,
 				Arrays.asList(
 				new TaskTimes(2000, 3000),
 				new TaskTimes(6000)

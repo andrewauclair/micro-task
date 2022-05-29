@@ -174,6 +174,6 @@ class Commands_Time_Tracking_Test extends CommandsBaseTestCase {
 			builder.withStartStopTime(time);
 		}
 
-		tasks.addTask(builder.build(), tasks.getList(list), true);
+		tasks.addTask(builder, tasks.getList(list), true);
 	}
 }

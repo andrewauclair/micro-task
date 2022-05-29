@@ -388,12 +388,13 @@ public class Tasks {
 		return idValidator.containsExistingID(id);
 	}
 
-	public void addTask(Task task) {
-		if (hasTaskWithID(task.ID())) {
-			throw new TaskException("Task with ID " + task.ID() + " already exists.");
-		}
-
-		idValidator.addExistingID(task.ID());
+	public Task addTask(TaskBuilder builder) {
+//		if (hasTaskWithID(task.ID())) {
+//			throw new TaskException("Task with ID " + task.ID() + " already exists.");
+//		}
+//
+//		idValidator.addExistingID(task.ID());
+		Task task = builder.build();
 
 		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
 		task.setShortID(shortID);
@@ -406,14 +407,17 @@ public class Tasks {
 		if (task.state == TaskState.Active) {
 			activeContext.setActiveTaskID(task.ID());
 		}
+
+		return task;
 	}
 
-	public void addTask(Task task, TaskList list, boolean commit) {
-		if (hasTaskWithID(task.ID())) {
+	public Task addTask(TaskBuilder builder, TaskList list, boolean commit) {
+//		if (hasTaskWithID(task.ID())) {
 //			throw new TaskException("Task with ID " + task.ID() + " already exists.");
-		}
-
-		idValidator.addExistingID(task.ID());
+//		}
+//
+//		idValidator.addExistingID(task.ID());
+		Task task = builder.build();
 
 		if (task.state != TaskState.Finished) {
 			RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
@@ -433,6 +437,8 @@ public class Tasks {
 		if (task.state == TaskState.Active) {
 			activeContext.setActiveTaskID(task.ID());
 		}
+
+		return task;
 	}
 
 	public ActiveContext getActiveContext() {

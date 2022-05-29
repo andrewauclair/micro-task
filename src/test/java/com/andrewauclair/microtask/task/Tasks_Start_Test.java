@@ -30,7 +30,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 
 		Task newActiveTask = tasks.startTask(existingID(task.ID()), false);
 
-		Task oldTask = newTask(existingID(2), "Testing task start command", TaskState.Inactive, 0);
+		Task oldTask = newTask(existingID(2), "Testing task start command", TaskState.Inactive, 0).build();
 		Task activeTask = newTask(existingID(2), "Testing task start command", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
@@ -168,7 +168,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 		tasks.startTask(existingID(2), true);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(existingID(1), "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))),
+				newTask(existingID(1), "Test 1", TaskState.Finished, 1000, 1561078202L, Collections.singletonList(new TaskTimes(3000, 1561078202L))).build(),
 				newTaskBuilder(existingID(2), "Test 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1561078202L))).withDueTime(2000 + Tasks.DEFAULT_DUE_TIME).build()
 		);
 	}
@@ -232,7 +232,7 @@ class Tasks_Start_Test extends TaskBaseTestCase {
 	
 	@Test
 	void finished_tasks_cannot_be_started() {
-		tasks.addTask(newTask(1, "Test", TaskState.Finished, 1234, Collections.singletonList(new TaskTimes(2345))));
+		tasks.addTask(newTask(newID(1), idValidator, "Test", TaskState.Finished, 1234, Collections.singletonList(new TaskTimes(2345))));
 		
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.startTask(existingID(1), false));
 		

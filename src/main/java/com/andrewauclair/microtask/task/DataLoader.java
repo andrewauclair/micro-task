@@ -6,6 +6,7 @@ import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.schedule.Schedule;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -82,7 +83,7 @@ public class DataLoader {
 							tasks.idValidator().addExistingID(id);
 
 							Task task = reader.readTask(new ExistingID(tasks.idValidator(), id), bufferedReader);
-							tasks.addTask(task, list, false);
+							tasks.addTask(new TaskBuilder(task), list, false);
 						}
 						line = bufferedReader.readLine();
 					} while (line != null);
@@ -99,7 +100,7 @@ public class DataLoader {
 				tasks.idValidator().addExistingID(id);
 
 				Task task = reader.readTask(new ExistingID(tasks.idValidator(), id), fileInfo.getPath());
-				tasks.addTask(task, list, false);
+				tasks.addTask(new TaskBuilder(task), list, false);
 			}
 		}
 	}
