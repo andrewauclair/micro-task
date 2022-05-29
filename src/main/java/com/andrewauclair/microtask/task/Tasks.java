@@ -46,11 +46,6 @@ public class Tasks {
 
 	private final ActiveContext activeContext = new ActiveContext(this);
 
-//	private long nextID = 1;
-//	private long nextShortID = 1;
-
-//	private final Set<Long> existingTasksFullIDs = new HashSet<>();
-
 	private final IDValidator idValidator;
 
 	private TaskFilterBuilder filterBuilder = new TaskFilterBuilder();
@@ -92,12 +87,7 @@ public class Tasks {
 	public Task addTask(String task, ExistingListName list) {
 		// TODO This wastes an ID if the list or group is finished and we don't actually add the task
 		TaskList taskList = getList(list);
-//		if (taskList.getState() != TaskContainerState.Finished) {
 		NewID id = incrementID();
-//		NewID id = new NewID(idValidator, newID);
-//		idValidator.addExistingID(id.get());
-
-//		Task newTask = taskList.addTask(id, task);
 
 		if (taskList.getState() == TaskContainerState.Finished) {
 			throw new TaskException("Task '" + task + "' cannot be created because list '" + taskList.getFullPath() + "' has been finished.");
@@ -132,25 +122,6 @@ public class Tasks {
 	public NewID incrementID() {
 		return idValidator.incrementID();
 	}
-
-//	public ExistingID reserveID() {
-//		long nextID = this.nextID++;
-//
-//		writeNextID();
-//
-//		existingTasksFullIDs.add(nextID);
-//
-//		return new ExistingID(this, nextID);
-//	}
-
-//	private void writeNextID() {
-//		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/next-id.txt"))) {
-//			outputStream.print(this.nextID);
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace(output);
-//		}
-//	}
 
 	public TaskGroup getGroupForList(ExistingListName list) {
 		TaskGroup group = getGroup(list.parentGroupName());
@@ -391,11 +362,6 @@ public class Tasks {
 	}
 
 	public Task addTask(TaskBuilder builder) {
-//		if (hasTaskWithID(task.ID())) {
-//			throw new TaskException("Task with ID " + task.ID() + " already exists.");
-//		}
-//
-//		idValidator.addExistingID(task.ID());
 		Task task = builder.build();
 
 		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
@@ -414,11 +380,6 @@ public class Tasks {
 	}
 
 	public Task addTask(TaskBuilder builder, TaskList list, boolean commit) {
-//		if (hasTaskWithID(task.ID())) {
-//			throw new TaskException("Task with ID " + task.ID() + " already exists.");
-//		}
-//
-//		idValidator.addExistingID(task.ID());
 		Task task = builder.build();
 
 		if (task.state != TaskState.Finished) {

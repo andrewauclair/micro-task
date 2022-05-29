@@ -163,7 +163,7 @@ public final class TaskGroup implements TaskContainer {
 		return false;
 	}
 
-	// finds lists by their absolute name
+	// finds list by absolute path
 	TaskList getListAbsolute(String path) {
 		Optional<TaskList> optionalList = children.stream()
 				.filter(child -> child instanceof TaskList)

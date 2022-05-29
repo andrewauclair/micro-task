@@ -30,7 +30,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 
-// Everything we can't really test will go here and we'll mock it in the tests and ignore this in the codecov
+// Everything we can't really test will go here, and we'll mock it in the tests and ignore this in the codecov
 public class OSInterfaceImpl implements OSInterface {
 	public static boolean disableGit = false;
 
@@ -135,9 +135,9 @@ public class OSInterfaceImpl implements OSInterface {
 
 			Set<String> removeFiles = status.getMissing();
 
-			// jgit doesn't delete files through the add command like git does from the command line
+			// jgit doesn't delete files through the add command like git does from the command line,
 			// so we need to use the git rm command to remove any missing files
-			// if a file is missing, that means that the code removed the file and it needs to be deleted
+			// if a file is missing, that means that the code removed the file, and it needs to be deleted
 			if (!removeFiles.isEmpty()) {
 				RmCommand removeCmd = repo.rm();
 

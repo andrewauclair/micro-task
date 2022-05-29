@@ -101,7 +101,7 @@ public class ActiveContext {
 		activeMilestone = milestone;
 	}
 
-	public void setNoActiveMiletone() {
+	public void setNoActiveMilestone() {
 		activeMilestone = null;
 	}
 

@@ -209,18 +209,6 @@ public class DataLoader {
 					tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), state, false);
 				}
 			}
-//			String line = scanner.nextLine();
-//			TaskContainerState state;
-//
-//			try {
-//				state = TaskContainerState.valueOf(line);
-//			}
-//			catch (IllegalArgumentException e) {
-//				// legacy
-//				scanner.nextLine();
-//				state = TaskContainerState.valueOf(scanner.nextLine());
-//			}
-
 		}
 		catch (IOException e) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this

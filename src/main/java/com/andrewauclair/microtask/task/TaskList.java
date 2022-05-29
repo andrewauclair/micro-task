@@ -319,8 +319,6 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Task " + id.get() + " cannot be moved because it has been finished.");
 		}
 
-//		removeTask(task);
-//		list.addTask(task);
 		tasks.remove(task);
 		list.tasks.add(task);
 

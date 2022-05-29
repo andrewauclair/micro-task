@@ -6,7 +6,6 @@ import com.andrewauclair.microtask.TaskException;
 import java.util.Objects;
 
 // suppressing warning because it isn't valid here. The ExistingFeature(String) constructor is private, there for we can't make a proper matching record.
-@SuppressWarnings("ClassCanBeRecord")
 public final class ExistingFeature {
 	private final String name;
 

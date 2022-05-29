@@ -203,9 +203,6 @@ public final class TimesCommand implements Runnable {
 					table.print();
 				}
 			}
-
-//			System.out.println();
-//			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());

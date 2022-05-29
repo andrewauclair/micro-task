@@ -316,9 +316,7 @@ public class GitLabReleases {
 	private static void extractFolder(String zipFile, String extractFolder) {
 		try (ZipFile zip = new ZipFile(zipFile)) {
 			int BUFFER = 2048;
-//			File file = new File(zipFile);
-//
-//			ZipFile zip = new ZipFile(file);
+
 			String newPath = extractFolder;
 
 			new File(newPath).mkdir();

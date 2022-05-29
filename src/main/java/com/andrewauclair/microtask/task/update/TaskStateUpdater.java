@@ -53,19 +53,7 @@ public class TaskStateUpdater {
 		long startTime = osInterface.currentSeconds();
 
 		if (lastTask.isPresent()) {
-			//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 			int size = lastTask.get().startStopTimes.size();
-			//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 			startTime = lastTask.get().startStopTimes.get(size - 1).stop;
 		}
 
