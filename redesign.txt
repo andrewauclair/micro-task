@@ -1,0 +1,173 @@
+
+
+gradually redesigning the entire app here, top to bottom
+
+main goal: track time and progress on projects, not tasks
+
+define project templates, add a new project using a template.
+
+projects would have:
+    - start date
+    - end date
+    - features
+        - start date
+        - end date
+        - time estimate (in hours)
+    - milestones (usually just "finish X feature", but can be multiple features, not going to allow any other granularity this time, like groups, lists and tasks like in v1)
+
+after multiple projects are defined and running there will be scheduling features
+
+scheduling will allow us to make priorities for specific projects
+
+scheduling will check if we require over 100% of our time to make an end date
+
+template allows you to define the entire project with defaults for everything (start date will be assumed to the current date)
+
+things to define:
+Scheduling
+
+-- Project --
+
+A project is a collection of features and milestones. A start date and end date is defined for the project as a whole and each of its features.
+
+For a Project to be finished, all of its Features and Milestones must be finished.
+
+-- Feature --
+
+A feature can be defined as a Group or List and has a start and end date.
+
+For a Feature to be finished, its Group or List must be finished.
+
+-- Milestone --
+
+A Milestone is a collection of features with a start date and end date. Usually each Milestone will only contain a single Feature, but it is possible for it to contain multiple.
+
+For a Milestone to be finished, all of its Features must be finished.
+
+-- Project Template --
+
+A project template predefines all aspects of a Project. The user can use the template to generate a new project with a given name and interactively assign names to Features and Milestones.
+
+-- Group --
+
+A Group is a collection of Lists. A Group can have a state of Active, Inactive or Finished.
+
+For a Group to be finished, all of its Lists must be finished.
+
+-- List --
+
+A List is a collection of Tasks. A List can have a state of Active, Inactive or Finished.
+
+For a List to be finished, all of its Tasks must be finished.
+
+-- Task --
+
+A Task is the true heart of micro-task. It defines the actual tasks that are worked on. Contains the task name, start and stop times, add and finish times, recurring flag, id and state.
+
+-- Scheduler --
+
+The Scheduler is responsible for determining which projects are worked on for a given day. Projects can be assigned a percentage and/or priority which will influence the scheduling.
+
+The output of the Scheduler can be used to create a list of Tasks for the day.
+
+-- Active Context --
+
+
+-- 3rd Party --
+
+Version 2 of micro-task will come complete with our own replacement of the JLine 3 library. JLine 3 was a good way to do all of our console integrations (input and output),
+but it is massively complex to understand, and I always have a hard time debugging anything to do with it.
+
+We will continue to use picocli as it is an excellent library with great usage and documentation.
+
+We will also continue to use our test libraries: junit 5, assertj, mockito and equals verifier.
+
+We will continue to target conEmu for now. It has been a good way to have multiple consoles open and organized. I do have some issues with it not clearing lines that I would
+like to sort out this time around.
+
+
+-- Testing --
+
+I would like to use fewer mocks. I'm going to try and split up modules a little more into sensible pieces.
+
+
+
+-- Commands --
+
+Commands will be reorganized and improved for version 2. We will define simple picocli command classes that pass the command parameters to a real command class to do the work.
+This way we can test the picocli expected behavior separately from the command behavior. This would also allow another type of interface on top of the app.
+
+-- current commands --
+
+finish (used to finish tasks, lists, groups, features, milestones and projects)
+stop (used to stop the active task) (currently used to stop all kinds of things, but I think it really only makes sense for tasks like in the very original version)
+active (used to display the active things, probably just info?)
+list (just shows info about a list, move to info?)
+debug (haven't really used this much, maybe we can roll it into set?)
+search (used to search for tasks by name only currently, expand this functionality)
+version (used to show the micro-task version info)
+exit (used to exit the app)
+ch (this is the last o.g.(?) command from micro-task, would like to have something that makes a little more sense)
+day (yet another info command, move to info?)
+alias (used to define aliases for commands)
+next (maybe make this a form of search?)
+info
+status (don't really use this anymore, haven't really sent commands to the status console since we switched to conemu)
+project (roll into info?)
+group (same as list, move to info? is used to do a bit more like "list finished tasks", which is more search like, but honestly might be covered by "tasks --group /test/ --finished")
+tasks
+milestone (used to add and remove milestones, roll into project?)
+schedule
+add (used to add all kinds of stuff, tasks, lists, groups, projects, milestones)
+start (currently used to start all kinds of things, but I think it really only makes sense for tasks like in the very original version)
+move (used to move all kinds of things)
+update (used to update the app to a new version and push/pull app data to/from git repo)
+set (used to modify things in "unusual" ways like setting state of a finished task)
+rename (rename all the things)
+times (display times for all kinds of different things, probably the most complicated command in the app)
+
+-- removed commands --
+
+focus (was used to force the status command window to the front, not needed now that we don't use windows cmd prompt)
+json (don't remember why it was even added. looks like it dumps out GitLabReleases info?)
+datagen (testing command to make fake data)
+
+
+-- new commands --
+add (task, list, group, project, feature, milestone)
+start (task)
+stop (task)
+finish (task, list, group, project, feature, milestone)
+
+move (task, list, group)
+rename (task, list, group, project, feature, milestone)
+schedule
+update
+
+search
+times
+info (active, list, group, task, project, milestone, feature, day)
+version
+tasks
+
+alias
+
+exit
+
+ch? used to change active list and group
+set? used to set task list group and due tasks
+
+-- Packages --
+
+alias
+schedule
+task
+project
+picocli
+command
+console
+
+
+
+
+Each feature that we write needs in memory and in file support. This requires testing each form.
