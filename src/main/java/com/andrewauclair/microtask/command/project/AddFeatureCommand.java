@@ -1,8 +1,10 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.project;
 
-import com.andrewauclair.microtask.TaskException;
-import com.andrewauclair.microtask.project.*;
+import com.andrewauclair.microtask.project.ExistingProject;
+import com.andrewauclair.microtask.project.NewFeature;
+import com.andrewauclair.microtask.project.Project;
+import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 import picocli.CommandLine;
@@ -28,12 +30,14 @@ public class AddFeatureCommand implements Runnable {
 
 	private boolean hasList() {
 		TaskListFinder finder = new TaskListFinder(tasks);
-		return finder.hasList(new TaskListName(tasks, "/projects/" + project.getName() + "/" + feature) {});
+		return finder.hasList(new TaskListName(tasks, "/projects/" + project.getName() + "/" + feature) {
+		});
 	}
 
 	private boolean hasGroup() {
 		TaskGroupFinder finder = new TaskGroupFinder(tasks);
-		return finder.hasGroupPath(new TaskGroupName(tasks, "/projects/" + project.getName() + "/" + feature + "/"){});
+		return finder.hasGroupPath(new TaskGroupName(tasks, "/projects/" + project.getName() + "/" + feature + "/") {
+		});
 	}
 
 	@Override

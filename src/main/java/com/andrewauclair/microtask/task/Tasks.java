@@ -44,23 +44,28 @@ public class Tasks {
 
 	private TaskGroup rootGroup = TaskGroupBuilder.createRootGroup();
 
-	private final Set<Long> existingTasks = new HashSet<>();
-
 	private final ActiveContext activeContext = new ActiveContext(this);
 
-	private long nextID = 1;
+	private final IDValidator idValidator;
 
 	private TaskFilterBuilder filterBuilder = new TaskFilterBuilder();
 
-	public Tasks(TaskWriter writer, PrintStream output, OSInterface osInterface) {
+	public Tasks(IDValidator idValidator, TaskWriter writer, PrintStream output, OSInterface osInterface) {
+		this.idValidator = idValidator;
 		this.writer = writer;
 		this.output = output;
 		this.osInterface = osInterface;
 	}
 
+	// TODO we're going to add a bunch of calls to this that can probably get the validator elsewhere
+	public IDValidator idValidator() {
+		return idValidator;
+	}
+
 	public void setProjects(Projects projects) {
 		this.projects = projects;
 	}
+
 	public TaskFilterBuilder getFilterBuilder() {
 		return filterBuilder;
 	}
@@ -82,11 +87,30 @@ public class Tasks {
 	public Task addTask(String task, ExistingListName list) {
 		// TODO This wastes an ID if the list or group is finished and we don't actually add the task
 		TaskList taskList = getList(list);
-//		if (taskList.getState() != TaskContainerState.Finished) {
-		long newID = incrementID();
-		NewID id = new NewID(this, newID);
-		existingTasks.add(newID);
-		return taskList.addTask(id, task);
+		NewID id = incrementID();
+
+		if (taskList.getState() == TaskContainerState.Finished) {
+			throw new TaskException("Task '" + task + "' cannot be created because list '" + taskList.getFullPath() + "' has been finished.");
+		}
+
+		long addTime = osInterface.currentSeconds();
+
+		Task newTask = new TaskBuilder(idValidator, id)
+				.withTask(task)
+				.withState(TaskState.Inactive)
+				.withAddTime(addTime)
+				.withRecurring(false)
+				.withDueTime(addTime + 604_800L)
+				.build();
+
+		taskList.addTask(newTask);
+
+		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+		newTask.setShortID(shortID);
+
+		idValidator.mapShortIDToFullID(shortID, newTask.fullID());
+
+		return newTask;
 //		}
 //		return null;
 	}
@@ -95,21 +119,8 @@ public class Tasks {
 		return getGroupForList(listName).getListAbsolute(listName.absoluteName());
 	}
 
-	public long incrementID() {
-		long nextID = this.nextID++;
-
-		writeNextID();
-
-		return nextID;
-	}
-
-	private void writeNextID() {
-		try (PrintStream outputStream = new PrintStream(osInterface.createOutputStream("git-data/next-id.txt"))) {
-			outputStream.print(this.nextID);
-		}
-		catch (IOException e) {
-			e.printStackTrace(output);
-		}
+	public NewID incrementID() {
+		return idValidator.incrementID();
 	}
 
 	public TaskGroup getGroupForList(ExistingListName list) {
@@ -126,7 +137,8 @@ public class Tasks {
 	}
 
 	public TaskGroup getGroup(String name) {
-		TaskGroupName groupName = new TaskGroupName(this, name){};
+		TaskGroupName groupName = new TaskGroupName(this, name) {
+		};
 
 		Optional<TaskGroup> optionalGroup = rootGroup.getGroupAbsolute(groupName.absoluteName());
 
@@ -137,7 +149,7 @@ public class Tasks {
 	}
 
 	public long nextID() {
-		return nextID;
+		return idValidator.nextID();
 	}
 
 	public void moveList(ExistingListName list, ExistingGroupName group) {
@@ -177,7 +189,7 @@ public class Tasks {
 	}
 
 	public Task finishTask() {
-		return finishTask(new ExistingID(this, getActiveTask().id));
+		return finishTask(getActiveTask().ID());
 	}
 
 	public List<Task> getTasksForList(ExistingListName listName) {
@@ -253,21 +265,41 @@ public class Tasks {
 		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		return new ExistingListName(this, getListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath());
+		return new ExistingListName(this, getListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID())).getFullPath());
 	}
 
 	public Task finishTask(ExistingID id) {
 		TaskStateUpdater updater = new TaskStateUpdater(this, projects, osInterface);
-		return updater.finishTask(id);
+		Task finishedTask = updater.finishTask(id);
+
+		idValidator.resetShortIDs();
+
+		// renumber all the short IDs
+		for (int fullID = 1; fullID < idValidator.nextID(); fullID++) {
+			Task task = getTask(new ExistingID(idValidator, fullID));
+
+			if (task.state != TaskState.Finished) {
+				RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+				task.setShortID(shortID);
+
+				idValidator.mapShortIDToFullID(shortID, task.fullID());
+			}
+			else {
+				task.setShortID(RelativeTaskID.NO_SHORT_ID);
+			}
+		}
+
+
+		return finishedTask;
 	}
 
 	public Task getActiveTask() {
 		if (activeContext.getActiveTaskID() == NO_ACTIVE_TASK) {
 			throw new TaskException("No active task.");
 		}
-		TaskList list = findListForTask(new ExistingID(this, activeContext.getActiveTaskID()));
+		TaskList list = findListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID()));
 
-		return list.getTask(new ExistingID(this, activeContext.getActiveTaskID()));
+		return list.getTask(new ExistingID(idValidator, activeContext.getActiveTaskID()));
 	}
 
 	public void renameList(ExistingListName currentName, NewTaskListName newName) {
@@ -326,30 +358,36 @@ public class Tasks {
 	}
 
 	public boolean hasTaskWithID(long id) {
-		return existingTasks.contains(id);
+		return idValidator.containsExistingID(id);
 	}
 
-	public void addTask(Task task) {
-		if (hasTaskWithID(task.id)) {
-			throw new TaskException("Task with ID " + task.id + " already exists.");
-		}
+	public Task addTask(TaskBuilder builder) {
+		Task task = builder.build();
 
-		existingTasks.add(task.id);
+		RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+		task.setShortID(shortID);
+
+		idValidator.mapShortIDToFullID(shortID, task.fullID());
 
 		getList(activeContext.getCurrentList()).addTaskNoWriteCommit(task);
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.id);
+			activeContext.setActiveTaskID(task.ID().get().ID());
 		}
+
+		return task;
 	}
 
-	public void addTask(Task task, TaskList list, boolean commit) {
-		if (hasTaskWithID(task.id)) {
-			throw new TaskException("Task with ID " + task.id + " already exists.");
-		}
+	public Task addTask(TaskBuilder builder, TaskList list, boolean commit) {
+		Task task = builder.build();
 
-		existingTasks.add(task.id);
+		if (task.state != TaskState.Finished) {
+			RelativeTaskID shortID = new RelativeTaskID(idValidator.incrementShortID());
+			task.setShortID(shortID);
+
+			idValidator.mapShortIDToFullID(shortID, task.fullID());
+		}
 
 		if (commit) {
 			list.addTask(task);
@@ -360,8 +398,10 @@ public class Tasks {
 
 		// used to set the active task when reloading from the files
 		if (task.state == TaskState.Active) {
-			activeContext.setActiveTaskID(task.id);
+			activeContext.setActiveTaskID(task.ID().get().ID());
 		}
+
+		return task;
 	}
 
 	public ActiveContext getActiveContext() {
@@ -446,33 +486,46 @@ public class Tasks {
 
 	public Task setTags(ExistingID id, List<String> tags) {
 		Task origTask = getTask(id);
-		TaskBuilder builder = new TaskBuilder(origTask);
-
-		builder.clearTags();
+		TaskBuilder builder = new TaskBuilder(origTask)
+				.clearTags();
 
 		tags.forEach(builder::withTag);
 
 		Task task = builder.build();
 
-		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
+		String list = findListForTask(task.ID()).getFullPath();
 		replaceTask(new ExistingListName(this, list), origTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		osInterface.gitCommit("Set tag(s) for task " + task.id + " to " + String.join(", ", tags));
+		osInterface.gitCommit("Set tag(s) for task " + task.ID() + " to " + String.join(", ", tags));
 
 		return task;
 	}
 
 	public Task getTask(ExistingID id) {
-		Optional<Task> optionalTask = getAllTasks().stream()
-				.filter(task -> task.id == id.get())
-				.findFirst();
+//		Optional<Task> optionalTask = getAllTasks().stream()
+//				.filter(task -> task.ID().equals(id))
+//				.findFirst();
+		Optional<Task> optionalTask = rootGroup.findTask(id);
 
 		if (optionalTask.isEmpty()) {
 			throw new TaskException("Task " + id.get() + " does not exist.");
 		}
+		return optionalTask.get();
+	}
+
+	public Task getTaskWithRelativeID(RelativeTaskID id) {
+//		Optional<Task> optionalTask = getAllTasks().stream()
+//				.filter(task -> task.shortID().equals(id))
+//				.findFirst();
+		Optional<Task> optionalTask = rootGroup.findTask(id);
+
+		if (optionalTask.isEmpty()) {
+			throw new TaskException("Task with relative ID " + id.ID() + " does not exist.");
+		}
+
 		return optionalTask.get();
 	}
 
@@ -507,15 +560,15 @@ public class Tasks {
 				.withState(state)
 				.build();
 
-		String list = findListForTask(new ExistingID(this, task.id)).getFullPath();
+		String list = findListForTask(task.ID()).getFullPath();
 		replaceTask(new ExistingListName(this, list), optionalTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 
-		findListForTask(new ExistingID(this, task.id)).writeArchive();
+		findListForTask(task.ID()).writeArchive();
 
-		osInterface.gitCommit("Set state for task " + task.id + " to " + state);
+		osInterface.gitCommit("Set state for task " + task.ID() + " to " + state);
 
 		return task;
 	}
@@ -529,7 +582,7 @@ public class Tasks {
 		String list = findListForTask(id).getFullPath();
 		replaceTask(new ExistingListName(this, list), existingTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		writer.writeTask(task, file);
 	}
 
@@ -699,7 +752,7 @@ public class Tasks {
 		activeContext.setActiveTaskID(NO_ACTIVE_TASK);
 
 		try {
-			nextID = getStartingID();
+			idValidator.setStartingID(getStartingID());
 			loader.load();
 			commands.loadAliases();
 
@@ -708,8 +761,8 @@ public class Tasks {
 					.findFirst();
 
 			if (activeTask.isPresent()) {
-				activeContext.setActiveTaskID(activeTask.get().id);
-				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(this, activeContext.getActiveTaskID())).getFullPath()));
+				activeContext.setActiveTaskID(activeTask.get().ID().get().ID());
+				activeContext.setCurrentList(new ExistingListName(this, findListForTask(new ExistingID(idValidator, activeContext.getActiveTaskID())).getFullPath()));
 				activeContext.setCurrentGroup(new ExistingGroupName(this, getGroupForList(activeContext.getCurrentList()).getFullPath()));
 			}
 		}
@@ -737,6 +790,6 @@ public class Tasks {
 	}
 
 	private void resetIDs() {
-		existingTasks.clear();
+		idValidator.clearExistingIDs();
 	}
 }

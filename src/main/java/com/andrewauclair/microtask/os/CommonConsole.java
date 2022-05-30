@@ -5,7 +5,6 @@ import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.picocli.CustomPicocliCommands;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinUser;
-import org.jline.builtins.Completers;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.Binding;
 import org.jline.reader.LineReader;

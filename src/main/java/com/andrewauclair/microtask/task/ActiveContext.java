@@ -9,7 +9,6 @@ import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.andrewauclair.microtask.task.TaskGroup.ROOT_PATH;
@@ -102,7 +101,7 @@ public class ActiveContext {
 		activeMilestone = milestone;
 	}
 
-	public void setNoActiveMiletone() {
+	public void setNoActiveMilestone() {
 		activeMilestone = null;
 	}
 

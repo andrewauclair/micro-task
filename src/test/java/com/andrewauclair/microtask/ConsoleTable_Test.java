@@ -332,7 +332,7 @@ public class ConsoleTable_Test {
 		String r = ANSI_RESET;
 
 		assertOutput(
-				u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r + "                          ",
+				u + "One" + r + "  " + u + "Two" + r + "  " + u + "Three" + r + "  " + u + "Four" + r,
 				"                 this is a longer string that will wrap around to the next line",
 				"                 even with the spaces in front                                 "
 		);

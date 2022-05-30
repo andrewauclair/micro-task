@@ -6,11 +6,11 @@ import com.andrewauclair.microtask.TaskException;
 public class NewID {
 	private final long id;
 
-	public NewID(Tasks tasks, long id) {
+	public NewID(IDValidator idValidator, long id) {
 		this.id = id;
 
-		if (tasks.hasTaskWithID(id)) {
-			throw new TaskException("Task " + id + " already exist.");
+		if (idValidator.containsExistingID(id)) {
+			throw new TaskException("Task with ID " + id + " already exists.");
 		}
 	}
 

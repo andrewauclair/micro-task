@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.task.add;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.TaskListFileWriter;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
@@ -27,7 +26,8 @@ public class ListAdder {
 		String groupName = listName.parentGroupName().absoluteName();
 
 		// create any groups in the path that don't exist
-		tasks.createGroup(new TaskGroupName(tasks, listName.parentGroupName().absoluteName()){}, createFiles);
+		tasks.createGroup(new TaskGroupName(tasks, listName.parentGroupName().absoluteName()) {
+		}, createFiles);
 
 		group = tasks.getGroup(groupName);
 

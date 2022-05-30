@@ -6,12 +6,16 @@ import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.project.*;
 import com.andrewauclair.microtask.schedule.Schedule;
+import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import com.andrewauclair.microtask.task.list.name.NewTaskListName;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class DataLoader {
@@ -35,7 +39,8 @@ public class DataLoader {
 		loadTasks("git-data/tasks", true);
 
 		// if the default list is missing, add it and the /projects/ group
-		if (!new TaskListFinder(tasks).hasList(new TaskListName(tasks, "/default") {})) {
+		if (!new TaskListFinder(tasks).hasList(new TaskListName(tasks, "/default") {
+		})) {
 			tasks.addList(new NewTaskListName(tasks, "/default"), osInterface.canCreateFiles());
 			tasks.addGroup(new NewTaskGroupName(tasks, "/projects/"));
 			tasks.getActiveContext().setCurrentList(new ExistingListName(tasks, "/default"));
@@ -73,15 +78,16 @@ public class DataLoader {
 
 						long id = Long.parseLong(line.substring(lastSlash + 1, lastDot));
 
-						Task task = reader.readTask(id, bufferedReader);
-
 						// probably our bug where we keep writing the finished tasks that are in the archive, delete the file
-						if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks, id)).state == TaskState.Finished) {
+						if (tasks.hasTaskWithID(id) && tasks.getTask(new ExistingID(tasks.idValidator(), id)).state == TaskState.Finished) {
 //							osInterface.removeFile(fileInfo.getPath());
 							osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + id + ".txt");
 						}
 						else {
-							tasks.addTask(task, list, false);
+							tasks.idValidator().addExistingID(id);
+
+							Task task = reader.readTask(new ExistingID(tasks.idValidator(), id), bufferedReader);
+							tasks.addTask(new TaskBuilder(task), list, false);
 						}
 						line = bufferedReader.readLine();
 					} while (line != null);
@@ -95,10 +101,10 @@ public class DataLoader {
 				String fileName = fileInfo.getFileName();
 				long id = idFromFileName(fileInfo, fileName);
 
+				tasks.idValidator().addExistingID(id);
 
-
-				Task task = reader.readTask(id, fileInfo.getPath());
-				tasks.addTask(task, list, false);
+				Task task = reader.readTask(new ExistingID(tasks.idValidator(), id), fileInfo.getPath());
+				tasks.addTask(new TaskBuilder(task), list, false);
 			}
 		}
 	}
@@ -203,18 +209,6 @@ public class DataLoader {
 					tasks.setGroupState(new ExistingGroupName(tasks, group.getFullPath()), state, false);
 				}
 			}
-//			String line = scanner.nextLine();
-//			TaskContainerState state;
-//
-//			try {
-//				state = TaskContainerState.valueOf(line);
-//			}
-//			catch (IllegalArgumentException e) {
-//				// legacy
-//				scanner.nextLine();
-//				state = TaskContainerState.valueOf(scanner.nextLine());
-//			}
-
 		}
 		catch (IOException e) {
 			// TODO I don't want to ignore any exceptions, especially ones from creating an input stream, test this
@@ -256,7 +250,7 @@ public class DataLoader {
 							else {
 								long taskID = Long.parseLong(line.split(" ")[1]);
 
-								ms.addTask(new ExistingID(tasks, taskID));
+								ms.addTask(new ExistingID(tasks.idValidator(), taskID));
 							}
 						}
 					}

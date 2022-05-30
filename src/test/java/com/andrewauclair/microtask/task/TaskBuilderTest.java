@@ -1,11 +1,11 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
+import com.andrewauclair.microtask.MockOSInterface;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -14,9 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TaskBuilderTest {
+	IDValidator idValidator = new TaskIDValidator(System.out, new MockOSInterface());
+
 	@Test
 	void finishing_task_with_no_times_results_in_finish_time() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 0);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 0).build();
 		
 		TaskBuilder builder = new TaskBuilder(task);
 		
@@ -35,7 +37,7 @@ class TaskBuilderTest {
 	
 	@Test
 	void does_not_remove_last_time_when_not_finished() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 0);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 0).build();
 		
 		Task finalTask = new TaskBuilder(task)
 				.withState(TaskState.Finished)
@@ -46,7 +48,7 @@ class TaskBuilderTest {
 	
 	@Test
 	void does_not_remove_last_time_when_state_does_not_change() {
-		Task task = newTask(1, "Test", TaskState.Finished, 0);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Finished, 0).build();
 		
 		Task finalTask = new TaskBuilder(task)
 				.withState(TaskState.Finished)
@@ -57,7 +59,9 @@ class TaskBuilderTest {
 
 	@Test
 	void build_task_starting_with_only_id() {
-		Task task = new TaskBuilder(1)
+		Task expectedTask = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123, Collections.singletonList(new TaskTimes(124, 224))).build();
+
+		Task task = new TaskBuilder(new ExistingID(idValidator, 1))
 				.withTask("Test")
 				.withState(TaskState.Inactive)
 				.withAddTime(123)
@@ -65,14 +69,13 @@ class TaskBuilderTest {
 				.withDueTime(604923)
 				.build();
 
-		Task expectedTask = newTask(1, "Test", TaskState.Inactive, 123, Collections.singletonList(new TaskTimes(124, 224)));
 
 		assertEquals(expectedTask, task);
 	}
 
 	@Test
 	void finished_task_can_not_be_renamed() {
-		TaskBuilder builder = new TaskBuilder(1)
+		TaskBuilder builder = new TaskBuilder(idValidator, new NewID(idValidator, 1))
 				.withTask("Test")
 				.withState(TaskState.Finished);
 

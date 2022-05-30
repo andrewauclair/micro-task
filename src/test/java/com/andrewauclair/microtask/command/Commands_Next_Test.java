@@ -30,12 +30,12 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 5 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   2  Test 2     ",
-				ANSI_BG_GRAY + "/gr/one    3  Test 3     " + ANSI_RESET,
-				"/gr/one    4  Test 4     ",
-				ANSI_BG_GRAY + "/gr/one    5  Test 5     " + ANSI_RESET,
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   2  (2)  Test 2     ",
+				ANSI_BG_GRAY + "/gr/one    3  (3)  Test 3     " + ANSI_RESET,
+				"/gr/one    4  (4)  Test 4     ",
+				ANSI_BG_GRAY + "/gr/one    5  (5)  Test 5     " + ANSI_RESET,
 				""
 		);
 	}
@@ -53,9 +53,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   2  Test 2     ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   2  (2)  Test 2     ",
 				""
 		);
 	}
@@ -77,9 +77,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GREEN + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   3  Test 3     ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GREEN + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   3  (2)  Test 3     ",
 				""
 		);
 	}
@@ -100,9 +100,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   3  Test 3     ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   3  (3)  Test 3     ",
 				""
 		);
 	}
@@ -120,9 +120,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   2  Test 2     ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   2  (2)  Test 2     ",
 				""
 		);
 	}
@@ -142,9 +142,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "                              ",
-				ANSI_BG_GRAY + "/default   1  Very long titles will be wrapped at the side of the screen ins..." + ANSI_RESET,
-				"/default   2  Very long titles will be wrapped at the side of the screen ins...",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Very long titles will be wrapped at the side of the scree..." + ANSI_RESET,
+				"/default   2  (2)  Very long titles will be wrapped at the side of the scree...",
 				""
 		);
 	}
@@ -164,11 +164,11 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r + "                              ",
-				ANSI_BG_GRAY + "/default   1  Very long titles will be wrapped at the side of the screen       ",
-				"              instead of being cut off at the edge                             " + ANSI_RESET,
-				"/default   2  Very long titles will be wrapped at the side of the screen       ",
-				"              instead of being cut off at the edge                             ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Very long titles will be wrapped at the side of the screen  ",
+				"                   instead of being cut off at the edge                        " + ANSI_RESET,
+				"/default   2  (2)  Very long titles will be wrapped at the side of the screen  ",
+				"                   instead of being cut off at the edge                        ",
 				""
 		);
 	}
@@ -194,11 +194,11 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 4 Tasks to Complete (exclude: /gr/one)",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   2  Test 2     ",
-				ANSI_BG_GRAY + "/default   3  Test 3     " + ANSI_RESET,
-				"/gr/two    5  Test 5     ",
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   2  (2)  Test 2     ",
+				ANSI_BG_GRAY + "/default   3  (3)  Test 3     " + ANSI_RESET,
+				"/gr/two    5  (5)  Test 5     ",
 				""
 		);
 	}
@@ -224,10 +224,10 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 3 Tasks to Complete (exclude: /gr/)",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   1  Test 1     " + ANSI_RESET,
-				"/default   2  Test 2     ",
-				ANSI_BG_GRAY + "/default   3  Test 3     " + ANSI_RESET,
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   1  (1)  Test 1     " + ANSI_RESET,
+				"/default   2  (2)  Test 2     ",
+				ANSI_BG_GRAY + "/default   3  (3)  Test 3     " + ANSI_RESET,
 				""
 		);
 	}
@@ -253,8 +253,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 1 Tasks to Complete (include: /gr/one)",
 				"",
-				u + "List" + r + "     " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/gr/one   4  Test 4     " + ANSI_RESET,
+				u + "List" + r + "     " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/gr/one   4  (4)  Test 4     " + ANSI_RESET,
 				""
 		);
 	}
@@ -280,9 +280,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete (include: /gr/)",
 				"",
-				u + "List" + r + "     " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/gr/one   4  Test 4     " + ANSI_RESET,
-				"/gr/two   5  Test 5     ",
+				u + "List" + r + "     " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/gr/one   4  (4)  Test 4     " + ANSI_RESET,
+				"/gr/two   5  (5)  Test 5     ",
 				""
 		);
 	}
@@ -308,8 +308,8 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 1 Tasks to Complete (include: /gr/; exclude: /gr/one)",
 				"",
-				u + "List" + r + "     " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/gr/two   5  Test 5     " + ANSI_RESET,
+				u + "List" + r + "     " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/gr/two   5  (5)  Test 5     " + ANSI_RESET,
 				""
 		);
 	}
@@ -337,9 +337,9 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 2 Tasks to Complete (include: /gr/; exclude: /gr/gd/)",
 				"",
-				u + "List" + r + "     " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "/gr/one   2  Test 2     " + ANSI_RESET,
-				"/gr/one   3  Test 3     ",
+				u + "List" + r + "     " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "/gr/one   2  (2)  Test 2     " + ANSI_RESET,
+				"/gr/one   3  (3)  Test 3     ",
 				""
 		);
 	}
@@ -356,30 +356,25 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 
 	@Test
 	void next_command_displays_due_tasks_with_due_option() {
-		tasks.addTask(new TaskBuilder(1)
+		tasks.addTask(new TaskBuilder(idValidator, newID(1))
 				.withTask("Test 1")
-				.withDueTime(100000)
-				.build());
+				.withDueTime(100000));
 
-		tasks.addTask(new TaskBuilder(2)
+		tasks.addTask(new TaskBuilder(idValidator, newID(2))
 				.withTask("Test 2")
-				.withDueTime(90000)
-				.build());
+				.withDueTime(90000));
 
-		tasks.addTask(new TaskBuilder(3)
+		tasks.addTask(new TaskBuilder(idValidator, newID(3))
 				.withTask("Test 3")
-				.withDueTime(80000)
-				.build());
+				.withDueTime(80000));
 
-		tasks.addTask(new TaskBuilder(4)
+		tasks.addTask(new TaskBuilder(idValidator, newID(4))
 				.withTask("Test 4")
-				.withDueTime(70000)
-				.build());
+				.withDueTime(70000));
 
-		tasks.addTask(new TaskBuilder(5)
+		tasks.addTask(new TaskBuilder(idValidator, newID(5))
 				.withTask("Test 5")
-				.withDueTime(60000)
-				.build());
+				.withDueTime(60000));
 
 		commands.execute(printStream, "next -c 3 --due");
 
@@ -389,10 +384,10 @@ class Commands_Next_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Next 3 Due Tasks to Complete",
 				"",
-				u + "List" + r + "      " + u + "ID" + r + "  " + u + "Due" + r + "         " + u + "Description" + r,
-				ANSI_BG_GRAY + "/default   5  01/01/1970  Test 5     " + ANSI_RESET,
-				"/default   4  01/01/1970  Test 4     ",
-				ANSI_BG_GRAY + "/default   3  01/01/1970  Test 3     " + ANSI_RESET,
+				u + "List" + r + "      " + u + "ID" + r + "  " + u + r + "     " + u + "Due" + r + "         " + u + "Description" + r,
+				ANSI_BG_GRAY + "/default   5  (5)  01/01/1970  Test 5     " + ANSI_RESET,
+				"/default   4  (4)  01/01/1970  Test 4     ",
+				ANSI_BG_GRAY + "/default   3  (3)  01/01/1970  Test 3     " + ANSI_RESET,
 				""
 		);
 	}

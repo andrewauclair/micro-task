@@ -2,11 +2,11 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -21,7 +21,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(1), "Testing rename typo here, fixed");
 
-		Task task = newTask(1, "Testing rename typo here, fixed", TaskState.Inactive, 1000);
+		Task task = TestUtils.existingTask(existingID(1), "Testing rename typo here, fixed", TaskState.Inactive, 1000).build();
 		
 		assertEquals(task, renameTask);
 		assertThat(tasks.getTasks()).containsOnly(task);
@@ -35,7 +35,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(2), "Renaming task");
 
-		Task task = newTask(2, "Renaming task", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(3000)));
+		Task task = TestUtils.existingTask(existingID(2), "Renaming task", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(3000)));
 		
 		assertEquals(task, renameTask);
 	}
@@ -77,7 +77,13 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getTask(existingID(5)));
 		assertEquals("Task 5 does not exist.", taskException.getMessage());
 	}
-	
+
+	@Test
+	void getTaskWithRelativeID_throws_exception_if_task_was_not_found() {
+		TaskException taskException = assertThrows(TaskException.class, () -> tasks.getTaskWithRelativeID(new RelativeTaskID(55)));
+		assertEquals("Task with relative ID 55 does not exist.", taskException.getMessage());
+	}
+
 	@Test
 	void can_rename_tasks_on_a_different_list() {
 		tasks.addTask("Task to rename");
@@ -86,7 +92,7 @@ class Tasks_Rename_Task_Test extends TaskBaseTestCase {
 		
 		Task renameTask = tasks.renameTask(existingID(1), "Renamed this task");
 
-		Task task = newTask(1, "Renamed this task", TaskState.Inactive, 1000);
+		Task task = TestUtils.existingTask(existingID(1), "Renamed this task", TaskState.Inactive, 1000).build();
 		
 		assertEquals(task, renameTask);
 		

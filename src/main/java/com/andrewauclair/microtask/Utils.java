@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask;
 
 import com.andrewauclair.microtask.os.OSInterface;
+import com.andrewauclair.microtask.task.Task;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -13,6 +14,19 @@ public final class Utils {
 	private static final int SECONDS_IN_MINUTE = 60;
 	private static final int HOURS_IN_DAY = 8;
 	private static final int HOURS_IN_WEEK = 40;
+
+	public enum HighestTime {
+		None,
+		Second,
+		Minute,
+		Hour,
+		Day,
+		Week;
+
+		public boolean isAtLeast(HighestTime highestTime) {
+			return this.ordinal() >= highestTime.ordinal();
+		}
+	}
 
 	public static String formatTime(long time, HighestTime highestTime) {
 		long minsInHour = 60 * 60;
@@ -99,18 +113,5 @@ public final class Utils {
 		}
 
 		return currentVersion;
-	}
-
-	public enum HighestTime {
-		None,
-		Second,
-		Minute,
-		Hour,
-		Day,
-		Week;
-
-		public boolean isAtLeast(HighestTime highestTime) {
-			return this.ordinal() >= highestTime.ordinal();
-		}
 	}
 }

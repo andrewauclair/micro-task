@@ -82,7 +82,7 @@ public final class ConsoleColors {
 		ANSI_BG_BRIGHT_WHITE("\u001B[47;1m"),
 
 
-//		ANSI_BG_GRAY("\u001B[48;5;234m");
+		//		ANSI_BG_GRAY("\u001B[48;5;234m");
 		ANSI_BG_GRAY("\u001B[44m");
 
 		private final String str;

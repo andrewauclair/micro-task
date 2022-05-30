@@ -11,9 +11,9 @@ import java.util.Objects;
 public class NewTaskListName extends TaskListName {
 	public NewTaskListName(Tasks tasks, String name) {
 		super(tasks, name);
-		
+
 		TaskListFinder finder = new TaskListFinder(tasks);
-		
+
 		if (finder.hasList(this)) {
 			throw new TaskException("List '" + absoluteName() + "' already exists.");
 		}

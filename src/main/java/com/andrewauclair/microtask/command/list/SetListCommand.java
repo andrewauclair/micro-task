@@ -1,18 +1,25 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.list;
 
+import com.andrewauclair.microtask.DueDate;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.DueDate;
-import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskContainerState;
+import com.andrewauclair.microtask.task.TaskList;
+import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Command(name = "list")
 public class SetListCommand implements Runnable {
@@ -79,8 +86,10 @@ public class SetListCommand implements Runnable {
 
 			TaskList list = tasks.getList(new ExistingListName(tasks, this.list.absoluteName()));
 
-			for (final Task task : list.getTasks()) {
-				tasks.setDueDate(new ExistingID(tasks, task.id), dueTime);
+			List<Task> listTasks = new ArrayList<>(list.getTasks());
+
+			for (final Task task : listTasks) {
+				tasks.setDueDate(task.ID(), dueTime);
 
 				System.out.println("Set due date for task " + task.description() + " to " + eodStr);
 			}

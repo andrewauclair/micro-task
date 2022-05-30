@@ -13,5 +13,9 @@ public interface TaskContainer {
 
 	Optional<TaskList> findListForTask(ExistingID id);
 
+	Optional<Task> findTask(ExistingID id);
+
+	Optional<Task> findTask(RelativeTaskID id);
+
 	TaskContainerState getState();
 }

@@ -2,9 +2,7 @@
 package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.MockOSInterface;
-import com.andrewauclair.microtask.task.ExistingID;
-import com.andrewauclair.microtask.task.TaskWriter;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -25,6 +23,7 @@ class ProjectBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected IDValidator idValidator;
 	protected Tasks tasks;
 	protected Projects projects;
 
@@ -36,7 +35,8 @@ class ProjectBaseTestCase {
 
 		Mockito.when(osInterface.fileExists("git-data")).thenReturn(true);
 
-		tasks = new Tasks(writer, new PrintStream(outputStream), osInterface);
+		idValidator = new TaskIDValidator(new PrintStream(outputStream), osInterface);
+		tasks = new Tasks(idValidator, writer, new PrintStream(outputStream), osInterface);
 
 		tasks.addList(newList("/default"), true);
 		tasks.setCurrentList(existingList("/default"));
@@ -62,6 +62,6 @@ class ProjectBaseTestCase {
 	}
 
 	public ExistingID existingID(long ID) {
-		return new ExistingID(tasks, ID);
+		return new ExistingID(tasks.idValidator(), ID);
 	}
 }

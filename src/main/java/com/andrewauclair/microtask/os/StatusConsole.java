@@ -24,7 +24,6 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.utils.InfoCmp;
 
 import java.io.*;
 import java.net.Socket;
@@ -166,7 +165,7 @@ public class StatusConsole {
 
 		LocalSettings localSettings = new LocalSettings(osInterface);
 
-		tasks = new Tasks(new TaskWriter(osInterface), System.out, osInterface);
+		tasks = new Tasks(new ReadOnlyIDValidator(), new TaskWriter(osInterface), System.out, osInterface);
 		projects = new Projects(tasks, osInterface);
 		tasks.setProjects(projects);
 
@@ -381,8 +380,9 @@ public class StatusConsole {
 			}
 
 			char escCode = 0x1B;
-			int row = 0; int column = 0;
-			System.out.printf("%c[%d;%df",escCode,row,column);
+			int row = 0;
+			int column = 0;
+			System.out.printf("%c[%d;%df", escCode, row, column);
 
 //			if (lineReader.getBuiltinWidgets().get(LineReader.CLEAR_SCREEN).apply()) {
 //				terminal.writer().print(finalStr);

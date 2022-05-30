@@ -39,7 +39,7 @@ final class InfoCommand implements Runnable {
 		if (copy_name) {
 			osInterface.copyToClipboard(task.task);
 
-			System.out.println("Copied name of task " + task.id + " to the clipboard.");
+			System.out.println("Copied name of task " + task.ID() + " to the clipboard.");
 			System.out.println();
 
 			return;
@@ -77,12 +77,12 @@ final class InfoCommand implements Runnable {
 			System.out.println();
 		}
 
-		System.out.println("on list '" + tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath() + "'");
+		System.out.println("on list '" + tasks.findListForTask(task.ID()).getFullPath() + "'");
 		System.out.println();
 
 
-		System.out.println("Project '" + projects.getProjectForList(tasks.getListForTask(new ExistingID(tasks, task.id))) + "'");
-		System.out.println("Feature '" + projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.id))) + "'");
+		System.out.println("Project '" + projects.getProjectForList(tasks.getListForTask(task.ID())) + "'");
+		System.out.println("Feature '" + projects.getFeatureForList(tasks.getListForTask(task.ID())) + "'");
 		System.out.println();
 
 		if (task.state != TaskState.Finished) {

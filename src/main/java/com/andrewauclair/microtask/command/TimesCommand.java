@@ -203,9 +203,6 @@ public final class TimesCommand implements Runnable {
 					table.print();
 				}
 			}
-
-//			System.out.println();
-//			System.out.print(Utils.formatTime(totalTime, highestTime));
 		}
 		else {
 			results.sort(Comparator.comparingLong(TaskTimesFilter.TaskTimeFilterResult::getTotal).reversed());
@@ -217,7 +214,7 @@ public final class TimesCommand implements Runnable {
 			}
 
 		}
-			System.out.println();
+		System.out.println();
 //			System.out.print(Utils.formatTime(totalTime, highestTime));
 
 		System.out.print(String.format("%-" + table.getColumnWidths().get(0) + "s   Total", Utils.formatTime(totalTime, highestTime)));
@@ -244,7 +241,7 @@ public final class TimesCommand implements Runnable {
 			String type = "";
 			Task task = result.task;
 
-			boolean active = tasks.getActiveTaskID() == task.id;
+			boolean active = tasks.getActiveTaskID() == task.ID().get().ID();
 
 			if (active) {
 				type += "*";
@@ -269,10 +266,10 @@ public final class TimesCommand implements Runnable {
 
 			if (!total) {
 				if (active) {
-					table.addRow(ANSI_BG_GREEN, false, time, type, String.valueOf(task.id), task.task);
+					table.addRow(ANSI_BG_GREEN, false, time, type, String.valueOf(task.ID()), task.task);
 				}
 				else {
-					table.addRow(time, type, String.valueOf(task.id), task.task);
+					table.addRow(time, type, String.valueOf(task.ID()), task.task);
 				}
 			}
 
@@ -482,9 +479,9 @@ public final class TimesCommand implements Runnable {
 		Utils.HighestTime highestTime = getHighestTime(filter);
 
 		for (TaskTimesFilter.TaskTimeFilterResult task : filter.getData()) {
-			String project = projects.getProjectForList(tasks.findListForTask(new ExistingID(tasks, task.task.id)));
+			String project = projects.getProjectForList(tasks.findListForTask(task.task.ID()));
 //			String feature = getFeatureForTask(new ExistingID(tasks, task.task.id));
-			String feature = projects.getFeatureForList(tasks.getListForTask(new ExistingID(tasks, task.task.id)));
+			String feature = projects.getFeatureForList(tasks.getListForTask(task.task.ID()));
 
 			if (project.isEmpty()) {
 				project = "None";

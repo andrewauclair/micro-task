@@ -20,6 +20,7 @@ class TaskWriterTest {
 	private final OutputStream outputStream = new ByteArrayOutputStream();
 	private final OSInterface osInterface = Mockito.mock(OSInterface.class);
 	private final TaskWriter writer = new TaskWriter(osInterface);
+	private final IDValidator idValidator = new TaskIDValidator(new PrintStream(outputStream), osInterface);
 
 	@BeforeEach
 	void setup() throws IOException {
@@ -28,7 +29,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_file() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 1234);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 1234).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -46,7 +47,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_tags() {
-		Task task = newTaskBuilder(1, "Test", TaskState.Inactive, 1234)
+		Task task = newTaskBuilder(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 1234)
 				.withTag("one")
 				.withTag("two")
 				.withTag("three")
@@ -72,7 +73,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_contents_to_specific_output_stream() {
-		Task task = newTask(5, "Test", TaskState.Inactive,1234);
+		Task task = newTask(new NewID(idValidator, 5), idValidator, "Test", TaskState.Inactive,1234).build();
 		writer.writeTask(task, outputStream);
 
 
@@ -89,7 +90,7 @@ class TaskWriterTest {
 	}
 	@Test
 	void write_recurring_task() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 1000, true);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 1000, true).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -108,7 +109,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_due_date() {
-		Task task = newTaskBuilder(1, "Test", TaskState.Inactive, 1000)
+		Task task = newTaskBuilder(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 1000)
 				.withDueTime(5876)
 				.build();
 
@@ -130,11 +131,11 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_project() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123,
 				Collections.singletonList(
 						new TaskTimes(1234, 4567, "Project 1", "")
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -156,11 +157,11 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_feature() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123,
 				Collections.singletonList(
 						new TaskTimes(1234, 4567, "", "Feature 1")
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -182,11 +183,11 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_project_and_feature() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123,
 				Collections.singletonList(
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1")
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -208,7 +209,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_time() {
-		Task task = newTask(1, "Test", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(2345)));
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Active, 1234, Collections.singletonList(new TaskTimes(2345))).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -230,7 +231,7 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_and_stop_times() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123, Collections.singletonList(new TaskTimes(1234, 4567)));
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123, Collections.singletonList(new TaskTimes(1234, 4567))).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -252,12 +253,12 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_start_stop_and_start_again() {
-		Task task = newTask(1, "Test", TaskState.Active, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Active, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333)
 				)
-		);
+		).build();
 
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
@@ -284,12 +285,12 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_multiple_starts_and_stops() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567),
 						new TaskTimes(3333, 5555)
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -316,12 +317,12 @@ class TaskWriterTest {
 
 	@Test
 	void write_task_with_multiple_times_with_multiple_different_projects_and_features() {
-		Task task = newTask(1, "Test", TaskState.Inactive, 123,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 123,
 				Arrays.asList(
 						new TaskTimes(1234, 4567, "Project 1", "Feature 1"),
 						new TaskTimes(3333, 5555, "Project 2", "Feature 2")
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 
 		assertOutput(
@@ -347,11 +348,11 @@ class TaskWriterTest {
 	
 	@Test
 	void write_task_with_finish_time() {
-		Task task = newTask(1, "Test", TaskState.Finished, 123, 5678,
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Finished, 123, 5678,
 				Collections.singletonList(
 						new TaskTimes(1234, 4567)
 				)
-		);
+		).build();
 		boolean writeTask = writer.writeTask(task, "git-data/1.txt");
 		
 		assertOutput(
@@ -378,7 +379,7 @@ class TaskWriterTest {
 
 		System.setOut(new PrintStream(outputStream));
 
-		Task task = newTask(1, "Test", TaskState.Inactive, 0);
+		Task task = newTask(new NewID(idValidator, 1), idValidator, "Test", TaskState.Inactive, 0).build();
 		assertFalse(writer.writeTask(task, "test.txt"));
 
 		assertOutput(

@@ -35,7 +35,7 @@ public class TaskTimesFilter {
 				totalTime += time.getDuration(osInterface);
 			}
 
-			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()));
+			results.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.ID()).getFullPath()));
 		}
 	}
 
@@ -87,7 +87,7 @@ public class TaskTimesFilter {
 
 			if (totalTime > 0) {
 				newTasks.add(task);
-				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(new ExistingID(tasks, task.id)).getFullPath()));
+				newResults.add(new TaskTimeFilterResult(totalTime, task, tasks.getListForTask(task.ID()).getFullPath()));
 			}
 		}
 

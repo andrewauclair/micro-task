@@ -275,7 +275,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		assertEquals("Task 1 cannot be moved because list '/default' has been finished.", taskException.getMessage());
 
-		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(existingID(1)));
 
 		Mockito.verifyNoInteractions(writer, osInterface);
 	}
@@ -292,7 +292,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		assertEquals("Task 1 cannot be moved because list '/one' has been finished.", taskException.getMessage());
 
-		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(existingID(1)));
 
 		Mockito.verifyNoInteractions(writer, osInterface);
 	}
@@ -309,7 +309,7 @@ class Tasks_Move_Test extends TaskBaseTestCase {
 
 		assertEquals("Task 1 cannot be moved because it has been finished.", taskException.getMessage());
 
-		assertTrue(tasks.getListByName(existingList("/default")).containsTask(1));
+		assertTrue(tasks.getListByName(existingList("/default")).containsTask(existingID(1)));
 
 		Mockito.verifyNoInteractions(writer, osInterface);
 	}

@@ -16,7 +16,10 @@ import picocli.CommandLine;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.andrewauclair.microtask.ConsoleTable.Alignment.LEFT;
@@ -129,7 +132,7 @@ public class TasksCommand implements Runnable {
 		boolean useTags = !tasksData.getActiveContext().getActiveTags().isEmpty();
 		List<String> tags = tasksData.getActiveContext().getActiveTags();
 
-		if  (due_args != null && due_args.due_before != null) {
+		if (due_args != null && due_args.due_before != null) {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			System.out.println("Tasks due before " + dateTimeFormatter.format(due_args.due_before.atStartOfDay()));
 		}
@@ -233,16 +236,16 @@ public class TasksCommand implements Runnable {
 		table.enableAlternatingColors();
 
 		if (useGroup) {
-			table.setHeaders("List", "Type", "ID", "Description");
-			table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+			table.setHeaders("List", "Type", "ID", "", "Description");
+			table.setColumnAlignment(LEFT, LEFT, RIGHT, RIGHT, LEFT);
 		}
 		else if (display_schedule) {
-			table.setHeaders("Project", "Type", "ID", "Description");
-			table.setColumnAlignment(LEFT, LEFT, RIGHT, LEFT);
+			table.setHeaders("Project", "Type", "ID", "", "Description");
+			table.setColumnAlignment(LEFT, LEFT, RIGHT, RIGHT, LEFT);
 		}
 		else {
-			table.setHeaders("Type", "ID", "Description");
-			table.setColumnAlignment(LEFT, RIGHT, LEFT);
+			table.setHeaders("Type", "ID", "", "Description");
+			table.setColumnAlignment(LEFT, RIGHT, RIGHT, LEFT);
 		}
 
 		if (verbose) {
@@ -251,18 +254,18 @@ public class TasksCommand implements Runnable {
 
 		if (feature.isPresent()) {
 			tasks = feature.get().getTasks().stream()
-					.filter(task -> !useTags || task.tags.containsAll(tags))
+					.filter(task -> !useTags || new HashSet<>(task.tags).containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else if (milestone.isPresent()) {
 			tasks = milestone.get().getTasks().stream()
 					.map(tasksData::getTask)
-					.filter(task -> !useTags || task.tags.containsAll(tags))
+					.filter(task -> !useTags || new HashSet<>(task.tags).containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else if (useGroup) {
 			tasks = getTasks(tasksData.getGroup(group), finished, recursive).stream()
-					.filter(task -> !useTags || task.tags.containsAll(tags))
+					.filter(task -> !useTags || new HashSet<>(task.tags).containsAll(tags))
 					.collect(Collectors.toList());
 		}
 		else if (display_schedule) {
@@ -271,7 +274,7 @@ public class TasksCommand implements Runnable {
 		else {
 			List<Task> tasksList = tasksData.getTasksForList(list).stream()
 					.filter(task -> finished == (task.state == TaskState.Finished))
-					.filter(task -> !useTags || task.tags.containsAll(tags))
+					.filter(task -> !useTags || new HashSet<>(task.tags).containsAll(tags))
 					.collect(Collectors.toList());
 
 			tasks.addAll(tasksList);
@@ -289,11 +292,11 @@ public class TasksCommand implements Runnable {
 			tasks.clear();
 		}
 
-		dueTasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
-		tasks.sort((o1, o2) -> Long.compare(o2.id, o1.id));
+		dueTasks.sort((o1, o2) -> ExistingID.compare(o2.ID(), o1.ID()));
+		tasks.sort((o1, o2) -> ExistingID.compare(o2.ID(), o1.ID()));
 
 		for (final Task task : tasks) {
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, task.id));
+			TaskList listForTask = tasksData.findListForTask(task.ID());
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -307,7 +310,7 @@ public class TasksCommand implements Runnable {
 			}
 
 			for (Task dueTask : dueTasks) {
-				TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, dueTask.id));
+				TaskList listForTask = tasksData.findListForTask(dueTask.ID());
 				String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 				String project_name = projects.getProjectForList(listForTask);
@@ -319,7 +322,7 @@ public class TasksCommand implements Runnable {
 		if (tasksData.hasActiveTask() && !display_schedule) {
 			table.addRow(true, "Active Task");
 
-			TaskList listForTask = tasksData.findListForTask(new ExistingID(tasksData, tasksData.getActiveTask().id));
+			TaskList listForTask = tasksData.findListForTask(tasksData.getActiveTask().ID());
 			String name = listForTask.getFullPath().replace(group.absoluteName(), "");
 
 			String project_name = projects.getProjectForList(listForTask);
@@ -404,9 +407,9 @@ public class TasksCommand implements Runnable {
 	}
 
 	private void addTaskToTable(ConsoleTable table, Task task, String listName, String projectName, boolean due, boolean printListName, boolean printProjectName) {
-		boolean active = task.id == tasksData.getActiveTaskID();
+		boolean active = task.ID().get().ID() == tasksData.getActiveTaskID();
 
-		String type = "";
+		String type;
 		if (active) {
 			type = "*";
 		}
@@ -437,14 +440,17 @@ public class TasksCommand implements Runnable {
 			bgColor = ANSI_BG_RED;
 		}
 
+		String fullID = String.valueOf(task.fullID().ID());
+		String shortID = task.shortID() == RelativeTaskID.NO_SHORT_ID ? "" : "(" + task.shortID().ID() + ")";
+
 		if (printListName) {
-			table.addRow(bgColor, false, listName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, listName, type, fullID, shortID, task.task);
 		}
 		else if (printProjectName) {
-			table.addRow(bgColor, false, projectName, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, projectName, type, fullID, shortID, task.task);
 		}
 		else {
-			table.addRow(bgColor, false, type, String.valueOf(task.id), task.task);
+			table.addRow(bgColor, false, type, fullID, shortID, task.task);
 		}
 	}
 

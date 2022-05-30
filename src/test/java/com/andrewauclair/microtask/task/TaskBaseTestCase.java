@@ -23,6 +23,7 @@ class TaskBaseTestCase {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected IDValidator idValidator;
 	protected Tasks tasks;
 	protected Projects projects;
 
@@ -37,8 +38,9 @@ class TaskBaseTestCase {
 
 		PrintStream output = new PrintStream(outputStream);
 		System.setOut(output);
-		
-		tasks = new Tasks(writer, output, osInterface);
+
+		idValidator = new TaskIDValidator(output, osInterface);
+		tasks = new Tasks(idValidator, writer, output, osInterface);
 
 		tasks.addList(newList("/default"), true);
 		tasks.setCurrentList(existingList("/default"));
@@ -65,10 +67,10 @@ class TaskBaseTestCase {
 	}
 
 	public ExistingID existingID(long id) {
-		return new ExistingID(tasks, id);
+		return new ExistingID(tasks.idValidator(), id);
 	}
 
 	public NewID newID(long id) {
-		return new NewID(tasks, id);
+		return new NewID(idValidator, id);
 	}
 }

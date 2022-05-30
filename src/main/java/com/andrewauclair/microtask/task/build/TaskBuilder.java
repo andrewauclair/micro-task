@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class TaskBuilder {
-	private final long id;
+	private final ExistingID existingID;
+
+	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
 	private String task = "";
 	private TaskState state = TaskState.Inactive;
 	private long addTime = 0;
@@ -19,12 +21,20 @@ public final class TaskBuilder {
 	private long dueTime = 0;
 	private final List<String> tags = new ArrayList<>();
 
-	public TaskBuilder(long id) {
-		this.id = id;
+	public TaskBuilder(IDValidator idValidator, NewID id) {
+		idValidator.addExistingID(id.get());
+
+		this.existingID = new ExistingID(idValidator, id.get());
+	}
+
+	public TaskBuilder(ExistingID id) {
+		this.existingID = id;
 	}
 
 	public TaskBuilder(Task task) {
-		id = task.id;
+		existingID = task.ID();
+		shortID = task.shortID();
+
 		this.task = task.task;
 		state = task.state;
 		addTime = task.addTime;
@@ -37,7 +47,7 @@ public final class TaskBuilder {
 
 	public TaskBuilder withTask(String name) {
 		if (state == TaskState.Finished) {
-			throw new TaskException("Task " + id + " cannot be renamed because it has been finished.");
+			throw new TaskException("Task " + existingID.get() + " cannot be renamed because it has been finished.");
 		}
 		task = name;
 		return this;
@@ -45,7 +55,6 @@ public final class TaskBuilder {
 
 	public TaskBuilder withState(TaskState state) {
 		if (this.state == TaskState.Finished && state != TaskState.Finished) {
-//			startStopTimes.remove(startStopTimes.size() - 1);
 			finishTime = TaskTimes.TIME_NOT_SET;
 		}
 		this.state = state;
@@ -88,7 +97,6 @@ public final class TaskBuilder {
 	}
 
 	public Task start(long start, Tasks tasks, Projects projects) {
-		ExistingID existingID = new ExistingID(tasks, id);
 		TaskList list = new TaskFinder(tasks).findListForTask(existingID);
 		String project = projects.getProjectForList(list);
 		String feature = projects.getFeatureForList(list);
@@ -98,7 +106,9 @@ public final class TaskBuilder {
 	}
 
 	public Task build() {
-		return new Task(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		Task task1 = new Task(existingID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		task1.setShortID(shortID);
+		return task1;
 	}
 
 	public Task finish(long finishTime) {
