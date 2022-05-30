@@ -86,7 +86,7 @@ public class TaskTimesFilter_Month_Test extends TaskBaseTestCase {
 	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		osInterface.setTime(start);
-		tasks.startTask(existingID(task.id), false);
+		tasks.startTask(task.ID(), false);
 		osInterface.setTime(stop);
 		return tasks.stopTask();
 	}

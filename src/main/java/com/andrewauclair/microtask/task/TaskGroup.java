@@ -77,11 +77,35 @@ public final class TaskGroup implements TaskContainer {
 
 	@Override
 	public Optional<TaskList> findListForTask(ExistingID id) {
-		for (TaskContainer child : getChildren()) {
+		for (TaskContainer child : children) {
 			Optional<TaskList> list = child.findListForTask(id);
 
 			if (list.isPresent()) {
 				return list;
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Task> findTask(ExistingID id) {
+		for (final TaskContainer child : children) {
+			Optional<Task> task = child.findTask(id);
+
+			if (task.isPresent()) {
+				return task;
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Task> findTask(RelativeTaskID id) {
+		for (final TaskContainer child : children) {
+			Optional<Task> task = child.findTask(id);
+
+			if (task.isPresent()) {
+				return task;
 			}
 		}
 		return Optional.empty();
@@ -163,7 +187,7 @@ public final class TaskGroup implements TaskContainer {
 		return false;
 	}
 
-	// finds lists by their absolute name
+	// finds list by absolute path
 	TaskList getListAbsolute(String path) {
 		Optional<TaskList> optionalList = children.stream()
 				.filter(child -> child instanceof TaskList)
@@ -179,7 +203,7 @@ public final class TaskGroup implements TaskContainer {
 
 	Optional<TaskGroup> getGroupAbsolute(String path) {
 		for (TaskContainer child : children) {
-			if (child instanceof TaskGroup ) {
+			if (child instanceof TaskGroup) {
 				// TODO Pattern matching instanceof (JDK 16+), had to remove --enable-preview for now
 				TaskGroup group = (TaskGroup) child;
 

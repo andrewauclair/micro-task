@@ -1,7 +1,6 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.os;
 
-import com.andrewauclair.microtask.ConsoleTable;
 import com.andrewauclair.microtask.TaskException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,7 +8,6 @@ import org.json.JSONObject;
 import javax.net.ssl.*;
 import java.io.*;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.file.Files;
@@ -17,13 +15,9 @@ import java.nio.file.StandardCopyOption;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 @SuppressWarnings("CanBeFinal")
 public class GitLabReleases {
@@ -319,22 +313,17 @@ public class GitLabReleases {
 		fos.close();
 	}
 
-	private static void extractFolder(String zipFile,String extractFolder)
-	{
-		try (ZipFile zip = new ZipFile(zipFile))
-		{
+	private static void extractFolder(String zipFile, String extractFolder) {
+		try (ZipFile zip = new ZipFile(zipFile)) {
 			int BUFFER = 2048;
-//			File file = new File(zipFile);
-//
-//			ZipFile zip = new ZipFile(file);
+
 			String newPath = extractFolder;
 
 			new File(newPath).mkdir();
 			Enumeration zipFileEntries = zip.entries();
 
 			// Process each entry
-			while (zipFileEntries.hasMoreElements())
-			{
+			while (zipFileEntries.hasMoreElements()) {
 				// grab a zip file entry
 				ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
 				String currentEntry = entry.getName();
@@ -346,8 +335,7 @@ public class GitLabReleases {
 				// create the parent directory structure if needed
 				destinationParent.mkdirs();
 
-				if (!entry.isDirectory())
-				{
+				if (!entry.isDirectory()) {
 					BufferedInputStream is = new BufferedInputStream(zip
 							.getInputStream(entry));
 					int currentByte;
@@ -371,8 +359,7 @@ public class GitLabReleases {
 
 			}
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 //			Log("ERROR: "+e.getMessage());
 		}

@@ -167,13 +167,13 @@ class Commands_Time_Tracking_Test extends CommandsBaseTestCase {
 	}
 
 	private void addTask(String name, ExistingListName list, TaskTimes... times) {
-		TaskBuilder builder = new TaskBuilder(tasks.incrementID())
+		TaskBuilder builder = new TaskBuilder(tasks.idValidator(), tasks.incrementID())
 				.withTask(name);
 
 		for (final TaskTimes time : times) {
 			builder.withStartStopTime(time);
 		}
 
-		tasks.addTask(builder.build(), tasks.getList(list), true);
+		tasks.addTask(builder, tasks.getList(list), true);
 	}
 }

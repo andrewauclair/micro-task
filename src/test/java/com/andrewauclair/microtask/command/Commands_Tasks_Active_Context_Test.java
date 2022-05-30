@@ -73,11 +73,11 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks on active list '/projects/micro-task/one'",
 				"",
-				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "       5  Task 4     " + ANSI_RESET,
-				"       4  Task 3     ",
-				ANSI_BG_GRAY + "       3  Task 2     " + ANSI_RESET,
-				"       2  Task 1     ",
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "       5  (5)  Task 4     " + ANSI_RESET,
+				"       4  (4)  Task 3     ",
+				ANSI_BG_GRAY + "       3  (3)  Task 2     " + ANSI_RESET,
+				"       2  (2)  Task 1     ",
 				"",
 				ANSI_BOLD + "Total Tasks: 4" + ANSI_RESET,
 				""
@@ -97,8 +97,8 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks on active list '/projects/micro-task/one' with tag(s): alpha, bravo",
 				"",
-				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "       4  Task 3     " + ANSI_RESET,
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "       4  (4)  Task 3     " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""
@@ -111,7 +111,7 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		tasks.getActiveContext().setActiveTags(Arrays.asList("alpha", "bravo"));
 
 		Task active_task = tasks.addTask("Active task");
-		tasks.startTask(existingID(active_task.id), false);
+		tasks.startTask(active_task.ID(), false);
 
 		commands.execute(printStream, "tasks");
 
@@ -121,11 +121,11 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks on list '/projects/micro-task/one' with tag(s): alpha, bravo",
 				"",
-				u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "       4  Task 3     " + ANSI_RESET,
+				u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "      " + u + "Description" + r,
+				ANSI_BG_GRAY + "       4   (4)  Task 3     " + ANSI_RESET,
 				"",
 				"Active Task" + ANSI_RESET,
-				ANSI_BG_GREEN + "*     11  Active task" + ANSI_RESET,
+				ANSI_BG_GREEN + "*     11  (11)  Active task" + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""
@@ -144,16 +144,16 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks in active group '/projects/micro-task/'",
 				"",
-				u + "List" + r + "     " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two             9  Task 8     " + ANSI_RESET,
-				"two             8  Task 7     ",
-				ANSI_BG_GRAY + "two             7  Task 6     " + ANSI_RESET,
-				"two             6  Task 5     ",
-				ANSI_BG_GRAY + "one             5  Task 4     " + ANSI_RESET,
-				"one             4  Task 3     ",
-				ANSI_BG_GRAY + "one             3  Task 2     " + ANSI_RESET,
-				"one             2  Task 1     ",
-				ANSI_BG_GRAY + "general   R     1  Planning   " + ANSI_RESET,
+				u + "List" + r + "     " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two             9  (9)  Task 8     " + ANSI_RESET,
+				"two             8  (8)  Task 7     ",
+				ANSI_BG_GRAY + "two             7  (7)  Task 6     " + ANSI_RESET,
+				"two             6  (6)  Task 5     ",
+				ANSI_BG_GRAY + "one             5  (5)  Task 4     " + ANSI_RESET,
+				"one             4  (4)  Task 3     ",
+				ANSI_BG_GRAY + "one             3  (3)  Task 2     " + ANSI_RESET,
+				"one             2  (2)  Task 1     ",
+				ANSI_BG_GRAY + "general   R     1  (1)  Planning   " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 9 (1 Recurring)" + ANSI_RESET,
 				""
@@ -173,9 +173,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks in active group '/projects/micro-task/' with tag(s): alpha, bravo",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two          8  Task 7     " + ANSI_RESET,
-				"one          4  Task 3     ",
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two          8  (8)  Task 7     " + ANSI_RESET,
+				"one          4  (4)  Task 3     ",
 				"",
 				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
@@ -194,16 +194,16 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks in active project 'micro-task'",
 				"",
-				u + "List" + r + "     " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two             9  Task 8     " + ANSI_RESET,
-				"two             8  Task 7     ",
-				ANSI_BG_GRAY + "two             7  Task 6     " + ANSI_RESET,
-				"two             6  Task 5     ",
-				ANSI_BG_GRAY + "one             5  Task 4     " + ANSI_RESET,
-				"one             4  Task 3     ",
-				ANSI_BG_GRAY + "one             3  Task 2     " + ANSI_RESET,
-				"one             2  Task 1     ",
-				ANSI_BG_GRAY + "general   R     1  Planning   " + ANSI_RESET,
+				u + "List" + r + "     " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two             9  (9)  Task 8     " + ANSI_RESET,
+				"two             8  (8)  Task 7     ",
+				ANSI_BG_GRAY + "two             7  (7)  Task 6     " + ANSI_RESET,
+				"two             6  (6)  Task 5     ",
+				ANSI_BG_GRAY + "one             5  (5)  Task 4     " + ANSI_RESET,
+				"one             4  (4)  Task 3     ",
+				ANSI_BG_GRAY + "one             3  (3)  Task 2     " + ANSI_RESET,
+				"one             2  (2)  Task 1     ",
+				ANSI_BG_GRAY + "general   R     1  (1)  Planning   " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 9 (1 Recurring)" + ANSI_RESET,
 				""
@@ -223,9 +223,9 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks in active project 'micro-task' with tag(s): alpha, bravo",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two          8  Task 7     " + ANSI_RESET,
-				"one          4  Task 3     ",
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two          8  (8)  Task 7     " + ANSI_RESET,
+				"one          4  (4)  Task 3     ",
 				"",
 				ANSI_BOLD + "Total Tasks: 2" + ANSI_RESET,
 				""
@@ -245,11 +245,11 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks for active feature 'one' of project 'micro-task'",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "one          5  Task 4     " + ANSI_RESET,
-				"one          4  Task 3     ",
-				ANSI_BG_GRAY + "one          3  Task 2     " + ANSI_RESET,
-				"one          2  Task 1     ",
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "one          5  (5)  Task 4     " + ANSI_RESET,
+				"one          4  (4)  Task 3     ",
+				ANSI_BG_GRAY + "one          3  (3)  Task 2     " + ANSI_RESET,
+				"one          2  (2)  Task 1     ",
 				"",
 				ANSI_BOLD + "Total Tasks: 4" + ANSI_RESET,
 				""
@@ -270,8 +270,8 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks for active feature 'one' of project 'micro-task' with tag(s): alpha, bravo",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "one          4  Task 3     " + ANSI_RESET,
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "one          4  (4)  Task 3     " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""
@@ -291,11 +291,11 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks for active milestone '20.9.3' for project 'micro-task'",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two          9  Task 8     " + ANSI_RESET,
-				"two          8  Task 7     ",
-				ANSI_BG_GRAY + "two          7  Task 6     " + ANSI_RESET,
-				"two          6  Task 5     ",
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two          9  (9)  Task 8     " + ANSI_RESET,
+				"two          8  (8)  Task 7     ",
+				ANSI_BG_GRAY + "two          7  (7)  Task 6     " + ANSI_RESET,
+				"two          6  (6)  Task 5     ",
 				"",
 				ANSI_BOLD + "Total Tasks: 4" + ANSI_RESET,
 				""
@@ -316,8 +316,8 @@ public class Commands_Tasks_Active_Context_Test extends CommandsBaseTestCase {
 		assertOutput(
 				"Tasks for active milestone '20.9.3' for project 'micro-task' with tag(s): alpha, bravo",
 				"",
-				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + "Description" + r,
-				ANSI_BG_GRAY + "two          8  Task 7     " + ANSI_RESET,
+				u + "List" + r + "  " + u + "Type" + r + "  " + u + "ID" + r + "  " + u + r + "     " + u + "Description" + r,
+				ANSI_BG_GRAY + "two          8  (8)  Task 7     " + ANSI_RESET,
 				"",
 				ANSI_BOLD + "Total Tasks: 1" + ANSI_RESET,
 				""

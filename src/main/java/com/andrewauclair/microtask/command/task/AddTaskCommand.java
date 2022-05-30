@@ -13,13 +13,8 @@ import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.ZoneId;
 import java.util.List;
-
-import static java.time.Duration.parse;
 
 @CommandLine.Command(name = "task")
 public class AddTaskCommand implements Runnable {
@@ -77,17 +72,14 @@ public class AddTaskCommand implements Runnable {
 		}
 
 		if (taskList.canAddTask()) {
-			long newID = tasks.incrementID();
-
 			long addTime = osInterface.currentSeconds();
 
-			TaskBuilder builder = new TaskBuilder(newID)
+			TaskBuilder builder = new TaskBuilder(tasks.idValidator(), tasks.incrementID())
 					.withTask(name)
 					.withState(TaskState.Inactive)
 					.withAddTime(addTime)
-					.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME);
-
-			builder.withRecurring(recurring);
+					.withDueTime(addTime + Tasks.DEFAULT_DUE_TIME)
+					.withRecurring(recurring);
 
 			if (due != null) {
 				long dueTime = due.dueTime();
@@ -99,9 +91,7 @@ public class AddTaskCommand implements Runnable {
 				tags.forEach(builder::withTag);
 			}
 
-			Task task = builder.build();
-
-			tasks.addTask(task, taskList, true);
+			Task task = tasks.addTask(builder, taskList, true);
 
 			System.out.println("Added task " + task.description());
 
@@ -116,7 +106,7 @@ public class AddTaskCommand implements Runnable {
 			System.out.println();
 
 			if (start) {
-				commands.execute(System.out, "start task " + task.id);
+				commands.execute(System.out, "start task " + task.ID());
 			}
 		}
 		else {

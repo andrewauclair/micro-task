@@ -57,20 +57,35 @@ public final class TaskList implements TaskContainer {
 
 	@Override
 	public List<Task> getTasks() {
-		return new ArrayList<>(tasks);
+//		return new ArrayList<>(tasks);
+		return Collections.unmodifiableList(tasks);
 	}
 
 	@Override
 	public Optional<TaskList> findListForTask(ExistingID id) {
-		if (containsTask(id.get())) {
+		if (containsTask(id)) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
 	}
 
-	boolean containsTask(long taskID) {
+	@Override
+	public Optional<Task> findTask(ExistingID id) {
 		return tasks.stream()
-				.anyMatch(task -> task.id == taskID);
+				.filter(task -> task.ID().equals(id))
+				.findFirst();
+	}
+
+	@Override
+	public Optional<Task> findTask(RelativeTaskID id) {
+		return tasks.stream()
+				.filter(task -> task.shortID().equals(id))
+				.findFirst();
+	}
+
+	boolean containsTask(ExistingID taskID) {
+		return tasks.stream()
+				.anyMatch(task -> task.ID().equals(taskID));
 	}
 
 	@Override
@@ -156,14 +171,14 @@ public final class TaskList implements TaskContainer {
 		return getState() != TaskContainerState.Finished;
 	}
 
-	public Task addTask(NewID id, String name) {
+	public Task addTask(IDValidator idValidator, NewID id, String name) {
 		if (getState() == TaskContainerState.Finished) {
 			throw new TaskException("Task '" + name + "' cannot be created because list '" + getFullPath() + "' has been finished.");
 		}
 
 		long addTime = osInterface.currentSeconds();
 
-		Task task = new TaskBuilder(id.get())
+		Task task = new TaskBuilder(idValidator, id)
 				.withTask(name)
 				.withState(TaskState.Inactive)
 				.withAddTime(addTime)
@@ -181,11 +196,11 @@ public final class TaskList implements TaskContainer {
 
 	private void writeTask(Task task) {
 		if (task.state == TaskState.Finished) {
-			osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+			osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 			writeArchive();
 		}
 		else {
-			writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+			writer.writeTask(task, "git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 		}
 	}
 
@@ -197,7 +212,7 @@ public final class TaskList implements TaskContainer {
 		if (finished.size() > 0) {
 			try (DataOutputStream outputStream = osInterface.createOutputStream("git-data/tasks" + getFullPath() + "/archive.txt")) {
 				for (final Task task : finished) {
-					String fileName = "git-data/tasks" + getFullPath() + "/" + task.id + ".txt";
+					String fileName = "git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt";
 					osInterface.removeFile(fileName);
 
 					outputStream.writeBytes(fileName);
@@ -235,7 +250,7 @@ public final class TaskList implements TaskContainer {
 
 	public Task getTask(ExistingID id) {
 		Optional<Task> optionalTask = tasks.stream()
-				.filter(task -> task.id == id.get())
+				.filter(task -> task.ID().equals(id))
 				.findFirst();
 
 		if (optionalTask.isPresent()) {
@@ -316,12 +331,10 @@ public final class TaskList implements TaskContainer {
 			throw new TaskException("Task " + id.get() + " cannot be moved because it has been finished.");
 		}
 
-//		removeTask(task);
-//		list.addTask(task);
 		tasks.remove(task);
 		list.tasks.add(task);
 
-		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.id + ".txt");
+		osInterface.removeFile("git-data/tasks" + getFullPath() + "/" + task.ID() + ".txt");
 
 		list.writeTask(task);
 		osInterface.gitCommit("Moved task " + task.description().replace("\"", "\\\"") + " to list '" + list.getFullPath() + "'");

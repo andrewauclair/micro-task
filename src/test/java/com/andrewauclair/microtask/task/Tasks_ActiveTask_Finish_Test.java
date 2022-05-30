@@ -2,6 +2,7 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -11,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.task.ActiveContext.NO_ACTIVE_TASK;
@@ -40,8 +40,8 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 	@Test
 	void finishing_a_task_removes_it_from_the_task_list() {
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Testing tasks", TaskState.Inactive, 1000),
-				newTask(2, "Testing tasks 2", TaskState.Inactive, 2000)
+				TestUtils.existingTask(existingID(1), "Testing tasks", TaskState.Inactive, 1000).build(),
+				TestUtils.existingTask(existingID(2), "Testing tasks 2", TaskState.Inactive, 2000).build()
 		);
 
 		Mockito.when(osInterface.currentSeconds()).thenReturn(1234L);
@@ -52,10 +52,10 @@ class Tasks_ActiveTask_Finish_Test extends TaskBaseTestCase {
 
 		Task task = tasks.finishTask();
 		
-		Task finishedTask = newTask(2, "Testing tasks 2", TaskState.Finished, 2000, 4567, Arrays.asList(new TaskTimes(1234, 4567)));
+		Task finishedTask = TestUtils.existingTask(existingID(2), "Testing tasks 2", TaskState.Finished, 2000, 4567, Arrays.asList(new TaskTimes(1234, 4567))).build();
 
 		assertThat(tasks.getTasks()).containsOnly(
-				newTask(1, "Testing tasks", TaskState.Inactive,1000),
+				TestUtils.existingTask(existingID(1), "Testing tasks", TaskState.Inactive,1000).build(),
 				finishedTask
 		);
 

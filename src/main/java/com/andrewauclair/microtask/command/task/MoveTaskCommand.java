@@ -1,14 +1,12 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command.task;
 
-import com.andrewauclair.microtask.command.group.SetGroupCommand;
 import com.andrewauclair.microtask.jline.ListCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,37 +43,39 @@ public class MoveTaskCommand implements Runnable {
 	@Override
 	public void run() {
 		if (args.id == null) {
+			// create list of IDs for all non-finished tasks on the given src list
 			List<Task> tasks = this.tasks.getList(args.src_list).getTasks().stream()
 					.filter(task -> task.state != TaskState.Finished)
-					.sorted(Comparator.comparingLong(o -> o.id))
+					.sorted((o1, o2) -> ExistingID.compare(o1.ID(), o2.ID()))
 					.collect(Collectors.toList());
 
 			args.id = new ExistingID[tasks.size()];
 
 			for (int i = 0; i < tasks.size(); i++) {
-				args.id[i] = new ExistingID(this.tasks, tasks.get(i).id);
+				args.id[i] = tasks.get(i).ID();
 			}
 		}
 
-		for (ExistingID taskID : args.id) {
-			boolean move = true;
+		TaskList list = tasks.getListByName(dest_list);
 
+		for (ExistingID taskID : args.id) {
 			if (interactive) {
 				System.out.println(tasks.getTask(taskID).description());
-				move = osInterface.promptChoice("move task " + taskID.get());
+
+				if (!osInterface.promptChoice("move task " + taskID.get())) {
+					continue;
+				}
 			}
 
-			if (move) {
-				moveTask(dest_list, taskID);
-			}
+			moveTask(list, taskID);
 		}
 		System.out.println();
 	}
 
-	private void moveTask(ExistingListName list, ExistingID taskID) {
+	private void moveTask(TaskList list, ExistingID taskID) {
 		TaskList taskList = tasks.getListForTask(taskID);
-		taskList.moveTask(taskID, tasks.getListByName(list));
+		taskList.moveTask(taskID, list);
 
-		System.out.println("Moved task " + taskID.get() + " to list '" + list + "'");
+		System.out.println("Moved task " + taskID.get() + " to list '" + list.getFullPath() + "'");
 	}
 }

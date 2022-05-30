@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.command;
 import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.project.Project;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
 import com.andrewauclair.microtask.task.*;
@@ -72,10 +71,10 @@ public final class UpdateCommand implements Runnable {
 
 				for (final Task task : list.getTasks()) {
 					if (task.state == TaskState.Finished) {
-						osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+						osInterface.removeFile("git-data/tasks" + list.getFullPath() + "/" + task.ID() + ".txt");
 					}
 					else {
-						tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.id + ".txt");
+						tasks.getWriter().writeTask(task, "git-data/tasks" + list.getFullPath() + "/" + task.ID() + ".txt");
 					}
 				}
 

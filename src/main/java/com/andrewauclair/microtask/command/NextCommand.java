@@ -65,7 +65,7 @@ final class NextCommand implements Runnable {
 		}
 
 		List<Task> tasks = this.tasks.getAllTasks().stream()
-				.sorted(Comparator.comparingLong(o -> o.id))
+				.sorted(Comparator.comparingLong(o -> o.ID().get().ID()))
 				.filter(task -> task.state != TaskState.Finished)
 				.filter(task -> !task.recurring)
 				.filter(this::includeTask)
@@ -159,11 +159,11 @@ final class NextCommand implements Runnable {
 
 		if (due) {
 			table.showFirstRows();
-			table.setHeaders("List", "ID", "Due", "Description");
+			table.setHeaders("List", "ID", "", "Due", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT, LEFT);
 		}
 		else {
-			table.setHeaders("List", "ID", "Description");
+			table.setHeaders("List", "ID", "", "Description");
 			table.setColumnAlignment(LEFT, RIGHT, LEFT);
 		}
 
@@ -175,23 +175,28 @@ final class NextCommand implements Runnable {
 		ZoneId zoneId = osInterface.getZoneId();
 
 		for (final Task task : tasks) {
+			String fullPath = this.tasks.findListForTask(task.ID()).getFullPath();
+
+			String fullID = String.valueOf(task.fullID().ID());
+			String shortID = task.shortID() == RelativeTaskID.NO_SHORT_ID ? "" : "(" + task.shortID().ID() + ")";
+
 			if (task.state == TaskState.Active) {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, fullID, shortID, dueStr, task.task);
 				}
 				else {
-					table.addRow(ANSI_BG_GREEN, false, this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+					table.addRow(ANSI_BG_GREEN, false, fullPath, fullID, shortID, task.task);
 				}
 			}
 			else {
 				if (due) {
 					String dueStr = Instant.ofEpochSecond(task.dueTime).atZone(zoneId).format(dateTimeFormatter);
-					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), dueStr, task.task);
+					table.addRow(fullPath, fullID, shortID, dueStr, task.task);
 
 				}
 				else {
-					table.addRow(this.tasks.findListForTask(new ExistingID(this.tasks, task.id)).getFullPath(), String.valueOf(task.id), task.task);
+					table.addRow(fullPath, fullID, shortID, task.task);
 				}
 			}
 		}
@@ -208,7 +213,7 @@ final class NextCommand implements Runnable {
 		if (excludeList != null) {
 			for (final ExistingListName listName : excludeList) {
 				boolean match = tasks.getList(listName).getTasks().stream()
-						.anyMatch(t -> t.id == task.id);
+						.anyMatch(t -> t.ID() == task.ID());
 
 				if (match) {
 					return false;
@@ -219,7 +224,7 @@ final class NextCommand implements Runnable {
 		if (excludeGroup != null) {
 			for (final ExistingGroupName groupName : excludeGroup) {
 				boolean match = tasks.getGroup(groupName).getTasks().stream()
-						.anyMatch(t -> t.id == task.id);
+						.anyMatch(t -> t.ID() == task.ID());
 
 				if (match) {
 					return false;
@@ -233,7 +238,7 @@ final class NextCommand implements Runnable {
 		if (list != null) {
 			for (final ExistingListName listName : list) {
 				boolean match = tasks.getList(listName).getTasks().stream()
-						.anyMatch(t -> t.id == task.id);
+						.anyMatch(t -> t.ID() == task.ID());
 
 				if (match) {
 					include = true;
@@ -244,7 +249,7 @@ final class NextCommand implements Runnable {
 		if (group != null) {
 			for (final ExistingGroupName groupName : group) {
 				boolean match = tasks.getGroup(groupName).getTasks().stream()
-						.anyMatch(t -> t.id == task.id);
+						.anyMatch(t -> t.ID() == task.ID());
 
 				if (match) {
 					include = true;

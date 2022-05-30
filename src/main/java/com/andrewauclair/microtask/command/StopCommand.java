@@ -116,7 +116,7 @@ final class StopCommand implements Runnable {
 
 		@Override
 		public void run() {
-			parent.tasks.getActiveContext().setNoActiveMiletone();
+			parent.tasks.getActiveContext().setNoActiveMilestone();
 		}
 	}
 

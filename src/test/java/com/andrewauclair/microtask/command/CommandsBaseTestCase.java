@@ -7,10 +7,7 @@ import com.andrewauclair.microtask.Utils;
 import com.andrewauclair.microtask.os.GitLabReleases;
 import com.andrewauclair.microtask.project.Projects;
 import com.andrewauclair.microtask.schedule.Schedule;
-import com.andrewauclair.microtask.task.ExistingID;
-import com.andrewauclair.microtask.task.Task;
-import com.andrewauclair.microtask.task.TaskWriter;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.*;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import com.andrewauclair.microtask.task.group.name.NewTaskGroupName;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
@@ -40,6 +37,7 @@ public class CommandsBaseTestCase {
 	final LocalSettings localSettings = Mockito.mock(LocalSettings.class);
 	protected final PrintStream printStream = new PrintStream(outputStream);
 	protected final PrintStream errPrintStream = new PrintStream(errorStream);
+	protected IDValidator idValidator;
 	protected Tasks tasks;
 	protected Projects projects;
 	protected Schedule schedule;
@@ -66,7 +64,8 @@ public class CommandsBaseTestCase {
 		System.setOut(printStream);
 		System.setErr(errPrintStream);
 
-		tasks = new Tasks(writer, printStream, osInterface);
+		idValidator = new TaskIDValidator(printStream, osInterface);
+		tasks = new Tasks(idValidator, writer, printStream, osInterface);
 
 		schedule = new Schedule(tasks, osInterface);
 
@@ -99,7 +98,7 @@ public class CommandsBaseTestCase {
 	Task addTaskWithTimes(String name, long start, long stop) {
 		Task task = tasks.addTask(name);
 		setTime(start);
-		tasks.startTask(existingID(task.id), false);
+		tasks.startTask(task.ID(), false);
 		setTime(stop);
 		return tasks.stopTask();
 	}
@@ -147,6 +146,10 @@ public class CommandsBaseTestCase {
 	}
 
 	public ExistingID existingID(long ID) {
-		return new ExistingID(tasks, ID);
+		return new ExistingID(idValidator, ID);
+	}
+
+	public NewID newID(long ID) {
+		return new NewID(idValidator, ID);
 	}
 }

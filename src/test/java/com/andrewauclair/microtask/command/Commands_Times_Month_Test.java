@@ -1,18 +1,15 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.os.ConsoleColors;
-import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.TaskTimes;
 import com.andrewauclair.microtask.task.TaskTimesFilter;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static com.andrewauclair.microtask.os.ConsoleColors.ANSI_RESET;
@@ -33,10 +30,10 @@ class Commands_Times_Month_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 
@@ -74,10 +71,10 @@ class Commands_Times_Month_Test extends Commands_Times_BaseTestCase {
 
 		when(mockTaskTimesFilter.getData()).thenReturn(
 				Arrays.asList(
-						new TaskTimesFilter.TaskTimeFilterResult(621, newTask(1, "Test 1", TaskState.Active, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(2, "Test 2", TaskState.Inactive, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(3, "Test 3", TaskState.Finished, addTime), "/default"),
-						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(5, "Test 5", TaskState.Inactive, addTime, true), "/default")
+						new TaskTimesFilter.TaskTimeFilterResult(621, TestUtils.existingTask(existingID(1), "Test 1", TaskState.Active, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(3699, newTask(newID(2), idValidator, "Test 2", TaskState.Inactive, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(6555, newTask(newID(3), idValidator, "Test 3", TaskState.Finished, addTime).build(), "/default"),
+						new TaskTimesFilter.TaskTimeFilterResult(1940, newTask(newID(5), idValidator, "Test 5", TaskState.Inactive, addTime, true).build(), "/default")
 				)
 		);
 

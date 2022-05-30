@@ -1,10 +1,16 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.task;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public final class Task {
-	public final long id; // TODO it would be great if this was an instance of ExistingID
+	private final ExistingID existingID;
+
+	private final FullTaskID fullID; // set once when task is created and never changes
+	private RelativeTaskID shortID = RelativeTaskID.NO_SHORT_ID;
+
 	public final String task;
 	public final TaskState state;
 	public final long addTime;
@@ -15,8 +21,12 @@ public final class Task {
 
 	public final List<String> tags;
 
-	public Task(long id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
-		this.id = id;
+	// only called by TaskBuilder
+	public Task(ExistingID id, String task, TaskState state, long addTime, long finishTime, List<TaskTimes> startStopTimes, boolean recurring, long dueTime, List<String> tags) {
+		this.existingID = id;
+
+		this.fullID = new FullTaskID(id.get().ID());
+
 		this.task = task;
 		this.state = state;
 		this.addTime = addTime;
@@ -27,9 +37,25 @@ public final class Task {
 		this.tags = Collections.unmodifiableList(tags);
 	}
 
+	public ExistingID ID() {
+		return existingID;
+	}
+
+	public FullTaskID fullID() {
+		return fullID;
+	}
+
+	public RelativeTaskID shortID() {
+		return shortID;
+	}
+
+	public void setShortID(RelativeTaskID shortID) {
+		this.shortID = shortID;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
+		return Objects.hash(existingID, fullID, task, state, addTime, finishTime, startStopTimes, recurring, dueTime, tags);
 	}
 
 	@Override
@@ -42,7 +68,8 @@ public final class Task {
 		}
 		Task otherTask = (Task) o;
 
-		return id == otherTask.id &&
+		return Objects.equals(existingID, otherTask.existingID) &&
+				Objects.equals(fullID, otherTask.fullID) &&
 				Objects.equals(task, otherTask.task) &&
 				state == otherTask.state &&
 				addTime == otherTask.addTime &&
@@ -56,7 +83,7 @@ public final class Task {
 	@Override
 	public String toString() {
 		return "Task{" +
-				"id=" + id +
+				"id=" + existingID.get().ID() +
 				", task='" + task + '\'' +
 				", state=" + state +
 				", addTime=" + addTime +
@@ -69,6 +96,6 @@ public final class Task {
 	}
 
 	public String description() {
-		return id + " - '" + task + "'";
+		return existingID.get().ID() + " - '" + task + "'";
 	}
 }

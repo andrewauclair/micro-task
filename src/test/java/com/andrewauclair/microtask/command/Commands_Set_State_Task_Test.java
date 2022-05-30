@@ -1,9 +1,8 @@
 // Copyright (C) 2019-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.command;
 
-import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.TestUtils;
 import com.andrewauclair.microtask.task.TaskState;
-import com.andrewauclair.microtask.task.TaskTimes;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -11,7 +10,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +41,7 @@ class Commands_Set_State_Task_Test extends CommandsBaseTestCase {
 
 		commands.execute(printStream, "set task 1 --inactive");
 
-		Mockito.verify(writer).writeTask(newTask(1, "Test", TaskState.Inactive, 1000), "git-data/tasks/default/1.txt");
+		Mockito.verify(writer).writeTask(TestUtils.existingTask(existingID(1), "Test", TaskState.Inactive, 1000).build(), "git-data/tasks/default/1.txt");
 	}
 
 	@Test

@@ -1,7 +1,6 @@
 // Copyright (C) 2020-2022 Andrew Auclair - All Rights Reserved
 package com.andrewauclair.microtask.picocli;
 
-import org.jline.builtins.Completers;
 import org.jline.builtins.Options;
 import org.jline.console.ArgDesc;
 import org.jline.console.CmdDesc;
@@ -12,7 +11,6 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.impl.completer.SystemCompleter;
 import org.jline.utils.AttributedString;
-import org.jline.widget.Widgets;
 import picocli.CommandLine;
 
 import java.nio.file.Path;

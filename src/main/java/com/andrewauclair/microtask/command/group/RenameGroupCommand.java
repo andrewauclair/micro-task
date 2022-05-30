@@ -12,6 +12,7 @@ import picocli.CommandLine.Parameters;
 @Command(name = "group")
 public class RenameGroupCommand implements Runnable {
 	private final Tasks tasks;
+
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
 

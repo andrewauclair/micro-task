@@ -2,20 +2,20 @@
 package com.andrewauclair.microtask.picocli;
 
 import com.andrewauclair.microtask.task.ExistingID;
-import com.andrewauclair.microtask.task.Tasks;
+import com.andrewauclair.microtask.task.IDValidator;
 import picocli.CommandLine;
 
 public class ExistingIDTypeConverter implements CommandLine.ITypeConverter<ExistingID> {
-	private final Tasks tasks;
+	private final IDValidator idValidator;
 
-	public ExistingIDTypeConverter(Tasks tasks) {
-		this.tasks = tasks;
+	public ExistingIDTypeConverter(IDValidator idValidator) {
+		this.idValidator = idValidator;
 	}
 
 	@Override
 	public ExistingID convert(String value) {
 		try {
-			return new ExistingID(tasks, Long.parseLong(value));
+			return new ExistingID(idValidator, Long.parseLong(value));
 		}
 		catch (RuntimeException e) {
 			throw new CommandLine.TypeConversionException(e.getMessage());

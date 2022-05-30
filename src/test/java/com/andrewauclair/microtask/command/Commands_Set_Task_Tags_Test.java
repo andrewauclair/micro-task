@@ -24,11 +24,10 @@ public class Commands_Set_Task_Tags_Test extends CommandsBaseTestCase {
 
 	@Test
 	void remove_tags_from_task() {
-		tasks.addTask(newTaskBuilder(1, "Test", TaskState.Inactive, 1234)
+		tasks.addTask(newTaskBuilder(newID(1), idValidator, "Test", TaskState.Inactive, 1234)
 				.withTag("one")
 				.withTag("two")
-				.withTag("three")
-				.build());
+				.withTag("three"));
 
 		commands.execute(printStream, "set task 1 --remove-tags one,two");
 

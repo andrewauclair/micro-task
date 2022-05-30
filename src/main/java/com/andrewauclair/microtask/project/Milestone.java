@@ -3,6 +3,7 @@ package com.andrewauclair.microtask.project;
 
 import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.Task;
 import com.andrewauclair.microtask.task.Tasks;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class Milestone {
 
 		for (final ExistingFeature feature : features) {
 			IDs.addAll(project.getFeature(feature).getTasks().stream()
-					.map(task -> new ExistingID(tasks, task.id))
+					.map(Task::ID)
 					.collect(Collectors.toList()));
 		}
 

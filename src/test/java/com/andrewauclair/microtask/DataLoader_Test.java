@@ -52,6 +52,7 @@ public class DataLoader_Test {
 	final TaskWriter writer = Mockito.mock(TaskWriter.class);
 	protected final MockOSInterface osInterface = Mockito.spy(MockOSInterface.class);
 	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	protected IDValidator idValidator;
 	protected Tasks tasks;
 
 	private final TaskReader reader = new TaskReader(osInterface);
@@ -72,7 +73,8 @@ public class DataLoader_Test {
 		PrintStream output = new PrintStream(outputStream);
 		System.setOut(output);
 
-		tasks = new Tasks(writer, output, osInterface);
+		idValidator = new TaskIDValidator(output, osInterface);
+		tasks = new Tasks(idValidator, writer, output, osInterface);
 
 		tasks.addList(new NewTaskListName(tasks, "/default"), true);
 		tasks.setCurrentList(new ExistingListName(tasks, "/default"));
@@ -291,12 +293,22 @@ public class DataLoader_Test {
 		//new Task(1, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000))),
 		//			new Task(2, "Test", TaskState.Inactive, Collections.singletonList(new TaskTimes(1000)))
 		assertThat(project.getMilestone(new ExistingMilestone(project, "20.9.3")).getTasks()).containsOnly(
-				new ExistingID(tasks, 1L),
-				new ExistingID(tasks, 2L),
-				new ExistingID(tasks, 3L),
-				new ExistingID(tasks, 4L),
-				new ExistingID(tasks, 5L)
+				new ExistingID(tasks.idValidator(), 1L),
+				new ExistingID(tasks.idValidator(), 2L),
+				new ExistingID(tasks.idValidator(), 3L),
+				new ExistingID(tasks.idValidator(), 4L),
+				new ExistingID(tasks.idValidator(), 5L)
 		);
+
+		List<Task> tasksForList = tasks.getAllTasks();
+
+		assertEquals(5, tasksForList.size());
+
+		assertEquals(1, tasksForList.get(0).shortID().ID());
+		assertEquals(-1, tasksForList.get(1).shortID().ID());
+		assertEquals(-1, tasksForList.get(2).shortID().ID());
+		assertEquals(-1, tasksForList.get(3).shortID().ID());
+		assertEquals(2, tasksForList.get(4).shortID().ID());
 	}
 
 	@Test
@@ -308,10 +320,10 @@ public class DataLoader_Test {
 		dataLoader.load();
 
 		assertThat(tasks.getTasksForList(new ExistingListName(tasks, "/projects/micro-task/one"))).containsOnly(
-				newTask(2, "Test", TaskState.Inactive, 1000),
-				newTask(3, "Test Finished", TaskState.Finished, 1001),
-				newTask(4, "Test Finished 2", TaskState.Finished, 1002),
-				newTask(5, "Test Finished 3", TaskState.Finished, 1003)
+				TestUtils.existingTask(new ExistingID(tasks.idValidator(), 2), "Test", TaskState.Inactive, 1000).build(),
+				TestUtils.existingTask(new ExistingID(tasks.idValidator(), 3), "Test Finished", TaskState.Finished, 1001).build(),
+				TestUtils.existingTask(new ExistingID(tasks.idValidator(), 4), "Test Finished 2", TaskState.Finished, 1002).build(),
+				TestUtils.existingTask(new ExistingID(tasks.idValidator(), 5), "Test Finished 3", TaskState.Finished, 1003).build()
 		);
 	}
 

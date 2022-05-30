@@ -2,10 +2,10 @@
 package com.andrewauclair.microtask.task;
 
 import com.andrewauclair.microtask.TaskException;
+import com.andrewauclair.microtask.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -23,7 +23,7 @@ class Tasks_Active_Test extends TaskBaseTestCase {
 
 		tasks.startTask(existingID(2), false);
 
-		Task activeTask = newTask(2, "Testing 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
+		Task activeTask = TestUtils.existingTask(existingID(2), "Testing 2", TaskState.Active, 2000, Collections.singletonList(new TaskTimes(1234)));
 
 		assertEquals(activeTask, tasks.getActiveTask());
 	}

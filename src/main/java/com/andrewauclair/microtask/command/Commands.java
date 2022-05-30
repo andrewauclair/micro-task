@@ -70,19 +70,11 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		commands.put("stop", new StopCommand(tasks, osInterface));
 //		commands.put("add", new AddCommand(tasks, this));
 		commands.put("active", new ActiveCommand(tasks, osInterface));
-		commands.put("list", new ListCommand(tasks, osInterface));
-//		commands.put("times", new TimesCommand(tasks, projects, osInterface));//, new TaskFilterBuilder()));
+		commands.put("list", new ListCommand(tasks));
 		commands.put("debug", new DebugCommand(localSettings));
-//		commands.put("rename", new RenameCommand(tasks));
 		commands.put("search", new SearchCommand(tasks));
 		commands.put("version", new VersionCommand(osInterface));
-//		commands.put("update", new UpdateCommand(tasks, this, localSettings, osInterface));
 		commands.put("exit", new ExitCommand(osInterface));
-//		commands.put("move", new MoveCommand(tasks, osInterface));
-//		commands.put("set-task", new SetCommand.SetTaskCommand(tasks));
-//		commands.put("set-list", new SetCommand.SetListCommand(tasks));
-//		commands.put("set-group", new SetCommand.SetGroupCommand(tasks));
-//		commands.put("mk", new MakeCommand(tasks, projects));
 		commands.put("ch", new ChangeCommand(tasks, projects, localSettings));
 		commands.put("day", new DayCommand(tasks, localSettings, osInterface));
 		commands.put("alias", new AliasCommand(this, osInterface));
@@ -198,22 +190,14 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		switch (command) {
 			case "finish":
 				return new FinishCommand(tasks, osInterface);
-//			case "start":
-//				return new StartCommand(tasks, osInterface);
 			case "stop":
 				return new StopCommand(tasks, osInterface);
-//			case "add":
-//				return new AddCommand(tasks, this);
 			case "active":
 				return new ActiveCommand(tasks, osInterface);
 			case "list":
-				return new ListCommand(tasks, osInterface);
-//			case "times":
-//				return new TimesCommand(tasks, projects, osInterface);
+				return new ListCommand(tasks);
 			case "debug":
 				return new DebugCommand(localSettings);
-//			case "rename":
-//				return new RenameCommand(tasks);
 			case "search":
 				return new SearchCommand(tasks);
 			case "version":
@@ -222,16 +206,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new UpdateCommand(tasks, this, localSettings, osInterface);
 			case "exit":
 				return new ExitCommand(osInterface);
-//			case "move":
-//				return new MoveCommand(tasks, osInterface);
-//			case "set-task":
-//				return new SetCommand.SetTaskCommand(tasks);
-//			case "set-list":
-//				return new SetCommand.SetListCommand(tasks);
-//			case "set-group":
-//				return new SetCommand.SetGroupCommand(tasks);
-//			case "mk":
-//				return new MakeCommand(tasks, projects);
 			case "ch":
 				return new ChangeCommand(tasks, projects, localSettings);
 			case "day":
@@ -248,8 +222,6 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 				return new StatusCommand(this, osInterface);
 			case "project":
 				return new ProjectCommand(tasks, projects, localSettings, osInterface);
-			case "datagen":
-				return new RandomDataGenerator(tasks);
 			case "group":
 				return new GroupCommand(tasks);
 			case "tasks":
@@ -359,8 +331,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks.idValidator()).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks.idValidator()).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));
@@ -406,8 +378,8 @@ public class Commands implements CommandLine.IExecutionExceptionHandler {
 		cmdLine.registerConverter(NewTaskListName.class, s -> new NewTaskListNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(ExistingGroupName.class, s -> new ExistingGroupNameTypeConverter(tasks).convert(s));
 		cmdLine.registerConverter(NewTaskGroupName.class, s -> new NewTaskGroupNameTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks).convert(s));
-		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks).convert(s));
+		cmdLine.registerConverter(ExistingID.class, s -> new ExistingIDTypeConverter(tasks.idValidator()).convert(s));
+		cmdLine.registerConverter(NewID.class, s -> new NewIDTypeConverter(tasks.idValidator()).convert(s));
 		cmdLine.registerConverter(ExistingProject.class, s -> new ExistingProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(NewProject.class, s -> new NewProjectNameTypeConverter(projects).convert(s));
 		cmdLine.registerConverter(DueDate.class, s -> new DueDateTypeConverter(osInterface).convert(s));

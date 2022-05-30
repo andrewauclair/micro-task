@@ -17,12 +17,6 @@ public final class TaskDuration {
 	}
 
 	public TaskDuration(Task task, OSInterface osInterface) {
-		//		// exclude add and finish when finished
-//		if (state == TaskState.Finished) {
-//			return startStopTimes.subList(1, startStopTimes.size() - 1);
-//		}
-//		// exclude add
-//		return startStopTimes.subList(1, startStopTimes.size());
 		times = task.startStopTimes;
 		this.osInterface = osInterface;
 	}

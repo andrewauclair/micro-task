@@ -2,7 +2,6 @@
 package com.andrewauclair.microtask.command;
 
 import com.andrewauclair.microtask.jline.ListCompleter;
-import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.task.TaskList;
 import com.andrewauclair.microtask.task.TaskState;
 import com.andrewauclair.microtask.task.Tasks;
@@ -13,7 +12,6 @@ import picocli.CommandLine.Option;
 @Command(name = "list", description = "List tasks or the content of a group.")
 final class ListCommand implements Runnable {
 	private final Tasks tasksData;
-	private final OSInterface osInterface;
 
 	@Option(names = {"-h", "--help"}, description = "Show this help message.", usageHelp = true)
 	private boolean help;
@@ -21,9 +19,8 @@ final class ListCommand implements Runnable {
 	@Option(names = {"-l", "--list"}, completionCandidates = ListCompleter.class, description = "List tasks on list.")
 	private ExistingListName list;
 
-	ListCommand(Tasks tasks, OSInterface osInterface) {
+	ListCommand(Tasks tasks) {
 		this.tasksData = tasks;
-		this.osInterface = osInterface;
 	}
 
 	@Override

@@ -3,7 +3,10 @@ package com.andrewauclair.microtask.task.update;
 
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.*;
+import com.andrewauclair.microtask.task.ExistingID;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskState;
+import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.build.TaskBuilder;
 import com.andrewauclair.microtask.task.list.name.ExistingListName;
 
@@ -27,13 +30,13 @@ public class TaskRecurringUpdater {
 				.withRecurring(recurring)
 				.build();
 
-		String list = tasks.findListForTask(new ExistingID(tasks, task.id)).getFullPath();
+		String list = tasks.findListForTask(task.ID()).getFullPath();
 		tasks.replaceTask(new ExistingListName(tasks, list), optionalTask, task);
 
-		String file = "git-data/tasks" + list + "/" + task.id + ".txt";
+		String file = "git-data/tasks" + list + "/" + task.ID() + ".txt";
 		tasks.getWriter().writeTask(task, file);
 
-		osInterface.gitCommit("Set recurring for task " + task.id + " to " + recurring);
+		osInterface.gitCommit("Set recurring for task " + task.ID() + " to " + recurring);
 
 		return task;
 	}

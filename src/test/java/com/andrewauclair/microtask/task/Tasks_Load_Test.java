@@ -4,7 +4,6 @@ package com.andrewauclair.microtask.task;
 import com.andrewauclair.microtask.TaskException;
 import com.andrewauclair.microtask.command.Commands;
 import com.andrewauclair.microtask.command.CommandsBaseTestCase;
-import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +11,6 @@ import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collections;
 
 import static com.andrewauclair.microtask.TestUtils.createInputStream;
 import static com.andrewauclair.microtask.TestUtils.newTask;
@@ -103,11 +101,11 @@ class Tasks_Load_Test extends TaskBaseTestCase {
 
 		Mockito.doAnswer(invocationOnMock -> {
 			tasks.addList(newList("/default"), true);
-			tasks.addTask(newTask(1, "Test", TaskState.Finished, 1000));
+			tasks.addTask(newTask(newID(1), idValidator, "Test", TaskState.Finished, 1000));
 			tasks.addGroup(newGroup("/test/"));
 			tasks.addList(newList("/test/data"), true);
 			tasks.setCurrentList(existingList("/test/data"));
-			tasks.addTask(newTask(2, "Test", TaskState.Active, 1000));
+			tasks.addTask(newTask(newID(2), idValidator, "Test", TaskState.Active, 1000));
 			tasks.setCurrentList(existingList("/default"));
 			return true;
 		}).when(loader).load();

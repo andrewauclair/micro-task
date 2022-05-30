@@ -2,20 +2,19 @@
 package com.andrewauclair.microtask.command.group;
 
 import com.andrewauclair.microtask.DueDate;
-import com.andrewauclair.microtask.command.list.SetListCommand;
 import com.andrewauclair.microtask.jline.GroupCompleter;
 import com.andrewauclair.microtask.os.OSInterface;
-import com.andrewauclair.microtask.task.*;
-import com.andrewauclair.microtask.task.build.TaskBuilder;
+import com.andrewauclair.microtask.task.Task;
+import com.andrewauclair.microtask.task.TaskContainerState;
+import com.andrewauclair.microtask.task.TaskGroup;
+import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.microtask.task.group.name.ExistingGroupName;
-import com.andrewauclair.microtask.task.list.name.ExistingListName;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -80,7 +79,7 @@ public class SetGroupCommand implements Runnable {
 			TaskGroup group = tasks.getGroup(this.group.absoluteName());
 
 			for (final Task task : group.getTasks()) {
-				tasks.setDueDate(new ExistingID(tasks, task.id), dueTime);
+				tasks.setDueDate(task.ID(), dueTime);
 
 				System.out.println("Set due date for task " + task.description() + " to " + eodStr);
 			}

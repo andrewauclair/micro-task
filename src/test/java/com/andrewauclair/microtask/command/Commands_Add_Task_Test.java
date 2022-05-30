@@ -22,7 +22,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Task 1")
 						.withState(TaskState.Inactive)
 						.withAddTime(1000)
@@ -41,7 +41,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Test")
 						.withState(TaskState.Inactive)
 						.withAddTime(1000)
@@ -64,7 +64,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Test")
 						.withState(TaskState.Inactive)
 						.withAddTime(50000)
@@ -86,7 +86,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasks()).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Test")
 						.withState(TaskState.Inactive)
 						.withAddTime(50000)
@@ -121,7 +121,7 @@ class Commands_Add_Task_Test extends CommandsBaseTestCase {
 		);
 
 		assertThat(tasks.getTasksForList(existingList("one"))).containsOnly(
-				new TaskBuilder(1)
+				new TaskBuilder(existingID(1))
 						.withTask("Test")
 						.withState(TaskState.Inactive)
 						.withAddTime(1000)
