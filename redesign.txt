@@ -1,4 +1,4 @@
-
+UI with docking!
 
 gradually redesigning the entire app here, top to bottom
 
@@ -143,7 +143,8 @@ move (task, list, group)
 rename (task, list, group, project, feature, milestone)
 schedule
 update
-
+switch (replaces ch)
+config (replaces set)
 search
 times
 info (active, list, group, task, project, milestone, feature, day)
@@ -154,20 +155,27 @@ alias
 
 exit
 
-ch? used to change active list and group
-set? used to set task list group and due tasks
 
 -- Packages --
 
 alias
 schedule
 task
+    id
+    filter
 project
-picocli
+picocli (wrappers around the actual command package to interface with picocli)
 command
+    add
+    finish
+    move
+    rename
+    info
+    times
 console
 
 
 
-
 Each feature that we write needs in memory and in file support. This requires testing each form.
+
+Probably need the builder pattern for most things so that they're expandable and we don't have to add parameters everywhere when we add new stuff
