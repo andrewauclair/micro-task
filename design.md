@@ -7,6 +7,32 @@ define when their tasks are due and ensure that they are working on the most pre
 
 What follows is a detailed design of micro-task and its many features and commands.
 
+## Table Styling in Markdown
+
+<style>
+    .heatMap {
+        width: 70%;
+        text-align: center;
+    }
+    .heatMap th {
+        background: grey;
+        word-wrap: break-word;
+        text-align: center;
+    }
+    .heatMap tr:nth-child(1) { background: red; }
+    .heatMap tr:nth-child(2) { background: orange; }
+    .heatMap tr:nth-child(3) { background: green; }
+</style>
+
+<div class="heatMap">
+
+| Everything | in this table | is Centered | and the table will only take up 70% of the screen width |
+| -- | -- | -- | -- |
+| This | is | a | Red Row |
+| This | is | an | Orange Row |
+| This | is | a | Green Row |
+
+</div>
 
 ## 1. Considerations
 #### 1.1 Assumptions

@@ -12,6 +12,12 @@ apply plugin: 'jacoco'
 repositories {
     mavenLocal()
     mavenCentral()
+    maven{
+        url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://clojars.org/repo/"
+    }
 }
 
 dependencies {
@@ -24,6 +30,8 @@ dependencies {
     implementation 'org.fusesource.hawtjni:hawtjni-runtime:1.18'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:6.0.0.202111291000-r'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha6'
+    implementation 'com.formdev:flatlaf:2.4'
+    implementation 'io.github.andrewauclair.ModernDocking:ModernDocking:0.1.1'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
@@ -32,6 +40,7 @@ dependencies {
     testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.9'
     testImplementation 'org.mockito:mockito-core:4.3.1'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.3.1'
+
 }
 
 //tasks.withType(JavaCompile) {

@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class Main {
+	public static MainConsole mainConsole;
+	public static StatusConsole statusConsole;
+
 	public static void main(String[] args) throws Exception {
 //		System.out.println(Arrays.toString(args));
 
@@ -32,7 +35,7 @@ public final class Main {
 
 			}
 
-			new StatusConsole(directory);
+			statusConsole = new StatusConsole(directory);
 
 			System.exit(0);
 		}
@@ -43,7 +46,7 @@ public final class Main {
 			else if (args.length > 1 && args[0].equals("working-dir")) {
 				OSInterfaceImpl.working_directory = args[1];
 			}
-			new MainConsole();
+			mainConsole = new MainConsole();
 		}
 	}
 }

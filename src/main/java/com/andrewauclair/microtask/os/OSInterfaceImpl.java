@@ -263,6 +263,9 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public int getTerminalHeight() {
+		if (terminal == null) {
+			return 30;
+		}
 		int height = terminal.getHeight();
 
 		if (height == 0) {
@@ -273,6 +276,9 @@ public class OSInterfaceImpl implements OSInterface {
 
 	@Override
 	public int getTerminalWidth() {
+		if (terminal == null) {
+			return 80;
+		}
 		int width = terminal.getWidth();
 
 		// must be running in IntelliJ
