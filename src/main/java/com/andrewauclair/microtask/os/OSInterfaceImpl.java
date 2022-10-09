@@ -40,6 +40,9 @@ public class OSInterfaceImpl implements OSInterface {
 
 	private final Git repo;
 
+	public int width = 0;
+	public int height = 0;
+
 	public OSInterfaceImpl() throws GitAPIException {
 		if (!disableGit) {
 			repo = initGitRepo();
@@ -264,7 +267,7 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public int getTerminalHeight() {
 		if (terminal == null) {
-			return 30;
+			return height;
 		}
 		int height = terminal.getHeight();
 
@@ -277,7 +280,7 @@ public class OSInterfaceImpl implements OSInterface {
 	@Override
 	public int getTerminalWidth() {
 		if (terminal == null) {
-			return 80;
+			return width;
 		}
 		int width = terminal.getWidth();
 

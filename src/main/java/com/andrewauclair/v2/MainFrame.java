@@ -42,18 +42,11 @@ public class MainFrame extends JFrame {
 	public MainFrame() throws Exception {
 		new Docking(this);
 
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
 		AppState.setAutoPersist(false);
 		AppState.setPersistFile(new File("auto_persist_layout.xml"));
 		AppState.setAutoPersist(true);
-
-		SwingUtilities.invokeLater(() -> {
-			AppState.setAutoPersist(false);
-			try {
-				AppState.restore();
-			}
-			catch (Exception e) {}
-			AppState.setAutoPersist(true);
-		});
 
 		setSize(500, 500);
 
@@ -72,7 +65,7 @@ public class MainFrame extends JFrame {
 			UpdateCommand.updateFiles(tasks, osInterface, localSettings, projects, schedule, commands);
 		}
 
-		main = new MainConsole(this, commands);
+		main = new MainConsole(this, commands, osInterface);
 
 		setLayout(new GridBagLayout());
 
@@ -80,17 +73,11 @@ public class MainFrame extends JFrame {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
-
-//		add(toolBar, gbc);
-
-		gbc.gridy++;
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.BOTH;
 
 		RootDockingPanel dockingPanel = new RootDockingPanel(this);
-//		Docking.registerDockingPanel(dockingPanel, this);
 
 		add(dockingPanel, gbc);
 
@@ -109,15 +96,29 @@ public class MainFrame extends JFrame {
 			AddStatusConsoleDialog dialog = new AddStatusConsoleDialog(this);
 			dialog.setVisible(true);
 		});
+
+		SwingUtilities.invokeLater(() -> {
+			AppState.setAutoPersist(false);
+			try {
+				AppState.restore();
+			}
+			catch (Exception e) {
+				Docking.dock(main, this);
+			}
+			AppState.setAutoPersist(true);
+		});
 	}
 
 	// if updateOnInterval is false then we update when the main command changes
 	// interval is in seconds
 	public void addStatusConsole(String command, boolean updateOnInterval, int interval) {
-		StatusConsole statusConsole = new StatusConsole(commands, command, command, updateOnInterval, interval);
+		StatusConsole statusConsole = new StatusConsole(commands, osInterface, command, command, updateOnInterval, interval);
 		statusConsoles.add(statusConsole);
 
 		Docking.dock(statusConsole, main, DockingRegion.WEST);
+
+		// force the console to update the first time
+		statusConsole.update();
 	}
 
 	// TODO Find a way to test this, build it into the task loader as the last step

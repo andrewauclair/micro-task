@@ -69,6 +69,7 @@ public abstract class Console extends JPanel implements Dockable {
 		put(ANSI_BG_BRIGHT_CYAN, Color.CYAN);
 		put(ANSI_BG_BRIGHT_WHITE, Color.WHITE);
 	}};
+	public JScrollPane scrollPane;
 
 	public Console(String name, boolean readOnly) {
 		this.name = name;
@@ -93,7 +94,8 @@ public abstract class Console extends JPanel implements Dockable {
 
 		//Add components
 		setLayout(new BorderLayout());
-		add(new JScrollPane(outputArea),BorderLayout.CENTER);
+		scrollPane = new JScrollPane(outputArea);
+		add(scrollPane,BorderLayout.CENTER);
 
 		if (!readOnly) {
 			add(inputField, BorderLayout.SOUTH);
@@ -213,11 +215,6 @@ public abstract class Console extends JPanel implements Dockable {
 	@Override
 	public List<DockingRegion> disallowedRegions() {
 		return Collections.emptyList();
-	}
-
-	@Override
-	public boolean allowClose() {
-		return false;
 	}
 
 	@Override

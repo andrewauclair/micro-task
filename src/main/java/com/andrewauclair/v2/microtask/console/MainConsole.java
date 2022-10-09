@@ -1,40 +1,25 @@
 // Copyright (C) 2022 Andrew Auclair - All Rights Reserved
-
 package com.andrewauclair.v2.microtask.console;
 
-import com.andrewauclair.microtask.LocalSettings;
 import com.andrewauclair.microtask.command.Commands;
-import com.andrewauclair.microtask.command.UpdateCommand;
-import com.andrewauclair.microtask.command.VersionCommand;
-import com.andrewauclair.microtask.os.GitLabReleases;
+import com.andrewauclair.microtask.os.OSInterface;
 import com.andrewauclair.microtask.os.OSInterfaceImpl;
-import com.andrewauclair.microtask.project.Projects;
-import com.andrewauclair.microtask.schedule.Schedule;
-import com.andrewauclair.microtask.task.DataLoader;
-import com.andrewauclair.microtask.task.TaskReader;
-import com.andrewauclair.microtask.task.TaskWriter;
-import com.andrewauclair.microtask.task.Tasks;
 import com.andrewauclair.v2.MainFrame;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Scanner;
 
 public class MainConsole extends Console {
-
-
 	private final MainFrame mainFrame;
 	private final Commands commands;
+	private OSInterfaceImpl osInterface;
 
-	public MainConsole(MainFrame mainFrame, Commands commands) throws Exception {
+	public MainConsole(MainFrame mainFrame, Commands commands, OSInterfaceImpl osInterface) {
 		super("main", false);
 		this.mainFrame = mainFrame;
 
-
-//		VersionCommand.printLogo(osInterface);
 		this.commands = commands;
+		this.osInterface = osInterface;
 	}
 
 	public void executeCommand(String command) {
@@ -56,5 +41,8 @@ public class MainConsole extends Console {
 		executeCommand(input);
 	}
 
-
+	@Override
+	public boolean allowClose() {
+		return false;
+	}
 }
